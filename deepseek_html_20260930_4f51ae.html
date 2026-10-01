@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>War Grid — Estratégia com Economia</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 0%, #1b2430 0%, #0b0f14 70%);
+    color: #e6edf3;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  #app {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  canvas {
+    display: block;
+    border-radius: 10px;
+    box-shadow: 0 0 0 2px #2a3542, 0 20px 50px rgba(0,0,0,.65);
+    background: #0e1216;
+    max-width: 100%;
+    height: auto;
+    cursor: pointer;
+  }
+
+  #panel {
+    width: 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  h1 {
+    font-size: 19px;
+    margin: 0 0 4px 0;
+    letter-spacing: 3px;
+    text-align: center;
+    color: #9fb3c8;
+    font-weight: 700;
+  }
+
+  .card {
+    background: #131a24;
+    border: 1px solid #24303f;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .card h2 {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #6b8098;
+    margin: 0 0 6px 0;
+    font-weight: 600;
+  }
+
+  .turn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    transition: all .25s;
+  }
+  .turn.blue { border-color:#2563eb; background:#0f1c33; color:#93c5fd; }
+  .turn.red  { border-color:#dc2626; background:#2a0f12; color:#fca5a5; }
+
+  .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    flex: none;
+  }
+  .dot.blue { background:#3b82f6; box-shadow: 0 0 10px #3b82f6; }
+  .dot.red  { background:#ef4444; box-shadow: 0 0 10px #ef4444; }
+
+  .credits {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 15px;
+    color: #fbbf24;
+  }
+  .credits span:last-child {
+    color: #fde68a;
+    font-size: 17px;
+  }
+  .credits .income {
+    font-size: 11px;
+    color: #86efac;
+    font-weight: 600;
+  }
+
+  .uName {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #dbe7f3;
+  }
+
+  .stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+    color: #8fa3b8;
+    font-size: 12px;
+  }
+  .stat b { color: #e6edf3; }
+
+  .bar {
+    height: 7px;
+    background: #0a0e13;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 3px 0 8px 0;
+    border: 1px solid #1e2836;
+  }
+  .bar i {
+    display: block;
+    height: 100%;
+    transition: width .25s;
+  }
+
+  button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #2f4a6b;
+    background: linear-gradient(180deg, #1d4ed8, #1e3a8a);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: .5px;
+    cursor: pointer;
+    transition: .15s;
+    margin-top: 6px;
+  }
+  button:hover:not(:disabled) { filter: brightness(1.2); transform: translateY(-1px); }
+  button:disabled { opacity: .35; cursor: not-allowed; }
+
+  button.build {
+    background: linear-gradient(180deg, #059669, #065f46);
+    border-color: #10b981;
+    font-size: 12px;
+  }
+
+  .buyGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 5px;
+  }
+  .buyGrid button {
+    padding: 8px 4px;
+    font-size: 11px;
+    line-height: 1.3;
+    margin-top: 0;
+    background: linear-gradient(180deg, #374151, #1f2937);
+    border-color: #4b5563;
+  }
+  .buyGrid button .price {
+    display: block;
+    font-size: 10px;
+    color: #fbbf24;
+    font-weight: 700;
+  }
+  .buyGrid button:hover:not(:disabled) {
+    background: linear-gradient(180deg, #4b5563, #374151);
+  }
+
+  #endTurnBtn {
+    background: linear-gradient(180deg, #b45309, #78350f);
+    border-color: #f59e0b;
+  }
+
+  #restartBtn {
+    background: linear-gradient(180deg, #374151, #1f2937);
+    border-color: #4b5563;
+    padding: 7px;
+    font-size: 11px;
+  }
+
+  #log {
+    max-height: 110px;
+    overflow-y: auto;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #8fa3b8;
+  }
+  #log .logLine { padding: 1px 0; border-bottom: 1px solid #1a2330; }
+
+  .help ul { margin: 0; padding-left: 16px; color: #7d8fa3; line-height: 1.55; font-size: 11px; }
+  .help b { color: #b8c9db; }
+  .help .ff { color: #fbbf24; }
+
+  #log::-webkit-scrollbar { width: 6px; }
+  #log::-webkit-scrollbar-thumb { background: #2a3542; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <canvas id="game" width="600" height="600"></canvas>
+
+  <aside id="panel">
+    <h1>⚔ WAR GRID</h1>
+
+    <div id="turnBox" class="card turn blue">
+      <span class="dot blue" id="turnDot"></span>
+      <span id="turnText">Turno: Nação Azul</span>
+    </div>
+
+    <!-- Painel de Créditos -->
+    <div class="card credits">
+      <span>💰 Créditos</span>
+      <span>
+        <span id="creditValue">100</span>
+        <span class="income" id="incomeHint"></span>
+      </span>
+    </div>
+
+    <div class="card">
+      <h2>Unidade Selecionada</h2>
+      <div id="unitInfo"><i style="color:#5b7085">Nenhuma unidade selecionada.</i></div>
+      <div id="buildPostContainer" style="display:none;">
+        <button class="build" id="buildPostBtn">🏗 Construir Posto Avançado</button>
+      </div>
+    </div>
+
+    <!-- Menu de Recrutamento -->
+    <div class="card">
+      <h2>Recrutamento (perto do QG)</h2>
+      <div class="buyGrid">
+        <button id="buyInfantry"><span>🪖</span><span>Infant.</span><span class="price">$50</span></button>
+        <button id="buyArtillery"><span>🎯</span><span>Artilh.</span><span class="price">$100</span></button>
+        <button id="buyTank"><span>🛡️</span><span>Tanque</span><span class="price">$150</span></button>
+      </div>
+    </div>
+
+    <button id="endTurnBtn">ENCERRAR TURNO</button>
+    <button id="restartBtn">↻ Reiniciar Partida</button>
+
+    <div class="card">
+      <h2>Registro de Combate</h2>
+      <div id="log"></div>
+    </div>
+
+    <div class="card help">
+      <h2>Como Jogar</h2>
+      <ul>
+        <li><b>Clique</b> numa unidade azul para selecioná-la.</li>
+        <li>Mova (azul) e depois ataque (vermelho).</li>
+        <li><b>Tanque</b>: alcance 3, <b>30% de chance de errar</b>.</li>
+        <li><b>Artilharia</b>: alcance 2–6, dano cai com a distância, <span class="ff">fogo amigo em área 3×3</span>.</li>
+        <li><b>Infantaria</b>: pode construir <b>Posto Avançado</b> (+15 créditos/turno).</li>
+        <li>Destruir inimigos dá créditos. Compre tropas no menu ao lado.</li>
+        <li>Vença destruindo o <b>QG</b> ou todas as unidades inimigas.</li>
+      </ul>
+    </div>
+  </aside>
+</div>
+
+<script>
+/* ============================================================================
+   WAR GRID v2.1 — Estratégia por turnos com economia, recrutamento e postos
+   ----------------------------------------------------------------------------
+   CORREÇÃO v2.1:
+     • Reset de ctx.globalAlpha no início do draw() e ao final de drawFloaters()
+       para impedir o escurecimento progressivo da tela (bug dos frames).
+   ============================================================================ */
+
+/* ------------------------------------------------------------------
+   1. CONFIGURAÇÕES, TIPOS DE UNIDADE E ECONOMIA
+   ------------------------------------------------------------------ */
+const GRID = 15;
+const CELL = 40;
+const W = GRID * CELL;
+const H = GRID * CELL;
+
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+
+const TYPES = {
+  infantry:  { name:'Infantaria',      hp:100, move:3, minRange:1, maxRange:1, damage:35 },
+  tank:      { name:'Tanque',          hp:170, move:5, minRange:1, maxRange:3, damage:60 },
+  artillery: { name:'Artilharia',      hp:80,  move:2, minRange:2, maxRange:6, damage:70 },
+  hq:        { name:'Quartel-General', hp:300, move:0, minRange:0, maxRange:0, damage:0 },
+  post:      { name:'Posto Avançado',  hp:60,  move:0, minRange:0, maxRange:0, damage:0 }
+};
+
+const COLORS = {
+  blue: { main:'#3b82f6', dark:'#1d4ed8' },
+  red:  { main:'#ef4444', dark:'#b91c1c' }
+};
+
+const COST = { infantry: 50, artillery: 100, tank: 150 };
+const KILL_REWARD = { infantry: 20, tank: 50, artillery: 40, hq: 100, post: 30 };
+const POST_INCOME = 15;
+const TANK_MISS_CHANCE = 0.30;
+const ARTILLERY_MIN_FALLOFF = 0.40;
+const START_CREDITS = 100;
+
+/* ------------------------------------------------------------------
+   2. TERRENO
+   ------------------------------------------------------------------ */
+const terrain = [];
+
+function buildTerrain() {
+  terrain.length = 0;
+  for (let y = 0; y < GRID; y++) terrain.push(new Array(GRID).fill(0));
+
+  const rocks = [
+    [5,5],[6,5],[5,6],[9,9],[9,8],[8,9],
+    [3,7],[7,3],[11,7],[7,11],
+    [2,4],[4,2],[12,10],[10,12],[7,7]
+  ];
+  for (const [x, y] of rocks) terrain[y][x] = 1;
+}
+
+const isObstacle = (x, y) => terrain[y][x] === 1;
+
+/* ------------------------------------------------------------------
+   3. ESTADO GLOBAL
+   ------------------------------------------------------------------ */
+const state = {
+  units: [],
+  turn: 'blue',
+  selected: null,
+  phase: 'idle',
+  reachable: [],
+  attackable: [],
+  log: [],
+  gameOver: false,
+  busy: false,
+  credits: { blue: START_CREDITS, red: START_CREDITS },
+  floaters: []
+};
+
+let nextId = 1;
+
+/* ------------------------------------------------------------------
+   4. CRIAÇÃO DE UNIDADES
+   ------------------------------------------------------------------ */
+function createUnit(owner, type, x, y) {
+  const t = TYPES[type];
+  return {
+    id: nextId++,
+    owner, type, x, y,
+    hp: t.hp,
+    maxHp: t.hp,
+    move: t.move,
+    minRange: t.minRange,
+    maxRange: t.maxRange,
+    damage: t.damage,
+    moved: false,
+    done: false
+  };
+}
+
+const BLUE_LAYOUT = [
+  ['hq',        1, 13],
+  ['infantry',  1, 12],
+  ['infantry',  2, 13],
+  ['tank',      2, 12],
+  ['tank',      3, 13],
+  ['artillery', 1, 11]
+];
+const RED_LAYOUT = [
+  ['hq',        13, 1],
+  ['infantry',  13, 2],
+  ['infantry',  12, 1],
+  ['tank',      12, 2],
+  ['tank',      11, 1],
+  ['artillery', 13, 3]
+];
+
+/* ------------------------------------------------------------------
+   5. UTILITÁRIOS DE GRID
+   ------------------------------------------------------------------ */
+const manhattan = (x1, y1, x2, y2) => Math.abs(x1 - x2) + Math.abs(y1 - y2);
+const inBounds = (x, y) => x >= 0 && y >= 0 && x < GRID && y < GRID;
+
+function unitAt(x, y) {
+  return state.units.find(u => u.hp > 0 && u.x === x && u.y === y) || null;
+}
+
+function canAttack(u, fx, fy, target) {
+  if (!target || target.hp <= 0) return false;
+  if (target.owner === u.owner) return false;
+  if (u.maxRange === 0) return false;
+  const d = manhattan(fx, fy, target.x, target.y);
+  return d >= u.minRange && d <= u.maxRange;
+}
+
+function enemiesInRange(u, x, y) {
+  return state.units.filter(e => e.hp > 0 && canAttack(u, x, y, e));
+}
+
+/* ------------------------------------------------------------------
+   6. PATHFINDING (BFS)
+   ------------------------------------------------------------------ */
+function computeReachable(unit) {
+  const dist = Array.from({ length: GRID }, () => new Array(GRID).fill(Infinity));
+  dist[unit.y][unit.x] = 0;
+
+  const queue = [[unit.x, unit.y]];
+  const dirs = [[1,0], [-1,0], [0,1], [0,-1]];
+
+  while (queue.length) {
+    const [x, y] = queue.shift();
+    const d = dist[y][x];
+    if (d >= unit.move) continue;
+
+    for (const [dx, dy] of dirs) {
+      const nx = x + dx, ny = y + dy;
+      if (!inBounds(nx, ny)) continue;
+      if (isObstacle(nx, ny)) continue;
+      const occ = unitAt(nx, ny);
+      if (occ && occ.owner !== unit.owner) continue;
+
+      if (dist[ny][nx] > d + 1) {
+        dist[ny][nx] = d + 1;
+        queue.push([nx, ny]);
+      }
+    }
+  }
+
+  const tiles = [];
+  for (let y = 0; y < GRID; y++)
+    for (let x = 0; x < GRID; x++)
+      if (dist[y][x] <= unit.move && !unitAt(x, y))
+        tiles.push({ x, y, cost: dist[y][x] });
+  return tiles;
+}
+
+function tilesInRange(u, x, y) {
+  const out = [];
+  for (let yy = 0; yy < GRID; yy++)
+    for (let xx = 0; xx < GRID; xx++) {
+      const d = manhattan(xx, yy, x, y);
+      if (d >= u.minRange && d <= u.maxRange) out.push({ x: xx, y: yy });
+    }
+  return out;
+}
+
+/* ------------------------------------------------------------------
+   7. TEXTO FLUTUANTE
+   ------------------------------------------------------------------ */
+function addFloater(gx, gy, text, color, dyOffset = 0) {
+  state.floaters.push({
+    gx, gy, text, color,
+    start: performance.now(),
+    duration: 1300,
+    dy: dyOffset + (Math.random() * 8 - 4)
+  });
+}
+
+/* ------------------------------------------------------------------
+   8. COMBATE
+   ------------------------------------------------------------------ */
+function applyDamage(target, amount) {
+  target.hp = Math.max(0, target.hp - amount);
+}
+
+function damageUnit(target, amount, attacker, isFriendlyFire) {
+  if (!target || target.hp <= 0 || amount <= 0) return;
+  applyDamage(target, amount);
+
+  addFloater(target.x, target.y, `-${amount}`, isFriendlyFire ? '#fbbf24' : '#ff7b7b');
+
+  if (target.hp <= 0 && attacker && attacker.owner !== target.owner && !isFriendlyFire) {
+    const reward = KILL_REWARD[target.type] || 0;
+    state.credits[attacker.owner] += reward;
+    addFloater(target.x, target.y, `+${reward}💰`, '#4ade80', -18);
+    log(`💰 +${reward} créditos para Nação ${attacker.owner === 'blue' ? 'Azul' : 'Vermelha'} (abateu ${TYPES[target.type].name}).`);
+  }
+}
+
+function removeDead() {
+  const dead = state.units.filter(u => u.hp <= 0);
+  for (const d of dead) {
+    const nacao = d.owner === 'blue' ? 'Azul' : 'Vermelha';
+    if (d.type === 'hq') log(`🏴 QG da Nação ${nacao} foi DESTRUÍDO!`);
+    else log(`💥 ${TYPES[d.type].name} ${nacao} destruído(a).`);
+  }
+  state.units = state.units.filter(u => u.hp > 0);
+}
+
+function artilleryDamage(attacker, target) {
+  const dist = manhattan(attacker.x, attacker.y, target.x, target.y);
+  const range = attacker.maxRange - attacker.minRange;
+  if (range <= 0) return attacker.damage;
+  const t = (dist - attacker.minRange) / range;
+  const falloff = 1 - (1 - ARTILLERY_MIN_FALLOFF) * t;
+  return Math.round(attacker.damage * falloff);
+}
+
+function doAttack(attacker, target) {
+  if (!attacker || !target || attacker.hp <= 0 || target.hp <= 0) return;
+
+  /* --- RNG DO TANQUE --- */
+  if (attacker.type === 'tank' && Math.random() < TANK_MISS_CHANCE) {
+    addFloater(target.x, target.y, 'ERROU!', '#facc15');
+    log(`⚔ Tanque errou o tiro em ${TYPES[target.type].name}! (30% de chance)`);
+    attacker.done = true;
+    attacker.moved = true;
+    clearSelection();
+    updateUI();
+    draw(performance.now());
+    checkVictory();
+    return;
+  }
+
+  /* --- Dano base --- */
+  let dmg = attacker.damage;
+  let falloffNote = '';
+  if (attacker.type === 'artillery') {
+    dmg = artilleryDamage(attacker, target);
+    const dist = manhattan(attacker.x, attacker.y, target.x, target.y);
+    falloffNote = ` [dist ${dist}, dano reduzido]`;
+  }
+
+  damageUnit(target, dmg, attacker, false);
+  log(`⚔ ${TYPES[attacker.type].name} ataca ${TYPES[target.type].name} causando ${dmg} de dano.${falloffNote}`);
+
+  /* --- Explosão em área da artilharia --- */
+  if (attacker.type === 'artillery') {
+    const splashDmg = Math.round(dmg * 0.5);
+    for (const other of [...state.units]) {
+      if (other === target || other.hp <= 0) continue;
+      if (manhattan(other.x, other.y, target.x, target.y) > 1) continue;
+
+      const isFriendly = other.owner === attacker.owner;
+      damageUnit(other, splashDmg, attacker, isFriendly);
+
+      if (isFriendly) log(`   ⚠ FOGO AMIGO! ${splashDmg} de dano em ${TYPES[other.type].name} aliado.`);
+      else log(`   💥 Área: ${splashDmg} de dano em ${TYPES[other.type].name}.`);
+    }
+  }
+
+  /* --- Contra-ataque --- */
+  if (target.hp > 0 && canAttack(target, target.x, target.y, attacker)) {
+    const counter = Math.round(target.damage * 0.5);
+    damageUnit(attacker, counter, target, false);
+    log(`   ↩ Contra-ataque de ${TYPES[target.type].name}: ${counter} de dano.`);
+  }
+
+  attacker.done = true;
+  attacker.moved = true;
+
+  removeDead();
+  clearSelection();
+  updateUI();
+  draw(performance.now());
+  checkVictory();
+}
+
+/* ------------------------------------------------------------------
+   9. POSTO AVANÇADO
+   ------------------------------------------------------------------ */
+function buildPost(infantry) {
+  if (!infantry || infantry.type !== 'infantry' || infantry.done || infantry.moved) return;
+
+  const owner = infantry.owner;
+  const x = infantry.x, y = infantry.y;
+
+  state.units = state.units.filter(u => u !== infantry);
+
+  const post = createUnit(owner, 'post', x, y);
+  state.units.push(post);
+
+  const nacao = owner === 'blue' ? 'Azul' : 'Vermelha';
+  log(`🏗 Nação ${nacao} construiu um Posto Avançado em (${x},${y}). +${POST_INCOME}💰/turno.`);
+
+  clearSelection();
+  updateUI();
+  draw(performance.now());
+}
+
+/* ------------------------------------------------------------------
+   10. RECRUTAMENTO
+   ------------------------------------------------------------------ */
+function findSpawnTile(owner) {
+  const hq = state.units.find(u => u.owner === owner && u.type === 'hq' && u.hp > 0);
+  if (!hq) return null;
+
+  for (let r = 1; r <= 5; r++) {
+    for (let dy = -r; dy <= r; dy++) {
+      for (let dx = -r; dx <= r; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+        const x = hq.x + dx, y = hq.y + dy;
+        if (!inBounds(x, y)) continue;
+        if (isObstacle(x, y)) continue;
+        if (unitAt(x, y)) continue;
+        return { x, y };
+      }
+    }
+  }
+  return null;
+}
+
+function purchaseUnit(owner, type) {
+  const cost = COST[type];
+  if (!cost) return false;
+  if (state.credits[owner] < cost) {
+    if (owner === 'blue') log(`❌ Créditos insuficientes para comprar ${TYPES[type].name}.`);
+    return false;
+  }
+  const tile = findSpawnTile(owner);
+  if (!tile) {
+    if (owner === 'blue') log(`❌ Sem espaço perto do QG para recrutar.`);
+    return false;
+  }
+
+  state.credits[owner] -= cost;
+  const u = createUnit(owner, type, tile.x, tile.y);
+  state.units.push(u);
+
+  const nacao = owner === 'blue' ? 'Azul' : 'Vermelha';
+  log(`🏭 Nação ${nacao} recrutou ${TYPES[type].name} por ${cost}💰.`);
+  return true;
+}
+
+/* ------------------------------------------------------------------
+   11. CONDIÇÃO DE VITÓRIA
+   ------------------------------------------------------------------ */
+function checkVictory() {
+  const blueAlive = state.units.some(u => u.owner === 'blue' && u.hp > 0);
+  const redAlive  = state.units.some(u => u.owner === 'red'  && u.hp > 0);
+  const blueHQ    = state.units.some(u => u.owner === 'blue' && u.type === 'hq' && u.hp > 0);
+  const redHQ     = state.units.some(u => u.owner === 'red'  && u.type === 'hq' && u.hp > 0);
+
+  if (!blueAlive || !blueHQ) { endGame('red');  return true; }
+  if (!redAlive  || !redHQ)  { endGame('blue'); return true; }
+  return false;
+}
+
+function endGame(winner) {
+  state.gameOver = true;
+  state.busy = false;
+  const nacao = winner === 'blue' ? 'NAÇÃO AZUL' : 'NAÇÃO VERMELHA';
+  log(`🏆 VITÓRIA DA ${nacao}!`);
+  updateUI();
+}
+
+/* ------------------------------------------------------------------
+   12. SELEÇÃO / MOVIMENTO
+   ------------------------------------------------------------------ */
+function clearSelection() {
+  state.selected = null;
+  state.phase = 'idle';
+  state.reachable = [];
+  state.attackable = [];
+}
+
+function selectUnit(u) {
+  state.selected = u;
+  if (!u.moved) {
+    state.phase = 'move';
+    state.reachable = computeReachable(u);
+    state.attackable = [];
+  } else {
+    state.phase = 'attack';
+    state.reachable = [];
+    state.attackable = enemiesInRange(u, u.x, u.y);
+  }
+  updateUI();
+}
+
+function doMove(u, x, y) {
+  u.x = x;
+  u.y = y;
+  u.moved = true;
+
+  const targets = enemiesInRange(u, x, y);
+  state.phase = 'attack';
+  state.attackable = targets;
+  state.reachable = [];
+
+  if (targets.length === 0) {
+    log(`${TYPES[u.type].name} avançou para (${x},${y}) — sem alvos ao alcance.`);
+  }
+  updateUI();
+  draw(performance.now());
+}
+
+/* ------------------------------------------------------------------
+   13. INTERAÇÃO COM O MOUSE
+   ------------------------------------------------------------------ */
+canvas.addEventListener('click', (e) => {
+  if (state.gameOver || state.busy) return;
+  if (state.turn !== 'blue') return;
+
+  const rect = canvas.getBoundingClientRect();
+  const x = Math.floor((e.clientX - rect.left) / (rect.width / GRID));
+  const y = Math.floor((e.clientY - rect.top) / (rect.height / GRID));
+  if (!inBounds(x, y)) return;
+
+  handleClick(x, y);
+});
+
+function handleClick(x, y) {
+  const clicked = unitAt(x, y);
+
+  if (state.phase === 'idle') {
+    if (clicked && clicked.owner === state.turn && !clicked.done && clicked.type !== 'post') {
+      selectUnit(clicked);
+      draw(performance.now());
+    }
+    return;
+  }
+
+  if (state.phase === 'move') {
+    const u = state.selected;
+    if (!u) { clearSelection(); return; }
+
+    if (clicked === u) { clearSelection(); updateUI(); draw(performance.now()); return; }
+
+    if (clicked && clicked.owner !== u.owner && canAttack(u, u.x, u.y, clicked)) {
+      doAttack(u, clicked);
+      return;
+    }
+
+    const tile = state.reachable.find(t => t.x === x && t.y === y);
+    if (tile) { doMove(u, x, y); return; }
+
+    if (clicked && clicked.owner === state.turn && !clicked.done && clicked.type !== 'post') {
+      selectUnit(clicked);
+      draw(performance.now());
+      return;
+    }
+
+    clearSelection();
+    updateUI();
+    draw(performance.now());
+    return;
+  }
+
+  if (state.phase === 'attack') {
+    const u = state.selected;
+    if (!u) { clearSelection(); return; }
+
+    if (clicked && clicked.owner !== u.owner && canAttack(u, u.x, u.y, clicked)) {
+      doAttack(u, clicked);
+      return;
+    }
+
+    u.done = true;
+    log(`${TYPES[u.type].name} aguardou em posição.`);
+
+    if (clicked && clicked.owner === state.turn && !clicked.done && clicked.type !== 'post') {
+      selectUnit(clicked);
+    } else {
+      clearSelection();
+    }
+    updateUI();
+    draw(performance.now());
+  }
+}
+
+/* ------------------------------------------------------------------
+   14. GERENCIAMENTO DE TURNOS
+   ------------------------------------------------------------------ */
+function startTurn(owner) {
+  state.turn = owner;
+  clearSelection();
+
+  const posts = state.units.filter(u => u.owner === owner && u.type === 'post' && u.hp > 0);
+  const income = posts.length * POST_INCOME;
+  if (income > 0) {
+    state.credits[owner] += income;
+    log(`💰 +${income} créditos de ${posts.length} Posto(s) Avançado(s) (Nação ${owner === 'blue' ? 'Azul' : 'Vermelha'}).`);
+  }
+
+  for (const u of state.units) {
+    if (u.owner === owner) { u.moved = false; u.done = false; }
+  }
+
+  log(`— Turno da Nação ${owner === 'blue' ? 'Azul' : 'Vermelha'} —`);
+  updateUI();
+  draw(performance.now());
+
+  if (owner === 'red' && !state.gameOver) {
+    state.busy = true;
+    updateUI();
+    setTimeout(aiTurn, 550);
+  }
+}
+
+function endTurn() {
+  if (state.gameOver) return;
+  clearSelection();
+  startTurn(state.turn === 'blue' ? 'red' : 'blue');
+}
+
+document.getElementById('endTurnBtn').addEventListener('click', () => {
+  if (state.turn !== 'blue' || state.busy || state.gameOver) return;
+  endTurn();
+});
+
+/* ------------------------------------------------------------------
+   15. IA
+   ------------------------------------------------------------------ */
+function aiTurn() {
+  if (state.gameOver) { state.busy = false; return; }
+
+  aiTryBuy();
+
+  const myUnits = state.units.filter(u => u.owner === 'red' && u.hp > 0);
+  let i = 0;
+
+  function step() {
+    if (state.gameOver) { state.busy = false; updateUI(); return; }
+
+    if (i >= myUnits.length) {
+      state.busy = false;
+      endTurn();
+      return;
+    }
+
+    const u = myUnits[i++];
+    if (!state.units.includes(u) || u.hp <= 0) { step(); return; }
+
+    aiActUnit(u);
+    draw(performance.now());
+    updateUI();
+    setTimeout(step, 460);
+  }
+
+  step();
+}
+
+function aiTryBuy() {
+  const combatUnits = state.units.filter(u =>
+    u.owner === 'red' && u.hp > 0 && u.type !== 'hq' && u.type !== 'post'
+  ).length;
+  if (combatUnits >= 9) return;
+
+  const priority = ['tank', 'artillery', 'infantry'];
+  for (const type of priority) {
+    if (state.credits.red >= COST[type]) {
+      if (purchaseUnit('red', type)) return;
+    }
+  }
+}
+
+function aiActUnit(u) {
+  if (u.move === 0) { u.done = true; return; }
+
+  if (u.type === 'infantry' && !u.moved) {
+    const redPosts = state.units.filter(p => p.owner === 'red' && p.type === 'post' && p.hp > 0).length;
+    const inimigosPerto = state.units.filter(e =>
+      e.owner !== 'red' && e.hp > 0 && manhattan(u.x, u.y, e.x, e.y) <= 6
+    ).length;
+    if (redPosts < 3 && inimigosPerto === 0 && Math.random() < 0.6) {
+      buildPost(u);
+      return;
+    }
+  }
+
+  const reachable = computeReachable(u);
+  const options = [{ x: u.x, y: u.y, cost: 0 }, ...reachable];
+
+  let best = null;
+
+  for (const t of options) {
+    const targets = enemiesInRange(u, t.x, t.y);
+    for (const target of targets) {
+      let expected = u.damage;
+      if (u.type === 'artillery') {
+        const d = manhattan(t.x, t.y, target.x, target.y);
+        const range = u.maxRange - u.minRange;
+        const falloff = 1 - (1 - ARTILLERY_MIN_FALLOFF) * ((d - u.minRange) / Math.max(1, range));
+        expected = Math.round(u.damage * falloff);
+      } else if (u.type === 'tank') {
+        expected = Math.round(u.damage * (1 - TANK_MISS_CHANCE));
+      }
+
+      let score = expected;
+      if (target.hp <= expected) score += 500;
+      if (target.type === 'artillery') score += 150;
+      if (target.type === 'hq') score += 300;
+      if (target.type === 'post') score += 120;
+      score -= t.cost * 5;
+
+      if (!best || score > best.score) best = { score, tile: t, target };
+    }
+  }
+
+  if (best) {
+    if (best.tile.x !== u.x || best.tile.y !== u.y) {
+      u.x = best.tile.x;
+      u.y = best.tile.y;
+      u.moved = true;
+    }
+    doAttack(u, best.target);
+    return;
+  }
+
+  const inimigos = state.units.filter(e => e.owner !== 'red' && e.hp > 0);
+  if (inimigos.length === 0) { u.done = true; return; }
+
+  let alvo = inimigos[0], melhorD = Infinity;
+  for (const e of inimigos) {
+    const d = manhattan(u.x, u.y, e.x, e.y) - (e.type === 'hq' ? 4 : 0);
+    if (d < melhorD) { melhorD = d; alvo = e; }
+  }
+
+  const ideal = u.type === 'artillery' ? 4 : (u.maxRange === 1 ? 1 : 2);
+
+  let bestTile = { x: u.x, y: u.y };
+  let bestScore = Math.abs(manhattan(u.x, u.y, alvo.x, alvo.y) - ideal);
+
+  for (const t of reachable) {
+    const d = manhattan(t.x, t.y, alvo.x, alvo.y);
+    const s = Math.abs(d - ideal);
+    if (s < bestScore) { bestScore = s; bestTile = t; }
+  }
+
+  if (bestTile.x !== u.x || bestTile.y !== u.y) {
+    u.x = bestTile.x;
+    u.y = bestTile.y;
+    u.moved = true;
+  }
+  u.done = true;
+}
+
+/* ------------------------------------------------------------------
+   16. RENDERIZAÇÃO
+   ------------------------------------------------------------------ */
+function draw(time) {
+  const pulse = 0.5 + 0.5 * Math.sin(time / 260);
+
+  // === CORREÇÃO v2.1: reset do globalAlpha no começo de cada frame ===
+  // Sem isto, o alpha herdado dos floaters do frame anterior escurecia
+  // o fundo progressivamente, criando o efeito de "tela ficando preta".
+  ctx.globalAlpha = 1;
+
+  // Fundo
+  ctx.fillStyle = '#0e1216';
+  ctx.fillRect(0, 0, W, H);
+
+  // Terreno
+  for (let y = 0; y < GRID; y++) {
+    for (let x = 0; x < GRID; x++) {
+      const px = x * CELL, py = y * CELL;
+
+      if (terrain[y][x] === 1) {
+        ctx.fillStyle = '#2b2f36';
+        ctx.fillRect(px, py, CELL, CELL);
+        ctx.fillStyle = '#3d434d';
+        ctx.beginPath();
+        ctx.arc(px + CELL / 2, py + CELL / 2, 13, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#4e5561';
+        ctx.beginPath();
+        ctx.arc(px + CELL / 2 - 4, py + CELL / 2 - 4, 6, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = (x + y) % 2 === 0 ? '#22301f' : '#273724';
+        ctx.fillRect(px, py, CELL, CELL);
+      }
+    }
+  }
+
+  // Overlay de movimento
+  if (state.phase === 'move' && state.selected) {
+    ctx.fillStyle = 'rgba(70,150,255,0.28)';
+    for (const t of state.reachable)
+      ctx.fillRect(t.x * CELL + 1, t.y * CELL + 1, CELL - 2, CELL - 2);
+    ctx.strokeStyle = 'rgba(120,190,255,0.55)';
+    ctx.lineWidth = 1;
+    for (const t of state.reachable)
+      ctx.strokeRect(t.x * CELL + 1.5, t.y * CELL + 1.5, CELL - 3, CELL - 3);
+  }
+
+  // Overlay de alcance de ataque
+  if (state.phase === 'attack' && state.selected) {
+    const u = state.selected;
+    const tiles = tilesInRange(u, u.x, u.y);
+
+    if (u.type === 'artillery') {
+      ctx.fillStyle = 'rgba(251,146,60,0.20)';
+    } else {
+      ctx.fillStyle = 'rgba(255,80,80,0.16)';
+    }
+    for (const t of tiles)
+      ctx.fillRect(t.x * CELL + 1, t.y * CELL + 1, CELL - 2, CELL - 2);
+  }
+
+  // Inimigos atacáveis
+  if (state.phase === 'attack' && state.attackable.length) {
+    ctx.strokeStyle = `rgba(255,70,70,${0.45 + 0.45 * pulse})`;
+    ctx.lineWidth = 3;
+    for (const e of state.attackable) {
+      if (e.hp <= 0) continue;
+      ctx.strokeRect(e.x * CELL + 3, e.y * CELL + 3, CELL - 6, CELL - 6);
+    }
+  }
+
+  // Grid
+  ctx.strokeStyle = 'rgba(0,0,0,0.30)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= GRID; i++) {
+    ctx.beginPath(); ctx.moveTo(i * CELL + 0.5, 0); ctx.lineTo(i * CELL + 0.5, H); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, i * CELL + 0.5); ctx.lineTo(W, i * CELL + 0.5); ctx.stroke();
+  }
+
+  // Unidades
+  for (const u of state.units) if (u.hp > 0) drawUnit(u);
+
+  // Anel de seleção
+  if (state.selected && state.selected.hp > 0) {
+    const s = state.selected;
+    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(s.x * CELL + 2, s.y * CELL + 2, CELL - 4, CELL - 4);
+
+    if (state.phase === 'attack') {
+      ctx.strokeStyle = `rgba(250,204,21,${0.3 + 0.4 * pulse})`;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(s.x * CELL + 5, s.y * CELL + 5, CELL - 10, CELL - 10);
+    }
+  }
+
+  // Textos flutuantes por cima
+  drawFloaters(time);
+
+  // Fim de jogo
+  if (state.gameOver) {
+    ctx.globalAlpha = 1;   // garante opacidade total na tela final
+    ctx.fillStyle = 'rgba(0,0,0,0.72)';
+    ctx.fillRect(0, 0, W, H);
+    const vencedor = state.units.some(u => u.owner === 'blue' && u.hp > 0) ? 'blue' : 'red';
+    const cor = vencedor === 'blue' ? '#60a5fa' : '#f87171';
+    const texto = vencedor === 'blue' ? 'NAÇÃO AZUL VENCEU!' : 'NAÇÃO VERMELHA VENCEU!';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = cor;
+    ctx.font = 'bold 34px Segoe UI, sans-serif';
+    ctx.fillText(texto, W / 2, H / 2 - 10);
+    ctx.fillStyle = '#9fb3c8';
+    ctx.font = '16px Segoe UI, sans-serif';
+    ctx.fillText('Clique em "Reiniciar Partida" para jogar novamente', W / 2, H / 2 + 30);
+  }
+}
+
+/** Desenha textos flutuantes com fade out e devolve o alpha ao normal ao final. */
+function drawFloaters(time) {
+  const alive = [];
+  for (const f of state.floaters) {
+    const elapsed = time - f.start;
+    if (elapsed >= f.duration) continue;
+    alive.push(f);
+
+    const t = elapsed / f.duration;
+    const alpha = 1 - t * t;
+    const py = f.gy * CELL + CELL / 2 - t * 42 + f.dy;
+    const px = f.gx * CELL + CELL / 2 + (f.dy % 3) * 4;
+
+    ctx.globalAlpha = alpha;
+    ctx.font = 'bold 15px Segoe UI, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.lineWidth = 3.5;
+    ctx.strokeStyle = 'rgba(0,0,0,0.85)';
+    ctx.strokeText(f.text, px, py);
+    ctx.fillStyle = f.color;
+    ctx.fillText(f.text, px, py);
+  }
+  if (state.floaters.length !== alive.length) state.floaters = alive;
+
+  // === CORREÇÃO v2.1: restaura o alpha para não contaminar o próximo frame ===
+  ctx.globalAlpha = 1;
+}
+
+function drawUnit(u) {
+  const cx = u.x * CELL + CELL / 2;
+  const cy = u.y * CELL + CELL / 2;
+  const c = COLORS[u.owner];
+
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + 14, 13, 5, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = c.main;
+  ctx.strokeStyle = c.dark;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 14, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = '#ffffff';
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+
+  if (u.type === 'infantry') {
+    ctx.beginPath(); ctx.arc(cx, cy - 5, 3.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx, cy - 1); ctx.lineTo(cx, cy + 7); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx - 5, cy + 2); ctx.lineTo(cx + 5, cy + 2); ctx.stroke();
+
+  } else if (u.type === 'tank') {
+    ctx.fillRect(cx - 8, cy - 4, 16, 10);
+    ctx.beginPath(); ctx.arc(cx, cy - 4, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx, cy - 4); ctx.lineTo(cx, cy - 12); ctx.stroke();
+
+  } else if (u.type === 'artillery') {
+    ctx.beginPath(); ctx.arc(cx - 2, cy + 3, 5.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx - 1, cy + 2); ctx.lineTo(cx + 9, cy - 9); ctx.stroke();
+
+  } else if (u.type === 'hq') {
+    ctx.beginPath(); ctx.moveTo(cx - 2, cy + 8); ctx.lineTo(cx - 2, cy - 9); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx - 2, cy - 9);
+    ctx.lineTo(cx + 8, cy - 5);
+    ctx.lineTo(cx - 2, cy - 1);
+    ctx.closePath();
+    ctx.fill();
+
+  } else if (u.type === 'post') {
+    ctx.fillRect(cx - 6, cy + 4, 12, 4);
+    ctx.fillRect(cx - 1, cy - 10, 2, 14);
+    ctx.beginPath();
+    ctx.moveTo(cx + 1, cy - 10);
+    ctx.lineTo(cx + 9, cy - 6.5);
+    ctx.lineTo(cx + 1, cy - 3);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  const bw = 30, bh = 4;
+  const bx = cx - bw / 2;
+  const by = cy + 15;
+  ctx.fillStyle = 'rgba(0,0,0,0.75)';
+  ctx.fillRect(bx - 1, by - 1, bw + 2, bh + 2);
+  const ratio = Math.max(0, u.hp / u.maxHp);
+  ctx.fillStyle = ratio > 0.6 ? '#4ade80' : ratio > 0.3 ? '#facc15' : '#ef4444';
+  ctx.fillRect(bx, by, bw * ratio, bh);
+
+  if (u.owner === state.turn && u.done) {
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 14, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+/* ------------------------------------------------------------------
+   17. INTERFACE
+   ------------------------------------------------------------------ */
+function log(msg) {
+  state.log.unshift(msg);
+  if (state.log.length > 45) state.log.pop();
+  renderLog();
+}
+
+function renderLog() {
+  const el = document.getElementById('log');
+  el.innerHTML = state.log.map(m => `<div class="logLine">${m}</div>`).join('');
+}
+
+function updateUI() {
+  const turnBox = document.getElementById('turnBox');
+  const turnDot = document.getElementById('turnDot');
+  const turnText = document.getElementById('turnText');
+  turnBox.className = 'card turn ' + state.turn;
+  turnDot.className = 'dot ' + state.turn;
+  turnText.textContent = state.turn === 'blue'
+    ? 'Turno: Nação Azul'
+    : (state.busy ? 'Turno: Nação Vermelha (pensando...)' : 'Turno: Nação Vermelha');
+
+  document.getElementById('creditValue').textContent = state.credits[state.turn];
+  const posts = state.units.filter(u => u.owner === state.turn && u.type === 'post' && u.hp > 0).length;
+  document.getElementById('incomeHint').textContent = posts > 0
+    ? ` (+${posts * POST_INCOME}/turno)` : '';
+
+  const info = document.getElementById('unitInfo');
+  const buildContainer = document.getElementById('buildPostContainer');
+  const u = state.selected;
+
+  if (u && u.hp > 0) {
+    const pct = Math.round((u.hp / u.maxHp) * 100);
+    const corBarra = pct > 60 ? '#4ade80' : pct > 30 ? '#facc15' : '#ef4444';
+    const alcance = u.maxRange === 0
+      ? '—'
+      : (u.minRange === u.maxRange ? u.minRange : `${u.minRange}-${u.maxRange}`);
+    const status = u.done ? 'Já agiu' : (u.moved ? 'Movida (pode atacar)' : 'Pronta');
+
+    let extra = '';
+    if (u.type === 'artillery') extra = '<div class="stat"><span>Efeito</span><b>Área 3×3 ⚠ Fogo amigo</b></div>';
+    if (u.type === 'tank') extra = '<div class="stat"><span>Precisão</span><b>70% (30% erro)</b></div>';
+    if (u.type === 'post') extra = `<div class="stat"><span>Renda</span><b>+${POST_INCOME}💰/turno</b></div>`;
+
+    info.innerHTML = `
+      <div class="uName"><span class="dot ${u.owner}"></span>${TYPES[u.type].name}</div>
+      <div class="stat"><span>Vida</span><b>${u.hp} / ${u.maxHp}</b></div>
+      <div class="bar"><i style="width:${pct}%;background:${corBarra}"></i></div>
+      <div class="stat"><span>Movimento</span><b>${u.move}</b></div>
+      <div class="stat"><span>Alcance</span><b>${alcance}</b></div>
+      <div class="stat"><span>Dano</span><b>${u.damage}</b></div>
+      ${extra}
+      <div class="stat"><span>Status</span><b>${status}</b></div>
+    `;
+
+    const canBuild = u.type === 'infantry' && u.owner === 'blue' && !u.done && !u.moved
+                     && !state.gameOver && state.turn === 'blue' && !state.busy;
+    buildContainer.style.display = canBuild ? 'block' : 'none';
+  } else {
+    info.innerHTML = '<i style="color:#5b7085">Nenhuma unidade selecionada.</i>';
+    buildContainer.style.display = 'none';
+  }
+
+  const isBlueTurn = state.turn === 'blue' && !state.busy && !state.gameOver;
+  document.getElementById('buyInfantry').disabled  = !isBlueTurn || state.credits.blue < COST.infantry;
+  document.getElementById('buyArtillery').disabled = !isBlueTurn || state.credits.blue < COST.artillery;
+  document.getElementById('buyTank').disabled      = !isBlueTurn || state.credits.blue < COST.tank;
+
+  const btn = document.getElementById('endTurnBtn');
+  btn.disabled = state.turn !== 'blue' || state.busy || state.gameOver;
+  btn.textContent = state.gameOver ? 'FIM DE JOGO' : 'ENCERRAR TURNO';
+}
+
+/* ------------------------------------------------------------------
+   18. BOTÕES DE AÇÃO
+   ------------------------------------------------------------------ */
+document.getElementById('buyInfantry').addEventListener('click', () => {
+  if (state.turn !== 'blue' || state.busy || state.gameOver) return;
+  if (purchaseUnit('blue', 'infantry')) { updateUI(); draw(performance.now()); }
+});
+document.getElementById('buyArtillery').addEventListener('click', () => {
+  if (state.turn !== 'blue' || state.busy || state.gameOver) return;
+  if (purchaseUnit('blue', 'artillery')) { updateUI(); draw(performance.now()); }
+});
+document.getElementById('buyTank').addEventListener('click', () => {
+  if (state.turn !== 'blue' || state.busy || state.gameOver) return;
+  if (purchaseUnit('blue', 'tank')) { updateUI(); draw(performance.now()); }
+});
+
+document.getElementById('buildPostBtn').addEventListener('click', () => {
+  if (state.turn !== 'blue' || state.busy || state.gameOver) return;
+  if (state.selected) buildPost(state.selected);
+});
+
+/* ------------------------------------------------------------------
+   19. INICIALIZAÇÃO / REINÍCIO
+   ------------------------------------------------------------------ */
+function initGame() {
+  nextId = 1;
+  state.units = [];
+  state.log = [];
+  state.floaters = [];
+  state.gameOver = false;
+  state.busy = false;
+  state.selected = null;
+  state.phase = 'idle';
+  state.reachable = [];
+  state.attackable = [];
+  state.credits = { blue: START_CREDITS, red: START_CREDITS };
+
+  buildTerrain();
+
+  for (const [type, x, y] of BLUE_LAYOUT) state.units.push(createUnit('blue', type, x, y));
+  for (const [type, x, y] of RED_LAYOUT)  state.units.push(createUnit('red',  type, x, y));
+
+  renderLog();
+  log('⚔ A batalha começou! Você tem 100 créditos e um QG para defender.');
+
+  state.turn = 'blue';
+  startTurn('blue');
+}
+
+document.getElementById('restartBtn').addEventListener('click', initGame);
+
+/* ------------------------------------------------------------------
+   20. LOOP DE RENDERIZAÇÃO
+   ------------------------------------------------------------------ */
+function loop(time) {
+  draw(time);
+  requestAnimationFrame(loop);
+}
+
+initGame();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

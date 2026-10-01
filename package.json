@@ -1,0 +1,13 @@
+{
+  "name": "war-grid",
+  "version": "1.0.0",
+  "private": true,
+  "description": "War Grid — Fronteiras RTS: estratégia militar em tempo real num único arquivo HTML.",
+  "scripts": {
+    "test": "node tests/engine.test.cjs",
+    "test:browser": "node tests/browser.test.cjs"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.50.0"
+  }
+}
