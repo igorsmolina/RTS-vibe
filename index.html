@@ -1,42 +1,44 @@
 <!doctype html>
 <html lang="pt-BR">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#132631"><title>War Grid — Fronteiras RTS</title>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#132631"><title>War Grid — Fronteiras por Turnos</title>
 <style id="tailwind">/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */
 @layer properties{@supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b)))){*,:before,:after,::backdrop{--tw-rotate-x:initial;--tw-rotate-y:initial;--tw-rotate-z:initial;--tw-skew-x:initial;--tw-skew-y:initial;--tw-border-style:solid;--tw-font-weight:initial;--tw-ordinal:initial;--tw-slashed-zero:initial;--tw-numeric-figure:initial;--tw-numeric-spacing:initial;--tw-numeric-fraction:initial;--tw-blur:initial;--tw-brightness:initial;--tw-contrast:initial;--tw-grayscale:initial;--tw-hue-rotate:initial;--tw-invert:initial;--tw-opacity:initial;--tw-saturate:initial;--tw-sepia:initial;--tw-drop-shadow:initial;--tw-drop-shadow-color:initial;--tw-drop-shadow-alpha:100%;--tw-drop-shadow-size:initial}}}@layer theme{:root,:host{--spacing:.25rem;--font-weight-semibold:600;--default-transition-duration:.15s;--default-transition-timing-function:cubic-bezier(.4, 0, .2, 1)}}@layer utilities{.visible{visibility:visible}.sr-only{clip-path:inset(50%);white-space:nowrap;border-width:0;width:1px;height:1px;margin:-1px;padding:0;position:absolute;overflow:hidden}.block{display:block}.flex{display:flex}.hidden{display:none}.table{display:table}.w-full{width:100%}.transform{transform:var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,)}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-between{justify-content:space-between}.gap-2{gap:calc(var(--spacing) * 2)}.gap-3{gap:calc(var(--spacing) * 3)}.border{border-style:var(--tw-border-style);border-width:1px}.font-semibold{--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold)}.tabular-nums{--tw-numeric-spacing:tabular-nums;font-variant-numeric:var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,)}.filter{filter:var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,)}.transition{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to,opacity,box-shadow,transform,translate,scale,rotate,filter,-webkit-backdrop-filter,backdrop-filter,display,content-visibility,overlay,pointer-events;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}}@property --tw-rotate-x{syntax:"*";inherits:false}@property --tw-rotate-y{syntax:"*";inherits:false}@property --tw-rotate-z{syntax:"*";inherits:false}@property --tw-skew-x{syntax:"*";inherits:false}@property --tw-skew-y{syntax:"*";inherits:false}@property --tw-border-style{syntax:"*";inherits:false;initial-value:solid}@property --tw-font-weight{syntax:"*";inherits:false}@property --tw-ordinal{syntax:"*";inherits:false}@property --tw-slashed-zero{syntax:"*";inherits:false}@property --tw-numeric-figure{syntax:"*";inherits:false}@property --tw-numeric-spacing{syntax:"*";inherits:false}@property --tw-numeric-fraction{syntax:"*";inherits:false}@property --tw-blur{syntax:"*";inherits:false}@property --tw-brightness{syntax:"*";inherits:false}@property --tw-contrast{syntax:"*";inherits:false}@property --tw-grayscale{syntax:"*";inherits:false}@property --tw-hue-rotate{syntax:"*";inherits:false}@property --tw-invert{syntax:"*";inherits:false}@property --tw-opacity{syntax:"*";inherits:false}@property --tw-saturate{syntax:"*";inherits:false}@property --tw-sepia{syntax:"*";inherits:false}@property --tw-drop-shadow{syntax:"*";inherits:false}@property --tw-drop-shadow-color{syntax:"*";inherits:false}@property --tw-drop-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-drop-shadow-size{syntax:"*";inherits:false}</style>
 <style>
 :root{color-scheme:dark;--bg:#10212a;--panel:#1b333f;--line:#39515c;--ink:#eff0df;--muted:#a9bfc5;--gold:#edd098;--blue:#77c8e2;--red:#ee9986;--dock:222px}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:13px 'Segoe UI',sans-serif}h1,h2,h3,p{margin:0}button,select,input{font:inherit}button,select,input{color:var(--ink);background:#253f4d;border:1px solid #4c636d;border-radius:5px;padding:8px 11px;min-height:36px}button{cursor:pointer;font-weight:600}button:hover:not(:disabled){background:#365a69;border-color:#abc2c5}button:disabled{opacity:.4;cursor:not-allowed}button:focus-visible,canvas:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}.primary{background:var(--gold);color:#263a40;border-color:var(--gold)}button.primary:hover:not(:disabled){background:#ffe4b2}.active,[aria-pressed=true].action{border-color:var(--gold);background:#555143}.muted,small{color:var(--muted)}.gold{color:var(--gold)}.shell{max-width:1540px;margin:auto;padding:0 26px calc(var(--dock) + 16px)}
-header{height:68px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:12px}.crest{width:35px;height:38px;border:2px solid var(--gold);color:var(--gold);font:26px Georgia;text-align:center;clip-path:polygon(0 0,100% 0,100% 76%,50% 100%,0 76%)}h1{font-size:23px;letter-spacing:1px}.brand small{font-size:11px}.header-controls{display:flex;gap:7px}.brief{display:flex;justify-content:space-between;align-items:center;padding:15px 0;gap:12px}.brief h2{font:27px Georgia,serif}.brief p{color:var(--muted);font-size:11px;margin-top:4px}.resources{display:flex;gap:25px}.resources div{display:grid;gap:2px}.resources strong{font-size:23px;font-weight:650}.resources small{font-size:10px}.battle{border:1px solid var(--line);border-radius:7px;background:#172d36;overflow:hidden}.battle-top{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;gap:15px;border-bottom:1px solid var(--line);font-size:12px}.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#aad6b1;margin-right:7px}.map-stage{display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#29423f,#132833);padding:8px;min-height:180px}.map-frame{width:min(100%,calc((100dvh - var(--dock) - 274px)*18/14));min-width:260px;max-width:1150px;position:relative}#battlefield{display:block;width:100%;height:auto;border:1px solid #677567;touch-action:none;cursor:crosshair;background:#20333d}.battle-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding:9px 14px;min-height:43px}#hint{font-size:12px;line-height:1.4}.key-hint{color:var(--muted);white-space:nowrap;font-size:10px}.under-map{display:flex;justify-content:space-between;gap:15px;margin:9px 0;color:var(--muted);font-size:10px}#pauseOverlay{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;background:#13273344}#pauseOverlay[hidden]{display:none}#pauseOverlay span{background:#142b35ed;border:1px solid #809699;padding:12px 24px;border-radius:6px;box-shadow:0 10px 40px #0005;font-size:18px;color:var(--gold)}
+header{height:68px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:12px}.crest{width:35px;height:38px;border:2px solid var(--gold);color:var(--gold);font:26px Georgia;text-align:center;clip-path:polygon(0 0,100% 0,100% 76%,50% 100%,0 76%)}h1{font-size:23px;letter-spacing:1px}.brand small{font-size:11px}.header-controls{display:flex;gap:7px}.brief{display:flex;justify-content:space-between;align-items:center;padding:15px 0;gap:12px}.brief h2{font:27px Georgia,serif}.brief p{color:var(--muted);font-size:11px;margin-top:4px}.resources{display:flex;gap:25px}.resources div{display:grid;gap:2px}.resources strong{font-size:23px;font-weight:650}.resources small{font-size:10px}.battle{border:1px solid var(--line);border-radius:7px;background:#172d36;overflow:hidden}.battle-top{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;gap:15px;border-bottom:1px solid var(--line);font-size:12px}.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#aad6b1;margin-right:7px}.map-stage{display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#29423f,#132833);padding:8px;min-height:180px}.map-frame{width:min(100%,calc((100dvh - var(--dock) - 296px)*18/14));min-width:260px;max-width:1150px;position:relative}#battlefield{display:block;width:100%;height:auto;border:1px solid #677567;touch-action:none;cursor:crosshair;background:#20333d}.battle-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding:9px 14px;min-height:43px}#hint{font-size:12px;line-height:1.4}.key-hint{color:var(--muted);white-space:nowrap;font-size:10px}.under-map{display:flex;justify-content:space-between;gap:15px;margin:9px 0;color:var(--muted);font-size:10px}#pauseOverlay{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;background:#13273344}#pauseOverlay[hidden]{display:none}#pauseOverlay span{background:#142b35ed;border:1px solid #809699;padding:12px 24px;border-radius:6px;box-shadow:0 10px 40px #0005;font-size:18px;color:var(--gold)}
 .dock{position:fixed;bottom:0;left:0;right:0;height:var(--dock);background:#1b323efa;border-top:2px solid #6a776b;box-shadow:0 -8px 40px #05111955;z-index:5;overflow:auto}.dock-grid{max-width:1540px;height:100%;margin:auto;display:grid;grid-template-columns:165px 230px 205px 270px minmax(170px,1fr);padding:13px 22px;gap:15px}.dock section{min-width:0;border-right:1px solid var(--line);padding-right:14px}.dock section:last-child{border:0;padding:0}.dock h2{font-size:12px;font-weight:650;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}.dock h2 small{font-size:10px;font-weight:400}#minimap{display:block;width:100%;max-width:150px;height:auto;border:1px solid #607471;cursor:crosshair;touch-action:none}.mini-caption{font-size:9px;color:var(--muted);margin-top:6px}.unit-summary{display:flex;align-items:center;gap:10px;margin-bottom:9px}.portrait{width:54px;height:54px;background:#122934;border:1px solid var(--line);border-radius:5px}.unit-summary h3{font-size:15px;margin-bottom:4px}.unit-summary p{font-size:10px;color:var(--muted)}.unit-stats{font-size:11px;line-height:1.65;color:#bfcfd1;white-space:pre-line}.health{height:4px;background:#102732;margin:7px 0}.health i{display:block;height:100%;background:#acd0a2}.actions{display:grid;grid-template-columns:1fr 1fr;gap:5px}.action{font-size:10px;padding:6px 4px;min-height:34px}.groups{display:flex;gap:5px;margin-top:8px}.groups button{min-height:25px;padding:3px;width:27px;font-size:11px}.groups button.filled{color:var(--gold);border-color:#939d86}.group-hint{font-size:9px;color:var(--muted);margin-top:5px}.recruits{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}.recruit{display:flex;flex-direction:column;align-items:center;padding:4px 2px;gap:3px;min-height:70px;background:#243f4d}.recruit canvas{width:25px;height:25px}.recruit span{font-size:9px}.recruit strong{font-size:10px;color:var(--gold)}.production-progress{height:5px;background:#0f2630;margin-top:10px;border-radius:3px;overflow:hidden}.production-progress i{height:100%;display:block;background:var(--gold);width:0}#queueStatus{font-size:10px;color:var(--muted);margin:6px 0;min-height:15px}#queue{font-size:10px;color:var(--gold);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#log{height:157px;overflow-y:auto;scrollbar-color:#5d7781 transparent;font-size:11px;line-height:1.5}.log-line{padding:4px 0;border-bottom:1px solid #314956}.log-line small{color:var(--gold);margin-right:7px;font-size:10px}.empty{color:var(--muted);font-size:11px;line-height:1.6;padding:8px 0}.key{border:1px solid #526b72;padding:0 4px;border-radius:3px;font-size:10px}
 dialog{color:var(--ink);background:#1b323e;border:1px solid #7c9093;border-radius:10px;width:min(540px,calc(100vw - 24px));max-height:90dvh;padding:25px;box-shadow:0 25px 100px #0008}dialog::backdrop{background:#071922d9;backdrop-filter:blur(4px)}dialog h2{font:29px Georgia;margin:0 0 10px}dialog p{font-size:13px;color:#bdccce;line-height:1.6;margin:10px 0 16px}.field{margin:17px 0}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px}.field select,.field input{width:100%}.dialog-buttons{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}.manual-grid{display:grid;grid-template-columns:125px 1fr;font-size:12px;line-height:1.5;gap:9px 12px}.manual-grid b{color:var(--gold)}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
 @media(max-width:1200px){.dock-grid{grid-template-columns:125px 190px 175px 245px minmax(135px,1fr);gap:10px;padding-inline:14px}.dock section{padding-right:10px}.resources{gap:15px}.key-hint{display:none}}
-@media(max-width:950px){:root{--dock:275px}.dock-grid{grid-template-columns:115px 1fr 1fr;gap:12px;height:auto}.dock section{border:0;padding:0}.production-panel{grid-column:2}.log-panel{grid-column:3}#log{height:120px}.dock{overflow-y:auto}.map-frame{width:min(100%,calc((100dvh - var(--dock) - 274px)*18/14))}.unit-stats{font-size:10px}.recruit{min-height:58px}.recruit canvas{width:22px;height:22px}}
-@media(max-width:600px){:root{--dock:290px}.shell{padding-inline:10px}header{height:62px;gap:5px}.crest{display:none}h1{font-size:16px}.brand small{font-size:9px}.header-controls{gap:4px}.header-controls button{font-size:10px;padding:6px;min-height:33px}.brief{padding:10px 0;align-items:center}.brief h2{font-size:20px}.brief p{max-width:180px;font-size:10px}.resources{gap:12px}.resources strong{font-size:17px}.resources .force-stat{display:none}.resources small{font-size:9px}.battle-top{padding:7px 8px;font-size:10px}.battle-bottom{padding:7px 8px}#hint{font-size:10px}.map-stage{padding:4px}.map-frame{min-width:0;width:100%;max-width:calc((100dvh - var(--dock) - 256px)*18/14)}.under-map{font-size:9px}.dock-grid{grid-template-columns:100px minmax(0,1fr);gap:10px;padding:10px}.action-panel{grid-column:1/-1}.actions{grid-template-columns:repeat(3,1fr)}.groups{margin-top:6px}.group-hint{display:inline;margin-left:8px}.production-panel,.log-panel{grid-column:1/-1}.production-panel{border-top:1px solid var(--line)!important;padding-top:10px!important}#minimap{width:100px}.unit-summary{gap:7px;margin:0 0 4px}.portrait{width:42px;height:42px}.unit-stats{font-size:10px}.unit-summary h3{font-size:13px}.unit-summary p{font-size:9px}.dock h2{font-size:11px}.groups-wrap{display:flex;align-items:center;flex-wrap:wrap}.recruit{min-height:60px}.recruit span{font-size:10px}.log-panel{padding-bottom:10px!important}}
+@media(max-width:950px){:root{--dock:275px}.dock-grid{grid-template-columns:115px 1fr 1fr;gap:12px;height:auto}.dock section{border:0;padding:0}.production-panel{grid-column:2}.log-panel{grid-column:3}#log{height:120px}.dock{overflow-y:auto}.map-frame{width:min(100%,calc((100dvh - var(--dock) - 296px)*18/14))}.unit-stats{font-size:10px}.recruit{min-height:58px}.recruit canvas{width:22px;height:22px}}
+@media(max-width:600px){:root{--dock:290px}.shell{padding-inline:10px}header{height:62px;gap:5px}.crest{display:none}h1{font-size:16px}.brand small{font-size:9px}.header-controls{gap:4px}.header-controls button{font-size:10px;padding:6px;min-height:33px}.brief{padding:10px 0;align-items:center}.brief h2{font-size:20px}.brief p{max-width:180px;font-size:10px}.resources{gap:12px}.resources strong{font-size:17px}.resources .force-stat{display:none}.resources small{font-size:9px}.battle-top{padding:7px 8px;font-size:10px}.battle-bottom{padding:7px 8px}#hint{font-size:10px}.map-stage{padding:4px}.map-frame{min-width:0;width:100%;max-width:calc((100dvh - var(--dock) - 278px)*18/14)}.under-map{font-size:9px}.dock-grid{grid-template-columns:100px minmax(0,1fr);gap:10px;padding:10px}.action-panel{grid-column:1/-1}.actions{grid-template-columns:repeat(3,1fr)}.groups{margin-top:6px}.group-hint{display:inline;margin-left:8px}.production-panel,.log-panel{grid-column:1/-1}.production-panel{border-top:1px solid var(--line)!important;padding-top:10px!important}#minimap{width:100px}.unit-summary{gap:7px;margin:0 0 4px}.portrait{width:42px;height:42px}.unit-stats{font-size:10px}.unit-summary h3{font-size:13px}.unit-summary p{font-size:9px}.dock h2{font-size:11px}.groups-wrap{display:flex;align-items:center;flex-wrap:wrap}.recruit{min-height:60px}.recruit span{font-size:10px}.log-panel{padding-bottom:10px!important}}
 @media(max-width:600px){header{height:auto;min-height:82px;flex-wrap:wrap;padding:8px 0;gap:7px}.brand{width:100%}.brand h1{display:inline;font-size:16px;white-space:nowrap;margin-right:9px}.brand small{display:inline;font-size:9px}.header-controls{width:100%}.header-controls button{flex:1;min-width:0}.brief h2{font-size:19px}.under-map{font-size:8px}}
 .shell{padding-bottom:calc(var(--dock) - 3px)}
 @media(max-width:600px){.shell{padding-bottom:calc(var(--dock) - 19px)}}
-@media(max-width:600px) and (max-height:760px){:root{--dock:240px}.map-frame{max-width:calc((100dvh - var(--dock) - 300px)*18/14)}.map-stage{min-height:0}}
+@media(max-width:600px) and (max-height:760px){:root{--dock:240px}.map-frame{max-width:calc((100dvh - var(--dock) - 322px)*18/14)}.map-stage{min-height:0}}
+.recruits{grid-template-columns:repeat(4,minmax(0,1fr))}.recruit{min-height:54px;padding:3px 2px;gap:1px}.recruit canvas{width:23px;height:23px}.recruit span{font-size:9px}.production-progress{margin-top:7px}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+#endTurn{white-space:nowrap;font-size:12px;min-height:36px}#clock{display:block;color:var(--muted);font-size:10px;margin-top:3px}.battle-top>span:first-child{min-width:100px}.live-dot{display:none}@media(max-width:600px){#tileInfo{display:none}#endTurn{font-size:11px;padding:7px 9px}}
 </style></head>
 <body>
 <div class="shell">
- <header><div class="brand"><div class="crest" aria-hidden="true">W</div><div><h1>WAR GRID</h1><small>Fronteiras / Tempo real</small></div></div><nav class="header-controls" aria-label="Controles gerais"><button id="pause">Pausar [P]</button><button id="speed" title="Alternar velocidade: 0,25×, 0,5×, 1× e 2×" aria-label="Alternar velocidade do jogo">0,5×</button><button id="sound" aria-pressed="true">Som ligado</button><button id="help">Manual</button><button id="newGame">Nova operação</button></nav></header>
- <section class="brief"><div><h2 id="mapTitle">Vale dos Rios</h2><p>Capture postos. Proteja seu comandante. Destrua o QG inimigo.</p></div><div class="resources tabular-nums"><div><small>Créditos</small><strong id="credits" class="gold">150</strong></div><div><small>Renda / segundo</small><strong id="income">+5,0</strong></div><div class="force-stat"><small>Em campo</small><strong id="force">7</strong></div></div></section>
- <main class="battle"><div class="battle-top"><span><i class="live-dot"></i><b id="status">Comando em espera</b> <span id="clock" class="tabular-nums">00:00</span></span><span id="tileInfo" class="muted">Selecione suas tropas</span></div><div class="map-stage"><div class="map-frame"><canvas id="battlefield" width="1008" height="784" tabindex="0" aria-label="Campo RTS. Clique para selecionar, arraste para selecionar grupos; botão direito emite ordens. A: atacar-mover; S: parar." aria-describedby="hint"></canvas><div id="pauseOverlay"><span>Pausa tática</span></div></div></div><div class="battle-bottom"><p id="hint" role="status">Arraste para selecionar um grupo. Botão direito para emitir uma ordem.</p><span class="key-hint">Shift: adicionar · Ctrl + 1–5: grupos · A: atacar-mover · S: parar</span></div></main>
+ <header><div class="brand"><div class="crest" aria-hidden="true">W</div><div><h1>WAR GRID</h1><small>Fronteiras / Por turnos</small></div></div><nav class="header-controls" aria-label="Controles gerais"><button id="pause">Pausar [P]</button><button id="speed" title="Velocidade das animações: 0,25×, 0,5×, 1× e 2×" aria-label="Alternar velocidade das animações">1×</button><button id="sound" aria-pressed="true">Som ligado</button><button id="help">Manual</button><button id="newGame">Nova operação</button></nav></header>
+ <section class="brief"><div><h2 id="mapTitle">Vale dos Rios</h2><p>Capture postos. Proteja seu comandante. Destrua o QG inimigo.</p></div><div class="resources tabular-nums"><div><small>Créditos</small><strong id="credits" class="gold">150</strong></div><div><small>Renda / turno</small><strong id="income">+15</strong></div><div class="force-stat"><small>Em campo</small><strong id="force">7</strong></div></div></section>
+ <main class="battle"><div class="battle-top"><span><i class="live-dot"></i><b id="status">Comando em espera</b> <span id="clock" class="tabular-nums">Rodada 1</span></span><span id="tileInfo" class="muted">Selecione suas tropas</span><button id="endTurn" class="primary">Encerrar turno [Enter]</button></div><div class="map-stage"><div class="map-frame"><canvas id="battlefield" width="1008" height="784" tabindex="0" aria-label="Campo por turnos. Clique ou arraste para selecionar; botão direito emite ordens. A: atacar; S: aguardar; Enter: encerrar turno." aria-describedby="hint"></canvas><div id="pauseOverlay"><span>Animações pausadas</span></div></div></div><div class="battle-bottom"><p id="hint" role="status">Arraste para selecionar um grupo. Botão direito para emitir uma ordem.</p><span class="key-hint">Shift: adicionar · Ctrl + 1–5: grupos · A: atacar · S: aguardar · Enter: encerrar</span></div></main>
  <div class="under-map"><span id="operationInfo">Visão compartilhada · Rios intransitáveis</span><span>Azul: suas forças · Coral: inimigo · Dourado: impacto</span></div>
 </div>
-<aside class="dock" aria-label="Painel de comando em tempo real"><div class="dock-grid">
- <section><h2>Reconhecimento <small id="explored">0%</small></h2><canvas id="minimap" width="252" height="196" aria-label="Minimapa. Botão direito emite ordem para o setor."></canvas><p class="mini-caption">Contatos atualizados em tempo real.</p></section>
+<aside class="dock" aria-label="Painel de comando por turnos"><div class="dock-grid">
+ <section><h2>Reconhecimento <small id="explored">0%</small></h2><canvas id="minimap" width="252" height="196" aria-label="Minimapa. Botão direito emite ordem para o setor."></canvas><p class="mini-caption">Contatos dentro da visão aliada.</p></section>
  <section><h2>Seleção <small id="selectionCount">0</small></h2><div class="unit-summary"><canvas id="portrait" class="portrait" width="108" height="108" aria-hidden="true"></canvas><div><h3 id="unitName">Nenhuma unidade</h3><p id="unitRole">Selecione suas tropas.</p></div></div><div class="health"><i id="healthBar"></i></div><div id="unitInfo" class="unit-stats"></div></section>
- <section class="action-panel"><h2>Ordens <small id="modeLabel">Contextual</small></h2><div class="actions"><button class="action" id="move">Mover [M]</button><button class="action" id="attackMove">Atacar-mover [A]</button><button class="action" id="stop">Parar [S]</button><button class="action" id="repair">Reparar [R]</button><button class="action" id="build">Posto · 60</button><button class="action" id="demine">Desarmar mina</button></div><div class="groups-wrap"><div class="groups" id="groups" aria-label="Grupos de controle"></div><p class="group-hint">Ctrl + número atribui o grupo.</p></div></section>
+ <section class="action-panel"><h2>Ordens <small id="modeLabel">Contextual</small></h2><div class="actions"><button class="action" id="move">Mover [M]</button><button class="action" id="attackMove">Atacar [A]</button><button class="action" id="stop">Aguardar [S]</button><button class="action" id="repair">Reparar [R]</button><button class="action" id="build">Posto · 60</button><button class="action" id="demine">Desarmar mina</button></div><div class="groups-wrap"><div class="groups" id="groups" aria-label="Grupos de controle"></div><p class="group-hint">Ctrl + número atribui o grupo.</p></div></section>
  <section class="production-panel"><h2>Produção do QG <small id="queueCount">0 / 5</small></h2><div id="recruits" class="recruits"></div><div class="production-progress"><i id="productionBar"></i></div><p id="queueStatus">Linha de produção livre.</p><p id="queue"></p></section>
  <section class="log-panel"><h2>Registro de batalha <small id="difficultyLabel">IA normal</small></h2><div id="log" role="log" aria-label="Registro de batalha" tabindex="0" aria-live="off"></div></section>
 </div></aside>
-<dialog id="setup" aria-labelledby="setupTitle"><form id="setupForm"><h2 id="setupTitle">Assuma o comando</h2><p>Ritmo lento, com pausa tática. Pressione P para congelar a batalha, dar ordens e organizar a produção. Pressione P novamente para continuar.</p><div class="field"><label for="mapSelect">Teatro de operações</label><select id="mapSelect"><option value="river">Vale dos Rios</option><option value="desert">Deserto Aberto</option><option value="mountain">Passe de Montanha</option><option value="random">Fronteira procedural</option></select></div><div class="field"><label for="difficulty">Dificuldade</label><select id="difficulty"><option value="easy">Fácil — mais cautelosa</option><option value="normal" selected>Normal — equilibrada</option><option value="hard">Difícil — agressiva, renda +20%</option></select></div><div class="field"><label for="seed">Semente (opcional)</label><input id="seed" type="number" min="1" max="4294967295" step="1" placeholder="Gerada automaticamente"></div><div class="dialog-buttons flex gap-2"><button type="button" id="cancelSetup">Voltar</button><button type="submit" class="primary">Iniciar operação</button></div></form></dialog>
-<dialog id="manual" aria-labelledby="manualTitle"><h2 id="manualTitle">Manual de campo</h2><div class="manual-grid"><b>Selecionar</b><span>Clique esquerdo. Arraste para selecionar várias tropas. Shift adiciona ou remove da seleção.</span><b>Ordens</b><span>Botão direito no chão: mover. No inimigo: atacar. No posto: capturar com infantaria. Em aliado: reparar com engenheiro.</span><b>Atacar-mover</b><span>Pressione A e clique no destino. A unidade enfrenta contatos no caminho. M emite movimento direto. S interrompe a ordem.</span><b>Grupos 1–5</b><span>Ctrl + número atribui a seleção. Número seleciona o grupo. P pausa. No celular, use os botões de ordem e toque no destino.</span><b>Pausa tática</b><span>P congela tropas, IA, combate e treinamento. Você pode selecionar, dar ordens e comprar tropas enquanto planeja. Custos são cobrados ao ordenar; execução e treinamento continuam ao retomar. Cada nova ordem substitui a anterior da unidade.</span><b>Velocidade</b><span>O jogo inicia em 0,5×. O botão de velocidade alterna entre 0,25×, 0,5×, 1× e 2×. Tempos de treinamento e combate seguem o relógio do jogo; em 0,5×, levam o dobro do tempo real. A renda por segundo considera a velocidade escolhida.</span><b>Terreno</b><span>Água bloqueada; atravesse pontes. Só infantaria usa montanhas (+50% defesa, +2 visão/alcance). Floresta dá +30% defesa e reduz velocidade de veículos. Estrada dobra a velocidade.</span><b>Artilharia</b><span>Arma e desarma em 1,5 s. Dispara a cada 5 s em área 3×3, com fogo amigo. Contorno dourado indica o impacto. Requer reconhecimento aliado.</span><b>Engenharia</b><span>Engenheiros reparam +8 HP/s adjacentes, inclusive automaticamente quando parados. Detectam minas a 2 casas e desarmam em 2 s.</span><b>Postos</b><span>Captura leva 3 s. Construir custa 60 e converte a infantaria em posto após 5 s. Dano reinicia a canalização. Cancelar construção devolve o custo.</span><b>Economia</b><span>QG +15 e posto +8 a cada 3 s. Produção serial de até 5 tropas. Uma saída ocupada segura a tropa pronta na fila.</span><b>Comando e XP</b><span>Aura em raio 2: +20% dano, +15 pontos de precisão. Morte do comandante perde metade dos créditos. 1/3 abates: Veterano/Elite; +10% vida/dano e +5 pontos de precisão/esquiva por promoção.</span><b>Defesa</b><span>Parar por 3 s sem disparar ativa trincheira (+25%). Minas causam 40 de dano. Vença destruindo o QG ou eliminando as tropas inimigas sem reforços pendentes.</span></div><div class="dialog-buttons"><button id="closeHelp" class="primary">Voltar ao campo</button></div></dialog>
+<dialog id="setup" aria-labelledby="setupTitle"><form id="setupForm"><h2 id="setupTitle">Assuma o comando</h2><p>Você joga primeiro. Cada tropa tem movimento limitado e uma ação por turno. A IA só age quando você clica em Encerrar turno ou pressiona Enter. Planeje sem limite de tempo.</p><div class="field"><label for="mapSelect">Teatro de operações</label><select id="mapSelect"><option value="river">Vale dos Rios</option><option value="desert">Deserto Aberto</option><option value="mountain">Passe de Montanha</option><option value="random">Fronteira procedural</option></select></div><div class="field"><label for="difficulty">Dificuldade</label><select id="difficulty"><option value="easy">Fácil — renda inimiga −20%</option><option value="normal" selected>Normal — equilibrada</option><option value="hard">Difícil — renda inimiga +20%</option></select></div><div class="field"><label for="seed">Semente (opcional)</label><input id="seed" type="number" min="1" max="4294967295" step="1" placeholder="Gerada automaticamente"></div><div class="dialog-buttons flex gap-2"><button type="button" id="cancelSetup">Voltar</button><button type="submit" class="primary">Iniciar operação</button></div></form></dialog>
+<dialog id="manual" aria-labelledby="manualTitle"><h2 id="manualTitle">Manual de campo</h2><div class="manual-grid"><b>Seu turno</b><span>Planeje sem limite de tempo: a IA não se move nem dispara. Cada tropa recebe movimento e uma ação. Clique em Encerrar turno ou use Enter para a IA jogar; depois, começa a próxima rodada.</span><b>Selecionar</b><span>Clique esquerdo ou arraste uma caixa. Shift adiciona à seleção. Ctrl + 1–5 cria grupos; 1–5 seleciona. No celular, escolha uma ordem no painel e toque no alvo.</span><b>Ordens</b><span>Botão direito no chão: mover. No inimigo: atacar. No posto: capturar com infantaria. No aliado ferido: reparar com engenheiro. A escolhe ataque; M, movimento; R, reparo.</span><b>Movimento</b><span>Pontos por turno: infantaria, engenheiro, antitanque e comandante 3; tanque 4; batedor 5; artilharia e metralhador 2. Pode dividir o movimento em várias ordens. Destinos distantes usam apenas os pontos restantes.</span><b>Terreno</b><span>Água bloqueada; use pontes. Só infantaria atravessa montanhas (+50% defesa e +2 visão/alcance). Cada célula custa 1 ponto; estrada custa 0,5 e floresta custa 2 para veículos. Floresta dá +30% defesa.</span><b>Ataque</b><span>Cada tropa pode executar um ataque por turno sob sua ordem. Se preciso, aproxima-se usando o movimento restante. Depois do ataque, pode gastar o movimento que sobrou. Precisão, cobertura, aura e veterania modificam o dano.</span><b>Artilharia</b><span>Escolha mover OU disparar naquele turno. Alcance 2–6; precisa de visão aliada. Explosão 3×3 com fogo amigo, contorno de alerta e dano menor longe do canhão e fora do alvo principal.</span><b>Novas tropas</b><span>Antitanque: 90 de dano base contra veículos, 20 contra tropas a pé e 40 contra estruturas; custa 110. Metralhador: rajada de até 3 tiros por ação, cada um com 23 de dano base contra tropas a pé, 5 contra veículos e 9 contra estruturas; custa 90.</span><b>Engenharia</b><span>Uma ação repara até 24 HP em um aliado adjacente ou desarma uma mina. O engenheiro pode se aproximar antes de agir. Detecta minas a 2 casas; minas causam 40 de dano.</span><b>Postos</b><span>Infantaria captura um posto adjacente com uma ação. Construir custa 60 créditos e uma ação, converte a infantaria em posto e exige distância mínima de 3 casas de outras estruturas.</span><b>Economia</b><span>A partir da segunda rodada, receba +15 por QG e +8 por posto no início do seu turno. Treinamento serial: infantaria/batedor 1 turno; engenheiro/antitanque/metralhador 2; tanque/artilharia 3. Fila de até 5 tropas; saída ocupada mantém a tropa pronta na fila.</span><b>Aguardar</b><span>S encerra o movimento e a ação da tropa e ativa trincheira (+25% defesa). Tropas que passam o turno sem mover nem agir também se entrincheiram. O bônus termina ao agir ou receber dano.</span><b>Comando e XP</b><span>Comandante dá +20% dano e +15 pontos de precisão no raio 2. Perdê-lo custa metade dos créditos. Aos 1/3 abates, a tropa vira Veterana/Elite e recebe bônus de vida, dano, precisão e esquiva.</span><b>Animações</b><span>P pausa ou retoma as animações. A velocidade 0,25×/0,5×/1×/2× altera somente a animação das ordens; não muda movimento, renda ou quantidade de ações. Aguarde a ordem terminar antes de dar outra.</span><b>Vitória</b><span>Destrua o QG inimigo ou elimine todas as tropas inimigas sem reforços pendentes.</span></div><div class="dialog-buttons"><button id="closeHelp" class="primary">Voltar ao campo</button></div></dialog>
 <dialog id="result" aria-labelledby="resultTitle"><h2 id="resultTitle">Operação concluída</h2><p id="resultText"></p><div class="dialog-buttons"><button id="review">Rever campo</button><button id="playAgain" class="primary">Nova operação</button></div></dialog>
 <script id="engine">'use strict';
-/* MOTOR RTS — sem DOM. A renderização consome estado e eventos, nunca aplica dano. */
+/* MOTOR POR TURNOS — o tempo real anima somente ações já autorizadas. */
 const COLS=18,ROWS=14,SIZE=COLS*ROWS,STEP=1/30;
 const KEY=(x,y)=>y*COLS+x,INSIDE=(x,y)=>Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&y>=0&&x<COLS&&y<ROWS;
 const TILE=u=>({x:Math.round(u.x),y:Math.round(u.y)}),DIST=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
@@ -44,33 +46,36 @@ const DIRS=[[1,0],[-1,0],[0,1],[0,-1]],SIDE={blue:'Azul',red:'Vermelha',neutral:
 const TERRAIN={plain:{name:'Planície',cover:0,color:'#77816a'},forest:{name:'Floresta',cover:.3,color:'#4b6654'},mountain:{name:'Montanha',cover:.5,color:'#868879'},river:{name:'Rio',cover:0,color:'#477986'},bridge:{name:'Ponte',cover:0,color:'#a69977'},road:{name:'Estrada',cover:0,color:'#b0a487'}};
 const MAPS={river:'Vale dos Rios',desert:'Deserto Aberto',mountain:'Passe de Montanha',random:'Fronteira procedural'};
 const TYPES={
- infantry:{name:'Infantaria',hp:100,speed:1.35,range:1.15,min:0,damage:35,accuracy:.9,vision:4,cooldown:.8,train:4,cost:50,reward:20,role:'Captura e construção'},
- tank:{name:'Tanque',hp:170,speed:1.55,range:3,min:0,damage:60,accuracy:.7,vision:4,cooldown:2.5,train:10,cost:150,reward:50,role:'Blindagem e canhão'},
- artillery:{name:'Artilharia',hp:80,speed:.85,range:6,min:2,damage:70,accuracy:.85,vision:3,cooldown:5,train:12,cost:100,reward:40,role:'Área 3×3 · fogo amigo'},
- recon:{name:'Batedor',hp:75,speed:2.25,range:2,min:0,damage:32,accuracy:.9,vision:7,cooldown:1.1,train:5,cost:75,reward:25,role:'Reconhecimento rápido'},
- engineer:{name:'Engenheiro',hp:85,speed:1.25,range:1.15,min:0,damage:20,accuracy:.9,vision:4,cooldown:1.2,train:6,cost:65,reward:25,role:'Reparo +8 HP/s'},
- commander:{name:'Comandante',hp:140,speed:1.35,range:2,min:0,damage:40,accuracy:.9,vision:5,cooldown:1.5,reward:70,role:'Aura de comando · raio 2'},
+ infantry:{move:3,name:'Infantaria',hp:100,speed:1.35,range:1.15,min:0,damage:35,accuracy:.9,vision:4,cooldown:.8,train:1,cost:50,reward:20,role:'Captura e construção'},
+ tank:{move:4,vehicle:true,name:'Tanque',hp:170,speed:1.55,range:3,min:0,damage:60,accuracy:.7,vision:4,cooldown:2.5,train:3,cost:150,reward:50,role:'Blindagem e canhão'},
+ artillery:{move:2,vehicle:true,name:'Artilharia',hp:80,speed:.85,range:6,min:2,damage:70,accuracy:.85,vision:3,cooldown:5,train:3,cost:100,reward:40,role:'Área 3×3 · fogo amigo'},
+ recon:{move:5,vehicle:true,name:'Batedor',hp:75,speed:2.25,range:2,min:0,damage:32,accuracy:.9,vision:7,cooldown:1.1,train:1,cost:75,reward:25,role:'Reconhecimento rápido'},
+ engineer:{move:3,name:'Engenheiro',hp:85,speed:1.25,range:1.15,min:0,damage:20,accuracy:.9,vision:4,cooldown:1.2,train:2,cost:65,reward:25,role:'Reparo +24 HP por ação'},
+ antitank:{move:3,name:'Antitanque',hp:90,speed:1.05,range:3,min:0,damage:40,accuracy:.85,vision:4,cooldown:3,train:2,cost:110,reward:35,role:'Foguetes contra veículos'},
+ machinegun:{move:2,name:'Metralhador',hp:110,speed:1.05,range:2.5,min:0,damage:18,accuracy:.88,vision:4,cooldown:.4,train:2,cost:90,reward:30,role:'Fogo rápido contra tropas a pé'},
+ commander:{move:3,name:'Comandante',hp:140,speed:1.35,range:2,min:0,damage:40,accuracy:.9,vision:5,cooldown:1.5,reward:70,role:'Aura de comando · raio 2'},
  hq:{name:'Quartel-general',hp:300,speed:0,range:0,damage:0,vision:5,structure:true,reward:100},
  post:{name:'Posto avançado',hp:80,speed:0,range:0,damage:0,vision:3,structure:true,reward:30}
 };
 function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n/4294967296;};}
-class Game{
+﻿class Game{
  constructor(map='river',difficulty='normal',seed=1){
   this.map=MAPS[map]?map:'river';this.difficulty=['easy','normal','hard'].includes(difficulty)?difficulty:'normal';this.seed=seed>>>0;this.rng=seeded(seed);
   this.terrain=Array(SIZE).fill('plain');this.units=[];this.structures=[];this.mines=[];this.projectiles=[];this.events=[];this.logs=[];this.nextId=1;
-  this.time=0;this.accumulator=0;this.incomeClock=0;this.visionClock=0;this.aiClock=0;this.aiEnabled=true;this.aiState='rally';this.aiDecisions=0;this.shotsFired=0;
+  this.time=0;this.round=1;this.turn='blue';this.actions=[];this.animation=null;this.aiQueue=[];this.aiWait=0;this.aiEnabled=true;this.aiDecisions=0;this.aiState='rally';this.shotsFired=0;
   this.credits={blue:150,red:150};this.winner=null;this.visible={blue:Array(SIZE).fill(false),red:Array(SIZE).fill(false)};this.explored={blue:Array(SIZE).fill(false),red:Array(SIZE).fill(false)};this.memory={blue:new Map(),red:new Map()};
-  this.generate();this.updateVision();this.log('Operação pronta. Reconheça, capture e avance.');
+  this.generate();this.updateVision();this.log('Seu turno. Mova as tropas, execute ações e encerre quando estiver pronto.');
  }
+ get busy(){return !!this.animation||this.actions.length>0||this.projectiles.length>0;}
  all(){return [...this.units,...this.structures];}
  get(id){return this.units.find(u=>u.id===id)||this.structures.find(u=>u.id===id);}
  hq(owner){return this.structures.find(u=>u.owner===owner&&u.type==='hq');}
  add(owner,type,x,y){
   const t=TYPES[type];if(!t||!INSIDE(x,y)||!['blue','red','neutral'].includes(owner))return null;
-  const u={id:this.nextId++,owner,type,x,y,hp:t.hp,maxHp:t.hp,level:1,xp:0,cooldown:0,setup:0,packing:0,idle:0,entrenched:false,work:0,reserved:0,order:{type:'stop'},path:[],segment:null,navGoal:null,repath:0,healText:0};
+  const u={id:this.nextId++,owner,type,x,y,facing:owner==='blue'?0:Math.PI,hp:t.hp,maxHp:t.hp,level:1,xp:0,cooldown:0,setup:0,packing:0,idle:0,entrenched:false,work:0,reserved:0,order:{type:'stop'},path:[],segment:null,navGoal:null,healText:0,moveLeft:t.move||0,actionLeft:!t.structure,moved:false,pending:false};
   if(t.structure)u.queue=[];(t.structure?this.structures:this.units).push(u);return u;
  }
- generate(){
+  generate(){
   for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){
    const k=KEY(x,y),mirror=KEY(17-x,13-y);if(k>mirror)continue;const r=this.rng();let t=r<.21?'forest':r<.27?'mountain':'plain';
    if(this.map==='desert')t=r<.07?'forest':r<.14?'mountain':'plain';
@@ -86,12 +91,13 @@ class Game{
   for(const [x,y]of [[5,9],[12,4],[6,4],[11,9]]){this.terrain[KEY(x,y)]='road';this.add('neutral','post',x,y);}
   for(const [x,y]of [[7,5],[10,8],[6,7],[11,6]])if(!['river','mountain'].includes(this.terrain[KEY(x,y)]))this.mines.push({x,y,known:{blue:false,red:false}});
  }
- log(text){this.logs.unshift({time:this.time,text});if(this.logs.length>70)this.logs.pop();}
+
+ log(text){this.logs.unshift({time:this.round,text});if(this.logs.length>70)this.logs.pop();}
  report(text,...units){if(units.some(u=>u.owner==='blue'||this.isVisible('blue',u)))this.log(text);}
  event(kind,u,extra={}){this.events.push({kind,x:u.x,y:u.y,visible:u.owner==='blue'||this.isVisible('blue',u),...extra});if(this.events.length>250)this.events.shift();}
- structureAt(x,y){return this.structures.find(s=>s.x===x&&s.y===y&&s.hp>0);}
+  structureAt(x,y){return this.structures.find(s=>s.x===x&&s.y===y&&s.hp>0);}
  terrainAt(u){const p=TILE(u);return this.terrain[KEY(p.x,p.y)];}
- cost(u,x,y){if(!INSIDE(x,y))return Infinity;const t=this.terrain[KEY(x,y)];if(t==='river'||t==='mountain'&&u.type!=='infantry')return Infinity;if(t==='road')return .5;return t==='forest'&&['tank','recon','artillery'].includes(u.type)?2:1;}
+ cost(u,x,y){if(!INSIDE(x,y))return Infinity;const t=this.terrain[KEY(x,y)];if(t==='river'||t==='mountain'&&u.type!=='infantry')return Infinity;if(t==='road')return .5;return t==='forest'&&TYPES[u.type].vehicle?2:1;}
  occupied(x,y,except){return this.units.find(u=>u!==except&&u.hp>0&&(DIST(TILE(u),{x,y})===0||u.segment&&(DIST(u.segment.from,{x,y})===0||DIST(u.segment.to,{x,y})===0)));}
  /* Grades por casa: guardam a primeira unidade/estrutura de cada casa, igual às buscas lineares, numa só varredura. */
  unitGrid(except){
@@ -150,96 +156,83 @@ class Game{
  attackPower(u){return TYPES[u.type].damage*(1+(u.level-1)*.1)*(this.hasAura(u)?1.2:1);}
  accuracy(a,b){return Math.max(.1,Math.min(.99,TYPES[a.type].accuracy+(a.level-1)*.05+(this.hasAura(a)?.15:0)-(b.level-1)*.05));}
  canFire(a,b){return !!b&&b.hp>0&&b.owner!==a.owner&&b.owner!=='neutral'&&this.isVisible(a.owner,b)&&DIST(a,b)<=this.range(a)+.05&&DIST(a,b)>=TYPES[a.type].min;}
- acquire(u){
-  let best,bestD=Infinity;
-  for(const list of [this.units,this.structures])for(const e of list){if(!this.canFire(u,e))continue;const d=DIST(u,e);if(d<bestD||d===bestD&&e.hp<best.hp){best=e;bestD=d;}}
+
+  acquire(u){
+  let best,bestD=Infinity,bestPriority=-1;
+  for(const list of [this.units,this.structures])for(const e of list){
+   if(!this.canFire(u,e))continue;const d=DIST(u,e),t=TYPES[e.type],priority=u.type==='antitank'?Number(!!t.vehicle):u.type==='machinegun'?Number(!t.vehicle&&!t.structure):0;
+   if(priority>bestPriority||priority===bestPriority&&(d<bestD||d===bestD&&e.hp<best.hp)){best=e;bestD=d;bestPriority=priority;}
+  }return best;
+ }
+
+ cancelWork(u){if(u.reserved){this.credits[u.owner]+=u.reserved;u.reserved=0;}u.work=0;}
+ buildSite(u){return u?.type==='infantry'&&u.hp>0&&!u.segment&&!this.structures.some(s=>DIST(s,u)<3)&&['plain','road','forest'].includes(this.terrainAt(u));}
+ canBuild(u){return !!u&&u.owner===this.turn&&u.actionLeft&&!u.pending&&this.credits[u.owner]>=60&&this.buildSite(u);}
+ pathCost(u,path){return path.reduce((sum,p)=>sum+this.cost(u,p.x,p.y),0);}
+ trimPath(u,path){let left=u.moveLeft;const route=[];for(const p of path){const cost=this.cost(u,p.x,p.y);if(cost>left+1e-8)break;left-=cost;route.push(p);}return route;}
+ pathToRange(u,target,near,min=0,budget=Infinity){
+  if(DIST(u,target)<=near&&DIST(u,target)>=min)return [];
+  const cells=[];for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){const d=DIST({x,y},target);if(d<=near&&d>=min&&!this.occupied(x,y,u)&&this.structureAt(x,y)?.type!=='hq'&&Number.isFinite(this.cost(u,x,y)))cells.push({x,y});}
+  cells.sort((a,b)=>DIST(a,u)-DIST(b,u));let best=null,bestCost=Infinity;
+  for(const cell of cells){const route=this.findPath(u,cell,true);if(!route)continue;const cost=this.pathCost(u,route);if(cost<=budget+1e-8&&cost<bestCost){best=route;bestCost=cost;}}
   return best;
  }
- cancelWork(u){if(u.reserved){this.credits[u.owner]+=u.reserved;u.reserved=0;}u.work=0;}
- canBuild(u){const p=TILE(u);return u?.type==='infantry'&&u.hp>0&&!u.reserved&&!u.segment&&DIST(u,p)<.02&&this.credits[u.owner]>=60&&!this.structures.some(s=>DIST(s,p)<3)&&['plain','road','forest'].includes(this.terrainAt(u));}
- order(u,type,args={}){
-  if(!u||!this.units.includes(u)||u.hp<=0||this.winner)return false;
-  if(!['move','attackMove','attack','stop','repair','capture','build','demine'].includes(type))return false;
-  let next={type},target=this.get(args.targetId);
-  if(type==='move'||type==='attackMove'){
-   const goal={x:Math.round(args.x),y:Math.round(args.y)};if(!INSIDE(goal.x,goal.y)||this.findPath(u,goal)===null)return false;next.goal=goal;
-  }else if(type==='attack'){
-   if(!target||target.owner===u.owner||target.owner==='neutral'||!this.isVisible(u.owner,target))return false;next.targetId=target.id;next.last=TILE(target);
-  }else if(type==='repair'){
-   if(u.type!=='engineer'||!target||target===u||target.owner!==u.owner)return false;next.targetId=target.id;
-  }else if(type==='capture'){
-   if(u.type!=='infantry'||target?.type!=='post'||target.owner===u.owner||!this.isVisible(u.owner,target))return false;next.targetId=target.id;
-  }else if(type==='build'){if(!this.canBuild(u))return false;next.goal=TILE(u);
-  }else if(type==='demine'){
-   const m=this.mines.find(m=>m.x===args.x&&m.y===args.y&&m.known[u.owner]);if(u.type!=='engineer'||!m)return false;next.goal={x:m.x,y:m.y};
+ order(u,type,args={},batch=false){
+  if(this.winner||!u||!this.units.includes(u)||u.owner!==this.turn||u.pending||u.hp<=0||this.busy&&!batch)return false;
+  if(type==='stop'){u.moveLeft=0;u.actionLeft=false;u.entrenched=true;u.order={type:'stop'};return true;}
+  let route=[],target=this.get(args.targetId),job={id:u.id,type,targetId:target?.id};
+  if(type==='move'){
+   const goal={x:Math.round(args.x),y:Math.round(args.y)};if(u.moveLeft<=0||u.type==='artillery'&&!u.actionLeft&&!u.moved||!INSIDE(goal.x,goal.y))return false;
+   const path=this.findPath(u,goal,true);if(!path)return false;route=this.trimPath(u,path);if(!route.length)return false;
+  }else{
+   if(!u.actionLeft)return false;
+   if(type==='attack'){
+    if(!target||target.owner===u.owner||target.owner==='neutral'||!this.isVisible(u.owner,target))return false;
+    if(u.type==='artillery'&&(u.moved||!this.canFire(u,target)))return false;
+    route=this.pathToRange(u,target,this.range(u),TYPES[u.type].min,u.moveLeft);if(route===null)return false;
+   }else if(type==='repair'){
+    if(u.type!=='engineer'||!target||target===u||target.owner!==u.owner||target.hp>=target.maxHp)return false;
+    route=this.pathToRange(u,target,1,0,u.moveLeft);if(route===null)return false;
+   }else if(type==='capture'){
+    if(u.type!=='infantry'||target?.type!=='post'||target.owner===u.owner||!this.isVisible(u.owner,target))return false;
+    route=this.pathToRange(u,target,1,0,u.moveLeft);if(route===null)return false;
+   }else if(type==='demine'){
+    const m=this.mines.find(m=>m.x===args.x&&m.y===args.y&&m.known[u.owner]);if(u.type!=='engineer'||!m)return false;
+    job.goal={x:m.x,y:m.y};route=this.pathToRange(u,m,1,0,u.moveLeft);if(route===null)return false;
+   }else if(type==='build'){
+    if(!this.canBuild(u))return false;this.credits[u.owner]-=60;u.reserved=60;
+   }else return false;
+   u.actionLeft=false;
   }
-  this.cancelWork(u);u.order=next;u.path=[];u.navGoal=null;u.repath=0;u.idle=0;u.entrenched=false;
-  if(type==='build'){this.credits[u.owner]-=60;u.reserved=60;}
-  if(type==='stop'){u.segment=null;return true;}
-  if(u.type==='artillery'&&u.setup>0&&['move','attackMove','attack'].includes(type)){u.setup=0;u.packing=1.5;}
-  return true;
+  u.entrenched=false;u.pending=true;u.path=route.slice();job.route=route;u.order={type,targetId:job.targetId,goal:route.length?route[route.length-1]:job.goal};this.actions.push(job);return true;
  }
  command(ids,type,args={}){
-  const units=ids.map(id=>this.get(id)).filter(u=>u&&!TYPES[u.type].structure&&u.owner==='blue'),assigned=new Set();let count=0;
-  for(const u of units){
-   if(type==='move'||type==='attackMove'){
-    const units=this.unitGrid(u),structures=this.structureGrid(),reach=this.reachable(u,units,structures),candidates=[];
-    for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){const k=KEY(x,y);if(DIST({x,y},args)<=4&&!assigned.has(k)&&reach[k]&&Number.isFinite(this.cost(u,x,y))&&structures[k]?.type!=='hq'&&!units[k])candidates.push({x,y});}
+  if(this.turn!=='blue'||this.busy||this.winner)return 0;let count=0;const assigned=new Set(),army=[...new Set(ids)].map(id=>this.get(id)).filter(u=>u?.owner==='blue'&&!TYPES[u.type].structure);
+  for(const u of army){
+   if(type==='move'&&army.length>1){
+    const candidates=[];for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)if(DIST({x,y},args)<=4&&!this.occupied(x,y,u)&&this.structureAt(x,y)?.type!=='hq'&&Number.isFinite(this.cost(u,x,y)))candidates.push({x,y});
     candidates.sort((a,b)=>DIST(a,args)-DIST(b,args)||DIST(a,u)-DIST(b,u));
-    for(const goal of candidates)if(this.order(u,type,goal)){assigned.add(KEY(goal.x,goal.y));count++;break;}
-   }else if(this.order(u,type,args))count++;
+    for(const goal of candidates){const path=this.findPath(u,goal,true);if(!path)continue;const route=this.trimPath(u,path),last=route[route.length-1];if(!last||assigned.has(KEY(last.x,last.y)))continue;if(this.order(u,type,goal,true)){assigned.add(KEY(last.x,last.y));count++;break;}}
+   }else if(this.order(u,type,args,true))count++;
   }return count;
  }
- navigate(u,goal,dt){
-  if(u.packing>0)return false;
-  if(u.type==='artillery'&&u.setup>0){u.packing=1.5;u.setup=0;return false;}
-  if(!u.segment&&DIST(u,goal)<.015){u.x=goal.x;u.y=goal.y;u.path=[];return true;}
-  if(!u.segment&&(!u.navGoal||DIST(u.navGoal,goal)>.01||!u.path.length&&u.repath<=0)){
-   u.navGoal={...goal};u.path=this.findPath(u,goal)||[];const cell=TILE(u);if(DIST(u,cell)>.01)u.path.unshift(cell);u.repath=.6;
-  }
-  if(!u.segment&&u.path.length){
-   const p=u.path[0];if(this.occupied(p.x,p.y,u)){
-    if(u.repath<=0){u.path=this.findPath(u,goal,true)||[];u.repath=.6;}return false;
-   }
-   u.path.shift();u.segment={from:TILE(u),to:p};
-  }
-  if(u.segment){
-   const to=u.segment.to,dx=to.x-u.x,dy=to.y-u.y,d=Math.hypot(dx,dy),step=TYPES[u.type].speed*dt/this.cost(u,to.x,to.y);
-   if(d<=step+.00001){u.x=to.x;u.y=to.y;u.segment=null;this.enterCell(u);}
-   else{u.x+=dx/d*step;u.y+=dy/d*step;}
-   u.idle=0;u.entrenched=false;
-  }return !u.segment&&DIST(u,goal)<.015;
- }
- approach(u,target,near,dt,min=0){
-  if(DIST(u,target)<=near&&DIST(u,target)>=min){u.path=[];u.segment=null;return true;}
-  if(u.navGoal&&u.repath>0&&DIST(u.navGoal,target)<=near&&DIST(u.navGoal,target)>=min)return this.navigate(u,u.navGoal,dt);
-  // Casa alcançável mais próxima da unidade; empates ficam com a primeira na ordem de varredura.
-  const units=this.unitGrid(u),structures=this.structureGrid(),cells=[];
-  for(let y=Math.max(0,Math.floor(target.y-near));y<=Math.min(ROWS-1,Math.ceil(target.y+near));y++)for(let x=Math.max(0,Math.floor(target.x-near));x<=Math.min(COLS-1,Math.ceil(target.x+near));x++){
-   const k=KEY(x,y),d=Math.abs(x-target.x)+Math.abs(y-target.y);if(d>near||d<min||units[k]||structures[k]?.type==='hq'||!Number.isFinite(this.cost(u,x,y)))continue;
-   cells.push({x,y,k,d:Math.abs(u.x-x)+Math.abs(u.y-y)});
-  }
-  if(!cells.length)return false;const reach=this.reachable(u,units,structures);let best=null;
-  for(const p of cells)if(reach[p.k]&&(!best||p.d<best.d))best=p;
-  return best?this.navigate(u,{x:best.x,y:best.y},dt):false;
- }
- enterCell(u){
-  const m=this.mines.find(m=>m.x===u.x&&m.y===u.y);if(!m)return;
-  this.mines=this.mines.filter(v=>v!==m);this.hurt(u,40,null);this.event('blast',u);this.report(`${TYPES[u.type].name} atingido por mina: −40.`,u);
- }
+ enterCell(u){const m=this.mines.find(m=>m.x===u.x&&m.y===u.y);if(!m)return;this.mines=this.mines.filter(v=>v!==m);this.hurt(u,40,null);this.event('blast',u);this.report(`${TYPES[u.type].name} atingido por mina: −40.`,u);}
  shoot(u,target){
-  u.cooldown=TYPES[u.type].cooldown;u.entrenched=false;u.idle=0;const artillery=u.type==='artillery',aim=artillery?TILE(target):{x:target.x,y:target.y};
-  this.projectiles.push({attackerId:u.id,owner:u.owner,type:u.type,targetId:target.id,sx:u.x,sy:u.y,tx:aim.x,ty:aim.y,elapsed:0,duration:artillery?.9:.18+DIST(u,target)*.04,power:this.attackPower(u),distance:DIST(u,target),range:this.range(u),hit:this.rng()<this.accuracy(u,target),critical:this.rng()<.1});
+  if(u.type==='artillery')u.moveLeft=0;
+  u.facing=Math.atan2(target.x-u.x,u.y-target.y);u.cooldown=TYPES[u.type].cooldown;const artillery=u.type==='artillery',aim=artillery?TILE(target):{x:target.x,y:target.y};
+  this.projectiles.push({attackerId:u.id,owner:u.owner,type:u.type,targetId:target.id,sx:u.x,sy:u.y,tx:aim.x,ty:aim.y,elapsed:0,duration:artillery?.7:u.type==='antitank'?.3:.18,power:this.attackPower(u),distance:DIST(u,target),range:this.range(u),hit:this.rng()<this.accuracy(u,target),critical:this.rng()<.1});
   this.shotsFired++;this.event('shot',u,{weapon:u.type});
  }
- impact(p){
+  impact(p){
   const attacker=this.get(p.attackerId),target=this.get(p.targetId),center={x:p.tx,y:p.ty,owner:p.owner};
   if(!p.hit){this.event('text',center,{text:'ERROU!',color:'#efd291'});return;}
   this.event('blast',center,{heavy:p.type==='artillery'});
   const targets=p.type==='artillery'?this.all().filter(u=>Math.abs(u.x-p.tx)<=1.5&&Math.abs(u.y-p.ty)<=1.5):target?[target]:[];
   for(const t of targets){
    let power=p.power;if(p.type==='artillery')power*=Math.max(.4,1-.6*(DIST({x:p.sx,y:p.sy},t)-2)/Math.max(1,p.range-2))*(t.id===p.targetId?1:.5);
-   if(p.type==='recon')power*=t.type==='tank'?.4:['infantry','engineer','commander'].includes(t.type)?1.5:1;
+   if(p.type==='recon')power*=t.type==='tank'?.4:!TYPES[t.type].vehicle&&!TYPES[t.type].structure?1.5:1;
+   if(p.type==='antitank')power*=TYPES[t.type].vehicle?2.25:TYPES[t.type].structure?1:.5;
+   if(p.type==='machinegun')power*=TYPES[t.type].vehicle?.25:TYPES[t.type].structure?.5:1.3;
    const n=Math.max(1,Math.round(power*(1-this.cover(t))*(p.critical?1.35:1)));this.hurt(t,n,attacker);
    if(p.critical)this.event('text',t,{text:'CRÍTICO!',color:'#efd291'});
    this.report(`${p.owner===t.owner?'Fogo amigo':TYPES[p.type].name}: ${TYPES[t.type].name} −${n}.`,t);
@@ -255,108 +248,82 @@ class Game{
   }
   this.units=this.units.filter(v=>v.hp>0);this.structures=this.structures.filter(v=>v.hp>0);
  }
- heal(e,t,dt){const n=Math.min(8*dt,t.maxHp-t.hp);if(n<=0)return;t.hp+=n;e.healText+=n;if(e.healText>=4){this.event('text',t,{text:`+${Math.round(e.healText)}`,color:'#a4e7bb'});e.healText=0;}}
- unitStep(u,dt){
-  u.cooldown=Math.max(0,u.cooldown-dt);u.packing=Math.max(0,u.packing-dt);u.repath-=dt;const order=u.order;
-  if(order.type==='build'){
-   if(this.structureAt(order.goal.x,order.goal.y)){this.order(u,'stop');return;}u.work+=dt;
-   if(u.work+1e-8>=5){u.reserved=0;this.add(u.owner,'post',order.goal.x,order.goal.y);this.units=this.units.filter(v=>v!==u);this.report('Posto concluído. Infantaria convertida em guarnição.',u);this.updateVision();}return;
-  }
-  if(order.type==='capture'){
-   const p=this.get(order.targetId);if(!p||p.owner===u.owner){this.order(u,'stop');return;}
-   if(this.navigate(u,p,dt)){u.work+=dt;if(u.work+1e-8>=3){p.owner=u.owner;this.order(u,'stop');this.report(`Posto capturado pela Nação ${SIDE[u.owner]}.`,u);this.updateVision();}}else u.work=0;return;
-  }
-  if(order.type==='demine'){
-   const m=this.mines.find(m=>DIST(m,order.goal)===0);if(!m){this.order(u,'stop');return;}
-   if(this.approach(u,m,1.05,dt)){u.work+=dt;if(u.work+1e-8>=2){this.mines=this.mines.filter(v=>v!==m);this.order(u,'stop');this.report('Mina removida.',u);}}else u.work=0;return;
-  }
-  if(order.type==='repair'){
-   const target=this.get(order.targetId);if(!target||target.owner!==u.owner){this.order(u,'stop');return;}
-   if(this.approach(u,target,1.05,dt))this.heal(u,target,dt);return;
-  }
-  if(order.type==='move'){if(this.navigate(u,order.goal,dt))this.order(u,'stop');return;}
-  let target;
-  if(order.type==='attack'){
-   target=this.get(order.targetId);
-   if(!target||!this.isVisible(u.owner,target)){const last=order.last;this.order(u,'attackMove',last);target=null;}
-   else{order.last=TILE(target);if(!this.canFire(u,target)){this.approach(u,target,this.range(u),dt,TYPES[u.type].min);return;}}
-  }
-  if(u.segment){this.navigate(u,u.navGoal||u.segment.to,dt);return;}
-  if(u.type==='engineer'&&u.order.type==='stop'){
-   const ally=this.all().filter(a=>a!==u&&a.owner===u.owner&&DIST(a,u)<=1.05&&a.hp<a.maxHp).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0];if(ally){this.heal(u,ally,dt);return;}
-  }
-  target ||= this.acquire(u);
-  if(target&&this.canFire(u,target)){
-   if(u.packing>0)return;
-   if(u.type==='artillery'){u.setup=Math.min(1.5,u.setup+dt);if(u.setup<1.5-1e-8)return;}
-   if(u.cooldown<=1e-8)this.shoot(u,target);return;
-  }
-  if(u.order.type==='attackMove'){if(this.navigate(u,u.order.goal,dt))this.order(u,'stop');return;}
-  u.idle+=dt;u.entrenched=u.idle>=3;
+
+ finishAction(u){if(u){u.pending=false;u.path=[];u.segment=null;u.order={type:'stop'};}this.animation=null;this.updateVision();}
+ resolveAction(job,u){
+  const target=this.get(job.targetId);let valid=false;
+  if(job.type==='move'){this.finishAction(u);if(this.turn==='red'&&u.actionLeft){const enemy=this.acquire(u);if(enemy)this.order(u,'attack',{targetId:enemy.id});}return;}
+  if(job.type==='attack'){
+   if(this.canFire(u,target)){this.animation={...job,route:[],shots:u.type==='machinegun'?3:1,shotClock:0,fired:0};return;}
+  }else if(job.type==='repair'&&target?.owner===u.owner&&DIST(u,target)<=1){const heal=Math.min(24,target.maxHp-target.hp);target.hp+=heal;this.event('text',target,{text:'+'+Math.round(heal),color:'#a4e7bb'});valid=true;
+  }else if(job.type==='capture'&&target?.type==='post'&&target.owner!==u.owner&&DIST(u,target)<=1){target.owner=u.owner;this.report(`Posto capturado pela Nação ${SIDE[u.owner]}.`,u);valid=true;
+  }else if(job.type==='demine'&&DIST(u,job.goal)<=1){const mine=this.mines.find(m=>m.x===job.goal.x&&m.y===job.goal.y);if(mine){this.mines=this.mines.filter(m=>m!==mine);this.report('Mina removida.',u);valid=true;}
+  }else if(job.type==='build'&&this.buildSite(u)){u.reserved=0;this.add(u.owner,'post',u.x,u.y);this.units=this.units.filter(v=>v!==u);this.report('Posto construído. Infantaria convertida em guarnição.',u);valid=true;}
+  if(!valid){u.actionLeft=true;this.cancelWork(u);}this.finishAction(u);
  }
- income(owner){return Math.round(this.structures.filter(s=>s.owner===owner).reduce((n,s)=>n+(s.type==='hq'?15:8),0)*(owner==='red'&&this.difficulty==='hard'?1.2:1));}
- spawnCells(owner,type){const hq=this.hq(owner),cells=[];if(!hq)return cells;for(let r=1;r<=2;r++)for(let y=hq.y-r;y<=hq.y+r;y++)for(let x=hq.x-r;x<=hq.x+r;x++)if(INSIDE(x,y)&&DIST(hq,{x,y})===r&&Number.isFinite(this.cost({type},x,y))&&!this.structureAt(x,y)&&!this.mines.some(m=>m.x===x&&m.y===y))cells.push({x,y});return cells;}
- enqueue(owner,type){
-  const hq=this.hq(owner),t=TYPES[type];if(this.winner||!hq||!t?.cost||hq.queue.length>=5||this.credits[owner]<t.cost)return false;
-  this.credits[owner]-=t.cost;hq.queue.push({type,progress:0});this.report(`${t.name} em treinamento (${t.train}s).`,hq);return true;
- }
- production(dt){
-  for(const hq of this.structures.filter(s=>s.type==='hq')){
-   const job=hq.queue[0];if(!job)continue;const t=TYPES[job.type];job.progress=Math.min(t.train,job.progress+dt);if(job.progress<t.train-1e-8)continue;job.progress=t.train;
-   const cell=this.spawnCells(hq.owner,job.type).find(p=>!this.occupied(p.x,p.y));if(!cell)continue;
-   this.add(hq.owner,job.type,cell.x,cell.y);hq.queue.shift();this.report(`${t.name} pronto para receber ordens.`,hq);this.event('ready',hq);this.updateVision();
+ animate(dt){
+  const a=this.animation,u=this.get(a.id);if(!u){this.animation=null;return;}
+  if(a.shots!==undefined){
+   a.shotClock-=dt;if(a.shotClock<=0){const target=this.get(a.targetId);if(a.shots>0&&this.canFire(u,target)){this.shoot(u,target);a.shots--;a.fired++;a.shotClock=.12;}else{if(!a.fired)u.actionLeft=true;this.finishAction(u);}}return;
   }
+  if(!u.segment){
+   if(!a.route.length){this.resolveAction(a,u);return;}
+   const next=a.route.shift(),cost=this.cost(u,next.x,next.y);
+   if(this.occupied(next.x,next.y,u)||cost>u.moveLeft+1e-8){a.route=[];u.path=[];this.resolveAction(a,u);return;}
+   u.segment={from:TILE(u),to:next,cost};u.path=a.route.slice();
+  }
+  const seg=u.segment,dx=seg.to.x-u.x,dy=seg.to.y-u.y,d=Math.hypot(dx,dy),step=5*dt;if(d>0)u.facing=Math.atan2(dx,-dy);
+  if(d<=step){u.x=seg.to.x;u.y=seg.to.y;u.moveLeft=Math.max(0,u.moveLeft-seg.cost);u.moved=true;if(u.type==='artillery')u.actionLeft=false;u.segment=null;this.enterCell(u);this.updateVision();}
+  else{u.x+=dx/d*step;u.y+=dy/d*step;}
  }
- aiThink(){
+ income(owner){return Math.round(this.structures.filter(s=>s.owner===owner).reduce((n,s)=>n+(s.type==='hq'?15:8),0)*(owner==='red'?(this.difficulty==='hard'?1.2:this.difficulty==='easy'?.8:1):1));}
+  spawnCells(owner,type){const hq=this.hq(owner),cells=[];if(!hq)return cells;for(let r=1;r<=2;r++)for(let y=hq.y-r;y<=hq.y+r;y++)for(let x=hq.x-r;x<=hq.x+r;x++)if(INSIDE(x,y)&&DIST(hq,{x,y})===r&&Number.isFinite(this.cost({type},x,y))&&!this.structureAt(x,y)&&!this.mines.some(m=>m.x===x&&m.y===y))cells.push({x,y});return cells;}
+
+ enqueue(owner,type){const hq=this.hq(owner),t=TYPES[type];if(this.winner||owner!==this.turn||this.busy||!hq||!t?.cost||hq.queue.length>=5||this.credits[owner]<t.cost)return false;this.credits[owner]-=t.cost;hq.queue.push({type,progress:0});this.report(`${t.name} em treinamento (${t.train} turno(s)).`,hq);return true;}
+ production(owner){
+  const hq=this.hq(owner),job=hq?.queue[0];if(!job)return;const t=TYPES[job.type];job.progress=Math.min(t.train,job.progress+1);if(job.progress<t.train)return;
+  const cell=this.spawnCells(owner,job.type).find(p=>!this.occupied(p.x,p.y));if(!cell)return;this.add(owner,job.type,cell.x,cell.y);hq.queue.shift();this.report(`${t.name} pronto para receber ordens.`,hq);this.event('ready',hq);
+ }
+ beginTurn(owner){
+  this.turn=owner;if(owner==='blue')this.round++;
+  for(const u of this.units)if(u.owner===owner){u.moveLeft=TYPES[u.type].move;u.actionLeft=true;u.moved=false;u.pending=false;u.path=[];u.segment=null;u.order={type:'stop'};}
+  if(this.round>1){this.credits[owner]+=this.income(owner);this.production(owner);}this.updateVision();
+  this.log(owner==='blue'?`Rodada ${this.round}: seu turno.`:`Rodada ${this.round}: turno da IA.`);
+  if(owner==='red'){this.aiQueue=this.aiEnabled?this.units.filter(u=>u.owner==='red').map(u=>u.id):[];this.claims=new Set();this.aiWait=.3;this.aiBuy();}
+ }
+ endTurn(){if(this.winner||this.turn!=='blue'||this.busy)return false;for(const u of this.units)if(u.owner==='blue'&&!u.moved&&u.actionLeft)u.entrenched=true;this.beginTurn('red');return true;}
+ aiBuy(){
+  if(!this.aiEnabled)return;const hq=this.hq('red');if(!hq||hq.queue.length>=2)return;const army=this.units.filter(u=>u.owner==='red');if(army.length+hq.queue.length>=16)return;
+  const pending=type=>army.filter(u=>u.type===type).length+hq.queue.filter(q=>q.type===type).length;
+  const priority=pending('infantry')<2?['infantry']:!pending('engineer')?['engineer']:!pending('recon')?['recon']:!pending('machinegun')?['machinegun','infantry']:!pending('antitank')?['antitank','infantry']:pending('artillery')<2?['artillery','tank','infantry']:['tank','infantry'];priority.some(type=>this.enqueue('red',type));
+ }
+ moveToward(u,target){const route=this.pathToRange(u,target,1);if(!route?.length)return false;const part=this.trimPath(u,route);return part.length?this.order(u,'move',part[part.length-1]):false;}
+ aiAct(u){
   this.aiDecisions++;const hq=this.hq('red');if(!hq)return;
-  const army=this.units.filter(u=>u.owner==='red'),foes=this.all().filter(u=>u.owner==='blue'&&this.isVisible('red',u)),threats=foes.filter(u=>!TYPES[u.type].structure&&DIST(u,hq)<=6);
-  const threshold=this.difficulty==='easy'?6:this.difficulty==='hard'?3:4;
-  this.aiState=threats.length?'defend':this.time>=12&&army.length>=threshold?'attack':'rally';
-  if(hq.queue.length<2&&army.length+hq.queue.length<16){const pending=type=>army.filter(u=>u.type===type).length+hq.queue.filter(q=>q.type===type).length;
-   const priority=pending('infantry')<2?['infantry']:!pending('engineer')?['engineer']:!pending('recon')?['recon']:pending('artillery')<2?['artillery','tank','infantry']:['tank','infantry'];priority.some(type=>this.enqueue('red',type));}
-  const posts=[...this.memory.red.values()].filter(s=>s.type==='post'&&s.owner!=='red'),claims=new Set();
-  const enemyHQ=[...this.memory.red.values()].find(s=>s.type==='hq'&&s.owner==='blue')||{x:2,y:11};
-  for(const u of army){
-   if(u.hp/u.maxHp<.35){const medic=army.filter(a=>a.type==='engineer'&&a!==u).sort((a,b)=>DIST(a,u)-DIST(b,u))[0]||hq;const near=this.spawnNear(u,medic);if(near)this.order(u,'move',near);continue;}
-   if(u.type==='engineer'){
-    const injured=army.filter(a=>a!==u&&a.hp<a.maxHp).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0];if(injured){if(u.order.targetId!==injured.id)this.order(u,'repair',{targetId:injured.id});continue;}
-    const mine=this.mines.find(m=>m.known.red&&DIST(u,m)<=2);if(mine){if(u.order.type!=='demine')this.order(u,'demine',mine);continue;}
-   }
-   if(u.type==='infantry'&&this.aiState!=='defend'){
-    const post=posts.filter(p=>!claims.has(p.id)).sort((a,b)=>DIST(a,u)-DIST(b,u))[0];
-    if(post){claims.add(post.id);if(u.order.type==='capture'&&u.order.targetId===post.id)continue;
-     if(this.isVisible('red',post))this.order(u,'capture',{targetId:post.id});else this.aiMove(u,'attackMove',post);continue;}
-   }
-   if(this.aiState==='defend'){const target=threats.sort((a,b)=>DIST(a,u)-DIST(b,u))[0];if(u.order.targetId!==target.id)this.order(u,'attack',{targetId:target.id});}
-   else if(this.aiState==='attack')this.aiMove(u,'attackMove',enemyHQ);
-   else this.aiMove(u,'attackMove',{x:13-u.id%2,y:4+u.id%2});
+  const army=this.units.filter(v=>v.owner==='red'),foes=this.all().filter(e=>e.owner==='blue'&&this.isVisible('red',e)),threats=foes.filter(e=>!TYPES[e.type].structure&&DIST(e,hq)<=6);this.aiState=threats.length?'defend':'attack';
+  if(u.hp/u.maxHp<.35){const medic=army.filter(e=>e.type==='engineer'&&e!==u).sort((a,b)=>DIST(a,u)-DIST(b,u))[0]||hq;if(this.moveToward(u,medic))return;}
+  if(u.type==='engineer'){
+   const allies=this.all().filter(e=>e.owner==='red'&&e!==u&&e.hp<e.maxHp).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp);for(const ally of allies)if(this.order(u,'repair',{targetId:ally.id}))return;
+   const mine=this.mines.find(m=>m.known.red&&DIST(m,u)<=u.moveLeft+1);if(mine&&this.order(u,'demine',mine))return;
   }
+  const firing=this.acquire(u);if(firing&&this.order(u,'attack',{targetId:firing.id}))return;
+  if(u.type==='infantry'&&!threats.length){
+   const posts=[...this.memory.red.values()].filter(p=>p.type==='post'&&p.owner!=='red'&&!this.claims.has(p.id)).sort((a,b)=>DIST(a,u)-DIST(b,u));
+   for(const p of posts){const live=this.get(p.id);if(live&&this.isVisible('red',live)&&this.order(u,'capture',{targetId:p.id})||this.moveToward(u,p)){this.claims.add(p.id);return;}}
+  }
+  const enemies=(threats.length?threats:foes).slice().sort((a,b)=>DIST(a,u)-DIST(b,u));for(const e of enemies)if(this.order(u,'attack',{targetId:e.id}))return;
+  const target=enemies[0]||[...this.memory.red.values()].find(s=>s.type==='hq'&&s.owner==='blue')||{x:1,y:12};if(!this.moveToward(u,target))this.order(u,'stop');
  }
- spawnNear(u,target){
-  const units=this.unitGrid(u),structures=this.structureGrid(),reach=this.reachable(u,units,structures);let best,bestT=Infinity,bestU=Infinity;
-  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){
-   const k=KEY(x,y),dt=Math.abs(x-target.x)+Math.abs(y-target.y);if(dt>2||!reach[k]||units[k]||structures[k]||!Number.isFinite(this.cost(u,x,y)))continue;
-   const du=Math.abs(x-u.x)+Math.abs(y-u.y);if(dt<bestT||dt===bestT&&du<bestU){best={x,y};bestT=dt;bestU=du;}
-  }return best;
- }
- aiMove(u,type,target){if(u.order.type===type&&u.order.goal&&DIST(u.order.goal,target)<=2)return;const goal=this.spawnNear(u,target);if(goal)this.order(u,type,goal);}
- checkVictory(){
+  checkVictory(){
   const alive=owner=>!!this.hq(owner)&&(this.units.some(u=>u.owner===owner)||this.hq(owner).queue.length>0),blue=alive('blue'),red=alive('red');
   if(!blue||!red){this.winner=!blue&&!red?'draw':blue?'blue':'red';this.log(this.winner==='draw'?'As duas forças foram neutralizadas.':`Vitória da Nação ${SIDE[this.winner]}.`);}
  }
+
  update(dt){
-  if(this.winner||!Number.isFinite(dt)||dt<=0)return;this.accumulator+=Math.min(dt,.25);
-  while(this.accumulator+1e-9>=STEP&&!this.winner){this.accumulator=Math.max(0,this.accumulator-STEP);this.step(STEP);}
- }
- step(dt){
-  this.time+=dt;this.incomeClock+=dt;this.visionClock+=dt;this.aiClock+=dt;
-  if(this.incomeClock>=3-1e-8){this.incomeClock-=3;for(const side of ['blue','red'])this.credits[side]+=this.income(side);}
-  this.production(dt);
-  if(this.visionClock>=.1-1e-8){this.visionClock=0;this.updateVision();}
-  if(this.aiClock>=1.5-1e-8){this.aiClock=0;if(this.aiEnabled)this.aiThink();}
-  for(const u of this.units.slice())if(u.hp>0)this.unitStep(u,dt);
-  const impacts=[];for(const p of this.projectiles){p.elapsed+=dt;if(p.elapsed>=p.duration)impacts.push(p);}
-  this.projectiles=this.projectiles.filter(p=>p.elapsed<p.duration);for(const p of impacts)this.impact(p);
+  if(this.winner||!Number.isFinite(dt)||dt<=0)return;dt=Math.min(dt,.1);this.time+=dt;for(const u of this.units)u.cooldown=Math.max(0,u.cooldown-dt);
+  const hits=[];for(const p of this.projectiles){p.elapsed+=dt;if(p.elapsed>=p.duration)hits.push(p);}this.projectiles=this.projectiles.filter(p=>p.elapsed<p.duration);for(const p of hits)this.impact(p);
+  if(this.animation)this.animate(dt);else if(!this.projectiles.length&&this.actions.length){this.animation=this.actions.shift();this.animate(dt);}
+  if(this.turn==='red'&&!this.busy){this.aiWait-=dt;if(this.aiWait<=0){const u=this.get(this.aiQueue.shift());if(u){this.aiAct(u);this.aiWait=.15;}else if(!this.aiQueue.length)this.beginTurn('blue');}}
   this.checkVictory();
  }
 }
@@ -392,39 +359,84 @@ class Sound{
 
 const $=id=>document.getElementById(id),CELL=56,TEAM={blue:'#77c8e2',red:'#ee9986',neutral:'#e0c992'};
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches,audio=new Sound();
-let game=new Game(),selection=new Set(),groups=Array.from({length:5},()=>[]),paused=true,started=false,speed=.5,mode=null,hover=null,drag=null,marker=null,resultShown=false;
+let game=new Game(),selection=new Set(),groups=Array.from({length:5},()=>[]),paused=true,started=false,speed=1,mode=null,hover=null,drag=null,marker=null,resultShown=false;
 let menuWasPaused=true,lastFrame=performance.now(),uiClock=0,lastLog=null;
 function polygon(ctx,points,fill,stroke){ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.stroke();}}
-function unitIcon(ctx,type,x,y,color,scale=1){
- ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);ctx.lineWidth=2;ctx.lineCap='round';ctx.lineJoin='round';
- ctx.fillStyle='#11252b';ctx.beginPath();ctx.ellipse(0,13,19,6,0,0,Math.PI*2);ctx.fill();
- if(type==='tank'||type==='recon'||type==='artillery'){
-  ctx.fillStyle='#223a3d';ctx.fillRect(-17,-14,7,29);ctx.fillRect(10,-14,7,29);
-  ctx.fillStyle='#668082';for(let i=-11;i<14;i+=6){ctx.fillRect(-16,i,5,2);ctx.fillRect(11,i,5,2);}
-  ctx.fillStyle=color;ctx.fillRect(-11,-12,22,27);ctx.fillStyle='#ffffff35';ctx.fillRect(-8,-10,4,21);
-  ctx.fillStyle='#294c53';ctx.fillRect(-5,-5,10,11);
-  if(type==='recon'){ctx.fillStyle='#d4e4d9';ctx.fillRect(-8,-8,16,5);ctx.fillStyle='#233f48';ctx.fillRect(-8,3,16,9);ctx.strokeStyle=color;ctx.beginPath();ctx.moveTo(8,-10);ctx.lineTo(11,-22);ctx.stroke();}
-  else{ctx.fillStyle=color;ctx.beginPath();ctx.arc(0,0,8,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#c4d8ca';ctx.lineWidth=type==='tank'?5:4;ctx.beginPath();ctx.moveTo(0,-2);ctx.lineTo(type==='artillery'?12:0,-23);ctx.stroke();ctx.fillStyle='#2d4f54';ctx.fillRect(-3,1,6,4);}
- }else if(type==='hq'||type==='post'){
-  ctx.fillStyle='#354744';ctx.fillRect(-20,-4,40,23);ctx.fillStyle=color;ctx.fillRect(-17,-7,34,22);ctx.fillStyle='#223e45';ctx.fillRect(-5,3,10,12);ctx.fillRect(-13,-1,5,5);ctx.fillRect(8,-1,5,5);
-  polygon(ctx,[[-23,-7],[0,-20],[23,-7]],'#c6c6a7');ctx.strokeStyle='#f0e9ca';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-14);ctx.lineTo(0,-32);ctx.stroke();polygon(ctx,[[1,-32],[15,-27],[1,-22]],color);
-  if(type==='post'){ctx.fillStyle='#152a31';ctx.fillRect(-20,8,12,9);ctx.fillRect(8,8,12,9);}
- }else{
-  ctx.strokeStyle='#273f43';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(-4,7);ctx.lineTo(-8,16);ctx.moveTo(4,7);ctx.lineTo(8,16);ctx.stroke();
-  ctx.fillStyle=color;ctx.fillRect(-10,-6,20,17);ctx.fillStyle='#ffffff28';ctx.fillRect(-8,-5,5,14);
-  ctx.strokeStyle=color;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-9,-2);ctx.lineTo(-15,6);ctx.moveTo(9,-2);ctx.lineTo(14,5);ctx.stroke();
-  ctx.fillStyle='#e4d6b6';ctx.beginPath();ctx.arc(0,-10,7,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle=type==='commander'?'#e9cc87':color;ctx.beginPath();ctx.ellipse(0,-14,9,5,0,Math.PI,Math.PI*2);ctx.fill();ctx.fillRect(-9,-14,18,3);
-  if(type==='engineer'){ctx.fillStyle='#eff5e7';ctx.fillRect(-5,-4,10,10);ctx.fillStyle='#487366';ctx.fillRect(-1,-3,2,8);ctx.fillRect(-4,0,8,2);}
-  else{ctx.strokeStyle='#1b363d';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(11,10);ctx.lineTo(11,-12);ctx.stroke();}
+function unitIcon(ctx,type,x,y,color,scale=1,facing=0,stride=0,firing=false){
+ ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);ctx.lineWidth=1.6;ctx.lineCap='round';ctx.lineJoin='round';
+ const dark='#10282e',steel='#a7b6ac',gold='#efd094';
+ const box=(x,y,w,h,fill,stroke)=>{ctx.fillStyle=fill;ctx.fillRect(x,y,w,h);if(stroke){ctx.strokeStyle=stroke;ctx.strokeRect(x,y,w,h);}};
+ const oval=(x,y,rx,ry,fill,stroke)=>{ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.stroke();}};
+ const line=(points,color,width=2)=>{ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();points.forEach(([a,b],i)=>i?ctx.lineTo(a,b):ctx.moveTo(a,b));ctx.stroke();ctx.lineWidth=1.6;};
+ oval(2,7,TYPES[type].vehicle?22:17,TYPES[type].vehicle?19:13,'#081b2270');
+ if(type==='hq'||type==='post'){
+  box(-20,-4,40,23,'#354744');box(-17,-7,34,22,color,dark);box(-5,3,10,12,'#223e45');box(-13,-1,5,5,steel);box(8,-1,5,5,steel);
+  polygon(ctx,[[-23,-7],[0,-20],[23,-7]],'#c6c6a7',dark);line([[0,-14],[0,-32]],'#f0e9ca');polygon(ctx,[[1,-32],[15,-27],[1,-22]],color);
+  if(type==='post'){box(-20,8,12,9,dark);box(8,8,12,9,dark);}ctx.restore();return;
  }
+ ctx.rotate(facing);
+ let muzzle={x:10,y:-25};
+ if(type==='tank'){
+  // Chassi largo, duas lagartas e torre: leitura imediata mesmo em escala pequena.
+  for(const side of [-1,1]){box(side<0?-21:13,-20,8,42,'#152d33',dark);for(let yy=-16;yy<21;yy+=7)box(side<0?-20:14,yy,6,3,'#65766e');}
+  polygon(ctx,[[-13,-21],[13,-21],[16,-10],[15,21],[-15,21],[-16,-10]],color,dark);
+  polygon(ctx,[[-11,-18],[10,-18],[12,-9],[-12,-9]],'#ffffff30');box(-10,12,20,6,'#345a5e');for(let xx=-8;xx<10;xx+=4)box(xx,12,2,6,dark);
+  polygon(ctx,[[-10,-9],[8,-12],[13,-4],[10,9],[-9,11],[-13,3]],'#294b51',dark);
+  polygon(ctx,[[-8,-10],[8,-10],[10,-1],[7,7],[-8,7],[-10,-2]],color,steel);
+  box(-3,-29+(firing?2:0),6,23,steel,dark);box(-4,-30+(firing?2:0),8,5,'#354f53',dark);oval(-3,3,4,3,'#304c4e',dark);
+  line([[8,10],[11,21]],steel,1.3);box(-13,-14,3,5,gold);box(10,-14,3,5,gold);muzzle={x:0,y:-33};
+ }else if(type==='recon'){
+  for(const xx of [-18,12])for(const yy of [-13,9])box(xx,yy,6,12,'#102830',dark);
+  polygon(ctx,[[-10,-23],[10,-23],[14,-9],[12,22],[-12,22],[-14,-9]],color,dark);
+  polygon(ctx,[[-9,-12],[9,-12],[10,-3],[-10,-3]],'#193943',steel);line([[-7,-11],[5,-11]],'#c6e1da',1.4);
+  box(-9,8,18,11,'#32575b',dark);oval(0,10,5,5,'#143139',steel);line([[0,8],[0,-25]],steel,3);
+  box(-9,-21,4,3,gold);box(5,-21,4,3,gold);line([[10,14],[21,26]],steel,1.3);oval(21,26,1.5,1.5,gold);muzzle={x:0,y:-28};
+ }else if(type==='artillery'){
+  // Rodas e apoios abertos distinguem a peça de artilharia do tanque.
+  line([[-9,5],[-20,22]],steel,5);line([[9,5],[20,22]],steel,5);box(-24,20,10,4,dark);box(14,20,10,4,dark);
+  box(-22,-6,8,23,'#142b31',dark);box(14,-6,8,23,'#142b31',dark);line([[-20,-3],[-20,13]],'#849086',2);line([[18,-3],[18,13]],'#849086',2);
+  polygon(ctx,[[-16,-12],[16,-12],[13,8],[-13,8]],color,dark);line([[-13,-10],[13,-10]],'#e0e8ce',1.5);
+  box(-5,-11,10,24,'#25474c',dark);oval(0,3,7,6,steel,dark);
+  box(-4,-31+(firing?3:0),8,31,steel,dark);box(-6,-33+(firing?3:0),12,6,'#35565b',dark);box(-2,-26,3,20,'#edf0dd');
+  box(-14,-7,5,9,'#ffffff35');muzzle={x:0,y:-36};
+ }else{
+  const gunner=type==='machinegun',engineer=type==='engineer',commander=type==='commander',rocket=type==='antitank';
+  box(-9,8+stride,7,12,'#18363c',dark);box(3,8-stride,7,12,'#18363c',dark);box(-10,16+stride,8,5,dark);box(3,16-stride,8,5,dark);
+  box(-11,1,22,13,engineer?'#9f8e5e':'#304c48',dark);line([[-7,4],[7,4]],'#b6c5a5',1);
+  polygon(ctx,[[-12,-10],[-8,-15],[8,-15],[12,-10],[11,11],[-11,11]],color,dark);
+  polygon(ctx,[[-6,-8],[6,-8],[8,7],[-8,7]],'#31524d',dark);box(-6,-6,4,6,'#b7c39b');box(2,-6,4,6,'#b7c39b');box(-7,3,14,3,'#162e33');
+  line([[-11,-8],[-14,1],[-8,3]],color,6);line([[11,-8],[15,-1],[11,4]],color,6);
+  oval(0,-14,8,7,commander?'#c8a760':color,dark);oval(-2,-16,4,2,'#ffffff3c');line([[-6,-18],[5,-18]],commander?'#f3d591':'#d8e2ca',1.4);
+  box(-5,-12,10,3,'#172d33');box(-4,-12,7,1,'#a1c8c8');
+  if(engineer){
+   box(-18,2,10,11,gold,dark);line([[-15,2],[-15,-1],[-10,-1],[-10,2]],steel,1.7);
+   line([[13,9],[13,-7]],steel,3);line([[10,-12],[9,-7],[13,-4],[17,-7],[16,-12]],steel,2.5);box(-3,6,6,3,gold);
+  }else if(commander){
+   polygon(ctx,[[-10,-18],[-3,-23],[8,-20],[9,-16],[-9,-16]],gold,dark);oval(4,-19,2,2,'#fff6d0');
+   line([[-13,9],[-19,-13]],steel,1.5);oval(-19,-13,1.5,1.5,gold);box(-3,0,6,5,gold,dark);
+   box(10,-14,4,20,dark);box(11,-17,2,8,steel);muzzle={x:12,y:-20};
+  }else if(rocket){
+   box(8,-19,9,29,'#314f49',dark);box(8,-16,9,3,gold);box(7,7,11,6,steel,dark);
+   polygon(ctx,[[8,-19],[10,-26],[15,-26],[17,-19]],steel,dark);box(10,-26,5,3,'#efbc79');box(5,-8,6,4,dark);box(11,-6,3,9,'#b8c4a2');
+   muzzle={x:12,y:-29};
+  }else if(gunner){
+   line([[-2,-14],[-9,-24]],steel,2);line([[3,-14],[10,-24]],steel,2);
+   box(-4,-21+(firing?1:0),9,20,dark);box(-2,-28+(firing?1:0),5,15,steel,dark);box(-4,-31+(firing?1:0),9,5,dark);
+   box(-15,-6,10,9,gold,dark);line([[-6,-4],[0,-2]],gold,4);for(let i=0;i<4;i++)box(-7+i*2,-6,1,4,'#6f654d');
+   box(-3,-15,7,7,'#536b65');muzzle={x:0,y:-34};
+  }else{
+   box(9,-18+(firing?1:0),5,27,dark);box(10,-23+(firing?1:0),3,12,steel);box(7,-4,6,5,'#775d3c');box(12,-19,4,3,dark);muzzle={x:11,y:-26};
+  }
+ }
+ if(firing){const {x:mx,y:my}=muzzle;polygon(ctx,[[mx-2,my+2],[mx-6,my-4],[mx-2,my-4],[mx,my-12],[mx+2,my-4],[mx+6,my-4],[mx+2,my+2]],'#f8cc76');oval(mx,my-3,2.5,4,'#fff6d1');}
  ctx.restore();
 }
-/* Cache de desenhos: cada ícone vetorial e o brilho dos projéteis são rasterizados uma vez e depois só copiados. */
+
+// Cache de sprites por equipe, disparo e três poses de caminhada; rotação aplicada ao desenhar.
 const sprites=new Map();
-function sprite(type,color,scale){
- const key=type+color+scale;let s=sprites.get(key);
- if(!s){const ox=Math.ceil(32*scale),oy=Math.ceil(38*scale);s=document.createElement('canvas');s.width=ox*2;s.height=Math.ceil(64*scale);unitIcon(s.getContext('2d'),type,ox,oy,color,scale);s.ox=ox;s.oy=oy;sprites.set(key,s);}
+function sprite(type,color,scale,stride=0,firing=false){
+ const key=type+color+scale+':'+stride+':'+firing;let s=sprites.get(key);
+ if(!s){const ox=Math.ceil(38*scale),oy=Math.ceil(50*scale);s=document.createElement('canvas');s.width=ox*2;s.height=Math.ceil(82*scale);unitIcon(s.getContext('2d'),type,ox,oy,color,scale,0,stride,firing);s.ox=ox;s.oy=oy;sprites.set(key,s);}
  return s;
 }
 function glow(radius){const s=document.createElement('canvas'),c=s.getContext('2d');s.width=s.height=Math.ceil(radius+14)*2;c.fillStyle='#fff0b1';c.shadowColor='#ffe499';c.shadowBlur=8;c.beginPath();c.arc(s.width/2,s.height/2,radius,0,7);c.fill();return s;}
@@ -461,7 +473,7 @@ class Renderer{
  consume(){
   for(const e of game.events.splice(0))if(e.visible){
    if(e.kind==='blast'){this.blast(e.x,e.y);if(e.heavy){audio.play('artillery');this.shake=reducedMotion?0:7;}}
-   else if(e.kind==='shot'){audio.play(e.weapon==='tank'?'tank':e.weapon==='artillery'?'tank':'infantry');if(e.weapon==='tank')this.shake=reducedMotion?0:4;}
+   else if(e.kind==='shot'){audio.play(['tank','artillery','antitank'].includes(e.weapon)?'tank':'infantry');if(e.weapon==='tank')this.shake=reducedMotion?0:4;}
    else if(e.kind==='ready')audio.play('purchase');
    else this.texts.push({...e,t:0});
   }if(this.texts.length>60)this.texts.splice(0,this.texts.length-60);
@@ -473,13 +485,13 @@ class Renderer{
   const c=this.ctx,x=(u.x+.5)*CELL,y=(u.y+.5)*CELL,chosen=selection.has(u.id);c.save();
   if(memory)c.globalAlpha=.55;
   if(chosen){c.strokeStyle=u.owner==='blue'?'#c6eff6':TEAM[u.owner];c.lineWidth=2.5;c.beginPath();c.ellipse(x,y+8,24,20,0,0,Math.PI*2);c.stroke();}
-  const s=sprite(u.type,TEAM[u.owner],TYPES[u.type].structure?.83:.77);c.drawImage(s,x-s.ox,y+2-s.oy);
+  const stride=u.segment&&!reducedMotion?Math.sign(Math.sin(game.time*13+u.id))*2:0,firing=!memory&&u.cooldown>TYPES[u.type].cooldown-.12;
+  const s=sprite(u.type,TEAM[u.owner],TYPES[u.type].structure?.83:.86,stride,firing);c.save();c.translate(x,y+2);if(!TYPES[u.type].structure)c.rotate(u.facing||0);c.drawImage(s,-s.ox,-s.oy);c.restore();
   if(!memory&&(chosen||u.hp<u.maxHp))this.bar(x,y+24,36,u.hp/u.maxHp,u.hp/u.maxHp>.45?'#b8dba5':'#f69d87');
   if(!memory&&!TYPES[u.type].structure){
    if(u.level>1||chosen){c.fillStyle='#ffde96';c.font='10px Segoe UI';c.textAlign='center';c.fillText('★'.repeat(u.level),x,y-22);}
    if(u.entrenched){c.strokeStyle='#c9e5e2';c.lineWidth=2;c.beginPath();c.arc(x,y+3,24,.1,Math.PI-.1);c.stroke();}
-   if(['build','capture','demine'].includes(u.order.type)&&u.work>0)this.bar(x,y+31,40,u.work/({build:5,capture:3,demine:2}[u.order.type]),'#edcf91');
-   if(u.type==='artillery'&&(u.packing>0||u.setup>0&&u.setup<1.5))this.bar(x,y+31,38,u.packing>0?1-u.packing/1.5:u.setup/1.5,'#edcf91');
+   if(chosen){c.fillStyle=u.actionLeft?'#b8e5bd':'#78858a';c.beginPath();c.arc(x+23,y-16,3,0,Math.PI*2);c.fill();}
   }
   if(!memory&&u.type==='hq'&&u.queue.length)this.bar(x,y+31,44,u.queue[0].progress/TYPES[u.queue[0].type].train,'#edd098');
   c.restore();
@@ -499,7 +511,7 @@ class Renderer{
   ['#21333d','#20313b','#62768140','#10252daf'].forEach((color,i)=>{c.fillStyle=color;c.fill(fog[i]);});
   for(const id of selection){const u=game.get(id);if(!u||u.owner!=='blue'||TYPES[u.type].structure)continue;
    c.strokeStyle='#a6e1e477';c.lineWidth=1.3;c.setLineDash([5,5]);c.beginPath();c.moveTo((u.x+.5)*CELL,(u.y+.5)*CELL);if(u.segment)c.lineTo((u.segment.to.x+.5)*CELL,(u.segment.to.y+.5)*CELL);for(const p of u.path)c.lineTo((p.x+.5)*CELL,(p.y+.5)*CELL);c.stroke();c.setLineDash([]);
-   if(paused){const target=game.get(u.order.targetId),goal=u.order.goal||(target&&game.isVisible('blue',target)?TILE(target):u.order.last);if(goal)this.outline(goal.x,goal.y,['attack','attackMove'].includes(u.order.type)?'#f9b09a':'#b8e5e6',2);}
+   if(game.turn==='blue'){const target=game.get(u.order.targetId),goal=u.order.goal||(target&&game.isVisible('blue',target)?TILE(target):u.order.last);if(goal)this.outline(goal.x,goal.y,['attack','attackMove'].includes(u.order.type)?'#f9b09a':'#b8e5e6',2);}
    if(u.type==='commander'){c.strokeStyle='#e9cf8944';c.lineWidth=2;polygon(c,[[u.x*CELL+28,(u.y-1.5)*CELL],[(u.x+2.5)*CELL,u.y*CELL+28],[u.x*CELL+28,(u.y+2.5)*CELL],[(u.x-1.5)*CELL,u.y*CELL+28]],'#edd0980d','#edd09855');}
   }
   for(const m of game.mines)if(m.known.blue&&game.explored.blue[KEY(m.x,m.y)]){polygon(c,[[(m.x+.5)*CELL,m.y*CELL+18],[m.x*CELL+42,m.y*CELL+42],[m.x*CELL+14,m.y*CELL+42]],'#d8bc77','#4d513d');c.fillStyle='#39403b';c.font='bold 17px sans-serif';c.textAlign='center';c.fillText('!',(m.x+.5)*CELL,m.y*CELL+37);}
@@ -510,6 +522,7 @@ class Renderer{
    const t=Math.min(1,p.elapsed/p.duration),target=p.type==='artillery'?null:game.get(p.targetId),tx=target?.x??p.tx,ty=target?.y??p.ty;
    const gx=p.sx+(tx-p.sx)*t,gy=p.sy+(ty-p.sy)*t;if(p.owner!=='blue'&&!game.isVisible('blue',{x:gx,y:gy}))continue;
    const x=(gx+.5)*CELL,y=(gy+.5)*CELL-(p.type==='artillery'?Math.sin(Math.PI*t)*85:0),g=p.type==='artillery'?this.glow.large:this.glow.small;c.drawImage(g,x-g.width/2,y-g.height/2);
+   if(p.type==='antitank'||p.type==='machinegun'){c.save();c.translate(x,y);c.rotate(Math.atan2(ty-p.sy,tx-p.sx));if(p.type==='antitank'){c.strokeStyle='#edb87388';c.lineWidth=3;c.beginPath();c.moveTo(-19,0);c.lineTo(-5,0);c.stroke();polygon(c,[[-5,-2],[4,-2],[8,0],[4,2],[-5,2]],'#e9ebe0');}else{c.fillStyle='#fff0b1';c.fillRect(-9,-1,12,2);}c.restore();}
   }
   let n=0;for(const p of this.particles){p.t+=dt;if(p.t>=p.life)continue;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy-=dt*12;c.globalAlpha=1-p.t/p.life;c.fillStyle=p.color;c.beginPath();c.arc(p.x,p.y,p.size*(1+p.t),0,7);c.fill();this.particles[n++]=p;}this.particles.length=n;
   c.font='bold 17px Segoe UI';c.textAlign='center';c.lineWidth=3;c.strokeStyle='#14262c';
@@ -525,13 +538,14 @@ class Renderer{
 }
 const renderer=new Renderer();
 function selectedUnits(){return [...selection].map(id=>game.get(id)).filter(u=>u&&u.owner==='blue'&&!TYPES[u.type].structure);}
-function canCommand(){return started&&!game.winner&&!$('setup').open&&!$('manual').open&&!$('result').open;}
-function playable(){return canCommand()&&!paused;}
+function menusClosed(){return !$('setup').open&&!$('manual').open&&!$('result').open;}
+function canCommand(){return started&&!game.winner&&game.turn==='blue'&&!game.busy&&menusClosed();}
+function playable(){return started&&!game.winner&&!paused&&menusClosed();}
 function say(text){$('hint').textContent=text;}
-function timeLabel(seconds){return `${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(Math.floor(seconds%60)).padStart(2,'0')}`;}
+function timeLabel(round){return 'Rodada '+round;}
 function entityAt(p){const visible=u=>u.owner==='blue'||game.isVisible('blue',u);return game.units.filter(visible).find(u=>Math.hypot(u.x-p.x,u.y-p.y)<.55)||game.structures.filter(visible).find(u=>Math.max(Math.abs(u.x-p.x),Math.abs(u.y-p.y))<.6);}
 function setSelection(ids,add=false){if(!add)selection.clear();for(const id of ids)if(game.get(id))selection.add(id);mode=null;updateUI();}
-function orderName(u){if(u.packing>0)return`Desarmando · ${u.packing.toFixed(1)}s`;if(u.type==='artillery'&&u.setup>0&&u.setup<1.5)return`Armando · ${(1.5-u.setup).toFixed(1)}s`;return{stop:u.entrenched?'Entrincheirada':'Vigilância',move:'Em deslocamento',attackMove:'Atacar-mover',attack:'Engajando alvo',repair:'Reparando',capture:'Capturando posto',build:'Construindo posto',demine:'Desarmando mina'}[u.order?.type]||'Estrutura ativa';}
+function orderName(u){return u.pending?{move:'Em deslocamento',attack:'Atacando',repair:'Reparando',capture:'Capturando',build:'Construindo',demine:'Desarmando'}[u.order.type]||'Executando ordem':u.entrenched?'Entrincheirada':u.actionLeft?'Ação disponível':'Ação usada';}
 /* Escritas no DOM só quando o valor muda: evita recálculo de estilo e layout a cada atualização do painel. */
 function setText(id,value){const e=$(id);value=String(value);if(e.textContent!==value)e.textContent=value;}
 function setProp(id,key,value){const e=typeof id==='string'?$(id):id;if(e[key]!==value)e[key]=value;}
@@ -541,8 +555,9 @@ let portraitKey=null,recruitButtons=[];
 function updateUI(){
   for(const id of selection){const u=game.get(id);if(!u||(u.owner!=='blue'&&!game.isVisible('blue',u)))selection.delete(id);}
   groups=groups.map(g=>g.filter(id=>game.get(id)?.owner==='blue'));
-  setText('mapTitle',MAPS[game.map]);setText('credits',game.credits.blue);setText('income','+'+(game.income('blue')/3*speed).toFixed(1).replace('.',','));setProp('income','title',`+${game.income('blue')} créditos a cada 3 segundos do jogo`);setText('force',game.units.filter(u=>u.owner==='blue').length);
-  setText('clock',timeLabel(game.time));setText('status',game.winner?'Operação encerrada':paused?'Pausa tática':'Operação em curso');setText('pause',paused?'Continuar [P]':'Pausar [P]');setProp('pause','disabled',!started||!!game.winner);setAttr('pause','aria-pressed',String(paused));setText('speed',String(speed).replace('.',',')+'×');setProp('pauseOverlay','hidden',!paused||!!game.winner);
+  setText('mapTitle',MAPS[game.map]);setText('credits',game.credits.blue);setText('income','+'+game.income('blue'));setProp('income','title',`+${game.income('blue')} créditos no início do seu turno, a partir da rodada 2`);setText('force',game.units.filter(u=>u.owner==='blue').length);
+  setText('clock',timeLabel(game.round));setText('status',game.winner?'Operação encerrada':game.turn==='red'?'Turno da IA':game.busy?'Executando ordem':'Seu turno');setText('pause',paused?'Continuar [P]':'Pausar [P]');setProp('pause','disabled',!started||!!game.winner);setAttr('pause','aria-pressed',String(paused));setText('speed',String(speed).replace('.',',')+'×');setProp('pauseOverlay','hidden',!paused||!!game.winner);
+  setProp('endTurn','disabled',!canCommand());
   setText('difficultyLabel','IA '+{easy:'fácil',normal:'normal',hard:'difícil'}[game.difficulty]);setText('operationInfo',`Semente ${game.seed} · Visão compartilhada · Pontes transitáveis`);setText('explored',Math.round(game.explored.blue.filter(Boolean).length/SIZE*100)+'%');
   const units=selectedUnits(),items=[...selection].map(id=>game.get(id)).filter(Boolean),u=items[0];setText('selectionCount',items.length?items.length+' selecionada(s)':'—');
   const key=u?u.type+u.owner:'';if(key!==portraitKey){portraitKey=key;const portrait=$('portrait').getContext('2d');portrait.clearRect(0,0,108,108);if(u)unitIcon(portrait,u.type,54,59,TEAM[u.owner],1.55);}
@@ -550,28 +565,28 @@ function updateUI(){
    const total=items.reduce((a,b)=>a+b.hp,0),max=items.reduce((a,b)=>a+b.maxHp,0);setWidth('healthBar',total/max);
    setText('unitName',items.length>1?`Grupo de ${items.length} tropas`:TYPES[u.type].name);
    setText('unitRole',items.length>1?[...new Set(items.map(v=>TYPES[v.type].name))].join(', '):TYPES[u.type].role||'Estrutura de apoio');
-   const t=TYPES[u.type];setText('unitInfo',items.length>1?`Integridade ${Math.ceil(total)} / ${max} HP. Clique direito para mover em formação. Cada tropa mantém sua cadência e alcance.`:`${Math.ceil(u.hp)} / ${u.maxHp} HP · ${TERRAIN[game.terrainAt(u)].name} · ${Math.round(game.cover(u)*100)}% defesa\n${t.structure?(u.type==='hq'?'Treinamento serial · até 5 tropas':'Renda +8 a cada 3 segundos'):`${t.speed} casas/s · Alcance ${t.min}–${game.range(u)} · Tiro ${t.cooldown}s\n${'★'.repeat(u.level)} ${orderName(u)}${game.hasAura(u)?' · Aura ativa':''}`}`);
-  }else{setText('unitName','Nenhuma unidade');setText('unitRole','Clique ou arraste no campo.');setText('unitInfo','Botão direito: ordem contextual. A: atacar-mover. S: parar.');setWidth('healthBar',0);}
-  const can=canCommand()&&units.length>0;for(const id of ['move','attackMove','stop'])setProp(id,'disabled',!can);
-  const noEngineer=!can||!units.some(u=>u.type==='engineer');setProp('repair','disabled',noEngineer);setProp('demine','disabled',noEngineer);setProp('build','disabled',!can||!units.some(u=>game.canBuild(u)));
-  for(const id of ['move','attackMove','repair','demine'])setAttr(id,'aria-pressed',String(mode===id));setText('modeLabel',mode?{move:'Escolha o destino',attackMove:'Escolha o destino',repair:'Escolha um aliado',demine:'Escolha uma mina'}[mode]:'Contextual');
+   const t=TYPES[u.type];setText('unitInfo',items.length>1?'Integridade '+Math.ceil(total)+' / '+max+' HP\n'+units.filter(v=>v.actionLeft).length+' ações disponíveis · '+units.filter(v=>v.moveLeft>0).length+' tropas com movimento':Math.ceil(u.hp)+' / '+u.maxHp+' HP · '+TERRAIN[game.terrainAt(u)].name+' · '+Math.round(game.cover(u)*100)+'% defesa\n'+(t.structure?(u.type==='hq'?'Treinamento serial · até 5 tropas':'Renda +8 por turno'):'Movimento '+u.moveLeft+' / '+t.move+' · Alcance '+t.min+'–'+game.range(u)+'\n'+'★'.repeat(u.level)+' '+orderName(u)+(game.hasAura(u)?' · Aura ativa':'')));
+  }else{setText('unitName','Nenhuma unidade');setText('unitRole','Clique ou arraste no campo.');setText('unitInfo','Botão direito: ordem. A: atacar. S: aguardar. Enter: encerrar turno.');setWidth('healthBar',0);}
+  const can=canCommand()&&units.length>0;setProp('move','disabled',!can||!units.some(u=>u.moveLeft>0&&(u.type!=='artillery'||u.actionLeft||u.moved)));setProp('attackMove','disabled',!can||!units.some(u=>u.actionLeft));setProp('stop','disabled',!can||!units.some(u=>u.moveLeft>0||u.actionLeft));
+  const noEngineer=!can||!units.some(u=>u.type==='engineer'&&u.actionLeft);setProp('repair','disabled',noEngineer);setProp('demine','disabled',noEngineer);setProp('build','disabled',!can||!units.some(u=>game.canBuild(u)));
+  for(const id of ['move','attackMove','repair','demine'])setAttr(id,'aria-pressed',String(mode===(id==='attackMove'?'attack':id)));setText('modeLabel',mode?{move:'Escolha o destino',attack:'Escolha um inimigo',repair:'Escolha um aliado',demine:'Escolha uma mina'}[mode]:'Contextual');
   const hq=game.hq('blue'),queue=hq?.queue||[],job=queue[0];setText('queueCount',`${queue.length} / 5`);
   for(const button of recruitButtons)setProp(button,'disabled',!canCommand()||!hq||queue.length>=5||game.credits.blue<TYPES[button.dataset.recruit].cost);
-  setWidth('productionBar',job?job.progress/TYPES[job.type].train:0);setText('queueStatus',!hq?'QG destruído.':job?job.progress>=TYPES[job.type].train?'Saída bloqueada. Afaste as tropas do QG.':`${TYPES[job.type].name} · ${(TYPES[job.type].train-job.progress).toFixed(1)}s restantes`:'Linha de produção livre.');
+  setWidth('productionBar',job?job.progress/TYPES[job.type].train:0);setText('queueStatus',!hq?'QG destruído.':job?job.progress>=TYPES[job.type].train?'Saída bloqueada. Afaste as tropas do QG.':`${TYPES[job.type].name} · ${TYPES[job.type].train-job.progress} turno(s) restantes`:'Linha de produção livre.');
   setText('queue',queue.slice(1).map(q=>TYPES[q.type].name).join(' → '));
   for(let i=0;i<5;i++){$('group'+i).classList.toggle('filled',groups[i].length>0);setProp('group'+i,'title',`Grupo ${i+1}: ${groups[i].length} tropas. Ctrl + clique atribui.`);}
   if(game.logs[0]!==lastLog){lastLog=game.logs[0];$('log').replaceChildren(...game.logs.map(e=>{const div=document.createElement('div');div.className='log-line';const time=document.createElement('small');time.textContent=timeLabel(e.time);div.append(time,document.createTextNode(e.text));return div;}));}
   renderer.drawMini();
-  if(game.winner&&!resultShown){resultShown=true;paused=true;audio.play(game.winner==='blue'?'victory':'defeat');$('resultTitle').textContent=game.winner==='blue'?'Vitória da Nação Azul':game.winner==='draw'?'Cessar-fogo':'Operação perdida';$('resultText').textContent=`Operação encerrada em ${timeLabel(game.time)}. ${game.winner==='blue'?'O comando inimigo foi neutralizado.':'Reorganize suas forças e tente uma nova operação.'}`;$('result').showModal();}
+  if(game.winner&&!resultShown){resultShown=true;paused=true;audio.play(game.winner==='blue'?'victory':'defeat');$('resultTitle').textContent=game.winner==='blue'?'Vitória da Nação Azul':game.winner==='draw'?'Cessar-fogo':'Operação perdida';$('resultText').textContent=`Operação encerrada na rodada ${game.round}. ${game.winner==='blue'?'O comando inimigo foi neutralizado.':'Reorganize suas forças e tente uma nova operação.'}`;$('result').showModal();}
 }
 function issueAt(p,forced=mode){
- if(!canCommand()){say('Feche o menu e inicie uma operação para emitir ordens.');return;}const units=selectedUnits();if(!units.length){say('Selecione suas tropas primeiro.');return;}
+ if(!canCommand()){say('Aguarde o seu turno e a conclusão da ordem atual.');return;}const units=selectedUnits();if(!units.length){say('Selecione suas tropas primeiro.');return;}
  const cell=TILE(p);if(!INSIDE(cell.x,cell.y))return;const target=entityAt(p);let type=forced,args={x:cell.x,y:cell.y};
  if(!type){if(target?.type==='post'&&target.owner!=='blue'&&units.some(u=>u.type==='infantry'))type='capture';else if(target&&target.owner==='red')type='attack';else if(target?.owner==='blue'&&units.some(u=>u.type==='engineer')&&target.hp<target.maxHp)type='repair';else type='move';}
  if(['attack','capture','repair'].includes(type)){if(!target){say('Escolha um alvo válido para essa ordem.');return;}args={targetId:target.id};}
  const n=game.command(units.map(u=>u.id),type,args);
- if(n){marker={x:cell.x,y:cell.y,t:0,color:type==='attack'||type==='attackMove'?'#f9b09a':'#b8e5e6'};audio.play('click');say(`${n} unidade(s): ${{move:'mover',attackMove:'atacar-mover',attack:'atacar',capture:'capturar posto',repair:'reparar',demine:'desarmar mina'}[type]}.`);mode=null;}
- else say(type==='move'||type==='attackMove'?'Sem rota disponível. Água e montanhas bloqueiam esta unidade.':'A seleção não pode executar essa ordem neste alvo.');updateUI();
+ if(n){marker={x:cell.x,y:cell.y,t:0,color:type==='attack'||type==='attackMove'?'#f9b09a':'#b8e5e6'};audio.play('click');say(`${paused?'Animações pausadas: pressione P para executar. ':''}${n} unidade(s): ${{move:'mover',attackMove:'atacar-mover',attack:'atacar',capture:'capturar posto',repair:'reparar',demine:'desarmar mina'}[type]}.`);mode=null;}
+ else say(type==='move'||type==='attackMove'?'Movimento indisponível: confira os pontos restantes e o terreno.':'Ação indisponível: confira o alvo, alcance e ações restantes.');updateUI();
 }
 function pointerPosition(e,canvas=renderer.canvas){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*COLS-.5,y:(e.clientY-r.top)/r.height*ROWS-.5};}
 function describe(p){const cell=TILE(p);if(!INSIDE(cell.x,cell.y))return;const k=KEY(cell.x,cell.y);$('tileInfo').textContent=`${String.fromCharCode(65+cell.x)}${String(ROWS-cell.y).padStart(2,'0')} · ${game.explored.blue[k]?TERRAIN[game.terrain[k]].name:'Não explorado'}`;}
@@ -589,20 +604,22 @@ renderer.canvas.addEventListener('pointerup',e=>{
 });
 renderer.canvas.addEventListener('pointercancel',()=>{drag=null;});renderer.canvas.addEventListener('pointerleave',()=>{if(!drag)hover=null;});window.addEventListener('blur',()=>{drag=null;});
 $('minimap').addEventListener('contextmenu',e=>{e.preventDefault();issueAt(pointerPosition(e,$('minimap')));});$('minimap').addEventListener('click',e=>{const p=pointerPosition(e,$('minimap'));if(mode)issueAt(p);else{const u=entityAt(p);setSelection(u?[u.id]:[]);}});
-function setMode(next){if(!canCommand()||!selectedUnits().length)return;mode=next;updateUI();say(next==='repair'?'Clique em um aliado para reparo contínuo.':next==='demine'?'Clique em uma mina detectada.':'Clique no destino ou use o botão direito.');}
+function setMode(next){if(!canCommand()||!selectedUnits().length)return;mode=next==='attackMove'?'attack':next;updateUI();say(next==='repair'?'Clique em um aliado para reparar até 24 HP com uma ação.':next==='demine'?'Clique em uma mina detectada.':'Clique no destino ou use o botão direito.');}
 for(const id of ['move','attackMove','repair','demine'])$(id).addEventListener('click',()=>setMode(id));
-function stopSelected(){if(!canCommand())return;game.command(selectedUnits().map(u=>u.id),'stop');mode=null;updateUI();say('Ordens interrompidas. Tropas em vigilância.');}
-$('stop').addEventListener('click',stopSelected);$('build').addEventListener('click',()=>{if(!canCommand())return;const count=game.command(selectedUnits().map(u=>u.id),'build');say(count?`${count} construção iniciada. Canalização de 5 segundos.`:'Escolha infantaria parada, com espaço para um posto.');updateUI();});
+function stopSelected(){if(!canCommand())return;game.command(selectedUnits().map(u=>u.id),'stop');mode=null;updateUI();say('Tropas aguardando. Movimento e ação encerrados; trincheira ativa.');}
+$('stop').addEventListener('click',stopSelected);$('build').addEventListener('click',()=>{if(!canCommand())return;const count=game.command(selectedUnits().map(u=>u.id),'build');say(count?`${count} posto(s) ordenado(s). A infantaria será convertida em guarnição.`:'Escolha infantaria parada, com espaço para um posto.');updateUI();});
 function groupAction(i,assign){if(assign){groups[i]=selectedUnits().map(u=>u.id);say(`Grupo ${i+1}: ${groups[i].length} tropas atribuídas.`);}else{setSelection(groups[i].filter(id=>game.get(id)));say(`Grupo ${i+1} selecionado.`);}updateUI();}
 for(let i=0;i<5;i++){const b=document.createElement('button');b.id='group'+i;b.textContent=i+1;b.addEventListener('click',e=>groupAction(i,e.ctrlKey||e.metaKey));$('groups').append(b);}
-for(const type of ['infantry','recon','engineer','artillery','tank']){const t=TYPES[type],b=document.createElement('button');b.className='recruit';b.dataset.recruit=type;b.setAttribute('aria-label',`Treinar ${t.name}, ${t.cost} créditos, ${t.train} segundos`);b.title=`${t.name} · ${t.cost} créditos · ${t.train}s`;b.innerHTML=`<canvas width="60" height="60" aria-hidden="true"></canvas><span>${{infantry:'Infant.',recon:'Batedor',engineer:'Engenh.',artillery:'Artilh.',tank:'Tanque'}[type]}</span><strong>${t.cost}</strong>`;unitIcon(b.querySelector('canvas').getContext('2d'),type,30,33,TEAM.blue,1);b.addEventListener('click',()=>{if(canCommand()&&game.enqueue('blue',type)){audio.play('click');updateUI();}});$('recruits').append(b);recruitButtons.push(b);}
-function togglePause(){if(!canCommand())return;paused=!paused;mode=null;drag=null;lastFrame=performance.now();updateUI();say(paused?'Pausa tática: dê ordens e organize a produção. P para continuar.':'Operação retomada. P pausa para planejar.');}
+for(const type of ['infantry','recon','engineer','artillery','tank','antitank','machinegun']){const t=TYPES[type],b=document.createElement('button');b.className='recruit';b.dataset.recruit=type;b.setAttribute('aria-label',`Treinar ${t.name}, ${t.cost} créditos, ${t.train} turno(s)`);b.title=`${t.name} · ${t.cost} créditos · ${t.train} turno(s) · ${t.role}`;b.innerHTML=`<canvas width="60" height="60" aria-hidden="true"></canvas><span>${{infantry:'Infant.',recon:'Batedor',engineer:'Engenh.',artillery:'Artilh.',tank:'Tanque',antitank:'Antitanque',machinegun:'Metralh.'}[type]}</span><strong>${t.cost}</strong>`;unitIcon(b.querySelector('canvas').getContext('2d'),type,30,33,TEAM.blue,1);b.addEventListener('click',()=>{if(canCommand()&&game.enqueue('blue',type)){audio.play('click');updateUI();}});$('recruits').append(b);recruitButtons.push(b);}
+function togglePause(){if(!started||game.winner||!menusClosed())return;paused=!paused;mode=null;drag=null;lastFrame=performance.now();updateUI();say(paused?'Animações pausadas. P para continuar.':'Animações retomadas. Planeje sem pressa no seu turno.');}
+function endPlayerTurn(){if(!canCommand()||!game.endTurn())return;paused=false;mode=null;drag=null;lastFrame=performance.now();updateUI();say('Turno da IA. Aguarde a próxima rodada.');}
+$('endTurn').addEventListener('click',endPlayerTurn);
 $('pause').addEventListener('click',togglePause);$('speed').addEventListener('click',()=>{const speeds=[.25,.5,1,2];speed=speeds[(speeds.indexOf(speed)+1)%speeds.length];updateUI();});
 $('sound').addEventListener('click',()=>{audio.enabled=!audio.enabled;if(audio.master)audio.master.gain.value=audio.enabled?.14:0;audio.unlock();$('sound').textContent=audio.enabled?'Som ligado':'Som desligado';$('sound').setAttribute('aria-pressed',String(audio.enabled));});
 function openMenu(id){menuWasPaused=paused;paused=true;drag=null;mode=null;$(id).showModal();updateUI();}
 function closeMenu(id){$(id).close();paused=started?menuWasPaused:true;lastFrame=performance.now();updateUI();}
 function openSetup(){if($('result').open)$('result').close();$('mapSelect').value=game.map;$('difficulty').value=game.difficulty;$('cancelSetup').hidden=!started;openMenu('setup');}
-function newOperation(map,difficulty,seed){game=new Game(map,difficulty,seed);selection=new Set();groups=Array.from({length:5},()=>[]);paused=false;started=true;mode=null;drag=null;hover=null;marker=null;resultShown=false;lastLog=null;lastFrame=performance.now();if($('result').open)$('result').close();renderer.rebuild();updateUI();say('Arraste para selecionar. Botão direito dá ordens. P pausa para planejar.');}
+function newOperation(map,difficulty,seed){game=new Game(map,difficulty,seed);selection=new Set();groups=Array.from({length:5},()=>[]);paused=false;started=true;mode=null;drag=null;hover=null;marker=null;resultShown=false;lastLog=null;lastFrame=performance.now();if($('result').open)$('result').close();renderer.rebuild();updateUI();say('Seu turno: selecione, mova e ataque. Enter encerra o turno.');}
 $('newGame').addEventListener('click',openSetup);$('playAgain').addEventListener('click',openSetup);$('cancelSetup').addEventListener('click',()=>closeMenu('setup'));
 $('help').addEventListener('click',()=>openMenu('manual'));$('closeHelp').addEventListener('click',()=>closeMenu('manual'));
 for(const id of ['setup','manual'])$(id).addEventListener('cancel',e=>{e.preventDefault();if(started||id==='manual')closeMenu(id);});
@@ -613,14 +630,14 @@ document.addEventListener('keydown',e=>{
  if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName)||$('setup').open||$('manual').open||$('result').open)return;const key=e.key.toLowerCase();
  if(/^[1-5]$/.test(key)){e.preventDefault();groupAction(Number(key)-1,e.ctrlKey||e.metaKey);return;}
  if(key==='p'||key===' '&&e.target===renderer.canvas){e.preventDefault();togglePause();return;}if(key==='escape'){mode=null;drag=null;selection.clear();updateUI();return;}
- if(e.ctrlKey||e.metaKey||e.altKey)return;if(key==='s'){e.preventDefault();stopSelected();}else if(key==='a'){e.preventDefault();setMode('attackMove');}else if(key==='m')setMode('move');else if(key==='r')setMode('repair');
+ if(e.ctrlKey||e.metaKey||e.altKey)return;if(key==='enter'){e.preventDefault();if(!e.repeat)endPlayerTurn();}else if(key==='s'){e.preventDefault();stopSelected();}else if(key==='a'){e.preventDefault();setMode('attackMove');}else if(key==='m')setMode('move');else if(key==='r')setMode('repair');
 });
 /* Parado (pausa, menus, fim de jogo), o quadro só é redesenhado após uma interação ou a cada 0,25 s. */
 for(const type of ['pointerdown','pointermove','pointerup','keydown','click'])document.addEventListener(type,()=>{renderer.dirty=true;},{capture:true,passive:true});
 let idleClock=0;
 function frame(now){
  const wall=Math.min(.1,Math.max(0,(now-lastFrame)/1000));lastFrame=now;const dt=playable()?wall*speed:0;
- if(dt)game.update(dt);renderer.consume();idleClock+=wall;
+ if(dt){const previousTurn=game.turn;game.update(dt);if(previousTurn==='red'&&game.turn==='blue'&&!game.winner)say('Seu turno. Movimento e ações renovados. Enter encerra o turno.');}renderer.consume();idleClock+=wall;
  if(dt||renderer.dirty||idleClock>=.25){renderer.draw(dt);renderer.dirty=false;idleClock=0;}uiClock+=wall;
  if(uiClock>=.12||game.winner&&!resultShown){uiClock=0;updateUI();}requestAnimationFrame(frame);
 }
@@ -630,46 +647,24 @@ updateUI();openSetup();requestAnimationFrame(frame);
 
 <!--
 COMENTÁRIOS FINAIS — ESTADO DO JOGO
-War Grid — Fronteiras RTS é um jogo de estratégia militar em tempo real para
-um jogador contra a IA. A operação acontece em um mapa 18 × 14 com quatro
-opções de terreno, três dificuldades e semente configurável. Vença destruindo
-o QG adversário ou eliminando suas tropas quando não houver produção pendente.
-Este index.html contém Canvas, CSS Tailwind compilado, lógica e áudio Web Audio;
-basta abri-lo no navegador, inclusive sem conexão à internet.
+War Grid é um jogo de estratégia militar por turnos em um único index.html,
+offline, com Canvas, Tailwind compilado localmente e áudio sintetizado.
+O jogador pensa sem limite de tempo; a IA age somente após Encerrar turno.
+Cada tropa possui pontos de movimento e uma ação renovados no próprio turno.
+Renda e produção avançam por turno. Animações, projéteis e efeitos usam rAF.
 
-MELHORIAS IMPLEMENTADAS
-Movimento contínuo com A* e velocidades individuais. Água bloqueia todas as
-tropas terrestres; pontes permitem travessia e montanhas só aceitam infantaria.
-Clique ou arraste para selecionar; Shift adiciona à seleção. Botão direito
-ordena movimento, ataque, captura de postos ou reparo conforme o alvo.
-Ctrl + 1 a 5 atribui grupos; 1 a 5 seleciona; A ativa atacar-mover; S para;
-M ativa movimento; R ativa reparo; P pausa. Há também botões para as ações.
-Combate automático com cadências individuais, tanques sujeitos a erro e
-artilharia com armação/desarmação de 1,5 s, alerta de impacto e área 3 × 3
-com fogo amigo. Engenheiros reparam 8 HP/s. O comandante concede aura de
-20% de dano e 15 pontos percentuais de precisão em um raio de duas casas.
-Construção de posto: 60 créditos, 5 s e conversão da infantaria em guarnição.
-Captura de posto: 3 s. Dano interrompe a canalização; cancelar construção
-devolve os créditos reservados. Minas, desarme, cobertura e veterania continuam.
-QG rende 15 e posto 8 créditos a cada 3 s. Produção usa uma fila serial com
-até cinco tropas; a unidade só aparece ao concluir o treinamento com saída livre.
-Névoa dinâmica oculta inimigos fora da visão. IA decide a cada 1,5 s, produz,
-captura, reúne tropas, ataca, defende e tenta retirar unidades gravemente feridas.
-O painel fixo mostra minimapa, seleção, ações, grupos, renda, produção e log.
-Barras de vida/progresso, projéteis em arco, partículas e sons indicam eventos.
+MELHORIAS ADICIONADAS
+Turnos alternados, contador de rodada, botão Encerrar turno e atalho Enter.
+Movimento limitado por terreno, ataque dirigido, reparo e captura por ação.
+Artilharia escolhe entre mover e atirar; mantém área 3x3 e fogo amigo.
+Antitanque contra veículos e metralhador com rajada de três tiros por ação.
+Desenhos próprios para cada tropa, animações de movimento/disparo e seleção
+individual/em grupo. Água bloqueada, pontes, A*, névoa dinâmica, minas,
+trincheiras, aura, veterania, quatro mapas, minimapa e fila de treinamento.
+Caches de sprites e atualizações de DOM apenas quando os valores mudam.
 
-RITMO LENTO E PAUSA TÁTICA
-O jogo inicia em 0,5×; o controle oferece 0,25×, 0,5×, 1× e 2×. P congela
-a simulação e permite selecionar, dar ordens, construir e enfileirar tropas.
-Custos são debitados ao ordenar. IA, movimento, disparos, reparos, canais,
-renda e treinamento só avançam após retomar. Ordens substituem as anteriores.
-Os destinos das tropas selecionadas ficam marcados no mapa durante a pausa.
-
-IDEIAS PARA UMA PRÓXIMA VERSÃO — AINDA NÃO IMPLEMENTADAS
-Ponto de encontro do QG e ordens encadeadas para reduzir cliques repetitivos.
-Salvar e carregar operações longas usando armazenamento local.
-Mais missões e objetivos secundários; ajustar custos e cadências com partidas
-humanas, pois os testes automáticos verificam regras, não o equilíbrio competitivo.
+IDEIAS PARA EVOLUIR — AINDA NÃO IMPLEMENTADAS
+Prévia das casas alcançáveis, previsão de dano antes de confirmar o ataque,
+salvar/carregar a operação e missões com objetivos variados. Ajustar o
+balanceamento das tropas com partidas completas e feedback do jogador.
 -->
-
-

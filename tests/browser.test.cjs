@@ -1,78 +1,31 @@
-// npm run test:browser — controles no Google Chrome instalado, offline. PLAYWRIGHT_MODULE pode apontar para outra instalação de Playwright.
+﻿// Controles reais no Google Chrome, com rede desligada.
 const assert=require('node:assert/strict'),path=require('node:path'),{pathToFileURL}=require('node:url');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright-core');
-(async()=>{
- const browser=await chromium.launch({channel:'chrome',headless:true});
- try{
-  const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[],requests=[];
-  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});
-  await page.context().setOffline(true);await page.goto(pathToFileURL(path.join(__dirname,'..','index.html')).href);
-  assert.equal(await page.title(),'War Grid — Fronteiras RTS');assert.equal(await page.locator('#setup').evaluate(e=>e.open),true);
-  await page.locator('#seed').fill('17');await page.getByRole('button',{name:'Iniciar operação'}).click();
-  assert.equal(await page.locator('#speed').textContent(),'0,5×');
-  await page.evaluate(()=>{paused=true;updateUI();});
-  const slowTime=await page.evaluate(()=>game.time);await page.locator('#pause').click();await page.waitForTimeout(600);
-  const slowElapsed=await page.evaluate(t=>game.time-t,slowTime);assert.ok(slowElapsed>=.2&&slowElapsed<.45,'0,5× avança cerca de metade do tempo real');
-  for(const label of ['1×','2×','0,25×','0,5×']){await page.locator('#speed').click();assert.equal(await page.locator('#speed').textContent(),label);}
-  await page.locator('#speed').click(); // Verificações existentes em ritmo 1×.
-  await page.evaluate(()=>{game.aiEnabled=false;game.terrain.fill('plain');game.mines=[];renderer.rebuild();});
-  async function point(x,y){const r=await page.locator('#battlefield').boundingBox();return{x:r.x+(x+.5)*r.width/18,y:r.y+(y+.5)*r.height/14};}
-  async function click(x,y,button='left'){const p=await point(x,y);await page.mouse.click(p.x,p.y,{button});}
-  const a=await point(.4,9.4),b=await point(4.5,12.5);await page.mouse.move(a.x,a.y);await page.mouse.down();await page.mouse.move(b.x,b.y,{steps:8});await page.mouse.up();
-  assert.equal(await page.evaluate(()=>selection.size),7);await page.keyboard.press('Control+1');assert.equal(await page.evaluate(()=>groups[0].length),7);
-  await click(9,12);assert.equal(await page.evaluate(()=>selection.size),0);await page.keyboard.press('1');assert.equal(await page.evaluate(()=>selection.size),7);
-  const before=await page.evaluate(()=>selectedUnits().map(u=>({id:u.id,x:u.x,y:u.y})));
-  await click(7,11,'right');assert.ok(await page.evaluate(()=>selectedUnits().every(u=>u.order.type==='move')));
-  await page.waitForTimeout(450);assert.ok(await page.evaluate(before=>before.some(p=>{const u=game.get(p.id);return u.x!==p.x||u.y!==p.y;}),before));
-  await page.keyboard.press('s');const stopped=await page.evaluate(()=>selectedUnits().map(u=>[u.x,u.y]));await page.waitForTimeout(250);assert.deepEqual(await page.evaluate(()=>selectedUnits().map(u=>[u.x,u.y])),stopped);
-  await page.keyboard.press('a');await click(8,10);assert.ok(await page.evaluate(()=>selectedUnits().every(u=>u.order.type==='attackMove')));await page.keyboard.press('s');
-  console.log('OK clique, arrasto, Ctrl+1/1, botão direito, A e S');
-  await page.locator('[data-recruit="infantry"]').click();assert.equal(await page.evaluate(()=>game.hq('blue').queue.length),1);
-  await page.waitForFunction(()=>game.hq('blue').queue.length===0,{},{timeout:10000});assert.equal(await page.evaluate(()=>game.units.filter(u=>u.owner==='blue').length),8);
-  await page.locator('#pause').click();const frozen=await page.evaluate(()=>game.time);await page.waitForTimeout(250);assert.equal(await page.evaluate(()=>game.time),frozen);
-  await page.locator('#pause').click();await page.locator('#help').click();const menuTime=await page.evaluate(()=>game.time);await page.waitForTimeout(200);assert.equal(await page.evaluate(()=>game.time),menuTime);await page.locator('#closeHelp').click();assert.equal(await page.evaluate(()=>paused),false);
-  console.log('OK produção com tempo real, pausa e manual');
-  await page.evaluate(()=>{
-   newOperation('desert','normal',19);game.aiEnabled=false;game.terrain.fill('plain');game.units=[];game.mines=[];
-   game.add('blue','artillery',4,7);game.add('red','hq',6,7);game.add('red','infantry',17,1);game.rng=()=>.2;game.updateVision();renderer.rebuild();setSelection([game.units[0].id]);
-  });
-  await page.waitForFunction(()=>game.projectiles.some(p=>p.type==='artillery'),{},{timeout:5000});
-  assert.equal(await page.evaluate(()=>game.structureAt(6,7).hp),300);await page.waitForFunction(()=>game.structureAt(6,7)?.hp<300);
-  await page.evaluate(()=>{newOperation('river','normal',21);game.aiEnabled=false;});await page.waitForTimeout(250);assert.equal(await page.evaluate(()=>game.projectiles.length),0);assert.ok(await page.evaluate(()=>game.all().every(u=>u.hp===u.maxHp)));
-  console.log('OK artilharia com armação, impacto atrasado e reinício seguro');
-  await page.evaluate(()=>{
-   newOperation('desert','normal',19);game.aiEnabled=false;game.terrain.fill('plain');game.units=[];game.structures=[];game.mines=[];
-   game.add('blue','hq',0,13);game.add('red','hq',17,0);game.add('red','infantry',17,1);
-   const infantry=game.add('blue','infantry',4,7);game.add('red','post',5,7);game.updateVision();renderer.rebuild();setSelection([infantry.id]);
-  });
-  await click(5,7,'right');assert.equal(await page.evaluate(()=>selectedUnits()[0].order.type),'capture');
-  await page.waitForFunction(()=>game.structureAt(5,7)?.owner==='blue',{},{timeout:6000});
-  console.log('OK botão direito captura posto inimigo com infantaria');
-  await page.evaluate(()=>{
-   newOperation('desert','normal',19);game.terrain.fill('plain');game.units=[];game.structures=[];game.mines=[];game.credits.blue=500;
-   game.add('blue','hq',0,13);game.add('red','hq',17,0);game.add('red','infantry',17,1);
-   game.add('blue','infantry',4,7);game.add('blue','engineer',6,7);game.add('blue','tank',7,7).hp=100;
-   game.add('blue','infantry',10,10);game.add('neutral','post',4,5);game.updateVision();renderer.rebuild();
-  });
-  await page.keyboard.press('p');assert.equal(await page.evaluate(()=>paused),true);
-  const tacticalTime=await page.evaluate(()=>game.time),aiDecisions=await page.evaluate(()=>game.aiDecisions);
-  await click(4,7);await click(4,5,'right');assert.equal(await page.evaluate(()=>selectedUnits()[0].order.type),'capture');
-  await page.keyboard.press('s');assert.equal(await page.evaluate(()=>selectedUnits()[0].order.type),'stop');
-  await page.keyboard.press('a');await click(8,7);assert.equal(await page.evaluate(()=>selectedUnits()[0].order.type),'attackMove');
-  await click(6,7);await page.locator('#repair').click();await click(7,7);assert.equal(await page.evaluate(()=>selectedUnits()[0].order.type),'repair');
-  await click(10,10);await page.locator('#build').click();assert.equal(await page.evaluate(()=>selectedUnits()[0].order.type),'build');
-  await page.locator('[data-recruit="infantry"]').click();assert.equal(await page.evaluate(()=>game.hq('blue').queue.length),1);
-  const snapshot=await page.evaluate(()=>({troops:game.units.map(u=>[u.id,u.x,u.y,u.hp,u.work,u.cooldown]),queue:game.hq('blue').queue[0].progress,credits:{...game.credits}}));
-  await page.waitForTimeout(400);assert.equal(await page.evaluate(()=>game.time),tacticalTime);assert.equal(await page.evaluate(()=>game.aiDecisions),aiDecisions);
-  assert.deepEqual(await page.evaluate(()=>({troops:game.units.map(u=>[u.id,u.x,u.y,u.hp,u.work,u.cooldown]),queue:game.hq('blue').queue[0].progress,credits:{...game.credits}})),snapshot);
-  await page.locator('#help').click();await page.locator('#closeHelp').click();assert.equal(await page.evaluate(()=>paused),true);
-  await page.keyboard.press('p');await page.waitForFunction(()=>game.hq('blue').queue[0]?.progress>.1&&game.units.find(u=>u.type==='tank'&&u.owner==='blue').hp>100);
-  assert.ok(await page.evaluate(t=>game.time>t,tacticalTime));console.log('OK 0,5×, velocidades, ordens e produção em pausa tática, retomada e IA congelada');
-  await page.locator('#newGame').click();await page.locator('#mapSelect').selectOption('random');await page.locator('#difficulty').selectOption('hard');await page.locator('#seed').fill('138');await page.getByRole('button',{name:'Iniciar operação'}).click();assert.equal(await page.evaluate(()=>game.seed),138);assert.equal(await page.evaluate(()=>game.income('red')),18);
-  await page.locator('#pause').click();await page.locator('#sound').click();assert.equal(await page.locator('#sound').getAttribute('aria-pressed'),'false');assert.ok(await page.evaluate(()=>audio.ctx?.state==='running'));
-  for(const width of [1440,1024,768,390,320]){await page.setViewportSize({width,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Largura '+width);const map=await page.locator('#battlefield').boundingBox(),dock=await page.locator('.dock').boundingBox();assert.ok(map.width>190);assert.ok(map.y+map.height<=dock.y+1,'Painel não cobre o mapa em '+width);}
-  await page.setViewportSize({width:320,height:700});const footer=await page.locator('.under-map').boundingBox(),smallDock=await page.locator('.dock').boundingBox();assert.ok(footer.y+footer.height<=smallDock.y+1,'Painel não cobre a legenda em tela curta');
-  if(process.env.SCREENSHOT_DIR){await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:path.join(process.env.SCREENSHOT_DIR,'rts-desktop.png'),fullPage:true});await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.join(process.env.SCREENSHOT_DIR,'rts-mobile.png'),fullPage:true});}
-  assert.deepEqual(errors,[]);assert.deepEqual(requests,[]);console.log('OK cinco larguras, áudio inicializado, menus e jogo offline sem erros');
- }finally{await browser.close();}
-})().catch(e=>{console.error(e);process.exitCode=1;});
+(async()=>{const browser=await chromium.launch({channel:'chrome',headless:true});try{
+ const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[],requests=[];
+ page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});await page.context().setOffline(true);
+ await page.goto(pathToFileURL(path.join(__dirname,'..','index.html')).href);assert.equal(await page.title(),'War Grid — Fronteiras por Turnos');assert.equal(await page.locator('#setup').evaluate(e=>e.open),true);
+ await page.locator('#seed').fill('17');await page.getByRole('button',{name:'Iniciar operação'}).click();assert.equal(await page.locator('#speed').textContent(),'1×');assert.equal(await page.locator('#status').textContent(),'Seu turno');
+ const snapshot=()=>page.evaluate(()=>JSON.stringify({army:game.units.map(u=>[u.x,u.y,u.hp]),credits:game.credits,decisions:game.aiDecisions,round:game.round}));const initial=await snapshot();await page.waitForTimeout(900);assert.equal(await snapshot(),initial);
+ async function point(x,y){const r=await page.locator('#battlefield').boundingBox();return{x:r.x+(x+.5)*r.width/18,y:r.y+(y+.5)*r.height/14};}
+ async function click(x,y,button='left'){const p=await point(x,y);await page.mouse.click(p.x,p.y,{button});}
+ async function settled(){await page.waitForFunction(()=>!game.busy&&game.turn==='blue',null,{timeout:20000});}
+ async function fixture(type='infantry') {return page.evaluate(type=>{newOperation('desert','normal',19);game.aiEnabled=false;game.terrain.fill('plain');game.units=[];game.structures=[];game.mines=[];game.add('blue','hq',0,13);game.add('red','hq',17,0);game.add('red','infantry',17,1);const unit=game.add('blue',type,4,7);game.rng=()=>.2;game.updateVision();renderer.rebuild();setSelection([unit.id]);return unit.id;},type);}
+ const a=await point(.4,9.4),b=await point(4.5,12.5);await page.mouse.move(a.x,a.y);await page.mouse.down();await page.mouse.move(b.x,b.y,{steps:8});await page.mouse.up();assert.equal(await page.evaluate(()=>selection.size),7);await page.keyboard.press('Control+1');assert.equal(await page.evaluate(()=>groups[0].length),7);await click(9,12);await page.keyboard.press('1');assert.equal(await page.evaluate(()=>selection.size),7);
+ await fixture();assert.match(await page.locator('#unitInfo').textContent(),/Movimento 3 \/ 3/);await click(5,7,'right');await settled();assert.equal(await page.evaluate(()=>selectedUnits()[0].moveLeft),2);await page.keyboard.press('s');assert.equal(await page.evaluate(()=>selectedUnits()[0].actionLeft),false);assert.equal(await page.locator('#move').isDisabled(),true);
+ await page.locator('[data-recruit="infantry"]').click();assert.match(await page.locator('#queueStatus').textContent(),/1 turno/);await page.waitForTimeout(600);assert.equal(await page.evaluate(()=>game.hq('blue').queue[0].progress),0);await page.locator('#endTurn').click();await settled();await page.waitForFunction(()=>document.querySelector('#clock').textContent==='Rodada 2');assert.equal(await page.evaluate(()=>game.hq('blue').queue.length),0);assert.equal(await page.evaluate(()=>selectedUnits()[0].moveLeft),3);assert.equal(await page.locator('#income').textContent(),'+15');
+ await page.keyboard.press('Enter');await settled();assert.equal(await page.evaluate(()=>game.round),3);console.log('OK planejamento, seleção, grupos, movimento, aguardar, Enter e treinamento por turno');
+ await fixture('antitank');await page.evaluate(()=>{game.add('red','tank',6,7);game.updateVision();});await page.keyboard.press('a');assert.equal(await page.evaluate(()=>mode),'attack');assert.equal(await page.locator('#attackMove').getAttribute('aria-pressed'),'true');await click(6,7);await settled();assert.equal(await page.evaluate(()=>game.units.find(u=>u.type==='tank').hp),80);assert.equal(await page.locator('#attackMove').isDisabled(),true);await page.waitForTimeout(400);assert.equal(await page.evaluate(()=>game.shotsFired),1);
+ await fixture('machinegun');await page.evaluate(()=>{game.add('red','infantry',5,7);game.updateVision();});await click(5,7,'right');await settled();assert.equal(await page.evaluate(()=>game.shotsFired),3);console.log('OK ataque manual, antitanque e rajada por uma ação');
+ await fixture('artillery');await page.evaluate(()=>{game.add('red','tank',6,7);game.updateVision();});await page.locator('#pause').click();await click(6,7,'right');assert.equal(await page.locator('#endTurn').isDisabled(),true);await page.waitForTimeout(200);assert.equal(await page.evaluate(()=>game.shotsFired),0);await page.keyboard.press('p');await page.waitForFunction(()=>game.projectiles.length>0);await page.keyboard.press('p');const projectile=await page.evaluate(()=>game.projectiles[0].elapsed);await page.waitForTimeout(250);assert.equal(await page.evaluate(()=>game.projectiles[0].elapsed),projectile);await page.keyboard.press('p');await settled();assert.equal(await page.locator('#move').isDisabled(),true);assert.equal(await page.evaluate(()=>game.units.find(u=>u.type==='tank').hp),100);
+ await page.locator('#help').click();assert.equal(await page.locator('#manual').evaluate(e=>e.open),true);await page.locator('#closeHelp').click();console.log('OK artilharia, pausa de animação, bloqueio de ações e manual');
+ await fixture();await page.evaluate(()=>{game.add('neutral','post',5,7);game.updateVision();});await click(5,7,'right');await settled();assert.equal(await page.evaluate(()=>game.structureAt(5,7).owner),'blue');
+ await fixture('engineer');await page.evaluate(()=>{game.add('blue','tank',5,7).hp=90;game.updateVision();});await page.keyboard.press('r');await click(5,7);await settled();assert.equal(await page.evaluate(()=>game.units.find(u=>u.type==='tank').hp),114);
+ await fixture();await page.locator('#build').click();await settled();assert.equal(await page.evaluate(()=>game.structureAt(4,7).type),'post');console.log('OK captura, reparo e construção por ação');
+ await page.evaluate(()=>{newOperation('river','normal',21);speed=2;});const redBefore=await page.evaluate(()=>game.units.filter(u=>u.owner==='red').map(u=>[u.x,u.y]));await page.locator('#endTurn').click();assert.equal(await page.locator('#endTurn').isDisabled(),true);await page.keyboard.press('p');const frozen=await snapshot();await page.waitForTimeout(250);assert.equal(await snapshot(),frozen);await page.keyboard.press('p');await settled();assert.notDeepEqual(await page.evaluate(()=>game.units.filter(u=>u.owner==='red').map(u=>[u.x,u.y])),redBefore);assert.equal(await page.evaluate(()=>game.round),2);await page.waitForFunction(()=>document.querySelector('#status').textContent==='Seu turno');
+ await page.locator('#endTurn').click();await page.locator('#newGame').click();await page.getByRole('button',{name:'Iniciar operação'}).click();assert.equal(await page.evaluate(()=>game.round),1);assert.equal(await page.evaluate(()=>game.turn),'blue');assert.equal(await page.evaluate(()=>game.busy),false);console.log('OK turno da IA, pausa, retorno do controle e reinício durante execução');
+ for(const viewport of [{width:1440,height:1000},{width:1280,height:800},{width:768,height:1024},{width:390,height:844},{width:375,height:667}]){await page.setViewportSize(viewport);await page.waitForTimeout(100);const layout=await page.evaluate(()=>{const c=document.querySelector('#battlefield').getBoundingClientRect(),d=document.querySelector('.dock').getBoundingClientRect(),e=document.querySelector('#endTurn').getBoundingClientRect();return{overflow:document.documentElement.scrollWidth>innerWidth,canvasBottom:c.bottom,dockTop:d.top,buttonRight:e.right,width:innerWidth,buttonTop:e.top};});assert.equal(layout.overflow,false,JSON.stringify(viewport));assert.ok(layout.canvasBottom<=layout.dockTop+1,JSON.stringify({viewport,layout}));assert.ok(layout.buttonRight<=layout.width&&layout.buttonTop>=0);}
+ console.log('OK cinco layouts, incluindo celular baixo; comandos e mapa acessíveis');
+ await page.setViewportSize({width:1440,height:1000});await page.evaluate(()=>{setSelection(game.units.filter(u=>u.owner==='blue'&&u.type==='infantry').map(u=>u.id));});if(process.env.QA_SCREENSHOT)await page.screenshot({path:process.env.QA_SCREENSHOT,type:'jpeg',quality:70,fullPage:true});
+ assert.deepEqual(errors,[]);assert.deepEqual(requests,[]);console.log('OK sem erros JavaScript ou acesso à rede; jogo offline');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
