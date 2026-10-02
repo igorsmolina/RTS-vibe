@@ -8,9 +8,11 @@ Abra o **`index.html`** no Chrome, Edge ou Firefox. Funciona offline, sem instal
 
 As dez classes usam arte preparada com fundo transparente: aliados em verde/caqui e inimigos em vermelho. A mesma arte aparece no mapa, no retrato da seleção e no recrutamento, com rotação, movimento e efeito de disparo. Os atlas estão incorporados em `js/assets.js`; `assets/troops-atlas.png` guarda as tropas e `assets/Tanques/tanks-atlas.png` guarda os três tanques nas duas equipes. Versões preparadas com ImageGen e prompts ficam em `assets/Tanques/`.
 
-Os quatro cenários usam texturas de grama, floresta, montanha, água, estrada e ponte adaptadas das imagens fornecidas. O Deserto Aberto tem variantes arenosas. Estradas se conectam conforme os vizinhos; rios compartilham água sem margens internas; pontes alinham o piso aos acessos. A grade tem 36 × 28 casas de 56 pixels; a câmera rola e aproxima sobre o mapa, com as mesmas regras de movimento e combate.
+Os quatro cenários usam terrenos ilustrados naturais em camadas: grama ou areia, árvores e rochas com transparência, água, margens, estradas e pontes. A composição considera oito vizinhos para suavizar bordas e cantos; a paisagem é contínua, mantendo o centro de cada casa reconhecível. O Deserto Aberto tem versões arenosas.
 
-As 11 imagens de 128 × 128 pixels estão em `assets/terrain/` e incorporadas em `js/assets.js`. Originais e adaptações em alta resolução ficam em `assets/terrain/source/`; os prompts de ImageGen estão em `assets/terrain/prompts.json`. A preparação e as verificações estão descritas em `assets/terrain/README.md`.
+**Grade** (ou **G**) liga/desliga as linhas das casas e salva a preferência neste navegador. Começa desligada; apontamento, seleção, ordens e impacto continuam destacados. A grade é desenhada separadamente do chão e não altera movimento ou alcance.
+
+As 11 imagens de 128 × 128 pixels estão em `assets/terrain/` e incorporadas em `js/assets.js`. A arte foi gerada com o ImageGen integrado; fontes em alta resolução e prompts ficam em `assets/terrain/source/redesign/` e `assets/terrain/prompts.json`. A preparação está descrita em [assets/terrain/README.md](assets/terrain/README.md), e a revisão visual e o desempenho em [docs/terrain/README.md](docs/terrain/README.md).
 
 ### Gerador procedural
 
@@ -36,6 +38,7 @@ Todo o jogo funciona só com o mouse; os atalhos de teclado continuam como alter
 | Câmera | Encostar o mouse na borda do campo; arrastar com o botão do meio, ou com o esquerdo após ativar **✋ Câmera** (clique simples continua selecionando); roda aproxima/afasta; clique ou arraste no minimapa | — |
 | Pausar / Continuar | Botão no topo | **P** |
 | Velocidade | Botão **0,25× / 0,5× / 1× / 2×**: animações por turnos; toda a simulação no RTS | — |
+| Grade das casas | Botão Grade | **G** |
 | Tela cheia | Botão no topo; ativada ao iniciar a operação | **Esc** sai |
 
 No celular, use os botões de ordem e toque no destino, inclusive durante a pausa tática; toque ou arraste no minimapa para mover a câmera. Por turnos, aguarde a ordem terminar antes de emitir outra. Menus preservam a pausa anterior ao fechar; sair da aba pausa a operação. O **Manual** detalha as regras.
@@ -104,3 +107,5 @@ npm run compare:tanks    # 1.400 confrontos por sementes e lados alternados; doc
 Os testes requerem Node.js 18+ e usam o código real de `js/` e o próprio `index.html`. `PLAYWRIGHT_MODULE` permite indicar uma instalação local de Playwright. O teste de navegador bloqueia a rede e verifica ambos os modos, pausa com ordens e projéteis ativos, menus, grupos, reinício, velocidade e computador/celular.
 
 `docs/NOTAS.md` descreve as melhorias e sugestões futuras. Testes automáticos verificam regras e controles; o equilíbrio das tropas ainda deve ser avaliado em partidas completas.
+
+Verificações específicas do redesign: `npm run test:terrain` (grade, persistência, camadas alpha, água contínua, névoa, RNG e armazenamento bloqueado).

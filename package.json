@@ -8,7 +8,8 @@
     "test:browser": "node tests/browser.test.cjs",
     "prepare:terrain": "node scripts/prepare-terrain.cjs",
     "prepare:tanks": "node scripts/prepare-tanks.cjs",
-    "compare:tanks": "node scripts/compare-tanks.cjs"
+    "compare:tanks": "node scripts/compare-tanks.cjs",
+    "test:terrain": "node tests/terrain.test.cjs"
   },
   "devDependencies": {
     "playwright-core": "^1.50.0"

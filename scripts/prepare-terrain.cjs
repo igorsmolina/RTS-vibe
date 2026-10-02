@@ -9,11 +9,7 @@ const root=path.join(__dirname,'..'),dir=path.join(root,'assets','terrain');
   const output=await page.evaluate(async({name,input})=>{
    const image=new Image();image.src=input;await image.decode();
    const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const c=canvas.getContext('2d');c.imageSmoothingQuality='high';
-   if(name.startsWith('bank')){
-    const probe=document.createElement('canvas');probe.width=probe.height=128;const p=probe.getContext('2d');p.drawImage(image,0,0,128,128);const pixels=p.getImageData(0,0,128,128).data;
-    let top=128,bottom=-1;for(let y=0;y<128;y++)for(let x=0;x<128;x++)if(pixels[(y*128+x)*4+3]>8){top=Math.min(top,y);bottom=Math.max(bottom,y);}
-    if(bottom<top)throw Error('Empty bank image');c.drawImage(probe,0,top,128,bottom-top+1,0,0,128,18);
-   }else c.drawImage(image,0,0,128,128);
+   c.drawImage(image,0,0,128,128);
    return canvas.toDataURL('image/png');
   },{name,input});
   assert.ok(output.startsWith('data:image/png;base64,'));data[name]=output;fs.writeFileSync(path.join(dir,name+'.png'),Buffer.from(output.split(',')[1],'base64'));

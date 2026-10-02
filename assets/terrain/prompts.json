@@ -1,57 +1,79 @@
 [
   {
     "name": "plain",
-    "prompt": "Edit the provided reference into one production-ready square seamless terrain texture for War Grid, a top-down tactical board game. Terrain: olive grass plain, muted irregular grassy patches, only a few tiny stones. Keep the provided grass image design, make it tileable on all four edges. Preserve the original flat hand-drawn military game illustration style, natural subdued palette, fine dark outlines, orthographic overhead view. Fill the entire square with terrain; no border, no grid, no perspective tilt, no text, no icons, no troops, no buildings, no interface. Opposite edges must match for repeating tiles. Readable when reduced to 56x56 pixels. This is ONE texture tile, not a map or sprite sheet. Output opaque background.",
-    "source": "source/plain.png"
-  },
-  {
-    "name": "forest",
-    "prompt": "Edit the provided reference into one production-ready square seamless terrain texture for War Grid, a top-down tactical board game. Terrain: dense top-down rounded tree canopies in muted dark olive green. Preserve reference canopy linework, simplify the small details and darken foliage slightly so olive troop sprites are distinguishable. Seamless tile on all edges. Preserve the original flat hand-drawn military game illustration style, natural subdued palette, fine dark outlines, orthographic overhead view. Fill the entire square with terrain; no border, no grid, no perspective tilt, no text, no icons, no troops, no buildings, no interface. Opposite edges must match for repeating tiles. Readable when reduced to 56x56 pixels. This is ONE texture tile, not a map or sprite sheet. Output opaque background.",
-    "source": "source/forest.png"
-  },
-  {
-    "name": "mountain",
-    "prompt": "Edit the provided reference into one production-ready square seamless terrain texture for War Grid, a top-down tactical board game. Terrain: top-down jagged gray rocks and rock ridges on muted earth, like the reference. Simplify linework for readability at 56px, keep identifiable relief and natural shadows. Seamless tile on all edges. Preserve the original flat hand-drawn military game illustration style, natural subdued palette, fine dark outlines, orthographic overhead view. Fill the entire square with terrain; no border, no grid, no perspective tilt, no text, no icons, no troops, no buildings, no interface. Opposite edges must match for repeating tiles. Readable when reduced to 56x56 pixels. This is ONE texture tile, not a map or sprite sheet. Output opaque background.",
-    "source": "source/mountain.png"
-  },
-  {
-    "name": "water",
-    "prompt": "Edit target: provided reference terrain image. Create ONE square seamless repeating terrain texture for War Grid. Extract and extend ONLY the muted blue river water texture. Fill the entire square with water. Fine sparse hand-drawn ripples. Absolutely no banks, land, islands, vegetation, shorelines or river-shaped channel; this is water surface only, so several adjacent blocked water cells join into a single continuous river. Preserve the reference orthographic top-down illustrated game style, muted natural colors, simple readable silhouettes at 56x56 pixels. Fill the complete square edge to edge, opposite edges matching. No grid, borders, labels, buildings, units or interface. Opaque texture. No sprite sheet or whole map.",
-    "source": "source/water.png"
+    "prompt": "Natural hand-painted illustrated terrain for War Grid. True orthographic overhead, soft consistent light from upper left, restrained low-contrast detail readable at 56 pixels, subdued military palette. No perspective, grid, borders, text, troops, buildings, icons, UI, vignette or sprite sheet. Seamless sage olive meadow grass (#83936f), soft earth patches, short grass, few tiny pebbles, broad quiet areas. Opaque repeating ground.",
+    "source": "source/redesign/plain.png",
+    "transparent": false,
+    "generator": "built-in image_gen"
   },
   {
     "name": "sand",
-    "prompt": "Edit target: provided reference terrain image. Create ONE square seamless repeating terrain texture for War Grid. Convert the supplied grass plain to a desert plain: warm beige sand and ochre dusty earth instead of green grass; small sparse pebbles, faint sandy patches, no prominent dunes or plants. Restrained variation and clear visibility for olive troop icons. Preserve the reference orthographic top-down illustrated game style, muted natural colors, simple readable silhouettes at 56x56 pixels. Fill the complete square edge to edge, opposite edges matching. No grid, borders, labels, buildings, units or interface. Opaque texture. No sprite sheet or whole map.",
-    "source": "source/sand.png"
+    "prompt": "Natural hand-painted illustrated terrain for War Grid. True orthographic overhead, soft consistent light from upper left, restrained low-contrast detail readable at 56 pixels, subdued military palette. No perspective, grid, borders, text, troops, buildings, icons, UI, vignette or sprite sheet. Seamless warm beige sandy soil (#c4b18a), pale dusty patches, extremely sparse pebbles, no large dunes. Opaque repeating ground.",
+    "source": "source/redesign/sand.png",
+    "transparent": false,
+    "generator": "built-in image_gen"
+  },
+  {
+    "name": "water",
+    "prompt": "Natural hand-painted illustrated terrain for War Grid. True orthographic overhead, soft consistent light from upper left, restrained low-contrast detail readable at 56 pixels, subdued military palette. No perspective, grid, borders, text, troops, buildings, icons, UI, vignette or sprite sheet. Seamless muted blue teal water (#4e8390), sparse delicate curved ripples, softly mottled depth. Only water; no shores, islands, plants or channel silhouette. Opaque.",
+    "source": "source/redesign/water.png",
+    "transparent": false,
+    "generator": "built-in image_gen"
+  },
+  {
+    "name": "forest",
+    "prompt": "Natural hand-painted illustrated terrain for War Grid. True orthographic overhead, soft consistent light from upper left, restrained low-contrast detail readable at 56 pixels, subdued military palette. No perspective, grid, borders, text, troops, buildings, icons, UI, vignette or sprite sheet. Transparent repeating layer of rounded broadleaf canopies, connected irregular clusters and scattered shrubs. Dark muted pine and sage (#365342,#607451), transparent clearings about 20%. No ground; forms may cross edges.",
+    "source": "source/redesign/forest.png",
+    "transparent": true,
+    "generator": "built-in image_gen"
   },
   {
     "name": "forest-desert",
-    "prompt": "Edit target: provided reference terrain image. Create ONE square seamless repeating terrain texture for War Grid. Adapt the dense overhead forest to an arid biome: clustered small muted brown/olive tree canopies on warm sandy ground, with visible sand gaps, preserving rounded hand-drawn canopy silhouettes. Darker than the desert plain, not lush bright green. Preserve the reference orthographic top-down illustrated game style, muted natural colors, simple readable silhouettes at 56x56 pixels. Fill the complete square edge to edge, opposite edges matching. No grid, borders, labels, buildings, units or interface. Opaque texture. No sprite sheet or whole map.",
-    "source": "source/forest-desert.png"
+    "prompt": "Natural hand-painted illustrated terrain for War Grid. True orthographic overhead, soft consistent light from upper left, restrained low-contrast detail readable at 56 pixels, subdued military palette. No perspective, grid, borders, text, troops, buildings, icons, UI, vignette or sprite sheet. Transparent repeating arid woodland layer, clusters of small drought-adapted trees, rounded dusty olive/brown crowns (#626b43,#8b8759), sparse scrub. Transparent clearings about 25%; no sand or opaque ground.",
+    "source": "source/redesign/forest-desert.png",
+    "transparent": true,
+    "generator": "built-in image_gen"
+  },
+  {
+    "name": "mountain",
+    "prompt": "Natural hand-painted illustrated terrain for War Grid. True orthographic overhead, soft consistent light from upper left, restrained low-contrast detail readable at 56 pixels, subdued military palette. No perspective, grid, borders, text, troops, buildings, icons, UI, vignette or sprite sheet. Transparent repeating connected irregular slate-gray (#8b9388) rocky ridges and crags, pale highlights, soft relief shadows, loose stones. Transparent gaps about 15%; no side-view triangles, snow or ground.",
+    "source": "source/redesign/mountain.png",
+    "transparent": true,
+    "generator": "built-in image_gen"
   },
   {
     "name": "mountain-desert",
-    "prompt": "Edit target: provided reference terrain image. Create ONE square seamless repeating terrain texture for War Grid. Adapt the reference overhead mountain rock texture to an arid biome: warm ochre/tan jagged rock ridges and stones on beige sandy earth. Clearly distinct from plain sand; preserve rocky relief and dark outlines, simplify tiny details. Preserve the reference orthographic top-down illustrated game style, muted natural colors, simple readable silhouettes at 56x56 pixels. Fill the complete square edge to edge, opposite edges matching. No grid, borders, labels, buildings, units or interface. Opaque texture. No sprite sheet or whole map.",
-    "source": "source/mountain-desert.png"
+    "prompt": "Natural hand-painted illustrated terrain for War Grid. True orthographic overhead, soft consistent light from upper left, restrained low-contrast detail readable at 56 pixels, subdued military palette. No perspective, grid, borders, text, troops, buildings, icons, UI, vignette or sprite sheet. Transparent repeating connected warm ochre and tan (#a89678) rocky ridges, sandstone highlights and brown soft relief shadows, small rubble. Transparent gaps about 15%; no side-view triangles, snow or ground.",
+    "source": "source/redesign/mountain-desert.png",
+    "transparent": true,
+    "generator": "built-in image_gen"
   },
   {
     "name": "road",
-    "prompt": "Use case: background-extraction and precise-object-edit. Edit target: the supplied terrain reference. Game-ready transparent terrain overlay for War Grid. Isolate ONLY the central straight beige dirt road as a vertical strip centered in the square. Road reaches the TOP and BOTTOM canvas edges, its width about one third of the square. Remove ALL surrounding grass, plants and ground to genuine transparent alpha. Keep subtle ruts and tiny pebbles, no grass fringe. Straight parallel road edges, no perspective. Preserve the flat hand-drawn top-down illustrated style, subdued palette and fine outlines. ONE square sprite with actual alpha transparency, no painted checkerboard, text, grids, borders, cast shadows outside sprite, soldiers, vehicles or UI. Readable at 56px.",
-    "source": "source/road.png"
+    "prompt": "Production game terrain MATERIAL for War Grid. Natural hand-painted illustration, true orthographic top-down, restrained muted light brown compacted dirt (#b8a27b). ONE seamless square filled edge to edge with fine compacted earth, scattered very small pebbles and broad subtle uneven dusty patches. This is a material to be clipped to horizontal, vertical, curved and intersecting roads. No directional markings at all: NO wheel ruts, NO stripes, NO grooves, NO parallel lines, NO repeating bands, NO planks, NO road silhouette, NO grass edges. Opposite borders must seamlessly join. No text, grid, units, buildings, lighting gradient, vignette, UI or frame. Quiet texture readable at 56px. Opaque background.",
+    "source": "source/redesign/road.png",
+    "transparent": false,
+    "generator": "built-in image_gen"
   },
   {
     "name": "bridge",
-    "prompt": "Use case: background-extraction and precise-object-edit. Edit target: the supplied terrain reference. Game-ready transparent terrain overlay for War Grid. Isolate ONLY the central stone bridge deck and two thin side rails as a vertical strip. Preserve the gray paving stones in the reference. Bridge reaches TOP and BOTTOM canvas edges, width about one third of the square. No pillars, no end caps at top or bottom: several pieces must join end to end. Remove all surrounding water, banks and land to genuine transparent alpha. Flat orthographic overhead sprite. Preserve the flat hand-drawn top-down illustrated style, subdued palette and fine outlines. ONE square sprite with actual alpha transparency, no painted checkerboard, text, grids, borders, cast shadows outside sprite, soldiers, vehicles or UI. Readable at 56px.",
-    "source": "source/bridge.png"
+    "prompt": "Natural hand-painted illustrated terrain for War Grid. True orthographic overhead, soft consistent light from upper left, restrained low-contrast detail readable at 56 pixels, subdued military palette. No perspective, grid, borders, text, troops, buildings, icons, UI, vignette or sprite sheet. Genuinely transparent overlay of straight vertical weathered wooden bridge deck, centered strip width 38%, reaches top and bottom without endcaps, horizontal planks, two narrow side rails and attached soft shadow. No water, land or supports.",
+    "source": "source/redesign/bridge.png",
+    "transparent": true,
+    "generator": "built-in image_gen"
   },
   {
     "name": "bank",
-    "prompt": "Use case: background-extraction and precise-object-edit. Edit target: the supplied terrain reference. Game-ready transparent terrain overlay for War Grid. Extract a single straight HORIZONTAL narrow riverbank strip extending across the full square width. Small olive grass lip on its upper side, thin irregular beige earth edge underneath and a subtle dark boundary line on the bottom water side. The strip is centered vertically and occupies only about 15 percent of canvas height. Everything else is genuinely transparent alpha. No actual water or large land area. No trees, no bushes, no islands. Preserve the flat hand-drawn top-down illustrated style, subdued palette and fine outlines. ONE square sprite with actual alpha transparency, no painted checkerboard, text, grids, borders, cast shadows outside sprite, soldiers, vehicles or UI. Readable at 56px.",
-    "source": "source/bank.png"
+    "prompt": "Natural hand-painted illustrated terrain for War Grid. True orthographic overhead, soft consistent light from upper left, restrained low-contrast detail readable at 56 pixels, subdued military palette. No perspective, grid, borders, text, troops, buildings, icons, UI, vignette or sprite sheet. Seamless opaque riverbank soil material only, muted damp beige earth and olive grassy flecks, tiny pebbles. No water, shoreline silhouette, trees or large objects. Engine clips material to curved shores.",
+    "source": "source/redesign/bank.png",
+    "transparent": false,
+    "generator": "built-in image_gen"
   },
   {
     "name": "bank-desert",
-    "prompt": "Use case: background-extraction and precise-object-edit. Edit target: the supplied terrain reference. Game-ready transparent terrain overlay for War Grid. Create one straight HORIZONTAL narrow desert riverbank strip across the full square width, adapted from the bank in the reference. Warm beige sand on its upper side, thin darker ochre earth edge and a subtle dark boundary line on the bottom water side. Center strip vertically, occupy only about 15 percent of canvas height. Everything else is genuinely transparent alpha. No grass, water, plants or large land area. Preserve the flat hand-drawn top-down illustrated style, subdued palette and fine outlines. ONE square sprite with actual alpha transparency, no painted checkerboard, text, grids, borders, cast shadows outside sprite, soldiers, vehicles or UI. Readable at 56px.",
-    "source": "source/bank-desert.png"
+    "prompt": "Natural hand-painted illustrated terrain for War Grid. True orthographic overhead, soft consistent light from upper left, restrained low-contrast detail readable at 56 pixels, subdued military palette. No perspective, grid, borders, text, troops, buildings, icons, UI, vignette or sprite sheet. Seamless opaque desert riverbank soil material only, ochre damp sand, beige flecks and tiny pebbles. No water, shoreline silhouette, plants or large objects. Engine clips material to curved shores.",
+    "source": "source/redesign/bank-desert.png",
+    "transparent": false,
+    "generator": "built-in image_gen"
   }
 ]

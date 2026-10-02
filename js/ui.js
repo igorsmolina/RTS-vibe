@@ -31,6 +31,7 @@ const $=id=>document.getElementById(id),CELL=56,TEAM={blue:'#77c8e2',red:'#ee998
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches,audio=new Sound();
 let game=new Game(),selection=new Set(),groups=Array.from({length:5},()=>[]),paused=true,started=false,speed=1,mode=null,hover=null,drag=null,marker=null,resultShown=false,addMode=false,panTool=false,pointer=null,pan=null;
 let menuWasPaused=true,lastFrame=performance.now(),uiClock=0,lastLog=null;
+let showGrid=false;try{showGrid=localStorage.getItem('wargrid.grid.v1')==='true';}catch{}
 const renderer=new Renderer();
 function selectedUnits(){return [...selection].map(id=>game.get(id)).filter(u=>u&&u.owner==='blue'&&!TYPES[u.type].structure);}
 function menusClosed(){return !$('setup').open&&!$('manual').open&&!$('result').open;}
@@ -48,6 +49,7 @@ function setAttr(id,key,value){const e=$(id);if(e.getAttribute(key)!==value)e.se
 function setWidth(id,ratio){const e=$(id),value=Math.round(Math.max(0,Math.min(1,ratio))*1000)/10+'%';if(e.style.width!==value)e.style.width=value;}
 let portraitKey=null,recruitButtons=[];
 function updateUI(){
+  setAttr('grid','aria-pressed',String(showGrid));
   const rts=game.mode==='rts';
   for(const id of selection){const u=game.get(id);if(!u||(u.owner!=='blue'&&!game.isVisible('blue',u)))selection.delete(id);}
   groups=groups.map(g=>g.filter(id=>game.get(id)?.owner==='blue'));
@@ -119,6 +121,8 @@ for(const type of ['infantry','recon','engineer','artillery','lightTank','tank',
 function togglePause(){if(!started||game.winner||!menusClosed())return;paused=!paused;mode=null;drag=null;lastFrame=performance.now();updateUI();say(game.mode==='rts'?(paused?'Pausa tática. Selecione tropas e emita ordens; P retoma o combate.':'Combate retomado. Tropas e IA agem ao mesmo tempo.'):(paused?'Animações pausadas. P para continuar.':'Animações retomadas. Planeje sem pressa no seu turno.'));}
 function endPlayerTurn(){if(!canCommand()||!game.endTurn())return;paused=false;mode=null;drag=null;lastFrame=performance.now();updateUI();say('Turno da IA. Aguarde a próxima rodada.');}
 $('endTurn').addEventListener('click',endPlayerTurn);
+function toggleGrid(){showGrid=!showGrid;try{localStorage.setItem('wargrid.grid.v1',String(showGrid));}catch{}renderer.dirty=true;updateUI();}
+$('grid').addEventListener('click',toggleGrid);
 $('pause').addEventListener('click',togglePause);$('speed').addEventListener('click',()=>{const speeds=[.25,.5,1,2];speed=speeds[(speeds.indexOf(speed)+1)%speeds.length];updateUI();});
 $('panTool').addEventListener('click',()=>{panTool=!panTool;updateUI();say(panTool?'Câmera ativa: arraste com o botão esquerdo para mover o mapa; clique seleciona. Desative para voltar à seleção em caixa.':'Botão esquerdo volta a selecionar em caixa.');});
 $('addSelect').addEventListener('click',()=>{addMode=!addMode;updateUI();say(addMode?'Somar ativo: cliques e caixas adicionam ou removem tropas da seleção.':'Seleção normal.');});
@@ -145,7 +149,7 @@ document.addEventListener('keydown',e=>{
  if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName)||$('setup').open||$('manual').open||$('result').open)return;const key=e.key.toLowerCase();
  if(/^[1-5]$/.test(key)){e.preventDefault();groupAction(Number(key)-1,e.ctrlKey||e.metaKey);return;}
  if(key==='p'||key===' '&&e.target===renderer.canvas){e.preventDefault();togglePause();return;}if(key==='escape'){mode=null;drag=null;selection.clear();updateUI();return;}
- if(e.ctrlKey||e.metaKey||e.altKey)return;if(key==='enter'){e.preventDefault();if(!e.repeat)endPlayerTurn();}else if(key==='s'){e.preventDefault();stopSelected();}else if(key==='a'){e.preventDefault();setMode('attackMove');}else if(key==='m')setMode('move');else if(key==='r')setMode('repair');
+ if(e.ctrlKey||e.metaKey||e.altKey)return;if(key==='g'){e.preventDefault();if(!e.repeat)toggleGrid();}else if(key==='enter'){e.preventDefault();if(!e.repeat)endPlayerTurn();}else if(key==='s'){e.preventDefault();stopSelected();}else if(key==='a'){e.preventDefault();setMode('attackMove');}else if(key==='m')setMode('move');else if(key==='r')setMode('repair');
 });
 /* Parado (pausa, menus, fim de jogo), o quadro só é redesenhado após uma interação ou a cada 0,25 s. */
 for(const type of ['pointerdown','pointermove','pointerup','keydown','click'])document.addEventListener(type,()=>{renderer.dirty=true;},{capture:true,passive:true});
@@ -166,5 +170,5 @@ troopAtlas.onload=tankAtlas.onload=tankAtlas.onerror=()=>{
 };
 troopAtlas.src=troopAtlasData;
 tankAtlas.src=tankAtlasData;
-const terrainReady=Promise.all(Object.entries(terrainData).map(([name,src])=>new Promise(resolve=>{const image=terrainImages[name]=new Image();image.onload=()=>resolve(true);image.onerror=()=>resolve(false);image.src=src;}))).then(()=>{terrainTiles.clear();roadOverlays.clear();renderer.paintGround();renderer.drawMini();});
+const terrainReady=Promise.all(Object.entries(terrainData).map(([name,src])=>new Promise(resolve=>{const image=terrainImages[name]=new Image();image.onload=()=>resolve(true);image.onerror=()=>resolve(false);image.src=src;}))).then(()=>{clearTerrainCaches();renderer.paintGround();renderer.drawMini();setupPreview();});
 updateUI();openSetup();requestAnimationFrame(frame);

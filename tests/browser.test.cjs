@@ -76,7 +76,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  const camera=()=>page.evaluate(()=>({...cam}));const box=await page.locator('#battlefield').boundingBox();const start=await camera();
  assert.ok(await page.evaluate(()=>{const hq=game.hq('blue'),v=renderer.canvas;return(hq.x+.5)*CELL>=cam.x&&(hq.x+.5)*CELL<=cam.x+v.clientWidth/cam.zoom&&(hq.y+.5)*CELL>=cam.y&&(hq.y+.5)*CELL<=cam.y+v.clientHeight/cam.zoom;}),'QG visível ao iniciar');
  await page.mouse.move(box.x+box.width-5,box.y+box.height/2);await page.waitForTimeout(300);assert.ok((await camera()).x>start.x,'Borda direita rola a câmera');
- await page.mouse.move(box.x+box.width/2,box.y+box.height/2);const mid=await camera();await page.mouse.down({button:'middle'});await page.mouse.move(box.x+box.width/2-100,box.y+box.height/2-80,{steps:4});await page.mouse.up({button:'middle'});const middle=await camera();assert.ok(middle.x>mid.x&&middle.y<mid.y+1,'Botão do meio arrasta a câmera');
+ await page.mouse.move(box.x+box.width/2,box.y+box.height/2);const mid=await camera();await page.mouse.down({button:'middle'});await page.mouse.move(box.x+box.width/2-100,box.y+box.height/2-80,{steps:4});await page.mouse.up({button:'middle'});const middle=await camera();const limits=await page.evaluate(()=>({x:Math.max(0,COLS*CELL-renderer.canvas.clientWidth/cam.zoom),y:Math.max(0,ROWS*CELL-renderer.canvas.clientHeight/cam.zoom)}));assert.ok(Math.abs(middle.x-Math.min(limits.x,mid.x+100/mid.zoom))<1&&Math.abs(middle.y-Math.min(limits.y,mid.y+80/mid.zoom))<1,'Botão do meio desloca a câmera e respeita os limites do campo');
  await page.locator('#panTool').click();assert.equal(await page.locator('#panTool').getAttribute('aria-pressed'),'true');await page.evaluate(()=>setSelection([]));const leftStart=await camera();await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();await page.mouse.move(box.x+box.width/2+120,box.y+box.height/2,{steps:4});await page.mouse.up();assert.ok((await camera()).x<leftStart.x,'✋ Câmera: botão esquerdo arrasta a câmera');assert.equal(await page.evaluate(()=>selection.size),0,'Arrastar a câmera não seleciona em caixa');
  {const u=await page.evaluate(()=>{const u=game.units.find(u=>u.owner==='blue'&&u.type==='tank');centerCamera(u.x,u.y);return{x:u.x,y:u.y,id:u.id};}),r=await page.locator('#battlefield').boundingBox(),v=await camera();await page.mouse.click(r.x+((u.x+.5)*56-v.x)*v.zoom,r.y+((u.y+.5)*56-v.y)*v.zoom);assert.deepEqual(await page.evaluate(()=>[...selection]),[u.id],'Clique simples ainda seleciona');}
  await page.locator('#panTool').click();const panned=await camera();await page.mouse.move(box.x+box.width/2,box.y+box.height/2);
@@ -126,17 +126,17 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  const roads=await page.evaluate(()=>Array.from({length:16},(_,mask)=>{const tile=roadOverlay(mask),c=tile.getContext('2d');return{mask,alpha:[[28,0],[55,28],[28,55],[0,28]].map(([x,y])=>c.getImageData(x,y,1,1).data[3]),corner:c.getImageData(0,0,1,1).data[3],cached:roadOverlay(mask)===tile};}));
  for(const {mask,alpha,corner,cached} of roads){assert.ok(cached);assert.equal(corner,0);for(let d=0;d<4;d++)assert.equal(alpha[d]>200,!!(mask&(1<<d)),'Road mask '+mask+' direction '+d);}
  const connections=await page.evaluate(()=>{
-  game.terrain.fill('plain');game.terrain[KEY(8,6)]=game.terrain[KEY(9,6)]='river';const pair=[terrainTopology('river',8,6).waterMask,terrainTopology('river',9,6).waterMask];
-  const group=[];for(const p of [[8,6],[9,6],[8,7],[9,7]])game.terrain[KEY(...p)]='river';for(const p of [[8,6],[9,6],[8,7],[9,7]])group.push(terrainTopology('river',...p).waterMask);
-  game.terrain.fill('plain');game.terrain[KEY(0,0)]='river';const edge=terrainTopology('river',0,0).waterMask;
-  game.terrain.fill('plain');for(let x=6;x<=11;x++)game.terrain[KEY(x,6)]=x===8||x===9?'bridge':'road';const bridges=[8,9].map(x=>terrainTopology('bridge',x,6));
-  game.terrain.fill('plain');game.terrain[KEY(8,6)]='bridge';game.terrain[KEY(8,5)]=game.terrain[KEY(8,7)]='road';const vertical=terrainTopology('bridge',8,6).vertical;
-  game.terrain[KEY(7,6)]=game.terrain[KEY(9,6)]='road';const tie=terrainTopology('bridge',8,6).vertical;
+  game.terrain.fill('plain');game.terrain[KEY(8,6)]=game.terrain[KEY(9,6)]='river';const pair=[terrainTopology(game,8,6).waterMask,terrainTopology(game,9,6).waterMask];
+  const group=[];for(const p of [[8,6],[9,6],[8,7],[9,7]])game.terrain[KEY(...p)]='river';for(const p of [[8,6],[9,6],[8,7],[9,7]])group.push(terrainTopology(game,...p).waterMask);
+  game.terrain.fill('plain');game.terrain[KEY(0,0)]='river';const edge=terrainTopology(game,0,0).waterMask;
+  game.terrain.fill('plain');for(let x=6;x<=11;x++)game.terrain[KEY(x,6)]=x===8||x===9?'bridge':'road';const bridges=[8,9].map(x=>terrainTopology(game,x,6));
+  game.terrain.fill('plain');game.terrain[KEY(8,6)]='bridge';game.terrain[KEY(8,5)]=game.terrain[KEY(8,7)]='road';const vertical=terrainTopology(game,8,6).vertical;
+  game.terrain[KEY(7,6)]=game.terrain[KEY(9,6)]='road';const tie=terrainTopology(game,8,6).vertical;
   return{pair,group,edge,bridges,vertical,tie};
  });
  assert.deepEqual(connections.pair,[2,8]);assert.deepEqual(connections.group,[6,12,3,9]);assert.equal(connections.edge,0);assert.equal(connections.vertical,true);assert.equal(connections.tie,false);for(const bridge of connections.bridges){assert.equal(bridge.vertical,false);assert.equal(bridge.roadMask,10);}
  console.log('OK 16 conexões de estrada, rios agrupados, bordas e orientação de pontes');
- const palettes=await page.evaluate(()=>{game.terrain.fill('plain');game.terrain[KEY(8,6)]='river';game.map='river';const green=terrainTile('river',8,6);game.map='desert';const sand=terrainTile('river',8,6);return green===sand;});assert.equal(palettes,false,'Margens dos dois biomas devem ter caches distintos');
+ const palettes=await page.evaluate(()=>{game.terrain.fill('plain');game.terrain[KEY(8,6)]='river';game.map='river';const green=terrainTile(game,8,6);game.map='desert';const sand=terrainTile(game,8,6);return green===sand;});assert.equal(palettes,false,'Margens dos dois biomas devem ter caches distintos');
  await page.evaluate(()=>document.querySelector('#setup').close());
  for(const map of ['river','desert','mountain','random'])for(const seed of [17,83]){
   const state=await page.evaluate(({map,seed})=>{
