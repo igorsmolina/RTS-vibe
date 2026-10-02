@@ -2,10 +2,13 @@
   "name": "war-grid",
   "version": "1.0.0",
   "private": true,
-  "description": "War Grid — Fronteiras RTS: estratégia militar em tempo real num único arquivo HTML.",
+  "description": "War Grid — estratégia militar por turnos ou RTS com pausa tática, mapa 36 × 28 e gerador procedural, offline.",
   "scripts": {
     "test": "node tests/engine.test.cjs",
-    "test:browser": "node tests/browser.test.cjs"
+    "test:browser": "node tests/browser.test.cjs",
+    "prepare:terrain": "node scripts/prepare-terrain.cjs",
+    "prepare:tanks": "node scripts/prepare-tanks.cjs",
+    "compare:tanks": "node scripts/compare-tanks.cjs"
   },
   "devDependencies": {
     "playwright-core": "^1.50.0"

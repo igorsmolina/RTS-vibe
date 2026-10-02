@@ -1,0 +1,50 @@
+[
+  {
+    "name": "light-blue",
+    "column": 0,
+    "row": 0,
+    "source": "source/light-blue-imagegen.png",
+    "tool": "built-in ImageGen",
+    "prompt": "Edit target: the attached original light scout tank sprite. Preserve its specific tank model, turret shape, tracks, armor panels and olive green team colors. Prepare this same vehicle for the War Grid top-down board game, rather than inventing a different design. Use a strict orthographic overhead view; correct any oblique perspective. Rotate the entire tank so the main cannon points straight UP (north). Remove every checkerboard square and black background, and any ground shadow: actual transparent alpha everywhere outside the vehicle. One complete centered vehicle, square canvas, generous transparent margin; do not crop cannon or tracks. Clean illustrated military game sprite, dark outlines, stronger readable contrast, simplify tiny surface details that disappear at 56 pixels, preserve distinguishing silhouette and major details. No text, labels, insignia, extra objects, scenery or fake transparency pattern. Output a single sprite with real transparent background, usable after downsampling to 128x128."
+  },
+  {
+    "name": "light-red",
+    "column": 0,
+    "row": 1,
+    "source": "source/light-red-imagegen.png",
+    "tool": "built-in ImageGen",
+    "prompt": "Edit target: the attached original light scout tank sprite. Preserve its specific tank model, turret shape, tracks, armor panels and red team colors. Prepare this same vehicle for the War Grid top-down board game, rather than inventing a different design. Use a strict orthographic overhead view; correct any oblique perspective. Rotate the entire tank so the main cannon points straight UP (north). Remove every checkerboard square and black background, and any ground shadow: actual transparent alpha everywhere outside the vehicle. One complete centered vehicle, square canvas, generous transparent margin; do not crop cannon or tracks. Clean illustrated military game sprite, dark outlines, stronger readable contrast, simplify tiny surface details that disappear at 56 pixels, preserve distinguishing silhouette and major details. No text, labels, insignia, extra objects, scenery or fake transparency pattern. Output a single sprite with real transparent background, usable after downsampling to 128x128."
+  },
+  {
+    "name": "medium-blue",
+    "column": 1,
+    "row": 0,
+    "source": "source/medium-blue-imagegen.png",
+    "tool": "built-in ImageGen",
+    "prompt": "Edit target: the attached original medium main battle tank sprite. Preserve its specific tank model, turret shape, tracks, armor panels and olive green team colors. Prepare this same vehicle for the War Grid top-down board game, rather than inventing a different design. Use a strict orthographic overhead view; correct any oblique perspective. Rotate the entire tank so the main cannon points straight UP (north). Remove every checkerboard square and black background, and any ground shadow: actual transparent alpha everywhere outside the vehicle. One complete centered vehicle, square canvas, generous transparent margin; do not crop cannon or tracks. Clean illustrated military game sprite, dark outlines, stronger readable contrast, simplify tiny surface details that disappear at 56 pixels, preserve distinguishing silhouette and major details. No text, labels, insignia, extra objects, scenery or fake transparency pattern. Output a single sprite with real transparent background, usable after downsampling to 128x128."
+  },
+  {
+    "name": "medium-red",
+    "column": 1,
+    "row": 1,
+    "source": "source/medium-red-imagegen.png",
+    "tool": "built-in ImageGen",
+    "prompt": "Edit target: the attached original medium main battle tank sprite. Preserve its specific tank model, turret shape, tracks, armor panels and red team colors. Prepare this same vehicle for the War Grid top-down board game, rather than inventing a different design. Use a strict orthographic overhead view; correct any oblique perspective. Rotate the entire tank so the main cannon points straight UP (north). Remove every checkerboard square and black background, and any ground shadow: actual transparent alpha everywhere outside the vehicle. One complete centered vehicle, square canvas, generous transparent margin; do not crop cannon or tracks. Clean illustrated military game sprite, dark outlines, stronger readable contrast, simplify tiny surface details that disappear at 56 pixels, preserve distinguishing silhouette and major details. No text, labels, insignia, extra objects, scenery or fake transparency pattern. Output a single sprite with real transparent background, usable after downsampling to 128x128."
+  },
+  {
+    "name": "heavy-blue",
+    "column": 2,
+    "row": 0,
+    "source": "source/heavy-blue-imagegen.png",
+    "tool": "built-in ImageGen",
+    "prompt": "Edit target: the attached original heavy assault tank sprite. Preserve its specific tank model, turret shape, tracks, armor panels and olive green team colors. Prepare this same vehicle for the War Grid top-down board game, rather than inventing a different design. Use a strict orthographic overhead view; correct any oblique perspective. Rotate the entire tank so the main cannon points straight UP (north). Remove every checkerboard square and black background, and any ground shadow: actual transparent alpha everywhere outside the vehicle. One complete centered vehicle, square canvas, generous transparent margin; do not crop cannon or tracks. Clean illustrated military game sprite, dark outlines, stronger readable contrast, simplify tiny surface details that disappear at 56 pixels, preserve distinguishing silhouette and major details. No text, labels, insignia, extra objects, scenery or fake transparency pattern. Output a single sprite with real transparent background, usable after downsampling to 128x128."
+  },
+  {
+    "name": "heavy-red",
+    "column": 2,
+    "row": 1,
+    "source": "source/heavy-red-imagegen.png",
+    "tool": "built-in ImageGen",
+    "prompt": "Edit target: the attached original heavy assault tank sprite. Preserve its specific tank model, turret shape, tracks, armor panels and red team colors. Prepare this same vehicle for the War Grid top-down board game, rather than inventing a different design. Use a strict orthographic overhead view; correct any oblique perspective. Rotate the entire tank so the main cannon points straight UP (north). Remove every checkerboard square and black background, and any ground shadow: actual transparent alpha everywhere outside the vehicle. One complete centered vehicle, square canvas, generous transparent margin; do not crop cannon or tracks. Clean illustrated military game sprite, dark outlines, stronger readable contrast, simplify tiny surface details that disappear at 56 pixels, preserve distinguishing silhouette and major details. No text, labels, insignia, extra objects, scenery or fake transparency pattern. Output a single sprite with real transparent background, usable after downsampling to 128x128."
+  }
+]
