@@ -1,0 +1,72 @@
+[
+  {
+    "name": "standard-blue",
+    "column": 0,
+    "row": 0,
+    "prompt": "Use case: stylized-concept. Asset type: transparent raster unit sprite for the offline top-down Canvas military game War Grid. Create exactly ONE unarmed-secondary STANDARD attack helicopter, nose facing straight UP (north), tail straight DOWN, perfectly centered on a square canvas. True orthographic 90-degree overhead view: show the TOP of the fuselage and cockpit, NOT a front view, side view or isometric view. Illustrated strategy-game style matching crisp dark outlined olive-green top-down tank sprites, moderate flat painted shading, readable broad shapes and upper-left lighting. Compact narrow attack-helicopter fuselage with a blue-gray cockpit canopy at the front, olive armored engine housing, long slender tail boom and small tail stabilizers. A clearly visible short dark machine-gun barrel projects straight north from the chin/front; this is the only weapon. No missiles, no rocket pods, no lateral weapon pylons. Static four-bladed main rotor visible above the fuselage, thin dark blades arranged diagonally as an X, each blade attached cleanly to the central hub, with subtle lighter blade-tip highlights. Rotor diameter slightly less than total nose-to-tail length; blades must not obscure the cockpit or tail shape. Keep the silhouette simple and strong at a final 48–60 pixel screen size. Full helicopter including all rotor blades, gun and tail contained inside the canvas with generous transparent margins (at least 10% around silhouette). Muted allied olive/green paint, charcoal outlines, subtle metallic highlights; no insignia or text. Real transparent alpha background. No terrain, no floor, no ground shadow, no rotor motion blur, no fake checkerboard, no glow, no border, no extra objects. High-resolution production source for proportional downsampling to 128x128.",
+    "references": [],
+    "source": "source/standard-blue-imagegen.png",
+    "generator": "built-in image_gen",
+    "transparent": true
+  },
+  {
+    "name": "air-ground-blue",
+    "column": 1,
+    "row": 0,
+    "prompt": "Image 1 is the EDIT TARGET: the standard allied olive-green War Grid helicopter. Preserve the exact fuselage identity, 90-degree orthographic overhead perspective, NORTH-facing nose, SOUTH-facing tail, centered rotor hub, four static X-arranged rotor blades, machine gun, image dimensions, lighting, outline style and transparent alpha background. Keep ALL blade tips, tail, nose and new weapons fully inside the image; no ground, shadows on ground, checkerboard, labels, text or motion blur. Make only the requested localized change. The output must remain a production-ready isolated sprite readable after proportional reduction to 128x128 and display at 48–60 pixels. Convert it to the AIR-TO-GROUND missile variant. Add two clearly visible symmetrical stub-wing weapon pylons, one on either side of the central fuselage, carrying robust compact olive-gray air-to-ground missiles: a clustered set of three thick short missiles per side with broad compact bodies, chunky rear fins and muted ochre nose bands. All missiles face north. The side clusters must read as distinct broad compact missile banks even at small scale. Keep the original frontal machine gun. Keep the main rotor visually above the weapons with believable occlusion while retaining visible missile silhouettes. Do not change the rotor geometry or move/resize the fuselage. No long slender air-to-air missiles, no rocket launch tubes, no extra scenery.",
+    "references": [
+      "source/standard-blue-imagegen.png"
+    ],
+    "source": "source/air-ground-blue-imagegen.png",
+    "generator": "built-in image_gen",
+    "transparent": true
+  },
+  {
+    "name": "air-air-blue",
+    "column": 2,
+    "row": 0,
+    "prompt": "Image 1 is the EDIT TARGET: the standard allied olive-green War Grid helicopter. Preserve the exact fuselage identity, 90-degree orthographic overhead perspective, NORTH-facing nose, SOUTH-facing tail, centered rotor hub, four static X-arranged rotor blades, machine gun, image dimensions, lighting, outline style and transparent alpha background. Keep ALL blade tips, tail, nose and new weapons fully inside the image; no ground, shadows on ground, checkerboard, labels, text or motion blur. Make only the requested localized change. The output must remain a production-ready isolated sprite readable after proportional reduction to 128x128 and display at 48–60 pixels. Convert it to the AIR-TO-AIR missile variant. Add two symmetrical stub-wing weapon pylons, one on either side of the central fuselage, each carrying TWO clearly visible long slender light-gray air-to-air missiles pointing north, with pronounced swept tail fins and small front fins, dark nose tips and pale cyan identification bands. Longer and narrower missile silhouettes than compact air-to-ground missile banks, with open transparent space between the missiles. Keep the original frontal machine gun. Keep the main rotor visually above the weapons with believable occlusion while retaining visible long missile silhouettes. Do not move/resize the fuselage or change rotor geometry. No bulky rocket pods, no clustered short thick missiles, no extra scenery.",
+    "references": [
+      "source/standard-blue-imagegen.png"
+    ],
+    "source": "source/air-air-blue-imagegen.png",
+    "generator": "built-in image_gen",
+    "transparent": true
+  },
+  {
+    "name": "standard-red",
+    "column": 0,
+    "row": 1,
+    "prompt": "Image 1 is the EDIT TARGET: the standard allied olive-green War Grid helicopter. Preserve the exact fuselage identity, 90-degree orthographic overhead perspective, NORTH-facing nose, SOUTH-facing tail, centered rotor hub, four static X-arranged rotor blades, machine gun, image dimensions, lighting, outline style and transparent alpha background. Keep ALL blade tips, tail, nose and new weapons fully inside the image; no ground, shadows on ground, checkerboard, labels, text or motion blur. Make only the requested localized change. The output must remain a production-ready isolated sprite readable after proportional reduction to 128x128 and display at 48–60 pixels. Create the ENEMY TEAM color variant of exactly this STANDARD helicopter. Change ONLY the olive-green painted fuselage and tail panels to muted brick-red military paint with warm lighter red upper-left highlights and deeper burgundy shadows, matching the red tank faction. Keep rotor blades charcoal, cockpit blue-gray and metal gun dark. Preserve every shape, panel, proportion and pixel placement as closely as possible. No secondary weapons, missiles or lateral weapon pylons; this standard helicopter has only its frontal machine gun.",
+    "references": [
+      "source/standard-blue-imagegen.png"
+    ],
+    "source": "source/standard-red-imagegen.png",
+    "generator": "built-in image_gen",
+    "transparent": true
+  },
+  {
+    "name": "air-ground-red",
+    "column": 1,
+    "row": 1,
+    "prompt": "Image 1 is the EDIT TARGET: the olive-green AIR-TO-GROUND War Grid helicopter sprite. Create the enemy red faction variant by recoloring ONLY the olive-green paint on fuselage, tail, wing pylons and missile casings to muted brick-red, with warm red upper-left highlights and burgundy shading, matching the red faction military tanks. Preserve exact helicopter identity, all proportions and placement, the frontal machine gun, all six compact thick north-pointing air-to-ground missiles (three per side) and their ochre nose bands. Keep the rotor charcoal, cockpit blue-gray and dark outlines. Preserve the square canvas dimensions, fully contained north-facing aircraft, true 90-degree orthographic overhead view, centered four-bladed static X rotor, and transparent alpha. Keep all gun, blade and tail tips intact and in the exact same positions. No new objects, no labels, no background, no ground shadow, no motion blur, no checkerboard. This is a precise color edit, not a redesign. Maintain crisp illustrated contours and readability at 48–60 screen pixels.",
+    "references": [
+      "source/air-ground-blue-imagegen.png"
+    ],
+    "source": "source/air-ground-red-imagegen.png",
+    "generator": "built-in image_gen",
+    "transparent": true
+  },
+  {
+    "name": "air-air-red",
+    "column": 2,
+    "row": 1,
+    "prompt": "Image 1 is the EDIT TARGET: the olive-green AIR-TO-AIR War Grid helicopter sprite. Create the enemy red faction variant by recoloring ONLY olive-green painted fuselage, tail and wing pylons to muted brick-red military paint, with warm red upper-left highlights and burgundy shading, matching the red faction tanks. Preserve exact helicopter identity, proportions and pixel positions, frontal machine gun and all FOUR long slender north-facing air-to-air missiles (two per side). Keep missiles light gray with dark nose tips, swept fins and cyan identification bands, rotor charcoal, cockpit blue-gray and outlines dark. Preserve square canvas dimensions, fully contained north-facing aircraft, true 90-degree orthographic overhead view, centered four-bladed static X rotor and transparent alpha. Keep all gun, blade, missile fin and tail tips intact and in their exact positions. No extra objects, labels, background, ground shadow, motion blur or checkerboard. This is a precise color edit, not a redesign. Maintain crisp illustrated contours and readability at 48–60 screen pixels.",
+    "references": [
+      "source/air-air-blue-imagegen.png"
+    ],
+    "source": "source/air-air-red-imagegen.png",
+    "generator": "built-in image_gen",
+    "transparent": true
+  }
+]

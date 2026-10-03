@@ -6,7 +6,7 @@ Jogo de estratégia militar para um jogador contra a IA. Capture postos, proteja
 
 Abra o **`index.html`** no Chrome, Edge ou Firefox. Funciona offline, sem instalação nem servidor; basta manter as pastas `css/`, `js/` e `assets/` ao lado do HTML. Ao iniciar uma operação o jogo entra em tela cheia (botão **Tela cheia** no topo alterna) e a página inteira vira o campo de batalha, sem rolagem.
 
-As dez classes usam arte preparada com fundo transparente: aliados em verde/caqui e inimigos em vermelho. A mesma arte aparece no mapa, no retrato da seleção e no recrutamento, com rotação, movimento e efeito de disparo. Os atlas estão incorporados em `js/assets.js`; `assets/troops-atlas.png` guarda as tropas e `assets/Tanques/tanks-atlas.png` guarda os três tanques nas duas equipes. Versões preparadas com ImageGen e prompts ficam em `assets/Tanques/`.
+As treze classes usam arte preparada com fundo transparente: aliados em verde/caqui e inimigos em vermelho. A mesma arte aparece no mapa, no retrato da seleção e no recrutamento, com rotação, movimento e efeito de disparo. Os atlas estão incorporados em `js/assets.js`; `assets/troops-atlas.png` guarda as tropas e `assets/Tanques/tanks-atlas.png` guarda os três tanques nas duas equipes. Versões preparadas com ImageGen e prompts ficam em `assets/Tanques/`.
 
 Os quatro cenários usam terrenos ilustrados naturais em camadas: grama ou areia, árvores e rochas com transparência, água, margens, estradas e pontes. A composição considera oito vizinhos para suavizar bordas e cantos; a paisagem é contínua, mantendo o centro de cada casa reconhecível. O Deserto Aberto tem versões arenosas.
 
@@ -60,6 +60,9 @@ No RTS não há orçamento de movimento nem ação por turno. A velocidade depen
 | Tanque médio | 4 | 150 | 3 turnos / 30 s | Equilíbrio; conserva os atributos do tanque original |
 | Tanque pesado | 3 | 240 | 4 turnos / 40 s | Mais vida e dano por tiro; menor velocidade e cadência |
 | Artilharia | 2 | 100 | 3 turnos / 30 s | Move **ou** dispara por turno; explosão 3×3 com fogo amigo |
+| Helicóptero | 6 | 150 | 3 turnos / 30 s | Metralhadora; apoio e reconhecimento aéreo |
+| Helicóptero ar-terra | 6 | 230 | 4 turnos / 40 s | Metralhadora e mísseis contra alvos terrestres |
+| Helicóptero ar-ar | 6 | 240 | 4 turnos / 40 s | Metralhadora e mísseis contra helicópteros |
 | Comandante | 3 | — | — | Aura de dano/precisão em raio 2; unidade inicial |
 
 Os custos de treinamento são descontados ao comprar. A fila serial aceita 5 tropas e avança no início do turno do dono, a partir da segunda rodada, ou continuamente no RTS. Uma saída ocupada mantém a unidade pronta até o próximo turno com espaço livre ou até liberar espaço no RTS.
@@ -74,6 +77,10 @@ Os três tanques estão disponíveis no QG do jogador e da IA, com um médio ini
 - **Postos:** capturar usa uma ação da infantaria adjacente ou 2 segundos no RTS. Construir custa 60 e uma ação ou 3 segundos no RTS, convertendo a infantaria em guarnição. Cancelar devolve a reserva uma vez.
 - **Engenharia no RTS:** reparo de até 24 HP por segundo até completar a vida; desarme de mina em 1 segundo. As tarefas avançam somente com a simulação ativa.
 - **Névoa:** inimigos fora da visão atual ficam ocultos, mesmo em terreno explorado. Artilharia depende do reconhecimento aliado.
+- **Floresta:** tropas na floresta só são vistas a até 2 casas de um observador (batedor: 3). Disparar revela a posição por 2 s no RTS ou até o próximo turno.
+- **Helicópteros** (`air:true`): 120 HP, 2,2 casas/s no RTS, visão 6, recompensa 50. Voam sobre água e montanhas com custo 1 por casa, sem bônus de estrada, penalidade de floresta, cobertura ou bônus de montanha; a floresta não os esconde. Dividem casa com tropas terrestres e estruturas, nunca com outra aeronave; a saída aérea do QG só é bloqueada por aeronaves. Minas, a explosão da artilharia e a queda de uma aeronave não atingem a outra camada. Só infantaria e metralhadores os atacam; engenheiros os reparam. Não capturam, constroem nem transportam.
+- **Armas aéreas:** metralhadora 20 de dano, alcance 3, 85%, recarga 1 s (×0,35 contra veículos terrestres, ×0,5 contra estruturas); míssil ar-terra 65, alcance 5, 85%, 3 s (só alvos terrestres; ×1,5 contra veículos, ×0,5 contra tropas a pé); míssil ar-ar 70, alcance 6, 90%, 3 s (só helicópteros). Auto escolhe o míssil contra veículo/estrutura (ar-terra) ou helicóptero (ar-ar) e a metralhadora no resto; os botões Auto, Metralhadora e Míssil fixam a arma. Por turnos um disparo gasta a ação, e trocar de arma não a devolve; no RTS as duas armas dividem a recarga do último disparo. O projétil guarda arma, dano e alvo do momento do disparo. Clique de novo na mesma casa para alternar entre a aeronave e a tropa abaixo dela.
+- **Supressão:** tropa que leva dano e sobrevive perde 25 pontos de precisão por 3 s no RTS ou durante o próprio turno seguinte; novo dano renova sem acumular. Estruturas não são suprimidas.
 - **Comandante:** +20% dano e +15 pontos de precisão no raio 2. Sua morte remove metade dos créditos.
 - **Vitória:** destrua o QG inimigo ou elimine as tropas inimigas sem reforços pendentes.
 
@@ -85,7 +92,7 @@ Os três tanques estão disponíveis no QG do jogador e da IA, com um médio ini
 | `css/style.css` | Estilos do jogo e layout em tela cheia |
 | `css/tailwind.css` | Saída gerada do Tailwind; não há fonte para regenerar, então edite `style.css` |
 | `js/engine.js` | Motor independente do DOM: mapas, gerador procedural, tropas, combate, economia, IA e névoa |
-| `js/assets.js` | Texturas e atlas em data URL; atualizado pelos scripts `prepare:terrain` e `prepare:tanks` |
+| `js/assets.js` | Texturas e atlas em data URL; atualizado pelos scripts `prepare:terrain` e `prepare:tanks`; o bloco `HELI_ASSETS` traz `assets/Helicopteros/helicopters-atlas.png` |
 | `js/render.js` | Sprites, texturas de terreno, câmera, `Renderer` (Canvas e minimapa) e prévia do mapa |
 | `js/ui.js` | Som, estado da partida, painel, comandos de mouse e teclado, loop e inicialização |
 | `tests/` | `engine.test.cjs` (motor: turnos, RTS, tanques, gerador) e `browser.test.cjs` (Chrome: controles, câmera, gerador, tanques, terreno) |
