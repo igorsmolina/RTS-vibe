@@ -7,7 +7,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  {
  const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[],requests=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});await page.context().setOffline(true);
- await page.goto(pathToFileURL(path.join(__dirname,'..','index.html')).href);assert.equal(await page.title(),'War Grid — Fronteiras');assert.equal(await page.locator('#setup').evaluate(e=>e.open),true);
+ await page.goto(pathToFileURL(path.join(__dirname,'..','index.html')).href);assert.equal(await page.title(),'War Grid — Fronteiras');assert.equal(await page.locator('#titleScreen').evaluate(e=>e.open),true,'Abre no menu inicial');await page.locator('#titlePlay').click();assert.equal(await page.locator('#setup').evaluate(e=>e.open),true);
  assert.equal(await page.locator('#modeSelect option[value="rts"]').count(),1,'A configuração deve oferecer RTS com pausa tática');
  assert.equal(await page.evaluate(()=>typeof troopAtlas!=='undefined'),true,'A arte das tropas deve ser carregada');
  await page.waitForFunction(()=>troopAtlas.complete&&troopAtlas.naturalWidth>0&&tankAtlas.complete&&tankAtlas.naturalWidth>0);
@@ -65,13 +65,13 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  // --- mouse, câmera e gerador
  {
  const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto(pathToFileURL(path.join(__dirname,'..','index.html')).href);
+ await page.goto(pathToFileURL(path.join(__dirname,'..','index.html')).href);await page.locator('#titlePlay').click();
  // Gerador: controles visíveis só no mapa procedural; a prévia acompanha os parâmetros e "Gerar outro" troca a semente.
  assert.equal(await page.locator('#procedural').isHidden(),true);await page.locator('#mapSelect').selectOption('random');assert.equal(await page.locator('#procedural').isVisible(),true);
  const shot=()=>page.locator('#preview').evaluate(c=>c.toDataURL());const before=await shot();await page.locator('#genWater').fill('100');const wet=await shot();assert.notEqual(wet,before);
  const seed=await page.locator('#seed').inputValue();await page.locator('#reroll').click();assert.notEqual(await page.locator('#seed').inputValue(),seed);assert.notEqual(await shot(),wet);
- await page.locator('#genMountain').fill('0');await page.locator('#genPosts').selectOption('12');await page.getByRole('button',{name:'Iniciar operação'}).click();
- assert.equal(await page.evaluate(()=>game.structures.filter(s=>s.type==='post').length),12);assert.equal(await page.evaluate(()=>game.options.water),1);
+ await page.locator('#genRelief').fill('0');await page.locator('#genFarmland').fill('100');await page.locator('#genPosts').selectOption('12');await page.getByRole('button',{name:'Iniciar operação'}).click();
+ assert.equal(await page.evaluate(()=>game.structures.filter(s=>s.type==='post').length),12);assert.equal(await page.evaluate(()=>game.options.water),1);assert.equal(await page.evaluate(()=>[game.options.relief,game.options.farmland,game.terrain.filter(t=>t==='hill'||t==='mountain').length].join()),'0,1,0','Relevo 0 e campos 100');
  assert.equal(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight&&document.documentElement.scrollWidth<=innerWidth),true,'Página sem rolagem');
  console.log('OK gerador procedural: parâmetros, prévia, nova semente e partida 36 × 28');
  // Câmera só com mouse: começa no QG, rola pela borda, arrasta com o botão do meio, aproxima com a roda e salta pelo minimapa.
@@ -103,7 +103,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  for(const name of files){const input='data:image/png;base64,'+fs.readFileSync(path.join(root,'assets','Tanques',name+'.png')).toString('base64');const pixels=await page.evaluate(async src=>{const i=new Image();i.src=src;await i.decode();const c=document.createElement('canvas');c.width=c.height=128;const p=c.getContext('2d');p.drawImage(i,0,0);const d=p.getImageData(0,0,128,128).data;let clear=0,solid=0;for(let k=3;k<d.length;k+=4){if(d[k]===0)clear++;if(d[k]>=250)solid++;}return{width:i.width,height:i.height,clear,solid,corners:[d[3],d[127*4+3],d[127*128*4+3],d[d.length-1]]};},input);assert.equal(pixels.width,128);assert.equal(pixels.height,128);assert.ok(pixels.clear>5000&&pixels.solid>3000,name);assert.deepEqual(pixels.corners,[0,0,0,0]);}
  const art=await page.evaluate(()=>['blue','red'].flatMap(owner=>['lightTank','tank','heavyTank'].map(type=>{const c=document.createElement('canvas');c.width=c.height=96;const p=c.getContext('2d');unitIcon(p,type,48,48,TEAM[owner]);const normal=c.toDataURL();p.clearRect(0,0,96,96);unitIcon(p,type,48,48,TEAM[owner],1,Math.PI/2);const rotated=c.toDataURL();p.clearRect(0,0,96,96);unitIcon(p,type,48,48,TEAM[owner],1,0,0,true);return{normal,rotated,firing:c.toDataURL()};})));
  assert.equal(new Set(art.map(a=>a.normal)).size,6);for(const a of art){assert.notEqual(a.normal,a.rotated);assert.notEqual(a.normal,a.firing);}console.log('OK seis PNGs RGBA 128x128, atlas 3x2, classes/equipes, rotação e disparo');
- await page.getByRole('button',{name:'Iniciar operação'}).click();
+ await page.locator('#titlePlay').click();await page.getByRole('button',{name:'Iniciar operação'}).click();
  for(const mode of ['turns','rts'])for(const viewport of [{width:1440,height:1000},{width:768,height:1024},{width:390,height:844},{width:375,height:667}]){
   // Produção no balão do QG; mouse fora do campo para a rolagem pela borda não mover o balão.
   await page.mouse.move(1,1);await page.setViewportSize(viewport);await page.evaluate(mode=>{newOperation('desert','normal',17,mode);paused=true;game.aiEnabled=false;game.credits.blue=10000;setSelection([game.hq('blue').id]);},mode);
@@ -164,7 +164,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  // --- helicópteros ---
  {
  const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});await page.context().setOffline(true);
- await page.goto(pathToFileURL(path.join(root,'index.html')).href);await page.getByRole('button',{name:'Iniciar operação'}).click();await page.waitForFunction(()=>heliAtlas.complete&&heliAtlas.naturalWidth===384);assert.equal(await page.evaluate(()=>heliAtlas.naturalHeight),256);
+ await page.goto(pathToFileURL(path.join(root,'index.html')).href);await page.locator('#titlePlay').click();await page.getByRole('button',{name:'Iniciar operação'}).click();await page.waitForFunction(()=>heliAtlas.complete&&heliAtlas.naturalWidth===384);assert.equal(await page.evaluate(()=>heliAtlas.naturalHeight),256);
  const helis=['helicopter','helicopterGround','helicopterAir'],draw=()=>page.evaluate(helis=>['blue','red'].flatMap(owner=>helis.map(type=>{const c=document.createElement('canvas');c.width=c.height=96;const p=c.getContext('2d');unitIcon(p,type,48,48,TEAM[owner]);const normal=c.toDataURL(),alpha=p.getImageData(0,0,96,96).data.filter((v,i)=>i%4===3&&v>0).length;p.clearRect(0,0,96,96);unitIcon(p,type,48,48,TEAM[owner],1,Math.PI/2);const rotated=c.toDataURL();p.clearRect(0,0,96,96);unitIcon(p,type,48,48,TEAM[owner],1,0,0,true);return{normal,rotated,firing:c.toDataURL(),alpha};})),helis);
  const art=await draw();assert.equal(new Set(art.map(a=>a.normal)).size,6);for(const a of art){assert.ok(a.alpha>600);assert.notEqual(a.normal,a.rotated);assert.notEqual(a.normal,a.firing);}
  // Renderizar e carregar arte não consome o RNG da partida.
@@ -207,7 +207,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  // --- barra de comando ---
  {
  const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto(pathToFileURL(path.join(root,'index.html')).href);await page.getByRole('button',{name:'Iniciar operação'}).click();await page.mouse.move(1,1);
+ await page.goto(pathToFileURL(path.join(root,'index.html')).href);await page.locator('#titlePlay').click();await page.getByRole('button',{name:'Iniciar operação'}).click();await page.mouse.move(1,1);
  assert.equal(await page.locator('#balloon').count(),0,'Sem balões');assert.equal(await page.locator('#commandBar').isHidden(),true,'Sem seleção, sem barra');
  const fix=await page.evaluate(()=>{newOperation('desert','normal',19);paused=true;game.aiEnabled=false;game.terrain.fill('plain');renderer.rebuild();const t=game.units.find(u=>u.owner==='blue'&&u.type==='tank');t.x=12;t.y=12;game.updateVision();centerCamera(12,12);return t.id;});
  const unitAt=()=>page.evaluate(id=>{const u=game.get(id),r=renderer.canvas.getBoundingClientRect();return{x:r.left+((u.x+.5)*CELL-cam.x)*cam.zoom,y:r.top+((u.y+.5)*CELL-cam.y)*cam.zoom};},fix);
@@ -227,7 +227,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  await page.locator('#hqButton').click();assert.equal(await page.locator('#productionPanel').isVisible(),true);assert.equal(await page.locator('#ordersPanel').isVisible(),false);assert.ok((await rects()).bar.height<=125,'Recrutamento compacto');
  // Registro recolhe e expande, lembrando a escolha.
  assert.equal(await page.locator('#log').isHidden(),true);assert.notEqual(await page.locator('#logLast').textContent(),'');await page.locator('#logToggle').click();assert.equal(await page.locator('#log').isVisible(),true);assert.equal(await page.locator('#logToggle').getAttribute('aria-expanded'),'true');
- await page.reload();await page.getByRole('button',{name:'Iniciar operação'}).click();assert.equal(await page.locator('#log').isVisible(),true,'Escolha do registro lembrada');await page.locator('#logToggle').click();
+ await page.reload();await page.locator('#titlePlay').click();await page.getByRole('button',{name:'Iniciar operação'}).click();assert.equal(await page.locator('#log').isVisible(),true,'Escolha do registro lembrada');await page.locator('#logToggle').click();
  console.log('OK barra de comando: base do campo entre os cantos, compacta, não cobre a tropa, detalhes (i), × e QG; registro recolhível');
  // Celular: barra em largura total; os cantos somem enquanto ela está aberta e voltam ao fechar.
  await page.setViewportSize({width:390,height:844});await page.mouse.move(1,1);
@@ -236,5 +236,54 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  await page.locator('#closeSelection').click();assert.equal(await page.locator('.hud-right').isVisible(),true,'Cantos voltam ao fechar');
  assert.deepEqual(errors,[]);console.log('OK celular: barra em largura total, cantos ocultos enquanto aberta, tropa visível');
  await page.close();
+ }
+ // --- campanha no mapa-múndi ---
+ {
+ const context=await browser.newContext({viewport:{width:1440,height:900}});await context.setOffline(true);const page=await context.newPage(),errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});
+ await page.goto(pathToFileURL(path.join(root,'index.html')).href);await page.evaluate(()=>terrainReady);
+ await page.locator('#titleCampaign').click();assert.equal(await page.locator('#campaign').evaluate(e=>e.open),true);assert.equal(await page.locator('#titleScreen').evaluate(e=>e.open),false);
+ assert.match(await page.locator('#campaignStats').textContent(),/^1 suas · 1 inimigas/);
+ const land=await page.evaluate(()=>{const c=document.querySelector('#worldMap'),d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let n=0;for(let i=0;i<d.length;i+=4)if(d[i+1]>d[i+2])n++;return n/(d.length/4);});assert.ok(land>.15,'Terra desenhada: '+land);
+ const pts=await page.evaluate(()=>{const w=campaign.world,c=document.querySelector('#worldMap'),r=c.getBoundingClientRect();
+  const at=reg=>{let best=null;for(let k=0;k<worldView.ids.length;k++)if(worldView.ids[k]===reg.id){const px=k%c.width,py=Math.floor(k/c.width),d=Math.hypot(px-reg.x/w.w*c.width,py-reg.y/w.h*c.height);if(!best||d<best.d)best={px,py,d};}return{x:r.left+(best.px+.5)*r.width/c.width,y:r.top+(best.py+.5)*r.height/c.height,id:reg.id,name:reg.name};};
+  return{ok:at(w.regions.find(g=>canAttack(campaign,g.id))),far:at(w.regions.find(g=>!canAttack(campaign,g.id)&&g.id!==w.homes.blue))};});
+ await page.mouse.click(pts.far.x,pts.far.y);assert.equal(await page.locator('#regionName').textContent(),pts.far.name);assert.equal(await page.locator('#attackRegion').isDisabled(),true,'Sem fronteira azul');
+ await page.mouse.click(pts.ok.x,pts.ok.y);assert.equal(await page.locator('#regionName').textContent(),pts.ok.name);assert.equal(await page.locator('#attackRegion').isEnabled(),true);
+ const expected=await page.evaluate(id=>battleFor(campaign,id),pts.ok.id);await page.locator('#attackRegion').click();assert.equal(await page.locator('#campaign').evaluate(e=>e.open),false);
+ const state=await page.evaluate(()=>({map:game.map,seed:game.seed,difficulty:game.difficulty,title:document.querySelector('#mapTitle').textContent}));
+ assert.equal(state.map,expected.map);assert.equal(state.seed,expected.seed);assert.equal(state.difficulty,expected.difficulty);assert.match(state.title,new RegExp(pts.ok.name));
+ await page.evaluate(()=>{game.winner='blue';updateUI();});assert.equal(await page.locator('#backToWorld').isVisible(),true);await page.locator('#backToWorld').click();
+ assert.equal(await page.locator('#campaign').evaluate(e=>e.open),true);assert.equal(await page.evaluate(id=>campaign.owners[id],pts.ok.id),'blue');assert.match(await page.locator('#campaignEvents').textContent(),/conquistada/);
+ await page.reload();await page.evaluate(()=>terrainReady);await page.locator('#titleCampaign').click();assert.equal(await page.evaluate(id=>campaign.owners[id],pts.ok.id),'blue','Progresso salvo no navegador');
+ await page.locator('#closeCampaign').click();assert.equal(await page.locator('#titleScreen').evaluate(e=>e.open),true,'Sem partida, Voltar leva ao menu inicial');await page.locator('#titlePlay').click();
+ await page.getByRole('button',{name:'Iniciar operação'}).click();await page.locator('#worldButton').click();assert.equal(await page.locator('#campaign').evaluate(e=>e.open),true,'Botão Mapa-múndi do topo abre a campanha');await page.locator('#closeCampaign').click();assert.equal(await page.evaluate(()=>paused),false,'Voltar da campanha restaura o estado anterior da partida');await page.evaluate(()=>{game.winner='red';updateUI();});assert.equal(await page.locator('#backToWorld').isHidden(),true,'Batalha rápida não volta ao mundo');
+ assert.deepEqual(errors,[]);assert.deepEqual(requests,[]);console.log('OK campanha: mapa-múndi, ataque só na fronteira, batalha pela região, vitória pinta de azul e progresso salvo');
+ await context.close();
+ const denied=await browser.newContext();await denied.addInitScript(()=>{Storage.prototype.getItem=Storage.prototype.setItem=()=>{throw new Error('Storage blocked');};});const blocked=await denied.newPage(),deniedErrors=[];blocked.on('pageerror',e=>deniedErrors.push(e.message));
+ await blocked.goto(pathToFileURL(path.join(root,'index.html')).href);await blocked.locator('#titleCampaign').click();assert.equal(await blocked.locator('#campaign').evaluate(e=>e.open),true);await blocked.locator('#newCampaign').click();
+ assert.deepEqual(deniedErrors,[]);console.log('OK campanha sem armazenamento: funciona na sessão, sem erros');await denied.close();
+ }
+ // --- menu inicial e configurações ---
+ {
+ const context=await browser.newContext({viewport:{width:1440,height:900}});await context.setOffline(true);const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const open=id=>page.evaluate(id=>document.querySelector('#'+id).open,id);
+ await page.goto(pathToFileURL(path.join(root,'index.html')).href);await page.evaluate(()=>terrainReady);
+ assert.equal(await open('titleScreen'),true,'Abre no menu inicial');assert.equal(await page.locator('#titleResume').isHidden(),true,'Continuar só com partida');
+ await page.locator('#titlePlay').click();assert.equal(await open('setup'),true);assert.equal(await open('titleScreen'),false);
+ await page.locator('#cancelSetup').click();assert.equal(await open('titleScreen'),true,'Voltar leva ao título');
+ await page.locator('#titlePlay').click();await page.getByRole('button',{name:'Iniciar operação'}).click();await page.waitForTimeout(200);
+ assert.equal(await page.evaluate(()=>paused),false,'Partida começa rodando');
+ await page.locator('#menuButton').click();assert.equal(await open('titleScreen'),true);assert.equal(await page.evaluate(()=>paused),true,'Menu pausa a partida');assert.equal(await page.locator('#titleResume').isVisible(),true,'Continuar com partida');
+ await page.locator('#titleHelp').click();assert.equal(await open('manual'),true);await page.locator('#closeHelp').click();assert.equal(await open('titleScreen'),true,'Como jogar volta ao título');
+ await page.locator('#titleSettings').click();assert.equal(await open('settings'),true);await page.locator('#setGrid').check();await page.locator('#setDifficulty').selectOption('veteran');await page.locator('#setSpeed').selectOption('2');await page.locator('#settingsBack').click();assert.equal(await open('titleScreen'),true);
+ await page.reload();await page.evaluate(()=>terrainReady);
+ await page.locator('#titleSettings').click();assert.equal(await page.locator('#setGrid').isChecked(),true,'Grade persiste');assert.equal(await page.locator('#setDifficulty').inputValue(),'veteran','Dificuldade persiste');assert.equal(await page.locator('#setSpeed').inputValue(),'2','Velocidade persiste');await page.locator('#settingsBack').click();
+ await page.locator('#titlePlay').click();assert.equal(await page.locator('#difficulty').inputValue(),'veteran','Nova operação usa o padrão das configurações');
+ await page.keyboard.press('Escape');assert.equal(await open('titleScreen'),true,'Esc volta ao título');
+ await page.locator('#titleCampaign').click();assert.equal(await open('campaign'),true);await page.locator('#closeCampaign').click();assert.equal(await open('titleScreen'),true,'Campanha volta ao título');
+ await page.keyboard.press('ArrowDown');assert.notEqual(await page.evaluate(()=>document.activeElement.id),'titlePlay','Setas movem o foco');
+ await page.locator('#titlePlay').click();await page.getByRole('button',{name:'Iniciar operação'}).click();await page.waitForTimeout(150);await page.locator('#menuButton').click();await page.keyboard.press('Escape');assert.equal(await open('titleScreen'),false,'Esc com partida fecha o menu');assert.equal(await page.evaluate(()=>paused),false,'Retoma a pausa anterior');
+ assert.deepEqual(errors,[]);console.log('OK menu inicial e configurações: fluxo de voltar, pausa pelo Menu, persistência e atalhos');
+ await context.close();
  }
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

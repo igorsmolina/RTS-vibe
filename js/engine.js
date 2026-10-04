@@ -4,8 +4,17 @@ const COLS=36,ROWS=28,SIZE=COLS*ROWS,STEP=1/30;
 const KEY=(x,y)=>y*COLS+x,INSIDE=(x,y)=>Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&y>=0&&x<COLS&&y<ROWS;
 const TILE=u=>({x:Math.round(u.x),y:Math.round(u.y)}),DIST=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 const DIRS=[[1,0],[-1,0],[0,1],[0,-1]],SIDE={blue:'Azul',red:'Vermelha',neutral:'Neutra'};
-const TERRAIN={plain:{name:'Planície',cover:0,color:'#77816a'},forest:{name:'Floresta',cover:.3,color:'#4b6654'},mountain:{name:'Montanha',cover:.5,color:'#868879'},river:{name:'Rio',cover:0,color:'#477986'},bridge:{name:'Ponte',cover:0,color:'#a69977'},road:{name:'Estrada',cover:0,color:'#b0a487'}};
-const PROCEDURAL={water:.35,forest:.4,mountain:.3,posts:8};
+const TERRAIN={plain:{name:'Planície',cover:0,color:'#77816a'},field:{name:'Campo',cover:0,color:'#9b9a63'},hedge:{name:'Sebe',cover:.25,color:'#4f6a45'},hill:{name:'Colina',cover:.2,color:'#8f9470'},forest:{name:'Floresta',cover:.3,color:'#4b6654'},mountain:{name:'Montanha',cover:.5,color:'#868879'},river:{name:'Rio',cover:0,color:'#477986'},bridge:{name:'Ponte',cover:0,color:'#a69977'},road:{name:'Estrada',cover:0,color:'#b0a487'}};
+const PROCEDURAL={water:.35,forest:.35,relief:.35,farmland:.6,posts:8};
+/* Perfis dos campos de batalha: relevo (colinas), serra (montanha intransitável), água, floresta, campos e sebes.
+   A Fronteira procedural monta o perfil a partir dos controles da tela de nova operação. */
+const MAP_PROFILES={
+ river:{relief:.3,ridge:0,water:.45,centralRiver:true,forest:.3,farmland:.85,hedges:.9},
+ desert:{relief:.6,ridge:.12,water:.15,forest:.06,farmland:.6,irrigated:true,hedges:0},
+ mountain:{relief:.5,ridge:1,pass:true,water:.2,forest:.45,farmland:.45,hedges:.6}
+};
+// Vegetação que esconde quem está nela além de 2 casas (batedor: 3).
+const CONCEAL=new Set(['forest','hedge']);
 const MAPS={river:'Vale dos Rios',desert:'Deserto Aberto',mountain:'Passe de Montanha',random:'Fronteira procedural'};
 const TYPES={
  infantry:{move:3,name:'Infantaria',hp:100,speed:1.35,range:1.15,min:0,damage:35,accuracy:.9,vision:4,cooldown:.8,train:1,cost:50,reward:20,role:'Captura e construção'},
@@ -31,13 +40,32 @@ const WEAPONS={gun:{name:'Metralhadora',damage:20,range:3,accuracy:.85,cooldown:
 const AIR=u=>!!TYPES[u?.type]?.air;
 const MISSILE=w=>['agm','aam','antiAirVehicle','missileInfantry'].includes(w);
 // IA planejada: prazo mínimo de preparo (turnos; RTS ×30 s) e margem sobre a força azul já vista para lançar a onda.
-const PLAN={easy:{prep:5,margin:1.6},normal:{prep:3,margin:1.3},hard:{prep:2,margin:1.1}},WAVE=6;
+/* Níveis da IA: preparo (turnos; RTS ×30 s), margem sobre a força azul vista, onda mínima, fila e exército máximos,
+   renda e recursos de combate (reforço de onda e recuo mais cedo na Veterana). */
+const PLAN={
+ easy:{prep:5,margin:1.6,wave:6,queue:2,army:14,income:.8,reinforce:false,followUp:1},
+ normal:{prep:3,margin:1.15,wave:6,queue:2,army:16,income:1,reinforce:true,followUp:1},
+ hard:{prep:2,margin:1.05,wave:6,queue:3,army:18,income:1.2,reinforce:true,followUp:1},
+ veteran:{prep:2,margin:1,wave:5,queue:3,army:20,income:1.35,reinforce:true,followUp:.5}
+};
+/* Doutrina de compra: parcela do exército por tipo e mínimo fixo. A IA compra o tipo com maior déficit
+   (alvo − existentes − na fila), ajustado pelo que vê; sem crédito para ele, poupa (salvo base ameaçada). */
+const DOCTRINE=[
+ {type:'antiAirVehicle',share:.09},{type:'helicopter',share:.09,min:1},{type:'heavyTank',share:.14,min:1},
+ {type:'helicopterGround',share:.08},{type:'helicopterAir',share:.07},{type:'antitank',share:.08,min:1},
+ {type:'tank',share:.08,min:1},{type:'lightTank',share:.07},{type:'machinegun',share:.07,min:1},
+ {type:'artillery',share:.06,min:1},{type:'infantry',share:.14,min:2},{type:'engineer',share:.04,min:1},
+ {type:'recon',share:.04,min:1},{type:'missileInfantry',share:.02}
+];
+// Cronograma: a partir de certa rodada (RTS: ×30 s) a IA mantém pelo menos uma unidade destas classes.
+const SCHEDULE={antiAirVehicle:4,helicopter:1,heavyTank:6,helicopterGround:10,helicopterAir:14};
+const DEFENSE=['infantry','machinegun','antitank','missileInfantry','antiAirVehicle','lightTank'];
 function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n/4294967296;};}
 ﻿class Game{
  constructor(map='river',difficulty='normal',seed=1,mode='turns',options={}){
   this.mode=mode==='rts'?'rts':'turns';this.economyClock=0;this.aiClock=0;this.visionClock=0;this.claims=new Set();
-  this.map=MAPS[map]?map:'river';this.difficulty=['easy','normal','hard'].includes(difficulty)?difficulty:'normal';this.seed=seed>>>0;this.rng=seeded(seed);
-  const o={...PROCEDURAL,...options},unit=v=>Math.max(0,Math.min(1,Number(v)||0));this.options={water:unit(o.water),forest:unit(o.forest),mountain:unit(o.mountain),posts:Math.max(2,Math.min(12,Math.round(Number(o.posts)/2)*2||8))};
+  this.map=MAPS[map]?map:'river';this.difficulty=Object.hasOwn(PLAN,difficulty)?difficulty:'normal';this.seed=seed>>>0;this.rng=seeded(seed);
+  const o={...PROCEDURAL,...options},unit=v=>Math.max(0,Math.min(1,Number(v)||0));this.options={water:unit(o.water),forest:unit(o.forest),relief:unit(options.relief??options.mountain??PROCEDURAL.relief),farmland:unit(o.farmland),posts:Math.max(2,Math.min(12,Math.round(Number(o.posts)/2)*2||8))};
   this.terrain=Array(SIZE).fill('plain');this.units=[];this.structures=[];this.mines=[];this.projectiles=[];this.events=[];this.logs=[];this.nextId=1;
   this.time=0;this.round=1;this.turn='blue';this.actions=[];this.animation=null;this.aiQueue=[];this.aiWait=0;this.aiEnabled=true;this.aiDecisions=0;this.aiState='prepare';this.plan={phase:'prepare',since:this.mode==='rts'?0:1,rally:null,objective:null,wave:[],waveStart:0};this.intel=new Map();this.shotsFired=0;
   this.credits={blue:150,red:150};this.winner=null;this.visible={blue:Array(SIZE).fill(false),red:Array(SIZE).fill(false)};this.sky={blue:Array(SIZE).fill(false),red:Array(SIZE).fill(false)};this.explored={blue:Array(SIZE).fill(false),red:Array(SIZE).fill(false)};this.memory={blue:new Map(),red:new Map()};
@@ -53,35 +81,92 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   if(t.structure)u.queue=[];if(t.air){u.weaponMode='auto';u.altitude='low';u.flares=3;u.flareCooldown=0;u.flareUsed=false;}(t.structure?this.structures:this.units).push(u);return u;
  }
   generate(){
-  const {water,forest,mountain,posts}=this.options,rng=this.rng;
-  // Ruído de valor: grade grossa sorteada e interpolada, para manchas e rios contínuos.
+  const o=this.options,rng=this.rng,mid=COLS/2,T=this.terrain,seed=this.seed;
+  const P=this.map==='random'?{relief:o.relief,ridge:Math.max(0,o.relief-.55)*2.2,water:o.water,forest:o.forest,farmland:o.farmland,hedges:.8}:MAP_PROFILES[this.map];
+  // Mapa simétrico por ponto: decide meia malha e espelha (justiça e a IA presume o QG azul pelo espelho).
+  const mirror=c=>({x:COLS-1-c.x,y:ROWS-1-c.y}),half=(x,y)=>KEY(x,y)<=KEY(COLS-1-x,ROWS-1-y),at=(x,y)=>T[KEY(x,y)],set=(x,y,t)=>{T[KEY(x,y)]=T[KEY(COLS-1-x,ROWS-1-y)]=t;};
+  const each=fn=>{for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)if(half(x,y))fn(x,y);};
+  // Hash determinístico por semente (sem consumir o RNG): decide lotes e porteiras.
+  const hash=(a,b)=>{let n=(seed^Math.imul(a+7,0x9e3779b1)^Math.imul(b+3,0x85ebca6b))>>>0;n=Math.imul(n^(n>>>15),0x2c1b3c6d)>>>0;return((n^(n>>>13))>>>0)/4294967296;};
+  // Ruído de valor: grade grossa sorteada e interpolada, para manchas e contornos naturais.
   const noise=scale=>{const w=Math.ceil(COLS/scale)+2,h=Math.ceil(ROWS/scale)+2,g=Array.from({length:w*h},rng),s=t=>t*t*(3-2*t);return(x,y)=>{const fx=x/scale,fy=y/scale,ix=Math.floor(fx),iy=Math.floor(fy),tx=s(fx-ix),ty=s(fy-iy),v=(a,b)=>g[(iy+b)*w+ix+a];return(v(0,0)*(1-tx)+v(1,0)*tx)*(1-ty)+(v(0,1)*(1-tx)+v(1,1)*tx)*ty;};};
-  const height=noise(7),moisture=noise(5),flow=noise(9),mid=COLS/2;
-  // Limiar por quantil: cada parâmetro vira a fração aproximada da metade do mapa coberta pelo terreno.
-  const cut=(f,frac)=>{const v=[];for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)if(KEY(x,y)<=KEY(COLS-1-x,ROWS-1-y))v.push(f(x,y));v.sort((p,q)=>p-q);return v[v.length-1-Math.floor(frac*v.length)];};
-  const peak=cut(height,.18*mountain),lake=cut(flow,.04*water),wet=cut(moisture,.4*forest);
-  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){
-   const k=KEY(x,y),mirror=KEY(COLS-1-x,ROWS-1-y);if(k>mirror)continue;const r=rng();let t=r<.21?'forest':r<.27?'mountain':'plain';
-   if(this.map==='desert')t=r<.07?'forest':r<.14?'mountain':'plain';
-   if(this.map==='mountain')t=x>=mid-2&&x<=mid+1?'mountain':r<.2?'forest':'plain';
-   if(this.map==='river'&&(x===mid-1||x===mid))t='river';
-   if(this.map==='random')t=height(x,y)>peak?'mountain':flow(x,y)>lake?'river':moisture(x,y)>wet?'forest':'plain';
-   this.terrain[k]=this.terrain[mirror]=t;
+  const height=noise(6),moisture=noise(5),flow=noise(8),wobble=noise(4);
+  // Limiar por quantil: a fração pedida da meia malha recebe o terreno.
+  const cut=(f,frac)=>{const v=[];each((x,y)=>v.push(f(x,y)));v.sort((p,q)=>p-q);return v[v.length-1-Math.floor(frac*v.length)];};
+  // 1. Relevo: colinas em manchas; picos de serra raros; no Passe, uma serra central com três passagens.
+  const hills=cut(height,.32*P.relief),peaks=cut(height,.06*P.ridge);
+  each((x,y)=>set(x,y,P.ridge&&!P.pass&&height(x,y)>peaks?'mountain':height(x,y)>hills?'hill':'plain'));
+  if(P.pass){
+   each((x,y)=>{const c=mid-.5+(wobble(x,y)-.5)*3+(y-ROWS/2)*.15;if(Math.abs(x-c)<=1.6)set(x,y,'mountain');else if(Math.abs(x-c)<=3.2&&at(x,y)==='plain'&&height(x,y)>.45)set(x,y,'hill');});
+   for(const row of [Math.round(ROWS*.22),ROWS/2-1])for(let x=0;x<COLS;x++)for(const y of [row,row+1])if(at(x,y)==='mountain')set(x,y,'hill');
   }
-  // Rios procedurais: caminhada de borda a borda, contínua em 4 direções; o espelho cria o segundo rio.
-  if(this.map==='random')for(let i=0;i<Math.round(water*2);i++){let x=5+Math.floor(rng()*(COLS-12));const paint=(cx,y)=>{for(const wx of water>.6?[cx,cx+1]:[cx])this.terrain[KEY(wx,y)]=this.terrain[KEY(COLS-1-wx,ROWS-1-y)]='river';};
-   for(let y=0;y<ROWS;y++){paint(x,y);const r=rng();x=Math.max(5,Math.min(COLS-7,x+(r<.3?-1:r>.7?1:0)));paint(x,y);}}
-  const lane=Math.round(ROWS*.3);
-  for(const y of [lane,ROWS-1-lane])for(let x=0;x<COLS;x++)this.terrain[KEY(x,y)]=this.terrain[KEY(x,y)]==='river'?'bridge':'road';
-  for(const x of [2,COLS-3])for(let y=1;y<ROWS-1;y++)this.terrain[KEY(x,y)]=this.terrain[KEY(x,y)]==='river'?'bridge':'road';
-  for(const [x,y]of [[3,ROWS-2],[COLS-4,1]])this.terrain[KEY(x,y)]='road';
+  // 2. Água: rio central contínuo (Vale dos Rios) ou rios de borda a borda; lagos pelo ruído de fluxo.
+  const wet=(x,y)=>{if(INSIDE(x,y)&&at(x,y)!=='mountain')set(x,y,'river');};
+  if(P.centralRiver){
+   let x=mid-1;for(let y=ROWS/2-1;y>=0;y--){wet(x,y);wet(x+1,y);const r=rng(),nx=Math.max(mid-6,Math.min(mid+4,x+(r<.32?-1:r>.68?1:0)));if(nx!==x){wet(nx,y);wet(nx+1,y);}x=nx;if(y===Math.round(ROWS*.3))for(let dx=-1;dx<=2;dx++)for(let dy=-1;dy<=1;dy++)wet(x+dx,y+dy);}
+  }else for(let i=0;i<Math.round(P.water*2.2);i++){
+   let x=5+Math.floor(rng()*(COLS-12));const wide=P.water>.6;
+   for(let y=0;y<ROWS;y++){wet(x,y);if(wide)wet(x+1,y);const r=rng(),nx=Math.max(4,Math.min(COLS-6,x+(r<.3?-1:r>.7?1:0)));if(nx!==x){wet(nx,y);if(wide)wet(nx+1,y);}x=nx;}
+  }
+  const lakes=cut(flow,.035*P.water);each((x,y)=>{if(flow(x,y)>lakes&&at(x,y)!=='mountain')set(x,y,'river');});
+  // 3. Florestas em manchas pela umidade, só em planície.
+  const woods=cut(moisture,.3*P.forest);each((x,y)=>{if(at(x,y)==='plain'&&moisture(x,y)>woods)set(x,y,'forest');});
+  // 4. Campos e sebes: lotes entre linhas espelhadas; lote cultivado vira campo e suas bordas viram sebes com porteiras.
+  if(P.farmland>0){
+   const lines=(n,min,max)=>{const out=[];for(let v=1+Math.floor(rng()*3);v<n/2-1;v+=min+Math.floor(rng()*(max-min+1)))out.push(v,n-1-v);return new Set(out);};
+   const xs=lines(COLS,4,6),ys=lines(ROWS,3,5),count=(set,v)=>[...set].filter(l=>l<=v).length;
+   const lot=(x,y)=>{const a=count(xs,x),b=count(ys,y),ma=xs.size-a,mb=ys.size-b;return a<ma||a===ma&&b<=mb?[a,b]:[ma,mb];};
+   const farmed=(x,y)=>{const [a,b]=lot(x,y);return hash(a*31+5,b*17+11)<P.farmland;};
+   // Deserto: só cultivo irrigado, a até 3 casas de água (oásis).
+   const irrigated=(x,y)=>{for(let dy=-3;dy<=3;dy++)for(let dx=-3+Math.abs(dy);dx<=3-Math.abs(dy);dx++)if(INSIDE(x+dx,y+dy)&&at(x+dx,y+dy)==='river')return true;return false;};
+   each((x,y)=>{if(at(x,y)==='plain'&&!xs.has(x)&&!ys.has(y)&&farmed(x,y)&&(!P.irrigated||irrigated(x,y)))set(x,y,'field');});
+   // Bocage: um lote cultivado é cercado (chance pelo perfil); sebes contínuas com porteiras ocasionais e cantos fechados.
+   const hedged=(x,y)=>{const [a,b]=lot(x,y);return hash(a*13+3,b*7+1)<P.hedges;};
+   if(P.hedges>0){
+    each((x,y)=>{if(at(x,y)!=='plain'||!(xs.has(x)||ys.has(y)))return;if(hash(x,y)>.1&&DIRS.some(([dx,dy])=>INSIDE(x+dx,y+dy)&&at(x+dx,y+dy)==='field'&&hedged(x+dx,y+dy)))set(x,y,'hedge');});
+    each((x,y)=>{if(at(x,y)!=='plain'||!xs.has(x)||!ys.has(y))return;const h=(dx,dy)=>INSIDE(x+dx,y+dy)&&at(x+dx,y+dy)==='hedge';if((h(1,0)||h(-1,0))&&(h(0,1)||h(0,-1)))set(x,y,'hedge');});
+   }
+  }
+  // 5. Base: área inicial limpa; saída da estrada ao lado do QG.
+  for(let y=ROWS-5;y<ROWS;y++)for(let x=0;x<6;x++)set(x,y,'plain');
+  const exit={x:3,y:ROWS-2};
+  // Casas ligadas à saída sem atravessar serra (rios viram pontes nas estradas).
+  const reach=new Uint8Array(SIZE),queue=[KEY(exit.x,exit.y)];reach[queue[0]]=1;
+  while(queue.length){const k=queue.pop(),px=k%COLS,py=(k-px)/COLS;for(const [dx,dy]of DIRS){const x=px+dx,y=py+dy,n=KEY(x,y);if(INSIDE(x,y)&&!reach[n]&&at(x,y)!=='mountain'){reach[n]=1;queue.push(n);}}}
+  // 6. Postos em pontos estratégicos: colinas, cabeceiras de rio e o meio do mapa; espaçados e longe dos QGs.
+  const hqs=[{x:1,y:ROWS-2},{x:COLS-2,y:1}],placed=[],nearWater=(x,y)=>[[1,0],[-1,0],[0,1],[0,-1],[2,0],[-2,0],[0,2],[0,-2]].some(([dx,dy])=>INSIDE(x+dx,y+dy)&&at(x+dx,y+dy)==='river');
+  const candidates=[];each((x,y)=>{if(!reach[KEY(x,y)]||['river','mountain'].includes(at(x,y))||x<2||y<1||x>COLS-3||y>ROWS-2||hqs.some(h=>DIST(h,{x,y})<8)||x===COLS-1-x&&y===ROWS-1-y)return;
+   const balance=Math.abs(DIST({x,y},hqs[0])-DIST({x,y},hqs[1]));candidates.push({x,y,score:rng()+(at(x,y)==='hill'?.35:0)+(nearWater(x,y)?.35:0)+.25*(1-balance/40)});});
+  candidates.sort((a,b)=>b.score-a.score);
+  for(let space=6;space>=2&&placed.length<o.posts/2;space--)for(const c of candidates){if(placed.length>=o.posts/2)break;if([...placed,...placed.map(mirror)].some(p=>DIST(p,c)<space)||DIST(c,mirror(c))<space)continue;placed.push(c);}
+  // 7. Estradas: A* com custo de obra (planície barata, colina e floresta caras, rio vira ponte, serra proibida).
+  const build={road:.3,bridge:.3,plain:1,field:1.1,hedge:1.4,hill:2.4,forest:3,river:4.5};
+  // Se uma serra isolar os pontos, a segunda tentativa abre uma passagem por ela.
+  const carve=(a,b)=>{
+   for(const mountain of [undefined,8]){
+    const step={...build,mountain},cost=new Float64Array(SIZE).fill(Infinity),from=new Int32Array(SIZE).fill(-1),start=KEY(a.x,a.y),end=KEY(b.x,b.y),open=[[DIST(a,b),start]];cost[start]=0;
+    while(open.length){let i=0;for(let j=1;j<open.length;j++)if(open[j][0]<open[i][0])i=j;const [,k]=open.splice(i,1)[0];if(k===end)break;const px=k%COLS,py=(k-px)/COLS;
+     for(const [dx,dy]of DIRS){const x=px+dx,y=py+dy;if(!INSIDE(x,y))continue;const n=KEY(x,y),w=step[at(x,y)];if(w===undefined)continue;const c=cost[k]+w;if(c<cost[n]){cost[n]=c;from[n]=k;open.push([c+DIST({x,y},b)*.3,n]);}}}
+    if(end!==start&&from[end]<0)continue;
+    for(let k=end;k>=0;k=from[k]){const x=k%COLS,y=(k-x)/COLS;set(x,y,['river','bridge'].includes(at(x,y))?'bridge':'road');}return;
+   }
+  };
+  const center=[...Array(SIZE).keys()].filter(k=>reach[k]&&!['river','mountain'].includes(T[k])).map(k=>({x:k%COLS,y:(k-k%COLS)/COLS})).sort((p,q)=>Math.hypot(p.x-mid+.5,p.y-ROWS/2+.5)-Math.hypot(q.x-mid+.5,q.y-ROWS/2+.5))[0]||{x:mid-1,y:ROWS/2-1};
+  carve(exit,center);carve(center,mirror(center));
+  const nodes=[exit,mirror(exit),center,mirror(center)];
+  // Vale dos Rios: travessia reta extra (e o espelho), com ponte, ligada à malha pelas pontas.
+  if(P.centralRiver){const y=Math.round(ROWS*.2),ends=[{x:mid-8,y},{x:mid+7,y}];for(let x=ends[0].x;x<=ends[1].x;x++)set(x,y,['river','bridge'].includes(at(x,y))?'bridge':'road');
+   for(const e of ends){carve(e,nodes.slice().sort((m,n)=>DIST(m,e)-DIST(n,e))[0]);nodes.push(e,mirror(e));}}
+  for(const p of placed){const q=nodes.slice().sort((m,n)=>DIST(m,p)-DIST(n,p))[0];carve(p,q);nodes.push(p,mirror(p));}
+  // Postos neutros sobre a estrada.
+  for(const p of placed)for(const c of [p,mirror(p)]){T[KEY(c.x,c.y)]='road';this.add('neutral','post',c.x,c.y);}
+  // 8. Tropas iniciais.
   const start=[['hq',1,12],['commander',2,12],['infantry',3,11],['infantry',1,10],['tank',4,12],['artillery',1,11],['recon',3,10],['engineer',2,11]];
-  for(const [type,x,y0]of start){const y=y0-14+ROWS;this.terrain[KEY(x,y)]=this.terrain[KEY(COLS-1-x,ROWS-1-y)]='plain';this.add('blue',type,x,y);this.add('red',type,COLS-1-x,ROWS-1-y);}
-  // Postos espaçados nas estradas horizontais; o espelho cai na outra estrada. Pontes ficam livres.
-  for(let i=1;i<=posts/2;i++){let x=Math.round(i*COLS/(posts/2+1));while(this.terrain[KEY(x,lane)]==='bridge')x++;for(const [px,py]of [[x,lane],[COLS-1-x,ROWS-1-lane]])this.add('neutral','post',px,py);}
-  for(let placed=0,tries=0;placed<4&&tries<200;tries++){const x=mid-6+Math.floor(rng()*12),y=Math.floor(ROWS/2)-5+Math.floor(rng()*10),cells=[[x,y],[COLS-1-x,ROWS-1-y]];
-   if(cells.some(([cx,cy])=>['river','mountain','bridge'].includes(this.terrain[KEY(cx,cy)])||this.structureAt(cx,cy)||this.mines.some(m=>m.x===cx&&m.y===cy))||x===COLS-1-x&&y===ROWS-1-y)continue;
-   for(const [cx,cy]of cells)this.mines.push({x:cx,y:cy,known:{blue:false,red:false}});placed++;}
+  for(const [type,x,y0]of start){const y=y0-14+ROWS;this.add('blue',type,x,y);this.add('red',type,COLS-1-x,ROWS-1-y);}
+  // 9. Minas no centro, fora de água, serra, ponte e estruturas.
+  for(let placedMines=0,tries=0;placedMines<4&&tries<200;tries++){const x=mid-6+Math.floor(rng()*12),y=Math.floor(ROWS/2)-5+Math.floor(rng()*10),cells=[[x,y],[COLS-1-x,ROWS-1-y]];
+   if(cells.some(([cx,cy])=>['river','mountain','bridge'].includes(at(cx,cy))||this.structureAt(cx,cy)||this.mines.some(m=>m.x===cx&&m.y===cy))||x===COLS-1-x&&y===ROWS-1-y)continue;
+   for(const [cx,cy]of cells)this.mines.push({x:cx,y:cy,known:{blue:false,red:false}});placedMines++;}
  }
 
  log(text){this.logs.unshift({time:this.mode==='rts'?this.time:this.round,text});if(this.logs.length>70)this.logs.pop();}
@@ -89,7 +174,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  event(kind,u,extra={}){this.events.push({kind,x:u.x,y:u.y,visible:u.owner==='blue'||this.isVisible('blue',u),...extra});if(this.events.length>250)this.events.shift();}
   structureAt(x,y){return this.structures.find(s=>s.x===x&&s.y===y&&s.hp>0);}
  terrainAt(u){const p=TILE(u);return this.terrain[KEY(p.x,p.y)];}
- cost(u,x,y){if(!INSIDE(x,y))return Infinity;if(AIR(u))return 1;const t=this.terrain[KEY(x,y)];if(t==='river'||t==='mountain'&&u.type!=='infantry')return Infinity;if(t==='road')return .5;return t==='forest'&&TYPES[u.type].vehicle?2:1;}
+ cost(u,x,y){if(!INSIDE(x,y))return Infinity;if(AIR(u))return 1;const t=this.terrain[KEY(x,y)];if(t==='river'||t==='mountain'&&u.type!=='infantry')return Infinity;if(t==='road')return .5;const vehicle=TYPES[u.type].vehicle;return t==='forest'&&vehicle?2:(t==='hill'||t==='hedge')&&vehicle?1.5:1;}
  // Ocupação e reservas por camada: aeronaves só disputam casa com aeronaves; solo, com solo.
  occupied(x,y,except,air=AIR(except)){return this.units.find(u=>u!==except&&u.hp>0&&AIR(u)===air&&(DIST(TILE(u),{x,y})===0||u.segment&&(DIST(u.segment.from,{x,y})===0||DIST(u.segment.to,{x,y})===0)));}
  /* Grades por casa: guardam a primeira unidade/estrutura de cada casa, igual às buscas lineares, numa só varredura. */
@@ -134,8 +219,8 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  isVisible(owner,u){if(!u||!this.visible[owner])return false;const p=TILE(u);return !!(AIR(u)?this.sky:this.visible)[owner][KEY(p.x,p.y)];}
  effectVisible(x,y,air=false){const p=TILE({x,y});return INSIDE(p.x,p.y)&&!!(air?this.sky:this.visible).blue[KEY(p.x,p.y)];}
  // Alcance contra um alvo; sem alvo, o maior alcance do modo de arma atual.
- range(u,target){const t=TYPES[u.type];if(target&&!this.weapon(u,target))return 0;if(u.type==='missileInfantry')return target&&!AIR(target)?1:3;if(!t.air)return t.range+(this.terrainAt(u)==='mountain'?2:0);if(target)return WEAPONS[this.weapon(u,target)]?.range??0;const mode=u.weaponMode||'auto';return mode==='auto'?Math.max(...t.weapons.map(w=>WEAPONS[w].range)):WEAPONS[mode].range;}
- sight(u){return TYPES[u.type].vision+(!AIR(u)&&this.terrainAt(u)==='mountain'?2:0);}
+ range(u,target){const t=TYPES[u.type];if(target&&!this.weapon(u,target))return 0;if(u.type==='missileInfantry')return target&&!AIR(target)?1:3;if(!t.air)return t.range+({mountain:2,hill:1}[this.terrainAt(u)]||0);if(target)return WEAPONS[this.weapon(u,target)]?.range??0;const mode=u.weaponMode||'auto';return mode==='auto'?Math.max(...t.weapons.map(w=>WEAPONS[w].range)):WEAPONS[mode].range;}
+ sight(u){return TYPES[u.type].vision+(!AIR(u)&&['mountain','hill'].includes(this.terrainAt(u))?2:0);}
  /* Arma de a contra b, ou null se incompatível. Solo: a própria tropa (só infantaria e metralhador alcançam aeronaves).
     Helicóptero: arma manual se compatível; Auto prefere o míssil contra veículo/estrutura (ar-terra) ou aeronave (ar-ar). */
  weapon(a,b){
@@ -149,7 +234,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
    const visible=this.visible[owner],sky=this.sky[owner],explored=this.explored[owner];visible.fill(false);sky.fill(false);
    for(const list of [this.units,this.structures])for(const u of list){
     if(u.owner!==owner||u.hp<=0)continue;const r=this.sight(u),limit=r+.05,x0=Math.max(0,Math.floor(u.x-r)),x1=Math.min(COLS-1,Math.ceil(u.x+r));
-    for(let y=Math.max(0,Math.floor(u.y-r));y<=Math.min(ROWS-1,Math.ceil(u.y+r));y++){const dy=Math.abs(u.y-y);for(let x=x0;x<=x1;x++){const d=Math.abs(u.x-x)+dy;if(d<=limit){const k=KEY(x,y);explored[k]=true;sky[k]=true;if(this.terrain[k]!=='forest'||d<=(u.type==='recon'?3:2)+.05)visible[k]=true;}}}
+    for(let y=Math.max(0,Math.floor(u.y-r));y<=Math.min(ROWS-1,Math.ceil(u.y+r));y++){const dy=Math.abs(u.y-y);for(let x=x0;x<=x1;x++){const d=Math.abs(u.x-x)+dy;if(d<=limit){const k=KEY(x,y);explored[k]=true;sky[k]=true;if(!CONCEAL.has(this.terrain[k])||d<=(u.type==='recon'?3:2)+.05)visible[k]=true;}}}
    }
    // Floresta esconde além de 2 casas (batedor: 3); quem disparou fica visível a qualquer observador com alcance de visão.
    for(const e of this.units)if(e.owner!==owner&&e.revealed>0){const p=TILE(e),k=KEY(p.x,p.y);if(!visible[k]&&this.all().some(o=>o.owner===owner&&o.hp>0&&DIST(o,e)<=this.sight(o)+.05))visible[k]=true;}
@@ -172,7 +257,27 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  canService(u,base){return this.serviceSite(u,base)&&(u.hp<u.maxHp||u.flares<3);}
  canFire(a,b){return !!b&&b.hp>0&&b.owner!==a.owner&&b.owner!=='neutral'&&!!this.weapon(a,b)&&this.isVisible(a.owner,b)&&DIST(a,b)<=this.range(a,b)+.05&&DIST(a,b)>=TYPES[a.type].min;}
 
+ // Mira da IA: antitanque em veículos, metralhador em tropa a pé, mísseis em aeronaves; prefere abates prováveis,
+ // alvos de maior valor e perto; artilharia escolhe o ponto com mais inimigos no 3×3 e nenhum aliado.
+ aiAcquire(u){
+  const friends=this.units.filter(v=>v.owner==='red'&&v.hp>0),foes=this.all().filter(e=>e.owner==='blue'&&e.hp>0);
+  const around=(list,e)=>list.filter(v=>Math.max(Math.abs(v.x-e.x),Math.abs(v.y-e.y))<=1).length;
+  let best=null,bestScore=-Infinity;
+  for(const list of [this.units,this.structures])for(const e of list){
+   if(!this.canFire(u,e))continue;
+   const w=this.weapon(u,e),t=TYPES[e.type],d=DIST(u,e);let role=1;
+   if(u.type==='artillery')role=around(friends,e)?-10:2+around(foes,e)*2;
+   else if(AIR(u))role=w!=='gun'?3:1;
+   else if(u.type==='antitank')role=t.vehicle?3:0;
+   else if(u.type==='machinegun')role=AIR(e)||(!t.vehicle&&!t.structure)?2:0;
+   const dano=this.attackPower(u,AIR(u)?w:undefined),abate=e.hp<=dano*(1-this.cover(e))?1:0;
+   const score=role*4+abate*3+Math.min(2,(t.reward||0)/50)-d*.35-(e.hp/e.maxHp)*.5;
+   if(score>bestScore){bestScore=score;best=e;}
+  }
+  return best;
+ }
   acquire(u){
+  if(u.owner==='red')return this.aiAcquire(u);
   let best,bestD=Infinity,bestPriority=-1;
   for(const list of [this.units,this.structures])for(const e of list){
    if(!this.canFire(u,e))continue;const d=DIST(u,e),t=TYPES[e.type],priority=TYPES[u.type].air?Number(this.weapon(u,e)!=='gun'):u.type==='antitank'?Number(!!t.vehicle):u.type==='machinegun'?Number(!t.vehicle&&!t.structure):0;
@@ -181,7 +286,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  }
 
  cancelWork(u){if(u.reserved){this.credits[u.owner]+=u.reserved;u.reserved=0;}u.work=0;u.serviceClock=0;}
- buildSite(u){return u?.type==='infantry'&&u.hp>0&&!u.segment&&!this.structures.some(s=>DIST(s,u)<3)&&['plain','road','forest'].includes(this.terrainAt(u));}
+ buildSite(u){return u?.type==='infantry'&&u.hp>0&&!u.segment&&!this.structures.some(s=>DIST(s,u)<3)&&['plain','road','forest','field','hill'].includes(this.terrainAt(u));}
  canBuild(u){return !!u&&(this.mode==='rts'||u.owner===this.turn)&&u.actionLeft&&!u.pending&&this.credits[u.owner]>=60&&this.buildSite(u);}
  pathCost(u,path){return path.reduce((sum,p)=>sum+this.cost(u,p.x,p.y),0);}
  trimPath(u,path){if(this.mode==='rts')return path;let left=u.moveLeft;const route=[];for(const p of path){const cost=this.cost(u,p.x,p.y);if(cost>left+1e-8)break;left-=cost;route.push(p);}return route;}
@@ -311,7 +416,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   if(d<=step){u.x=seg.to.x;u.y=seg.to.y;u.moveLeft=Math.max(0,u.moveLeft-seg.cost);u.moved=true;if(u.type==='artillery')u.actionLeft=false;u.segment=null;this.enterCell(u);this.updateVision();}
   else{u.x+=dx/d*step;u.y+=dy/d*step;}
  }
- income(owner){return Math.round(this.structures.filter(s=>s.owner===owner).reduce((n,s)=>n+(s.type==='hq'?15:8),0)*(owner==='red'?(this.difficulty==='hard'?1.2:this.difficulty==='easy'?.8:1):1));}
+ income(owner){return Math.round(this.structures.filter(s=>s.owner===owner).reduce((n,s)=>n+(s.type==='hq'?15:8),0)*(owner==='red'?PLAN[this.difficulty].income:1));}
   spawnCells(owner,type){const hq=this.hq(owner),cells=[];if(!hq)return cells;for(let r=1;r<=2;r++)for(let y=hq.y-r;y<=hq.y+r;y++)for(let x=hq.x-r;x<=hq.x+r;x++)if(INSIDE(x,y)&&DIST(hq,{x,y})===r&&Number.isFinite(this.cost({type},x,y))&&(TYPES[type].air||!this.structureAt(x,y)&&!this.mines.some(m=>m.x===x&&m.y===y)))cells.push({x,y});return cells;}
 
  trainDuration(type){return TYPES[type].train*(this.mode==='rts'?10:1);}
@@ -330,13 +435,24 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  }
  endTurn(){if(this.mode==='rts'||this.winner||this.turn!=='blue'||this.busy)return false;for(const u of this.units)if(u.owner==='blue'&&!u.moved&&u.actionLeft&&!AIR(u))u.entrenched=true;this.beginTurn('red');return true;}
  aiBuy(){
-  if(!this.aiEnabled)return;const hq=this.hq('red');if(!hq||hq.queue.length>=2)return;const army=this.units.filter(u=>u.owner==='red');if(army.length+hq.queue.length>=16)return;
-  const pending=type=>army.filter(u=>u.type===type).length+hq.queue.filter(q=>q.type===type).length;
-  const tankChoice=['lightTank','tank','heavyTank'].sort((a,b)=>pending(a)/(a==='tank'?2:1)-pending(b)/(b==='tank'?2:1))[0];
-  // Aeronaves: ar-ar contra helicópteros visíveis, ar-terra contra blindados visíveis, padrão como apoio. Só usa o que vê.
-  const seen=this.all().filter(e=>e.owner==='blue'&&this.isVisible('red',e)),skies=seen.filter(AIR).length,armor=seen.filter(e=>TYPES[e.type].vehicle).length;
-  const airDefense=skies&&(!pending('antiAirVehicle')&&!pending('missileInfantry')||skies>=2&&(!pending('antiAirVehicle')||!pending('missileInfantry')))?!pending('antiAirVehicle')?['antiAirVehicle',...(!pending('missileInfantry')?['missileInfantry']:[])]:['missileInfantry']:null;
-  const priority=pending('infantry')<2?['infantry']:airDefense|| (skies&&!pending('helicopterAir')?['helicopterAir']:armor>=2&&!pending('helicopterGround')?['helicopterGround']:!pending('engineer')?['engineer']:!pending('recon')?['recon']:!pending('machinegun')?['machinegun','infantry']:!pending('antitank')?['antitank','infantry']:pending('artillery')<2?['artillery','tank','infantry']:!pending('helicopter')&&pending('lightTank')&&pending('heavyTank')&&pending('tank')>=2?['helicopter',tankChoice]:[tankChoice]);priority.some(type=>this.enqueue('red',type));
+  if(!this.aiEnabled)return;const hq=this.hq('red'),cfg=PLAN[this.difficulty];if(!hq||hq.queue.length>=cfg.queue)return;
+  const army=this.units.filter(u=>u.owner==='red');if(army.length+hq.queue.length>=cfg.army)return;
+  const count=type=>army.filter(u=>u.type===type).length+hq.queue.filter(q=>q.type===type).length;
+  // Só o que a IA vê conta: aeronaves, blindados e tropas a pé azuis ajustam a doutrina; ameaça perto do QG libera compra imediata.
+  const seen=this.all().filter(e=>e.owner==='blue'&&e.hp>0&&this.isVisible('red',e));
+  const skies=Math.min(3,seen.filter(AIR).length),armor=Math.min(4,seen.filter(e=>TYPES[e.type].vehicle&&!AIR(e)).length),foot=Math.min(6,seen.filter(e=>!TYPES[e.type].vehicle&&!TYPES[e.type].structure&&!AIR(e)).length);
+  const threatened=seen.some(e=>!TYPES[e.type].structure&&DIST(e,hq)<=6);
+  const boost={antiAirVehicle:1.5*skies,missileInfantry:1.5*skies,helicopterAir:skies,antitank:.75*armor,helicopterGround:1.5*armor,heavyTank:.5*armor,machinegun:.4*foot};
+  const norm=DOCTRINE.reduce((a,d)=>a+d.share,0),size=Math.max(8,army.length+hq.queue.length),clock=this.mode==='rts'?this.time/30:this.round;
+  const ranked=DOCTRINE.map((d,i)=>({type:d.type,i,share:d.share,score:Math.max(d.min||0,SCHEDULE[d.type]&&clock>=SCHEDULE[d.type]?1:0,Math.round(d.share/norm*size))-count(d.type)+(boost[d.type]||0)})).sort((x,y)=>y.score-x.score||x.i-y.i);
+  // Poupa pelo tipo de maior déficit até poder pagá-lo: o caro entra quando junta o dinheiro, e não é trocado pelas baratas.
+  const top=ranked[0];
+  if(this.credits.red>=TYPES[top.type].cost){this.enqueue('red',top.type);return;}
+  // Sem nenhum lançador de mísseis, compra o barato enquanto poupa pelo veículo antiaéreo; com um deles, espera.
+  if(top.type==='antiAirVehicle'&&!count('missileInfantry')&&this.credits.red>=TYPES.missileInfantry.cost){this.enqueue('red','missileInfantry');return;}
+  // Poupa para a classe escolhida; só gasta com o que tem para defender a base.
+  // Defesa aérea em espera não é trocada por um lançador barato.
+  if(threatened&&!['antiAirVehicle','missileInfantry'].includes(top.type)){const pick=ranked.find(r=>DEFENSE.includes(r.type)&&TYPES[r.type].cost<=this.credits.red);if(pick)this.enqueue('red',pick.type);}
  }
  moveToward(u,target,near=1,leg=Infinity){const route=this.pathToRange(u,target,near);if(!route?.length)return false;const part=this.trimPath(u,route).slice(0,leg);return part.length?this.order(u,'move',part[part.length-1]):false;}
  // Valor de combate: custo (100 sem custo) pela fração de vida. Combatentes da onda: tropas com arma, sem comandante, engenheiro e batedor.
@@ -363,12 +479,12 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   if(p.phase==='attack'){
    const alive=p.wave.map(id=>this.get(id)).filter(u=>u?.hp>0);
    if(!alive.length||sum(alive)<p.waveStart*.5){p.phase='regroup';p.wave=[];p.objective=null;p.since=now;}
-   else{const t=p.objective?.id&&this.get(p.objective.id);if(!p.objective||p.objective.id&&(!t||t.owner!=='blue')||!p.objective.id&&[...this.memory.red.values()].some(s=>s.owner==='blue'))p.objective=this.objective(hq);}
+   else{if(cfg.reinforce)for(const u of fighters)if(!p.wave.includes(u.id)&&home(u))p.wave.push(u.id);const t=p.objective?.id&&this.get(p.objective.id);if(!p.objective||p.objective.id&&(!t||t.owner!=='blue')||!p.objective.id&&[...this.memory.red.values()].some(s=>s.owner==='blue'))p.objective=this.objective(hq);}
   }
-  if(p.phase==='regroup'&&(fighters.filter(home).length>=fighters.length*.7||now-p.since>=prep)){p.phase='prepare';p.since=now;}
+  if(p.phase==='regroup'&&(fighters.filter(home).length>=fighters.length*.7||now-p.since>=prep*cfg.followUp)){p.phase='prepare';p.since=now;}
   if(p.phase==='prepare'&&now-p.since>=prep){
    const gathered=fighters.filter(home);
-   if(gathered.length>=WAVE&&sum(gathered)>=sum([...this.intel.values()])*cfg.margin){p.phase='attack';p.wave=gathered.map(u=>u.id);p.waveStart=sum(gathered);p.objective=this.objective(hq);}
+   if(gathered.length>=cfg.wave&&sum(gathered)>=sum([...this.intel.values()])*cfg.margin){p.phase='attack';p.wave=gathered.map(u=>u.id);p.waveStart=sum(gathered);p.objective=this.objective(hq);}
   }
  }
  // Segurar posição: por turnos encerra a tropa (trincheira); no RTS ela fica parada com fogo automático.
@@ -394,7 +510,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
    const missileTarget=foes.find(e=>MISSILE(this.weapon(u,e))&&this.canFire(u,e)),danger=foes.some(e=>MISSILE(this.weapon(e,u))&&DIST(e,u)<=this.range(e,u));
    const altitude=TYPES[u.type].weapons.length>1&&missileTarget&&!danger?'high':'low';if(u.altitude!==altitude&&this.order(u,'altitude',{altitude}))return;
   }
-  if(!AIR(u)&&u.hp/u.maxHp<.35){const medic=army.filter(e=>e.type==='engineer'&&e!==u).sort(byDist)[0]||hq;if(this.moveToward(u,medic))return;}
+  if(!AIR(u)&&u.hp/u.maxHp<(TYPES[u.type].cost>=150?.4:.35)){const medic=army.filter(e=>e.type==='engineer'&&e!==u).sort(byDist)[0]||hq;if(this.moveToward(u,medic))return;}
   if(u.type==='engineer'){
    const allies=this.all().filter(e=>e.owner==='red'&&e!==u&&!AIR(e)&&e.hp<e.maxHp&&DIST(e,u)<=6).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp);for(const ally of allies)if(this.order(u,'repair',{targetId:ally.id}))return;
    const mine=this.mines.find(m=>m.known.red&&DIST(m,u)<=u.moveLeft+1);if(mine&&this.order(u,'demine',mine))return;
@@ -413,7 +529,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   if(u.type==='recon'&&this.scout(u,hq))return;
   if(u.type==='infantry'&&!threats.length){
    // Expansão segura: só postos claramente do lado vermelho (6 casas mais perto do QG vermelho que do azul presumido).
-   const targets=[...this.memory.red.values()].filter(s=>s.type==='post'&&s.owner!=='red'&&!this.claims.has(s.id)&&DIST(s,hq)+6<=DIST(s,far)).sort(byDist);
+   const targets=[...this.memory.red.values()].filter(s=>s.type==='post'&&s.owner!=='red'&&!this.claims.has(s.id)&&DIST(s,hq)+2<=DIST(s,far)).sort(byDist);
    for(const s of targets){const live=this.get(s.id);if(live&&this.isVisible('red',live)&&this.order(u,'capture',{targetId:s.id})||this.moveToward(u,s)){this.claims.add(s.id);return;}}
   }
   if(u.type==='engineer'&&p.phase==='attack'){const w=p.wave.map(id=>this.get(id)).filter(Boolean);if(w.length){const c={x:Math.round(w.reduce((a,v)=>a+v.x,0)/w.length),y:Math.round(w.reduce((a,v)=>a+v.y,0)/w.length)};if(this.moveToward(u,c,2,4))return;}}

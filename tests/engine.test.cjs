@@ -1,7 +1,7 @@
 // Motor real de js/engine.js, sem navegador: turnos, RTS, tanques e gerador. node tests/engine.test.cjs
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
-const ctx=vm.createContext({console});vm.runInContext(fs.readFileSync(path.join(__dirname,'..','js','engine.js'),'utf8')+'\nthis.Game=Game;this.TYPES=TYPES;this.COLS=COLS;this.ROWS=ROWS;this.KEY=KEY;this.DIST=DIST;',ctx);const {Game,TYPES,COLS,ROWS,KEY,DIST}=ctx;
+const ctx=vm.createContext({console});vm.runInContext(fs.readFileSync(path.join(__dirname,'..','js','engine.js'),'utf8')+'\nthis.Game=Game;this.TYPES=TYPES;this.COLS=COLS;this.ROWS=ROWS;this.KEY=KEY;this.DIST=DIST;this.TERRAIN=TERRAIN;this.MAPS=MAPS;',ctx);const {Game,TYPES,COLS,ROWS,KEY,DIST,TERRAIN,MAPS}=ctx;
 // --- engine ---
 {
 function field(){const g=new Game('river','normal',17);g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.aiEnabled=false;g.add('blue','hq',0,13);g.add('red','hq',17,0);g.add('blue','infantry',0,12);g.add('red','infantry',17,1);g.rng=()=>.2;g.updateVision();return g;}
@@ -91,8 +91,8 @@ for(const mode of ['turns','rts'])for(const type of tanks){
 for(const mode of ['turns','rts']){
  const g=new Game('river','normal',71,mode);for(const owner of ['blue','red'])assert.deepEqual(Array.from(g.units.filter(u=>u.owner===owner&&TYPES[u.type].tank),u=>u.type),['tank']);
  const ai=field(mode);ai.aiEnabled=true;ai.turn='red';ai.credits.red=10000;for(const [i,type]of ['infantry','infantry','engineer','recon','machinegun','antitank','artillery','artillery','tank'].entries())ai.add('red',type,10+i%3,4+Math.floor(i/3));
- const bought=[];for(let i=0;i<3;i++){ai.aiBuy();bought.push(ai.hq('red').queue[0]?.type);ai.production('red',100);}
- for(const type of tanks)assert.ok(bought.includes(type),'IA deve recrutar '+type+': '+bought);
+ const bought=[];for(let i=0;i<6;i++){ai.aiBuy();bought.push(ai.hq('red').queue[0]?.type);ai.production('red',100);}
+ for(const type of ['antiAirVehicle','helicopter','heavyTank'])assert.ok(bought.includes(type),'IA deve recrutar '+type+': '+bought);
  console.log('OK '+mode+': médio inicial e três classes recrutadas pela IA');
 }
 for(const [type,hp,damage,cost,train,interval,reward]of [['lightTank',110,35,100,2,2,35],['tank',170,60,150,3,2.5,50],['heavyTank',280,80,240,4,3.5,80]]){
@@ -282,4 +282,94 @@ check('Partida simulada sem o jogador: a IA acaba atacando em grupo, sem persegu
   assert.ok(first,'IA deve lançar um ataque ('+mode+')');assert.ok(first.wave>=6);console.log('   '+mode+': primeiro ataque '+JSON.stringify(first));}
 });
 console.log(checks+' verificações de IA planejada concluídas.');
+}
+// --- terreno: colina, campo e sebe ---
+{
+let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
+function field(){const g=new Game('river','normal',17);g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.aiEnabled=false;g.add('blue','hq',0,ROWS-1);g.add('red','hq',COLS-1,0);g.rng=()=>.2;g.updateVision();return g;}
+check('Colina, campo e sebe: custo, cobertura, visão, alcance e construção',()=>{
+ const g=field(),inf=g.add('blue','infantry',5,5),tank=g.add('blue','tank',8,5),heli=g.add('blue','helicopter',11,5);
+ for(const [t,ci,cv,cover] of [['hill',1,1.5,.2],['field',1,1,0],['hedge',1,1.5,.25]]){g.terrain[KEY(6,6)]=t;assert.equal(g.cost(inf,6,6),ci,t);assert.equal(g.cost(tank,6,6),cv,t);assert.equal(g.cost(heli,6,6),1,t);assert.equal(TERRAIN[t].cover,cover,t);}
+ for(const x of [5,8,11])g.terrain[KEY(x,5)]='hill';
+ assert.equal(g.sight(inf),TYPES.infantry.vision+2);assert.equal(g.range(tank),TYPES.tank.range+1);assert.equal(g.sight(heli),TYPES.helicopter.vision,'Aeronave ignora o relevo');assert.equal(g.cover(inf),.2);
+ g.terrain[KEY(5,5)]='field';assert.ok(g.buildSite(inf));g.terrain[KEY(5,5)]='hill';assert.ok(g.buildSite(inf));g.terrain[KEY(5,5)]='hedge';assert.equal(g.buildSite(inf),false);
+});
+check('Sebe esconde como floresta: vista só a até 2 casas (batedor 3)',()=>{
+ const g=field(),eye=g.add('red','infantry',5,5),hid=g.add('blue','infantry',9,5);g.terrain[KEY(9,5)]='hedge';g.updateVision();assert.equal(g.isVisible('red',hid),false);
+ hid.x=7;g.terrain[KEY(7,5)]='hedge';g.updateVision();assert.equal(g.isVisible('red',hid),true);
+});
+console.log(checks+' verificações de terreno concluídas.');
+}
+// --- mapas no estilo Broken Arrow ---
+{
+let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
+const count=(g,...t)=>g.terrain.filter(v=>t.includes(v)).length;
+const parts=(g,type)=>{const seen=new Set();let n=0;for(let k=0;k<COLS*ROWS;k++){if(g.terrain[k]!==type||seen.has(k))continue;n++;const st=[k];seen.add(k);while(st.length){const c=st.pop(),x=c%COLS,y=(c-x)/COLS;for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy,nk=ny*COLS+nx;if(nx<0||ny<0||nx>=COLS||ny>=ROWS||seen.has(nk)||g.terrain[nk]!==type)continue;seen.add(nk);st.push(nk);}}}return n;};
+check('Quatro mapas × 12 sementes: simétricos, determinísticos, bases ligadas e todo posto sobre estrada ligada por tanque',()=>{
+ for(const map of Object.keys(MAPS))for(let seed=1;seed<=12;seed++){const g=new Game(map,'normal',seed);g.units=[];const tank={type:'tank',owner:'blue',x:4,y:ROWS-2};
+  for(let k=0;k<COLS*ROWS;k++)assert.equal(g.terrain[k],g.terrain[COLS*ROWS-1-k],map+'/'+seed);
+  assert.ok(g.findPath(tank,{x:COLS-5,y:1}),map+'/'+seed+' bases');const posts=g.structures.filter(s=>s.type==='post');assert.equal(posts.length,8,map+'/'+seed);
+  for(const p of posts){assert.equal(g.terrain[KEY(p.x,p.y)],'road');assert.ok([[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>['road','bridge'].includes(g.terrain[KEY(p.x+dx,p.y+dy)])&&g.findPath(tank,{x:p.x+dx,y:p.y+dy})),map+'/'+seed+' posto '+p.x+','+p.y);}
+  assert.equal(JSON.stringify(new Game(map,'normal',seed).terrain),JSON.stringify(g.terrain));}
+});
+check('Vale dos Rios: rio central de borda a borda, ≥ 3 pontes, campos, sebes e colinas',()=>{
+ for(let seed=1;seed<=12;seed++){const g=new Game('river','normal',seed),mid=COLS/2;
+  for(let y=0;y<ROWS;y++)assert.ok([...Array(13).keys()].some(i=>['river','bridge'].includes(g.terrain[KEY(mid-7+i,y)])),'Rio na linha '+y+' / '+seed);
+  assert.ok(parts(g,'bridge')>=3,'pontes '+seed);assert.ok(count(g,'field')>120&&count(g,'hedge')>40&&count(g,'hill')>20,seed+': '+[count(g,'field'),count(g,'hedge'),count(g,'hill')]);}
+});
+check('Deserto Aberto: dunas (colinas), quase sem vegetação, sem sebes e estradas longas',()=>{
+ for(let seed=1;seed<=12;seed++){const g=new Game('desert','normal',seed),n=COLS*ROWS;assert.ok(count(g,'hill')>n*.12,'dunas '+seed);assert.equal(count(g,'hedge'),0);assert.ok(count(g,'forest')<n*.05&&count(g,'field')<n*.08,'vegetação '+seed);assert.ok(count(g,'road','bridge')>40,'estradas '+seed);}
+});
+check('Passe de Montanha: serra central atravessada por ≥ 2 passagens',()=>{
+ for(let seed=1;seed<=12;seed++){const g=new Game('mountain','normal',seed),mid=COLS/2;assert.ok(count(g,'mountain')>40,'serra '+seed);
+  const open=[...Array(ROWS).keys()].filter(y=>[...Array(8).keys()].every(i=>g.terrain[KEY(mid-4+i,y)]!=='mountain'));assert.ok(open.length>=2,seed+': '+open);}
+});
+check('Fronteira procedural: água, floresta, relevo e campos seguem os controles',()=>{
+ for(let seed=1;seed<=10;seed++){
+  const flat=new Game('random','normal',seed,'turns',{water:0,forest:0,relief:0,farmland:0});assert.equal(count(flat,'river','bridge','forest','hill','mountain','field','hedge'),0,'liso '+seed);
+  const farm=new Game('random','normal',seed,'turns',{water:0,forest:0,relief:0,farmland:1});assert.ok(count(farm,'field')>150&&count(farm,'hedge')>40,'campos '+seed);
+  const rough=new Game('random','normal',seed,'turns',{water:0,forest:0,relief:1,farmland:0});assert.ok(count(rough,'hill')>100&&count(rough,'mountain')>0,'relevo '+seed);
+  assert.equal(new Game('random','normal',seed,'turns',{mountain:0}).options.relief,0,'mountain continua aceito como relevo');}
+});
+console.log(checks+' verificações de mapas concluídas.');
+}
+// --- IA: doutrina, poupança, mira e níveis ---
+{
+let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
+function field(){const g=new Game('river','normal',17);g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.aiEnabled=false;g.add('blue','hq',0,ROWS-1);g.add('red','hq',COLS-1,0);g.rng=()=>.2;g.updateVision();return g;}
+// Tira as unidades recém-treinadas da saída do QG (a IA as leva ao ponto de encontro): sem isso a saída lota.
+const park=g=>{const hq=g.hq('red'),cells=[];for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)if(DIST({x,y},hq)>=6&&DIST({x,y},hq)<=12&&Number.isFinite(g.cost({type:'tank'},x,y))&&!g.structureAt(x,y)&&!g.occupied(x,y,null))cells.push({x,y});let i=0;for(const u of g.units)if(u.owner==='red'&&DIST(u,hq)<=2){const c=cells[i++%cells.length];u.x=c.x;u.y=c.y;}};
+const buys=(g,n)=>{for(let i=0;i<n;i++){g.turn='red';g.aiBuy();g.production('red',100);park(g);}return g.units.filter(u=>u.owner==='red').map(u=>u.type);};
+check('Doutrina: com crédito de sobra, a IA monta exército variado (helicópteros, antiaéreas e os três tanques)',()=>{
+ const g=new Game('river','normal',17);g.aiEnabled=true;g.units=[];g.credits.red=100000;const types=new Set(buys(g,16));
+ for(const t of ['lightTank','tank','heavyTank','helicopter','helicopterGround','helicopterAir','antiAirVehicle','infantry','machinegun','antitank'])assert.ok(types.has(t),'Falta '+t+': '+[...types].join());
+});
+check('Poupança: sem ameaça, a IA espera pelo tipo de maior déficit em vez de gastar com outro',()=>{
+ const g=field();g.aiEnabled=true;g.turn='red';
+ // Um de cada classe (menos o pesado) e duas infantarias: nada ausente ao alcance, e o pesado (240) é o topo.
+ for(const t of ['lightTank','tank','engineer','recon','machinegun','antitank','artillery','helicopter','helicopterGround','helicopterAir','antiAirVehicle','missileInfantry'])g.add('red',t,COLS-3,ROWS-9+['lightTank','tank','engineer','recon','machinegun','antitank','artillery','helicopter','helicopterGround','helicopterAir','antiAirVehicle','missileInfantry'].indexOf(t));
+ g.add('red','infantry',COLS-3,2);g.add('red','infantry',COLS-4,2);g.add('red','infantry',COLS-5,2);g.updateVision();
+ g.credits.red=60;g.aiBuy();assert.equal(g.hq('red').queue.length,0,'Não compra com 60 o que quer caro');
+ g.credits.red=240;g.aiBuy();assert.equal(g.hq('red').queue[0]?.type,'heavyTank','Com dinheiro, compra o de maior déficit');
+});
+check('Mira: antitanque prefere veículo a tropa a pé; metralhador prefere tropa a pé',()=>{
+ const g=field();g.turn='red';const at=g.add('red','antitank',10,10),inf=g.add('blue','infantry',11,10),tank=g.add('blue','tank',10,13),mg=g.add('red','machinegun',20,20),foot=g.add('blue','infantry',21,20),vehicle=g.add('blue','lightTank',20,22);g.updateVision();
+ assert.equal(g.acquire(at),tank);assert.equal(g.acquire(mg),foot);
+});
+check('Mira: artilharia evita o ponto com aliado no 3×3 e escolhe o de mais inimigos',()=>{
+ const g=field();g.turn='red';const art=g.add('red','artillery',4,10);g.add('blue','infantry',9,10);g.add('red','infantry',9,11);const B=g.add('blue','tank',8,8);g.updateVision();
+ assert.equal(g.acquire(art),B);
+});
+check('Recuo: unidade cara ferida (< 40%) sai da linha; a barata continua lutando',()=>{
+ const g=field();g.turn='red';const heavy=g.add('red','heavyTank',10,10);heavy.hp=Math.floor(280*.35);g.add('blue','infantry',12,10);g.updateVision();g.aiAct(heavy);
+ assert.equal(heavy.order.type,'move');const hq=g.hq('red');assert.ok(DIST(heavy.order.goal||heavy,hq)<DIST(heavy,hq)+1,'Recua na direção do QG');
+});
+check('Níveis: Veterano tem renda +35% e exército até 20; Normal até 16 e renda normal',()=>{
+ const n=field();assert.equal(n.income('red'),15);
+ const v=field();v.difficulty='veteran';assert.equal(v.income('red'),20);
+ const nn=new Game('river','normal',17);nn.units=[];nn.credits.red=100000;const vv=new Game('river','veteran',17);vv.units=[];vv.credits.red=100000;
+ const normal=buys(nn,40).length,veteran=buys(vv,40).length;assert.equal(normal,16);assert.equal(veteran,20);
+ assert.equal(new Game('river','veteran',17).difficulty,'veteran');
+});
+console.log(checks+' verificações de IA concluídas.');
 }

@@ -30,12 +30,17 @@ class Sound{
 const $=id=>document.getElementById(id),CELL=56,TEAM={blue:'#77c8e2',red:'#ee9986',neutral:'#e0c992'};
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches,audio=new Sound();
 let game=new Game(),selection=new Set(),groups=Array.from({length:5},()=>[]),paused=true,started=false,speed=1,mode=null,hover=null,drag=null,marker=null,resultShown=false,addMode=false,panTool=false,pointer=null,pan=null;
-let menuWasPaused=true,lastFrame=performance.now(),uiClock=0,lastLog=null;
-let showGrid=false;try{showGrid=localStorage.getItem('wargrid.grid.v1')==='true';}catch{}
+let lastFrame=performance.now(),uiClock=0,lastLog=null;
+/* Configurações do jogador, salvas neste navegador (com try/catch: sem armazenamento, valem só na sessão). */
+const SETTINGS_KEY='wargrid.settings.v1',SETTING_DEFAULTS={sound:true,grid:false,speed:1,fullscreen:true,difficulty:'normal',mode:'turns'};
+let settings={...SETTING_DEFAULTS};try{Object.assign(settings,JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}'));}catch{}
+function saveSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));}catch{}}
+function changeSetting(key,value){settings[key]=value;saveSettings();}
+let showGrid=settings.grid===true;speed=[.25,.5,1,2].includes(settings.speed)?settings.speed:1;
 let logOpen=false,detailsOpen=false;try{logOpen=localStorage.getItem('wargrid.log.v1')==='true';}catch{}
 const renderer=new Renderer();
 function selectedUnits(){return [...selection].map(id=>game.get(id)).filter(u=>u&&u.owner==='blue'&&!TYPES[u.type].structure);}
-function menusClosed(){return !$('setup').open&&!$('manual').open&&!$('result').open;}
+function menusClosed(){return !document.querySelector('dialog[open]');}
 function canCommand(){return started&&!game.winner&&(game.mode==='rts'||game.turn==='blue'&&!game.busy)&&menusClosed();}
 function playable(){return started&&!game.winner&&!paused&&menusClosed();}
 function say(text){$('hint').textContent=text;}
@@ -57,11 +62,11 @@ function updateUI(){
   const rts=game.mode==='rts';
   for(const id of selection){const u=game.get(id);if(!u||(u.owner!=='blue'&&!game.isVisible('blue',u)))selection.delete(id);}
   groups=groups.map(g=>g.filter(id=>game.get(id)?.owner==='blue'));
-  setText('mapTitle',MAPS[game.map]);setText('credits',game.credits.blue);setText('income','+'+game.income('blue'));setText('incomeLabel',rts?'Renda / 10 s':'Renda / turno');setProp('income','title',rts?`+${game.income('blue')} créditos a cada 10 segundos de jogo`:`+${game.income('blue')} créditos no início do seu turno, a partir da rodada 2`);setText('force',game.units.filter(u=>u.owner==='blue').length);
+  setText('mapTitle',game.title||MAPS[game.map]);setText('credits',game.credits.blue);setText('income','+'+game.income('blue'));setText('incomeLabel',rts?'Renda / 10 s':'Renda / turno');setProp('income','title',rts?`+${game.income('blue')} créditos a cada 10 segundos de jogo`:`+${game.income('blue')} créditos no início do seu turno, a partir da rodada 2`);setText('force',game.units.filter(u=>u.owner==='blue').length);
   setText('clock',timeLabel(rts?game.time:game.round));setText('status',game.winner?'Operação encerrada':rts?(paused?'Pausa tática':'Combate em tempo real'):game.turn==='red'?'Turno da IA':game.busy?'Executando ordem':'Seu turno');setText('pause',paused?'Continuar [P]':'Pausar [P]');setProp('pause','disabled',!started||!!game.winner);setAttr('pause','aria-pressed',String(paused));setText('speed',String(speed).replace('.',',')+'×');setProp('pauseOverlay','hidden',!paused||!!game.winner);$('pauseOverlay').classList.toggle('tactical',rts);setText('pauseLabel',rts?'Pausa tática · emita ordens · P para continuar':'Animações pausadas');
   setText('modeTitle',rts?'Fronteiras / RTS':'Fronteiras / Por turnos');setText('keyHint','Clique numa tropa: barra de comando · QG: produção · Botão direito: ordem · Bordas, roda, botão do meio ou ✋: câmera');setAttr('addSelect','aria-pressed',String(addMode));setAttr('panTool','aria-pressed',String(panTool));renderer.canvas.classList.toggle('grab',panTool);setProp('speed','title',rts?'Velocidade do combate: 0,25×, 0,5×, 1× e 2×':'Velocidade das animações: 0,25×, 0,5×, 1× e 2×');setAttr('speed','aria-label',rts?'Alternar velocidade do combate':'Alternar velocidade das animações');setAttr('battlefield','aria-label',(rts?'Campo em tempo real.':'Campo por turnos.')+' Clique ou arraste para selecionar; botão direito emite ordens. Bordas, roda e botão do meio movem a câmera.');setText('stop',rts?'Parar [S]':'Aguardar [S]');
   setProp('endTurn','hidden',rts);setProp('endTurn','disabled',rts||!canCommand());
-  setText('difficultyLabel','IA '+{easy:'fácil',normal:'normal',hard:'difícil'}[game.difficulty]);setText('operationInfo',`Semente ${game.seed} · ${COLS} × ${ROWS} casas · Capture postos e destrua o QG inimigo`);setText('explored',Math.round(game.explored.blue.filter(Boolean).length/SIZE*100)+'%');
+  setText('difficultyLabel','IA '+{easy:'fácil',normal:'normal',hard:'difícil',veteran:'veterana'}[game.difficulty]);setText('operationInfo',`Semente ${game.seed} · ${COLS} × ${ROWS} casas · Capture postos e destrua o QG inimigo`);setText('explored',Math.round(game.explored.blue.filter(Boolean).length/SIZE*100)+'%');
   const units=selectedUnits(),items=[...selection].map(id=>game.get(id)).filter(Boolean),u=items[0];setText('selectionCount',items.length?items.length+' selecionada(s)':'—');
   // Barra de comando: ordens para tropas azuis; produção quando o QG azul está selecionado; detalhes pelo botão i.
   setProp('commandBar','hidden',!items.length);setProp('modeLabel','hidden',!mode);setAttr('infoToggle','aria-expanded',String(detailsOpen));setProp('details','hidden',!detailsOpen);setProp('ordersPanel','hidden',!units.length);setProp('productionPanel','hidden',!items.some(v=>v.type==='hq'&&v.owner==='blue'));
@@ -72,7 +77,7 @@ function updateUI(){
    setText('unitRole',items.length>1?[...new Set(items.map(v=>TYPES[v.type].name))].join(', '):rts&&u.type==='engineer'?'Reparo +24 HP por segundo':TYPES[u.type].role||'Estrutura de apoio');
    const t=TYPES[u.type],flight=t.air?flightStatus(u)+'\nArma: '+weaponLabel(u.weaponMode)+' · '+t.weapons.map(w=>WEAPONS[w].name+' '+WEAPONS[w].range+' casas, '+WEAPONS[w].cooldown+' s').join(' · ')+(rts?' · '+(u.cooldown>0?'recarga '+u.cooldown.toFixed(1).replace('.',',')+' s':'pronto'):''):'';
    const rangeText=u.type==='missileInfantry'?'solo 1 / ar 3':u.type==='antiAirVehicle'?'somente ar 6':t.min+'–'+game.range(u);
-   setText('unitInfo',items.length>1?'Integridade '+Math.ceil(total)+' / '+max+' HP\n'+(rts?units.filter(v=>v.pending).length+' tropas executando ordens':units.filter(v=>v.actionLeft).length+' ações disponíveis · '+units.filter(v=>v.moveLeft>0).length+' tropas com movimento')+units.filter(AIR).map(v=>'\n'+TYPES[v.type].name+flightStatus(v)).join(''):Math.ceil(u.hp)+' / '+u.maxHp+' HP · '+(t.air?'Em voo sobre '+TERRAIN[game.terrainAt(u)].name.toLowerCase():TERRAIN[game.terrainAt(u)].name+' · '+Math.round(game.cover(u)*100)+'% defesa')+'\n'+(t.structure?(u.type==='hq'?'Treinamento serial · até 5 tropas':rts?'Renda +8 / 10 s':'Renda +8 por turno'):(rts?'Velocidade '+String(t.speed).replace('.',',')+' casas/s':'Movimento '+u.moveLeft+' / '+t.move)+' · Alcance '+rangeText+'\n'+'★'.repeat(u.level)+' '+orderName(u)+(game.hasAura(u)?' · Aura ativa':'')+(u.suppressed>0?' · Suprimida (−25 pontos de precisão)':'')+(!t.air&&game.terrainAt(u)==='forest'&&!(u.revealed>0)?' · Oculta na floresta':'')+flight));
+   setText('unitInfo',items.length>1?'Integridade '+Math.ceil(total)+' / '+max+' HP\n'+(rts?units.filter(v=>v.pending).length+' tropas executando ordens':units.filter(v=>v.actionLeft).length+' ações disponíveis · '+units.filter(v=>v.moveLeft>0).length+' tropas com movimento')+units.filter(AIR).map(v=>'\n'+TYPES[v.type].name+flightStatus(v)).join(''):Math.ceil(u.hp)+' / '+u.maxHp+' HP · '+(t.air?'Em voo sobre '+TERRAIN[game.terrainAt(u)].name.toLowerCase():TERRAIN[game.terrainAt(u)].name+' · '+Math.round(game.cover(u)*100)+'% defesa')+'\n'+(t.structure?(u.type==='hq'?'Treinamento serial · até 5 tropas':rts?'Renda +8 / 10 s':'Renda +8 por turno'):(rts?'Velocidade '+String(t.speed).replace('.',',')+' casas/s':'Movimento '+u.moveLeft+' / '+t.move)+' · Alcance '+rangeText+'\n'+'★'.repeat(u.level)+' '+orderName(u)+(game.hasAura(u)?' · Aura ativa':'')+(u.suppressed>0?' · Suprimida (−25 pontos de precisão)':'')+(!t.air&&CONCEAL.has(game.terrainAt(u))&&!(u.revealed>0)?' · Oculta na '+TERRAIN[game.terrainAt(u)].name.toLowerCase():'')+flight));
   }else{setText('unitName','Nenhuma unidade');setText('unitRole','Clique ou arraste no campo.');setText('unitInfo',rts?'Botão direito: ordem. Pausar congela o combate para dar ordens.':'Botão direito: ordem. Encerrar turno passa a vez à IA.');setWidth('healthBar',0);}
   const can=canCommand()&&units.length>0;setProp('move','disabled',!can||!rts&&!units.some(u=>u.moveLeft>0&&(u.type!=='artillery'||u.actionLeft||u.moved)));setProp('attackMove','disabled',!can||!rts&&!units.some(u=>u.actionLeft));setProp('stop','disabled',!can||!rts&&!units.some(u=>u.moveLeft>0||u.actionLeft));
   const noEngineer=!can||!units.some(u=>u.type==='engineer'&&(rts||u.actionLeft));setProp('repair','disabled',noEngineer);setProp('demine','disabled',noEngineer);setProp('build','disabled',!can||!units.some(u=>game.canBuild(u)));
@@ -90,7 +95,7 @@ function updateUI(){
   if(game.logs[0]!==lastLog){lastLog=game.logs[0];$('log').replaceChildren(...game.logs.map(e=>{const div=document.createElement('div');div.className='log-line';const time=document.createElement('small');time.textContent=timeLabel(e.time);div.append(time,document.createTextNode(e.text));return div;}));setText('logLast',game.logs[0]?.text||'');}
   setAttr('logToggle','aria-expanded',String(logOpen));setProp('log','hidden',!logOpen);
   renderer.drawMini();
-  if(game.winner&&!resultShown){resultShown=true;paused=true;audio.play(game.winner==='blue'?'victory':'defeat');$('resultTitle').textContent=game.winner==='blue'?'Vitória da Nação Azul':game.winner==='draw'?'Cessar-fogo':'Operação perdida';$('resultText').textContent=`Operação encerrada ${rts?'aos '+timeLabel(game.time):'na rodada '+game.round}. ${game.winner==='blue'?'O comando inimigo foi neutralizado.':'Reorganize suas forças e tente uma nova operação.'}`;$('result').showModal();}
+  if(game.winner&&!resultShown){resultShown=true;paused=true;audio.play(game.winner==='blue'?'victory':'defeat');$('resultTitle').textContent=game.winner==='blue'?'Vitória da Nação Azul':game.winner==='draw'?'Cessar-fogo':'Operação perdida';$('resultText').textContent=`Operação encerrada ${rts?'aos '+timeLabel(game.time):'na rodada '+game.round}. ${game.winner==='blue'?'O comando inimigo foi neutralizado.':'Reorganize suas forças e tente uma nova operação.'}`;$('backToWorld').hidden=!(typeof campaignBattle!=='undefined'&&campaignBattle);$('result').showModal();}
 }
 function issueAt(p,forced=mode){
  if(!canCommand()){say(game.mode==='rts'?'Feche o menu para emitir ordens.':'Aguarde o seu turno e a conclusão da ordem atual.');return;}const units=selectedUnits();if(!units.length){say('Selecione suas tropas primeiro.');return;}
@@ -148,32 +153,43 @@ for(const type of ['infantry','recon','engineer','artillery','lightTank','tank',
 function togglePause(){if(!started||game.winner||!menusClosed())return;paused=!paused;mode=null;drag=null;lastFrame=performance.now();updateUI();say(game.mode==='rts'?(paused?'Pausa tática. Selecione tropas e emita ordens; P retoma o combate.':'Combate retomado. Tropas e IA agem ao mesmo tempo.'):(paused?'Animações pausadas. P para continuar.':'Animações retomadas. Planeje sem pressa no seu turno.'));}
 function endPlayerTurn(){if(!canCommand()||!game.endTurn())return;paused=false;mode=null;drag=null;lastFrame=performance.now();updateUI();say('Turno da IA. Aguarde a próxima rodada.');}
 $('endTurn').addEventListener('click',endPlayerTurn);
-function toggleGrid(){showGrid=!showGrid;try{localStorage.setItem('wargrid.grid.v1',String(showGrid));}catch{}renderer.dirty=true;updateUI();}
+function toggleGrid(){showGrid=!showGrid;changeSetting('grid',showGrid);renderer.dirty=true;updateUI();}
 $('grid').addEventListener('click',toggleGrid);
 $('pause').addEventListener('click',togglePause);$('speed').addEventListener('click',()=>{const speeds=[.25,.5,1,2];speed=speeds[(speeds.indexOf(speed)+1)%speeds.length];updateUI();});
 $('panTool').addEventListener('click',()=>{panTool=!panTool;updateUI();say(panTool?'Câmera ativa: arraste com o botão esquerdo para mover o mapa; clique seleciona. Desative para voltar à seleção em caixa.':'Botão esquerdo volta a selecionar em caixa.');});
 $('addSelect').addEventListener('click',()=>{addMode=!addMode;updateUI();say(addMode?'Somar ativo: cliques e caixas adicionam ou removem tropas da seleção.':'Seleção normal.');});
 function toggleFullscreen(){if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{});else document.documentElement.requestFullscreen?.().catch(()=>{});}
 $('fullscreen').addEventListener('click',toggleFullscreen);document.addEventListener('fullscreenchange',()=>{const on=!!document.fullscreenElement;$('fullscreen').textContent=on?'Sair da tela cheia':'Tela cheia';$('fullscreen').setAttribute('aria-pressed',String(on));});
-$('sound').addEventListener('click',()=>{audio.enabled=!audio.enabled;if(audio.master)audio.master.gain.value=audio.enabled?.14:0;audio.unlock();$('sound').textContent=audio.enabled?'Som ligado':'Som desligado';$('sound').setAttribute('aria-pressed',String(audio.enabled));});
-function openMenu(id){menuWasPaused=paused;paused=true;drag=null;mode=null;$(id).showModal();updateUI();}
-function closeMenu(id){$(id).close();paused=started?menuWasPaused:true;lastFrame=performance.now();updateUI();}
+$('sound').addEventListener('click',()=>{audio.enabled=!audio.enabled;changeSetting('sound',audio.enabled);if(audio.master)audio.master.gain.value=audio.enabled?.14:0;audio.unlock();$('sound').textContent=audio.enabled?'Som ligado':'Som desligado';$('sound').setAttribute('aria-pressed',String(audio.enabled));});
+let overlaid=false,pausedBefore=true,backTo=null;
+// Pausa de todos os diálogos: guarda o estado anterior ao primeiro menu e o restaura quando o último fecha.
+function syncPause(){const open=!!document.querySelector('dialog[open]');if(open&&!overlaid){overlaid=true;pausedBefore=paused;}if(open)paused=true;else if(overlaid){overlaid=false;paused=started?pausedBefore:true;}lastFrame=performance.now();updateUI();}
+function openMenu(id){drag=null;mode=null;$(id).showModal();syncPause();}
+function closeMenu(id){$(id).close();syncPause();}
+// Fecha um diálogo: volta ao menu inicial se ele veio de lá; senão retoma a partida.
+function closeChild(id){$(id).close();if(backTo){backTo=null;openTitle();}else syncPause();}
+function leaveTitleFor(fn){if($('titleScreen').open){$('titleScreen').close();backTo='titleScreen';}fn();}
+function openTitle(){backTo=null;if(!$('titleScreen').open)openMenu('titleScreen');refreshTitle();$('titlePlay').focus();}
+function refreshTitle(){paintTitle();$('titleResume').hidden=!started;const info=campaignSummary();const label=$('titleCampaign').querySelector('span');label.textContent=info?'Continuar campanha':'Campanha';$('titleCampaignInfo').textContent=info||'Mapa-múndi gerado por semente';}
+// Fundo do menu: um campo gerado ao acaso, em movimento lento (CSS), sem afetar a partida atual.
+function paintTitle(){const maps=Object.keys(MAPS);drawPreview($('titleBg'),new Game(maps[Math.floor(Math.random()*maps.length)],'normal',Math.floor(Math.random()*4294967294)+1,'turns'));}
 function setupDescription(){$('setupDescription').textContent=$('modeSelect').value==='rts'?'Tropas e IA agem ao mesmo tempo. Pressione P ou Pausar para congelar o combate, selecionar tropas e preparar ordens. Continue para executá-las.':'Você joga primeiro. Cada tropa tem movimento limitado e uma ação por turno. A IA só age quando você encerra o turno. Planeje sem limite de tempo.';}
 $('modeSelect').addEventListener('change',setupDescription);
-function setupOptions(){return{water:$('genWater').value/100,forest:$('genForest').value/100,mountain:$('genMountain').value/100,posts:Number($('genPosts').value)};}
+function setupOptions(){return{water:$('genWater').value/100,forest:$('genForest').value/100,relief:$('genRelief').value/100,farmland:$('genFarmland').value/100,posts:Number($('genPosts').value)};}
 function setupPreview(){$('procedural').hidden=$('mapSelect').value!=='random';drawPreview($('preview'),new Game($('mapSelect').value,'normal',Number($('seed').value)||1,'turns',setupOptions()));}
 function rerollSeed(){$('seed').value=Math.floor(Math.random()*4294967294)+1;setupPreview();}
-for(const id of ['mapSelect','seed','genWater','genForest','genMountain','genPosts'])$(id).addEventListener('input',setupPreview);$('reroll').addEventListener('click',rerollSeed);
-function openSetup(){if($('result').open)$('result').close();$('mapSelect').value=game.map;$('difficulty').value=game.difficulty;$('modeSelect').value=game.mode;setupDescription();rerollSeed();$('cancelSetup').hidden=!started;openMenu('setup');}
-function newOperation(map,difficulty,seed,battleMode='turns',options){game=new Game(map,difficulty,seed,battleMode,options);selection=new Set();groups=Array.from({length:5},()=>[]);paused=false;started=true;mode=null;drag=null;hover=null;marker=null;resultShown=false;lastLog=null;lastFrame=performance.now();if($('result').open)$('result').close();renderer.rebuild();const hq=game.hq('blue');centerCamera(hq.x,hq.y);updateUI();say(game.mode==='rts'?'Combate em tempo real. Pausar congela o combate para selecionar tropas e preparar ordens.':'Seu turno: selecione, mova e ataque. Encerrar turno passa a vez à IA.');}
-$('newGame').addEventListener('click',openSetup);$('playAgain').addEventListener('click',openSetup);$('cancelSetup').addEventListener('click',()=>closeMenu('setup'));
-$('help').addEventListener('click',()=>openMenu('manual'));$('closeHelp').addEventListener('click',()=>closeMenu('manual'));
-for(const id of ['setup','manual'])$(id).addEventListener('cancel',e=>{e.preventDefault();if(started||id==='manual')closeMenu(id);});
+for(const id of ['mapSelect','seed','genWater','genForest','genRelief','genFarmland','genPosts'])$(id).addEventListener('input',setupPreview);$('reroll').addEventListener('click',rerollSeed);
+function openSetup(){if($('result').open)$('result').close();$('mapSelect').value=game.map;// Primeira operação usa as configurações padrão; depois, repete o modo e a dificuldade da partida anterior.
+$('difficulty').value=started?game.difficulty:settings.difficulty;$('modeSelect').value=started?game.mode:settings.mode;setupDescription();rerollSeed();openMenu('setup');}
+function newOperation(map,difficulty,seed,battleMode='turns',options){game=new Game(map,difficulty,seed,battleMode,options);selection=new Set();groups=Array.from({length:5},()=>[]);paused=false;started=true;overlaid=false;backTo=null;speed=settings.speed;mode=null;drag=null;hover=null;marker=null;resultShown=false;lastLog=null;lastFrame=performance.now();if($('result').open)$('result').close();renderer.rebuild();const hq=game.hq('blue');centerCamera(hq.x,hq.y);updateUI();say(game.mode==='rts'?'Combate em tempo real. Pausar congela o combate para selecionar tropas e preparar ordens.':'Seu turno: selecione, mova e ataque. Encerrar turno passa a vez à IA.');}
+$('newGame').addEventListener('click',openSetup);$('playAgain').addEventListener('click',openSetup);$('cancelSetup').addEventListener('click',()=>closeChild('setup'));
+$('help').addEventListener('click',()=>openMenu('manual'));$('closeHelp').addEventListener('click',()=>closeChild('manual'));
+for(const id of ['setup','manual','settings'])$(id).addEventListener('cancel',e=>{e.preventDefault();closeChild(id);});
 $('review').addEventListener('click',()=>{$('result').close();updateUI();});
-$('setupForm').addEventListener('submit',e=>{e.preventDefault();if(!$('setupForm').reportValidity())return;audio.unlock();const seed=$('seed').value?Number($('seed').value):Math.floor(Math.random()*4294967294)+1;$('setup').close();if(!document.fullscreenElement)toggleFullscreen();newOperation($('mapSelect').value,$('difficulty').value,seed,$('modeSelect').value,setupOptions());});
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&started&&!game.winner){paused=true;menuWasPaused=true;drag=null;mode=null;updateUI();say('Operação pausada ao sair da aba. Continue quando estiver pronto.');}lastFrame=performance.now();});
+$('setupForm').addEventListener('submit',e=>{e.preventDefault();if(!$('setupForm').reportValidity())return;audio.unlock();const seed=$('seed').value?Number($('seed').value):Math.floor(Math.random()*4294967294)+1;$('setup').close();if(settings.fullscreen&&!document.fullscreenElement)toggleFullscreen();newOperation($('mapSelect').value,$('difficulty').value,seed,$('modeSelect').value,setupOptions());});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&started&&!game.winner){paused=true;if(overlaid)pausedBefore=true;drag=null;mode=null;updateUI();say('Operação pausada ao sair da aba. Continue quando estiver pronto.');}lastFrame=performance.now();});
 document.addEventListener('keydown',e=>{
- if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName)||$('setup').open||$('manual').open||$('result').open)return;const key=e.key.toLowerCase();
+ if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName)||document.querySelector('dialog[open]'))return;const key=e.key.toLowerCase();
  if(/^[1-5]$/.test(key)){e.preventDefault();groupAction(Number(key)-1,e.ctrlKey||e.metaKey);return;}
  if(key==='p'||key===' '&&e.target===renderer.canvas){e.preventDefault();togglePause();return;}if(key==='escape'){mode=null;drag=null;selection.clear();updateUI();return;}
  if(e.ctrlKey||e.metaKey||e.altKey)return;if(key==='g'){e.preventDefault();if(!e.repeat)toggleGrid();}else if(key==='enter'){e.preventDefault();if(!e.repeat)endPlayerTurn();}else if(key==='s'){e.preventDefault();stopSelected();}else if(key==='a'){e.preventDefault();setMode('attackMove');}else if(key==='m')setMode('move');else if(key==='r')setMode('repair');
@@ -201,4 +217,27 @@ heliAtlas.src=heliAtlasData;
 antiAirAtlas.src=antiAirAtlasData;
 highCloud.src=highCloudData;
 const terrainReady=Promise.all(Object.entries(terrainData).map(([name,src])=>new Promise(resolve=>{const image=terrainImages[name]=new Image();image.onload=()=>resolve(true);image.onerror=()=>resolve(false);image.src=src;}))).then(()=>{clearTerrainCaches();renderer.paintGround();renderer.drawMini();setupPreview();});
-updateUI();openSetup();requestAnimationFrame(frame);
+// Ao abrir, o menu inicial aparece sobre o campo; ele depende de campaign.js, por isso espera a página carregar.
+updateUI();window.addEventListener('load',()=>openTitle());requestAnimationFrame(frame);
+// Menu inicial: Continuar, Jogar, Campanha, Configurações e Como jogar; setas navegam os botões.
+$('titlePlay').addEventListener('click',()=>leaveTitleFor(openSetup));
+$('titleResume').addEventListener('click',()=>closeChild('titleScreen'));
+$('titleCampaign').addEventListener('click',()=>leaveTitleFor(openCampaign));
+$('titleSettings').addEventListener('click',()=>leaveTitleFor(openSettings));
+$('titleHelp').addEventListener('click',()=>leaveTitleFor(()=>openMenu('manual')));
+$('menuButton').addEventListener('click',()=>{if(started)openTitle();});
+$('titleScreen').addEventListener('cancel',e=>{e.preventDefault();if(started)closeChild('titleScreen');});
+$('titleScreen').addEventListener('keydown',e=>{if(e.key!=='ArrowDown'&&e.key!=='ArrowUp')return;const items=[...document.querySelectorAll('.title-menu button')].filter(b=>!b.hidden);const i=items.indexOf(document.activeElement);e.preventDefault();items[(i+(e.key==='ArrowDown'?1:-1)+items.length)%items.length].focus();});
+// Configurações: cada alteração vale na hora e fica salva.
+function fillSettings(){$('setSound').checked=audio.enabled;$('setGrid').checked=showGrid;$('setFullscreen').checked=settings.fullscreen;$('setSpeed').value=String(settings.speed);$('setDifficulty').value=settings.difficulty;$('setMode').value=settings.mode;}
+function applySettings(){audio.enabled=settings.sound!==false;if(audio.master)audio.master.gain.value=audio.enabled?.14:0;$('sound').textContent=audio.enabled?'Som ligado':'Som desligado';$('sound').setAttribute('aria-pressed',String(audio.enabled));showGrid=settings.grid===true;fillSettings();}
+function openSettings(){fillSettings();openMenu('settings');}
+$('setSound').addEventListener('change',()=>{audio.enabled=$('setSound').checked;if(audio.master)audio.master.gain.value=audio.enabled?.14:0;audio.unlock();$('sound').textContent=audio.enabled?'Som ligado':'Som desligado';$('sound').setAttribute('aria-pressed',String(audio.enabled));changeSetting('sound',audio.enabled);});
+$('setGrid').addEventListener('change',()=>{showGrid=$('setGrid').checked;renderer.dirty=true;changeSetting('grid',showGrid);updateUI();});
+$('setFullscreen').addEventListener('change',()=>changeSetting('fullscreen',$('setFullscreen').checked));
+$('setSpeed').addEventListener('change',()=>changeSetting('speed',Number($('setSpeed').value)));
+$('setDifficulty').addEventListener('change',()=>changeSetting('difficulty',$('setDifficulty').value));
+$('setMode').addEventListener('change',()=>changeSetting('mode',$('setMode').value));
+$('settingsReset').addEventListener('click',()=>{settings={...SETTING_DEFAULTS};saveSettings();applySettings();});
+$('settingsBack').addEventListener('click',()=>closeChild('settings'));
+applySettings();

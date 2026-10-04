@@ -2,13 +2,37 @@
 
 Jogo de estratégia militar para um jogador contra a IA. Capture postos, proteja seu comandante e destrua o QG inimigo. Escolha **Por turnos** ou **RTS com pausa tática** ao iniciar uma operação.
 
+## Menu inicial e configurações
+
+Ao abrir o jogo, o **menu inicial** em tela cheia reúne: **Continuar partida** (quando há uma partida em andamento), **Jogar** (batalha rápida), **Campanha** (mapa-múndi; mostra o progresso salvo), **Configurações** e **Como jogar**. O botão **Menu** no topo leva de volta a ele e pausa a partida; **Esc** volta ao jogo. Setas navegam os botões e Enter escolhe.
+
+**Configurações** são salvas neste navegador: som, grade de casas, tela cheia ao iniciar operação, velocidade padrão, dificuldade padrão e modo padrão (turnos ou RTS). A primeira operação usa esses padrões; as seguintes repetem o modo e a dificuldade da partida anterior.
+
+### Níveis da IA
+
+| Nível | Renda inimiga | Preparo antes do ataque | Margem | Exército máximo |
+|---|---:|---|---:|---:|
+| Fácil | −20% | 5 turnos / 150 s | 1,6 | 14 |
+| Normal | normal | 3 turnos / 90 s | 1,15 | 16 |
+| Difícil | +20% | 2 turnos / 60 s | 1,05 | 18 |
+| Veterano | +35% | 2 turnos / 60 s, onda de 5 e volta mais rápida | 1,0 | 20 |
+
+A IA não investe no começo: se prepara, reúne o exército no ponto de encontro e ataca em grupo quando a força reunida supera o que ela viu do seu exército. Nos níveis Normal e acima, reforça a onda em andamento. Compra por **doutrina de exército variado**: antiaéreas, helicópteros, pesados, helicópteros ar-terra e ar-ar, antitanques e tanques entram em ordem de prioridade, e um cronograma garante pelo menos uma unidade de cada uma dessas classes a partir de certa rodada (antiaérea na 4ª, helicóptero na 1ª, pesado na 6ª, ar-terra na 10ª, ar-ar na 14ª; no RTS, ×30 s). Poupa pelo tipo que quer até poder pagá-lo. Mira abates prováveis e tropas de maior valor; artilharia escolhe o ponto com mais inimigos e nenhum aliado; unidades caras feridas recuam. Os valores são provisórios e ainda não foram validados em partidas completas.
+
 ## Como jogar
 
 Abra o **`index.html`** no Chrome, Edge ou Firefox. Funciona offline, sem instalação nem servidor; basta manter as pastas `css/`, `js/` e `assets/` ao lado do HTML. Ao iniciar uma operação o jogo entra em tela cheia (botão **Tela cheia** no topo alterna) e a página inteira vira o campo de batalha, sem rolagem.
 
 As treze classes usam arte preparada com fundo transparente: aliados em verde/caqui e inimigos em vermelho. A mesma arte aparece no mapa, no retrato da seleção e no recrutamento, com rotação, movimento e efeito de disparo. Os atlas estão incorporados em `js/assets.js`; `assets/troops-atlas.png` guarda as tropas e `assets/Tanques/tanks-atlas.png` guarda os três tanques nas duas equipes. Versões preparadas com ImageGen e prompts ficam em `assets/Tanques/`.
 
-Os quatro cenários usam terrenos ilustrados naturais em camadas: grama ou areia, árvores e rochas com transparência, água, margens, estradas e pontes. A composição considera oito vizinhos para suavizar bordas e cantos; a paisagem é contínua, mantendo o centro de cada casa reconhecível. O Deserto Aberto tem versões arenosas.
+Os quatro cenários foram redesenhados no estilo de Broken Arrow, sempre simétricos para os dois lados:
+
+- **Vale dos Rios:** bocage temperado — lotes de cultivo cercados por sebes, rio central sinuoso de borda a borda com três ou mais pontes, colinas suaves.
+- **Deserto Aberto:** solo de areia, dunas (colinas), poucos oásis com cultivo irrigado, estradas longas.
+- **Passe de Montanha:** serra central intransitável para veículos, cortada por três passagens, com encostas e vales cultivados.
+- **Fronteira procedural:** controles de água, floresta, relevo, campos e postos.
+
+Os postos ficam em pontos estratégicos (colinas, cabeceiras de rio, meio do mapa) e uma malha de estradas traçada pelo terreno liga QGs, postos e centro, com pontes onde cruza a água. Os terrenos usam as texturas ilustradas em camadas (grama ou areia, árvores, rochas, água, margens, estradas e pontes); campos, sebes e colinas são desenhados em Canvas sobre elas, com cor e fileiras por lote. A composição considera oito vizinhos para suavizar bordas e cantos, sem revelar terreno desconhecido sob a névoa.
 
 **Grade** (ou **G**) liga/desliga as linhas das casas e salva a preferência neste navegador. Começa desligada; apontamento, seleção, ordens e impacto continuam destacados. A grade é desenhada separadamente do chão e não altera movimento ou alcance.
 
@@ -16,7 +40,11 @@ As 11 imagens de 128 × 128 pixels estão em `assets/terrain/` e incorporadas em
 
 ### Gerador procedural
 
-Escolha **Fronteira procedural** no diálogo de nova operação para ajustar **Água** (rios contínuos de borda a borda e lagos), **Floresta**, **Montanha** e o número de **Postos** (4–12). A prévia mostra o mapa da semente atual e muda junto com os controles; **Gerar outro** sorteia uma nova semente. O mapa é sempre simétrico para os dois lados e as estradas com pontes garantem que todo o mapa seja alcançável. A prévia também funciona para os três mapas fixos.
+Escolha **Fronteira procedural** no diálogo de nova operação para ajustar **Água** (rios contínuos de borda a borda e lagos), **Floresta**, **Relevo** (colinas; acima de 55% surgem serras), **Campos e sebes** e o número de **Postos** (4–12). A prévia mostra o mapa da semente atual e muda junto com os controles; **Gerar outro** sorteia uma nova semente. O mapa é sempre simétrico para os dois lados e as estradas com pontes garantem que todo o mapa seja alcançável. A prévia também funciona para os três mapas fixos.
+
+### Campanha no mapa-múndi
+
+**Campanha (mapa-múndi)**, no diálogo de nova operação, abre um mundo gerado por semente: continentes, ilhas e oceano, cerca de 15–30 regiões com nome e bioma (planície temperada, deserto, planalto montanhoso, terras alagadas, floresta densa) e rotas marítimas ligando as massas de terra. Seu QG fica a oeste e o inimigo na região mais distante. Ataque regiões vizinhas do seu território (contorno dourado): a batalha é gerada com o campo do bioma (Vale dos Rios, Deserto Aberto, Passe de Montanha ou Fronteira procedural ajustada) e semente própria; território inimigo é um nível mais difícil. Vencer pinta a região de azul; perder abre um contra-ataque, e após cada batalha o inimigo ocupa uma região neutra vizinha. A campanha termina quando um QG cai. O progresso fica salvo neste navegador (`wargrid.campaign.v1`); sem armazenamento, vale só para a sessão.
 
 Escolha modo, mapa, dificuldade e, se quiser, uma semente. **Por turnos** é o padrão: você joga primeiro, sem limite de tempo. Selecione suas tropas, mova e execute ações. Clique em **Encerrar turno** (ou **Enter**) quando terminar; a IA joga e devolve o controle na próxima rodada.
 
@@ -73,7 +101,8 @@ Os três tanques estão disponíveis no QG do jogador e da IA, com um médio ini
 ### Outras regras
 
 - **Economia:** QG +15 e posto +8 créditos por turno a partir da segunda rodada, ou a cada 10 segundos no RTS. A IA recebe −20% no fácil e +20% no difícil.
-- **Terreno:** água bloqueada; use pontes. Cada célula custa 1 ponto, estrada custa 0,5 e floresta custa 2 para veículos. No RTS os custos alteram o tempo de travessia. Apenas infantaria atravessa montanhas.
+- **Terreno:** água bloqueada; use pontes. Cada célula custa 1 ponto, estrada custa 0,5, floresta custa 2 para veículos, colina e sebe custam 1,5 para veículos. No RTS os custos alteram o tempo de travessia. Apenas infantaria atravessa serras (montanhas).
+- **Relevo e vegetação (valores provisórios):** colina dá +20% defesa, +2 visão e +1 alcance de tiro direto; sebe dá +25% defesa e esconde quem está nela como a floresta (vista só a até 2 casas; batedor 3); campo é livre como a planície e aceita postos.
 - **Cobertura:** floresta +30% de defesa; montanha +50%; trincheira +25%. Tropas ociosas se entrincheiram ao passar o turno ou após 3 segundos no RTS.
 - **Postos:** capturar usa uma ação da infantaria adjacente ou 2 segundos no RTS. Construir custa 60 e uma ação ou 3 segundos no RTS, convertendo a infantaria em guarnição. Cancelar devolve a reserva uma vez.
 - **Engenharia no RTS:** reparo de até 24 HP por segundo até completar a vida; desarme de mina em 1 segundo. As tarefas avançam somente com a simulação ativa.
@@ -92,11 +121,13 @@ Os três tanques estão disponíveis no QG do jogador e da IA, com um médio ini
 | `index.html` | Marcação da página e diálogos |
 | `css/style.css` | Estilos do jogo e layout em tela cheia |
 | `css/tailwind.css` | Saída gerada do Tailwind; não há fonte para regenerar, então edite `style.css` |
-| `js/engine.js` | Motor independente do DOM: mapas, gerador procedural, tropas, combate, economia, IA e névoa |
+| `js/engine.js` | Motor independente do DOM: perfis dos mapas, gerador (relevo, água, vegetação, campos e sebes, postos, estradas), tropas, combate, economia, IA e névoa |
+| `js/world.js` | Mapa-múndi da campanha sem DOM: continentes, biomas, regiões, rotas marítimas e regras de conquista/salvamento |
+| `js/campaign.js` | Tela da campanha: desenho do mundo, escolha de região, batalha pelo bioma e progresso no navegador |
 | `js/assets.js` | Texturas e atlas em data URL; atualizado pelos scripts `prepare:terrain` e `prepare:tanks`; o bloco `HELI_ASSETS` traz `assets/Helicopteros/helicopters-atlas.png` |
 | `js/render.js` | Sprites, texturas de terreno, câmera, `Renderer` (Canvas e minimapa) e prévia do mapa |
 | `js/ui.js` | Som, estado da partida, barra de comando e painéis da base, comandos de mouse e teclado, loop e inicialização |
-| `tests/` | `engine.test.cjs` (motor: turnos, RTS, tanques, gerador) e `browser.test.cjs` (Chrome: controles, câmera, gerador, tanques, terreno) |
+| `tests/` | `engine.test.cjs` (motor: turnos, RTS, tanques, mapas e terrenos), `world.test.cjs` (mapa-múndi e campanha) e `browser.test.cjs` (Chrome: controles, câmera, gerador, campanha, tanques, terreno) |
 | `scripts/` | Preparação de texturas e tanques; comparação de confrontos |
 | `assets/` | Atlas, texturas e fontes de alta resolução com prompts |
 | `docs/` | `NOTAS.md` (evolução e ideias) e `tanks/README.md` (atributos e confrontos) |
@@ -104,7 +135,7 @@ Os três tanques estão disponíveis no QG do jogador e da IA, com um médio ini
 Os scripts são clássicos, sem `import`, para o jogo abrir via `file://`, e carregam nessa ordem. As imagens ficam em data URL porque o Canvas recusa ler pixels de PNGs locais carregados por caminho. `Game(map, difficulty, seed, mode, options)` aceita `turns` (padrão) ou `rts`; `options` (`water`, `forest`, `mountain` de 0 a 1 e `posts`) controla o gerador procedural; `trainDuration(type)` fornece turnos ou segundos. O loop subdivide o tempo de simulação em passos curtos. No planejamento por turnos, tempo decorrido não gera renda, treino ou decisões da IA; no RTS, tudo avança enquanto a operação estiver ativa.
 
 ```sh
-npm test                 # motor: turnos, RTS, tanques, mapas conectados e simétricos, gerador
+npm test                 # motor (turnos, RTS, tanques, mapas e terrenos), mapa-múndi/campanha e defesa aérea
 npm install              # dependência de desenvolvimento para o teste no navegador
 npm run test:browser     # Chrome offline: controles, câmera, gerador, layouts, tanques e terreno
 npm run prepare:terrain  # exporta as peças 128x128 e sincroniza js/assets.js

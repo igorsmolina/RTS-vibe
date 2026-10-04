@@ -131,7 +131,20 @@ function glow(radius){const s=document.createElement('canvas'),c=s.getContext('2
 const terrainImages={},terrainTiles=new Map(),roadOverlays=new Map(),terrainMasks=new Map(),materialTiles=new Map();
 let fogTerrainCache=new WeakMap();
 const terrainDirs=[[0,-1],[1,0],[0,1],[-1,0]],terrainNeighbors=[...terrainDirs,[1,-1],[1,1],[-1,1],[-1,-1]];
-function terrainMinimapColor(type,map){return map==='desert'?({plain:'#c4b18a',forest:'#74764c',mountain:'#a89678'}[type]||TERRAIN[type].color):({plain:'#83936f',forest:'#48604b',mountain:'#92958a',river:'#4e8390',bridge:'#ad9875',road:'#b8a27b'}[type]||TERRAIN[type].color);}
+function terrainMinimapColor(type,map){return map==='desert'?({plain:'#c4b18a',forest:'#74764c',mountain:'#a89678',hill:'#b9a37c',field:'#9da45e',hedge:'#6f7146'}[type]||TERRAIN[type].color):({plain:'#83936f',forest:'#48604b',mountain:'#92958a',river:'#4e8390',bridge:'#ad9875',road:'#b8a27b',hill:'#9aa27a',field:'#a9a46b',hedge:'#4f6a45'}[type]||TERRAIN[type].color);}
+/* Lotes de cultivo: cada campo contínuo recebe cor e direção das fileiras próprias (trigo, verde, terra arada…). */
+const CROPS={temperate:['#cdb768','#7f9b4f','#8d7552','#a3b46b'],desert:['#94a35a','#b8aa66']};
+let fieldPatches=new WeakMap();
+// Sob a névoa (conceal), o lote considera só casas exploradas: a cor não revela campos vizinhos desconhecidos.
+function fieldStyle(g,x,y,conceal=false){
+ let root;
+ if(conceal){root=KEY(x,y);const seen=new Set([root]),stack=[root];while(stack.length){const c=stack.pop(),cx=c%COLS,cy=(c-cx)/COLS;for(const [dx,dy]of terrainDirs){const nx=cx+dx,ny=cy+dy,n=KEY(nx,ny);if(INSIDE(nx,ny)&&!seen.has(n)&&g.terrain[n]==='field'&&g.explored.blue[n]){seen.add(n);stack.push(n);if(n<root)root=n;}}}}
+ else{let ids=fieldPatches.get(g);
+ if(!ids){ids=new Int32Array(SIZE).fill(-1);for(let k=0;k<SIZE;k++){if(g.terrain[k]!=='field'||ids[k]>=0)continue;const stack=[k];ids[k]=k;while(stack.length){const c=stack.pop(),cx=c%COLS,cy=(c-cx)/COLS;for(const [dx,dy]of terrainDirs){const nx=cx+dx,ny=cy+dy,n=KEY(nx,ny);if(INSIDE(nx,ny)&&ids[n]<0&&g.terrain[n]==='field'){ids[n]=k;stack.push(n);}}}}fieldPatches.set(g,ids);}
+ root=ids[KEY(x,y)];}
+ const h=terrainVisualHash(g.seed,root%COLS,(root-root%COLS)/COLS),palette=CROPS[g.map==='desert'?'desert':'temperate'];
+ return{color:palette[h%palette.length],vertical:!!((h>>>4)&1)};
+}
 function terrainVisualHash(seed,x,y){let n=(seed^Math.imul(x+1,0x9e3779b1)^Math.imul(y+1,0x85ebca6b))>>>0;n=Math.imul(n^(n>>>16),0x7feb352d);return(n^(n>>>15))>>>0;}
 function terrainTopology(g,x,y,concealNeighbors=false){
  const type=g.terrain[KEY(x,y)],water=t=>t==='river'||t==='bridge',road=t=>t==='road'||t==='bridge';let roadMask=0,waterMask=0,sameMask=0;
@@ -140,7 +153,22 @@ function terrainTopology(g,x,y,concealNeighbors=false){
  const horizontal=Number(!!(roadMask&2))+Number(!!(roadMask&8)),vertical=Number(!!(roadMask&1))+Number(!!(roadMask&4));return{roadMask,waterMask,sameMask,vertical:vertical>horizontal};
 }
 function terrainImageReady(name){const i=terrainImages[name];return !!(i?.complete&&i.naturalWidth);}
-function clearTerrainCaches(){terrainTiles.clear();roadOverlays.clear();terrainMasks.clear();materialTiles.clear();fogTerrainCache=new WeakMap();}
+function clearTerrainCaches(){terrainTiles.clear();roadOverlays.clear();terrainMasks.clear();materialTiles.clear();fogTerrainCache=new WeakMap();fieldPatches=new WeakMap();}
+// Fileiras de cultivo alinhadas ao mundo (continuam de uma casa para a outra) e margem escura onde o lote termina.
+function drawCrops(c,style,mask){c.fillStyle=style.color+'a6';c.fillRect(0,0,CELL,CELL);c.fillStyle='#2a24161f';for(let i=2;i<CELL;i+=7)style.vertical?c.fillRect(i,0,2,CELL):c.fillRect(0,i,CELL,2);
+ c.fillStyle='#3b331f40';if(!(mask&1))c.fillRect(0,0,CELL,2);if(!(mask&2))c.fillRect(CELL-2,0,2,CELL);if(!(mask&4))c.fillRect(0,CELL-2,CELL,2);if(!(mask&8))c.fillRect(0,0,2,CELL);}
+// Sebe: faixa de arbustos ligando as sebes vizinhas (mesmo traçado das estradas), com sombra.
+function drawHedge(c,mask,fill){const path=roadPath(mask);c.lineCap=c.lineJoin='round';c.save();c.translate(2,3);c.lineWidth=22;c.strokeStyle='#14251a66';c.stroke(path);c.restore();c.lineWidth=20;c.strokeStyle=fill;c.stroke(path);c.lineWidth=20;c.strokeStyle='#1f3d2638';c.stroke(path);c.save();c.translate(-1.5,-2);c.lineWidth=7;c.strokeStyle='#b8d39a24';c.stroke(path);c.restore();}
+// Colina: luz do noroeste e curva de nível no contorno, ambas pela máscara orgânica que funde colinas vizinhas.
+function drawHill(c,mask,variant,desert){
+ // Tom uniforme no alto; encosta clara nas bordas abertas ao noroeste e sombreada ao sudeste (sem degradê por casa, que formava uma colcha).
+ const layer=document.createElement('canvas');layer.width=layer.height=CELL;const q=layer.getContext('2d');q.fillStyle=desert?'#f6e2b246':'#ece9b33f';q.fillRect(0,0,CELL,CELL);
+ [[0,'light'],[1,'shade'],[2,'shade'],[3,'light']].forEach(([side,tone])=>{if(mask&(1<<side))return;const g=side===0?q.createLinearGradient(0,0,0,16):side===1?q.createLinearGradient(CELL,0,CELL-16,0):side===2?q.createLinearGradient(0,CELL,0,CELL-16):q.createLinearGradient(0,0,16,0);
+  g.addColorStop(0,tone==='light'?(desert?'#fff8dc66':'#fbf6d25c'):(desert?'#5c41245c':'#26321d5c'));g.addColorStop(1,'#00000000');q.fillStyle=g;q.fillRect(0,0,CELL,CELL);});
+ q.globalCompositeOperation='destination-in';q.drawImage(terrainMask(mask,'mountain',variant),0,0);c.drawImage(layer,0,0);
+ const ring=document.createElement('canvas');ring.width=ring.height=CELL;const r=ring.getContext('2d');r.fillStyle=desert?'#6b532f80':'#39412a80';r.fillRect(0,0,CELL,CELL);
+ r.globalCompositeOperation='destination-in';r.drawImage(terrainMask(mask,'forest',variant),0,0);r.globalCompositeOperation='destination-out';r.drawImage(terrainMask(mask,'mountain',variant),0,0);c.drawImage(ring,0,0);
+}
 function materialTile(name,x,y,seed){
  const phase=terrainVisualHash(seed,0,0),px=(x+(phase&1))&1,py=(y+((phase>>>1)&1))&1,key=name+':'+px+py;
  if(materialTiles.has(key))return materialTiles.get(key);
@@ -183,8 +211,8 @@ function roadOverlay(mask){
 function terrainTile(g,x,y,concealNeighbors=false){
  const type=g.terrain[KEY(x,y)],desert=g.map==='desert',soil=desert?'sand':'plain',vegetation=type+(desert?'-desert':''),bank=desert?'bank-desert':'bank',water=type==='river'||type==='bridge';
  const t=terrainTopology(g,x,y,concealNeighbors);
- const required=[soil,...(['forest','mountain'].includes(type)?[vegetation]:[]),...(water?['water',bank]:[]),...(type==='road'?['road']:[]),...(type==='bridge'?['bridge']:[])];if(!required.every(terrainImageReady))return null;
- const phase=terrainVisualHash(g.seed,0,0),variant=terrainVisualHash(g.seed,x,y)%4,organic=['forest','mountain','river','bridge'].includes(type),key=[type,desert,organic?t.sameMask:0,type==='road'?t.roadMask:0,type==='bridge'?t.vertical:0,(x+(phase&1))&1,(y+((phase>>>1)&1))&1,organic?variant:0].join(':');
+ const bush=desert?'forest-desert':'forest',required=[soil,...(['forest','mountain'].includes(type)?[vegetation]:[]),...(type==='hedge'?[bush]:[]),...(water?['water',bank]:[]),...(type==='road'?['road']:[]),...(type==='bridge'?['bridge']:[])];if(!required.every(terrainImageReady))return null;
+ const crop=type==='field'?fieldStyle(g,x,y,concealNeighbors):null,phase=terrainVisualHash(g.seed,0,0),variant=terrainVisualHash(g.seed,x,y)%4,organic=['forest','mountain','river','bridge','hill','hedge','field'].includes(type),key=[type,desert,organic?t.sameMask:0,type==='road'?t.roadMask:0,type==='bridge'?t.vertical:0,(x+(phase&1))&1,(y+((phase>>>1)&1))&1,organic?variant:0,crop?crop.color+crop.vertical:''].join(':');
  if(terrainTiles.has(key))return terrainTiles.get(key);
  const tile=document.createElement('canvas');tile.width=tile.height=CELL;const c=tile.getContext('2d');c.drawImage(materialTile(soil,x,y,g.seed),0,0);
  if(type==='forest'||type==='mountain'){
@@ -193,7 +221,10 @@ function terrainTile(g,x,y,concealNeighbors=false){
  }else if(water){
   maskedMaterial(c,bank,x,y,g,t.sameMask,'shore',variant);maskedMaterial(c,'water',x,y,g,t.sameMask,'water',variant);
   if(type==='bridge'){c.save();c.translate(28,28);if(!t.vertical)c.rotate(Math.PI/2);c.drawImage(terrainImages.bridge,-28,-28,CELL,CELL);c.restore();}
- }else if(type==='road')c.drawImage(roadOverlay(t.roadMask),0,0);
+ }else if(type==='road'){c.drawImage(roadOverlay(t.roadMask),0,0);if(desert){c.lineCap=c.lineJoin='round';c.lineWidth=18;c.strokeStyle='#5b46304d';c.stroke(roadPath(t.roadMask));}}
+ else if(type==='field')drawCrops(c,crop,t.sameMask);
+ else if(type==='hedge')drawHedge(c,t.sameMask&15,c.createPattern(materialTile(bush,x,y,g.seed),'repeat'));
+ else if(type==='hill')drawHill(c,t.sameMask,variant,desert);
  if(terrainTiles.size>=1024)terrainTiles.delete(terrainTiles.keys().next().value);terrainTiles.set(key,tile);return tile;
 }
 function terrainFallback(c,g,x,y,concealNeighbors=false){
@@ -201,6 +232,9 @@ function terrainFallback(c,g,x,y,concealNeighbors=false){
  if(type==='forest')for(const [px,py,r]of [[16,17,11],[39,22,10],[25,39,12]]){c.fillStyle='#233f3650';c.beginPath();c.ellipse(px+2,py+3,r,r*.8,0,0,7);c.fill();c.fillStyle=g.map==='desert'?'#667148':'#4a6b4a';c.beginPath();c.arc(px,py,r,0,7);c.fill();}
  if(type==='mountain'){polygon(c,[[6,43],[17,12],[34,6],[48,38],[30,48]],g.map==='desert'?'#a79779':'#9b9d92');polygon(c,[[17,12],[34,6],[30,48]],'#c5c6b2');}
  if(type==='road'){c.lineCap=c.lineJoin='round';c.strokeStyle='#b9a27b';c.lineWidth=20;c.stroke(roadPath(t.roadMask));}
+ if(type==='field')drawCrops(c,fieldStyle(g,x,y,concealNeighbors),t.sameMask);
+ if(type==='hedge'){c.fillStyle=terrainMinimapColor('plain',g.map);c.fillRect(0,0,CELL,CELL);drawHedge(c,t.sameMask&15,g.map==='desert'?'#6f7146':'#3f5e3c');}
+ if(type==='hill')drawHill(c,t.sameMask,terrainVisualHash(g.seed,x,y)%4,g.map==='desert');
  if(type==='river'||type==='bridge'){c.strokeStyle='#b1ced05c';c.beginPath();c.moveTo(5,20);c.bezierCurveTo(16,14,35,26,51,20);c.stroke();if(type==='bridge'){c.save();c.translate(28,28);if(!t.vertical)c.rotate(Math.PI/2);c.fillStyle='#b4a080';c.fillRect(-10,-28,20,56);c.strokeStyle='#574d3b';for(let yy=-26;yy<28;yy+=7){c.beginPath();c.moveTo(-10,yy);c.lineTo(10,yy);c.stroke();}c.restore();}}
 }
 function drawTerrainCell(c,g,x,y){c.save();c.translate(x*CELL,y*CELL);const tile=terrainTile(g,x,y);if(tile)c.drawImage(tile,0,0);else terrainFallback(c,g,x,y);c.restore();}
@@ -215,7 +249,7 @@ function drawUnexploredTerrainEdges(c,g){
     if(d<4)clip.rect(x*CELL+(d===1?CELL-20:0),y*CELL+(d===2?CELL-20:0),d%2?20:CELL,d%2?CELL:20);
     else clip.rect(x*CELL+(dx>0?CELL-20:0),y*CELL+(dy>0?CELL-20:0),20,20);
    });
-   if(capped)cached.items.push({x,y,clip,whole:['road','bridge'].includes(g.terrain[KEY(x,y)])});
+   if(capped)cached.items.push({x,y,clip,whole:['road','bridge','hedge','field'].includes(g.terrain[KEY(x,y)])});
   }fogTerrainCache.set(g,cached);
  }
  for(const {x,y,clip,whole}of cached.items){const tile=terrainTile(g,x,y,true);c.save();if(!whole)c.clip(clip);c.translate(x*CELL,y*CELL);if(tile)c.drawImage(tile,0,0);else terrainFallback(c,g,x,y,true);c.restore();}
@@ -235,7 +269,7 @@ function drawPreview(canvas,g){const c=canvas.getContext('2d');c.clearRect(0,0,c
 
 class Renderer{
  constructor(){this.canvas=$('battlefield');this.ctx=this.canvas.getContext('2d',{alpha:false});this.mini=$('minimap').getContext('2d');this.ground=document.createElement('canvas');this.ground.width=COLS*CELL;this.ground.height=ROWS*CELL;this.glow={small:glow(2.8),large:glow(4)};this.particles=[];this.texts=[];this.shake=0;this.dirty=true;this.rebuild();}
- paintGround(){const c=this.ground.getContext('2d');c.clearRect(0,0,this.ground.width,this.ground.height);renderTerrain(c,game);fogTerrainCache.delete(game);this.dirty=true;}
+ paintGround(){const c=this.ground.getContext('2d');c.clearRect(0,0,this.ground.width,this.ground.height);fieldPatches.delete(game);renderTerrain(c,game);fogTerrainCache.delete(game);this.dirty=true;}
  rebuild(){this.paintGround();this.particles=[];this.texts=[];this.shake=0;}
  terrain(ctx,x,y,type,time,g=game){drawTerrainCell(ctx,g,x,y);}
 
