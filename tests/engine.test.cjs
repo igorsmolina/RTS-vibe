@@ -169,7 +169,10 @@ check('Dano por arma no impacto: multiplicadores, cobertura, aura e veterania ap
  assert.equal(hit(g,hb,fresh('tank')),7);assert.equal(hit(g,hb,fresh('infantry')),20);assert.equal(hit(g,hb,g.hq('red')),10);assert.equal(hit(g,hb,fresh('helicopter')),20);
  assert.equal(hit(g,gb,fresh('tank'),'auto'),98);assert.equal(hit(g,gb,fresh('infantry'),'agm'),33);assert.equal(hit(g,gb,g.add('red','post',8,9),'agm'),65);assert.equal(hit(g,gb,fresh('tank'),'gun'),7);
  assert.equal(hit(g,ab,fresh('helicopter'),'auto'),70);assert.equal(hit(g,ab,fresh('infantry'),'auto'),20);
- const over=g.add('red','helicopter',4,8);g.terrain[KEY(4,8)]='forest';assert.equal(hit(g,g.add('blue','infantry',4,9),over),35,'Sem cobertura no ar');assert.equal(hit(g,g.add('blue','machinegun',3,8),over),18);
+ // Contra helicóptero: infantaria −75%, metralhador −35%, caindo até metade no alcance máximo; sem cobertura no ar.
+ const over=g.add('red','helicopter',4,8);g.terrain[KEY(4,8)]='forest';assert.equal(hit(g,g.add('blue','infantry',4,9),over),5,'Infantaria a 1 casa: 35 × 0,25 × 0,57');assert.equal(hit(g,g.add('blue','machinegun',3,8),over),9,'Metralhador a 1 casa: 18 × 0,65 × 0,8');
+ assert.equal(hit(g,g.add('blue','infantry',4,8),over),9,'Mesma casa: sem queda');assert.equal(hit(g,g.add('blue','machinegun',4,8),over),12);assert.equal(hit(g,g.add('blue','machinegun',2,8),over),7,'Metralhador a 2 casas: × 0,6');
+ assert.equal(hit(g,g.add('blue','infantry',14,15),g.add('red','infantry',14,14)),35,'Solo inalterado');assert.equal(hit(g,g.add('blue','machinegun',16,15),g.add('red','infantry',16,14)),23);
  const hidden=g.add('red','infantry',8,5);g.terrain[KEY(8,5)]='forest';assert.equal(hit(g,hb,hidden),14,'Cobertura terrestre mantida');
  const vet=g.add('blue','helicopter',10,5);vet.level=2;assert.equal(hit(g,vet,g.add('red','infantry',11,5)),22);const led=g.add('blue','helicopter',12,8);g.add('blue','commander',12,9);assert.equal(hit(g,led,g.add('red','infantry',13,8)),24);
  assert.ok(Math.abs(g.accuracy(hb,fresh('infantry'))-.85)<1e-9);assert.ok(Math.abs(g.accuracy(ab,fresh('helicopter'))-.9)<1e-9);assert.ok(Math.abs(g.accuracy(led,fresh('infantry'))-.99)<1e-9,'Aura uma vez, limite 99%');
@@ -190,9 +193,9 @@ check('Projétil guarda arma, dano e alvo do disparo; alvo destruído antes não
  const g=field(),gb=g.add('blue','helicopterGround',5,5),tank=g.add('red','tank',6,5);g.updateVision();g.shoot(gb,tank);g.setWeapon(gb,'gun');gb.level=3;flush(g);assert.equal(tank.hp,72);
  const weak=g.add('red','infantry',6,6);weak.hp=10;const credits=g.credits.blue;g.shoot(gb,weak);g.shoot(gb,weak);assert.equal(g.projectiles.length,2);flush(g);assert.equal(g.credits.blue,credits+20);assert.equal(gb.xp,1);
 });
-check('Reparo de helicóptero na mesma casa e adjacente, nos dois modos',()=>{
- const g=field(),e=g.add('blue','engineer',5,5),h=g.add('blue','helicopter',5,5);h.hp=90;assert.ok(g.order(e,'repair',{targetId:h.id}));settle(g);assert.equal(h.hp,114);
- const r=field('rts'),f=r.add('blue','engineer',5,5),k=r.add('blue','helicopterAir',6,5);k.hp=60;assert.ok(r.order(f,'repair',{targetId:k.id}));advance(r,1.05);assert.equal(k.hp,84);
+check('Engenheiros recusam reparo aéreo nos dois modos; atendimento por manutenção',()=>{
+ const g=field(),e=g.add('blue','engineer',5,5),h=g.add('blue','helicopter',5,5);h.hp=90;assert.equal(g.order(e,'repair',{targetId:h.id}),false);settle(g);assert.equal(h.hp,90);
+ const r=field('rts'),f=r.add('blue','engineer',5,5),k=r.add('blue','helicopterAir',6,5);k.hp=60;assert.equal(r.order(f,'repair',{targetId:k.id}),false);advance(r,1.05);assert.equal(k.hp,60);
 });
 check('Minas, explosões de artilharia e queda de aeronave não atingem a outra camada',()=>{
  const g=field(),h=g.add('blue','helicopter',5,5);g.mines.push({x:6,y:5,known:{blue:false,red:false}});assert.ok(g.order(h,'move',{x:7,y:5}));settle(g);assert.equal(h.hp,120);assert.equal(g.mines.length,1);
@@ -206,10 +209,77 @@ check('Névoa: aeronaves sobre floresta seguem o alcance de visão; fora dela fi
 });
 check('IA: compra conforme forças visíveis e ataca com a arma Auto',()=>{
  const g=field();g.aiEnabled=true;g.add('red','infantry',COLS-2,1);g.credits.red=1000;const spot=g.add('red','recon',20,10),seen=g.add('blue','helicopter',22,10),q=()=>g.hq('red').queue.map(j=>j.type);
- g.updateVision();g.turn='red';g.aiBuy();assert.equal(q()[0],'helicopterAir');
+ g.updateVision();g.turn='red';g.aiBuy();assert.equal(q()[0],'antiAirVehicle');
  const blind=field();blind.aiEnabled=true;blind.add('red','infantry',COLS-2,1);blind.credits.red=1000;blind.add('blue','helicopter',22,10);blind.updateVision();blind.turn='red';blind.aiBuy();assert.ok(!blind.hq('red').queue.some(j=>j.type==='helicopterAir'),'Não usa aeronaves ocultas');
  const armor=field();armor.aiEnabled=true;armor.add('red','infantry',COLS-2,1);armor.credits.red=1000;armor.add('red','recon',20,10);armor.add('blue','tank',22,10);armor.add('blue','lightTank',22,11);armor.updateVision();armor.turn='red';armor.aiBuy();assert.equal(armor.hq('red').queue[0].type,'helicopterGround');
- const fight=field(),red=fight.add('red','helicopterGround',6,5),target=fight.add('blue','tank',5,5);fight.aiEnabled=true;fight.units=fight.units.filter(u=>u.type!=='infantry'||u.owner==='blue');fight.endTurn();settle(fight);assert.equal(target.hp,170-73,'IA usa o míssil ar-terra no Auto: 97,5 × 0,75 da trincheira de fim de turno');
+ const fight=field(),red=fight.add('red','helicopterGround',6,5),target=fight.add('blue','tank',5,5);fight.aiEnabled=true;fight.units=fight.units.filter(u=>u.type!=='infantry'||u.owner==='blue');fight.endTurn();settle(fight);assert.equal(red.altitude,'high');assert.equal(target.hp,170,'Subir usa a ação do primeiro turno');fight.endTurn();settle(fight);assert.equal(target.hp,170-73,'IA usa o míssil ar-terra no Auto: 97,5 × 0,75 da trincheira de fim de turno');
 });
 console.log(checks+' verificações de helicópteros concluídas.');
+}
+// --- IA planejada ---
+{
+let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
+function field(mode='turns'){const g=new Game('river','normal',17,mode);g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.aiEnabled=false;g.add('blue','hq',0,ROWS-1);g.add('red','hq',COLS-1,0);g.add('blue','infantry',0,ROWS-2);g.add('red','infantry',COLS-1,1);g.rng=()=>.2;g.plan.rally=null;g.updateVision();return g;}
+function layers(g){for(const layer of [true,false]){const seen=new Set();for(const u of g.units.filter(u=>!!TYPES[u.type].air===layer)){const k=u.x+','+u.y;assert.ok(!seen.has(k),'Sobreposição '+k);seen.add(k);}}}
+function advance(g,s){for(let t=0;t<s-1e-8;t+=1/30){g.update(Math.min(1/30,s-t));layers(g);}}
+function settle(g){let n=0;while((g.busy||g.turn==='red')&&!g.winner&&n++<40000){g.update(1/30);layers(g);}assert.ok(n<40000,'Turno deve terminar');}
+const redHalf=(g,u)=>{const hq=g.hq('red'),far={x:COLS-1-hq.x,y:ROWS-1-hq.y};return DIST(u,hq)<=DIST(u,far);},away=(g,u)=>DIST(u,g.hq('blue'))>20;
+function staged(mode='turns'){const g=field(mode);g.aiEnabled=true;const rally=g.rallyPoint(g.hq('red'));g.plan.rally=rally;const tanks=[[-1,0],[0,0],[1,0],[-1,1],[0,1],[1,1]].map(([dx,dy])=>g.add('red','tank',rally.x+dx,rally.y+dy));g.updateVision();return{g,rally,tanks};}
+
+check('Sem investida inicial: quatro mapas, jogador parado — a IA se prepara longe da base azul',()=>{
+ for(const map of ['river','desert','mountain','random']){
+  const g=new Game(map,'normal',71);for(let i=0;i<3;i++){g.endTurn();settle(g);}
+  assert.equal(g.plan.phase,'prepare',map+': prazo mínimo de 3 turnos');assert.ok(g.plan.rally&&redHalf(g,g.plan.rally),map+': ponto de encontro na metade vermelha');
+  for(const u of g.units.filter(u=>u.owner==='red'&&u.type!=='recon'))assert.ok(away(g,u),map+'/'+u.type+' perto do QG azul em '+u.x+','+u.y);
+  const r=new Game(map,'normal',71,'rts');advance(r,60);assert.equal(r.plan.phase,'prepare',map+' RTS');
+  for(const u of r.units.filter(u=>u.owner==='red'&&u.type!=='recon'))assert.ok(away(r,u),map+' RTS/'+u.type+' perto do QG azul em '+u.x+','+u.y);
+ }
+});
+check('Ponto de encontro: alcançável por tanque, a 30% do caminho até o QG azul presumido pela simetria',()=>{
+ const {g,rally}=staged();assert.equal(rally.x+','+rally.y,'25,8');for(const map of ['river','desert','mountain','random'])for(const seed of [3,9]){const m=new Game(map,'normal',seed),p=m.rallyPoint(m.hq('red'));assert.ok(Number.isFinite(m.cost({type:'tank'},p.x,p.y)),map+'/'+seed);assert.ok(m.findPath({type:'tank',owner:'red',...m.spawnCells('red','tank')[0]},p),map+'/'+seed);}
+ assert.ok(g.power(g.units.find(u=>u.type==='tank'))===150);const hurt=g.add('red','tank',2,2);hurt.hp=85;assert.equal(g.power(hurt),75);assert.equal(g.power(g.hq('red')),0);
+ assert.equal(g.fighter(g.add('red','commander',3,3)),false);assert.equal(g.fighter(g.add('red','engineer',4,3)),false);assert.equal(g.fighter(g.add('red','recon',5,3)),false);assert.equal(g.fighter(hurt),true);
+});
+check('Ataca em grupo quando o exército reunido supera o que viu, e avança coeso até o objetivo',()=>{
+ const {g,tanks}=staged();g.round=4;g.planAI();assert.equal(g.plan.phase,'attack');assert.equal(g.plan.wave.length,6);assert.equal(JSON.stringify(g.plan.objective),JSON.stringify({x:0,y:ROWS-1}),'QG presumido');
+ const goal=g.plan.objective,mean=()=>tanks.reduce((a,t)=>a+DIST(t,goal),0)/tanks.length,start=mean();
+ for(let i=0;i<3;i++){g.endTurn();settle(g);const d=tanks.map(t=>DIST(t,goal));assert.ok(Math.max(...d)-Math.min(...d)<=6,'Onda coesa: '+d);}
+ assert.ok(mean()<start-8,'A onda avançou: '+start+' → '+mean());
+});
+check('Força inferior: com exército azul visto maior que onda × margem, continua se preparando',()=>{
+ const {g,rally}=staged();g.round=6;for(let i=0;i<5;i++)g.add('blue','heavyTank',rally.x-2+i,rally.y+4);g.updateVision();assert.equal(g.intel.size,5);g.planAI();assert.equal(g.plan.phase,'prepare');
+ g.units=g.units.filter(u=>u.type!=='heavyTank');g.updateVision();g.planAI();assert.equal(g.plan.phase,'attack','Sem a força vista, ataca');
+});
+check('Recua e reagrupa quando a onda perde metade da força',()=>{
+ const {g,rally,tanks}=staged();g.round=4;g.planAI();assert.equal(g.plan.phase,'attack');
+ for(const t of tanks.slice(0,4))t.hp=0;g.units=g.units.filter(u=>u.hp>0);const left=tanks[4];left.x=12;left.y=16;g.updateVision();
+ g.beginTurn('red');assert.equal(g.plan.phase,'regroup');const before=DIST(left,rally);g.aiAct(left);assert.equal(left.order.type,'move');settle(g);assert.ok(DIST(left,rally)<before,'Volta ao ponto de encontro');
+});
+check('Defende QG e postos: ameaças tiram as tropas do ponto de encontro; sem ameaça, ninguém persegue o mapa',()=>{
+ const {g,rally,tanks}=staged();const intruder=g.add('blue','infantry',COLS-3,2);g.updateVision();const t=tanks[0],before=DIST(t,intruder);g.endTurn();settle(g);
+ assert.equal(g.aiState,'defend');assert.ok(DIST(t,intruder)<before,'Tanque vai defender o QG');
+ const calm=staged().g,far=calm.add('blue','tank',6,20);calm.add('red','recon',10,18);calm.updateVision();assert.ok(calm.isVisible('red',far));const pos=calm.units.filter(u=>u.type==='tank'&&u.owner==='red').map(u=>u.x+','+u.y).join();
+ calm.endTurn();settle(calm);assert.equal(calm.units.filter(u=>u.type==='tank'&&u.owner==='red').map(u=>u.x+','+u.y).join(),pos,'Prazo não venceu: tanques seguram o ponto de encontro');
+ const post=staged(),p=post.g.add('red','post',post.rally.x-6,post.rally.y),raider=post.g.add('blue','infantry',p.x-2,p.y);post.g.updateVision();post.g.endTurn();settle(post.g);assert.ok(!post.g.units.includes(raider)||raider.hp<100,'Inimigo a 3 casas de posto vermelho é ameaça e é atacado');
+});
+check('Inteligência: grava o que viu, mantém fora de vista e apaga quando a casa conhecida fica visível vazia ou a tropa morre',()=>{
+ const g=field(),eye=g.add('red','tank',10,10),foe=g.add('blue','infantry',12,10);g.updateVision();assert.equal(g.intel.get(foe.id).x,12);
+ eye.x=2;eye.y=2;g.updateVision();assert.equal(g.intel.get(foe.id)?.x,12,'Fora de vista continua lembrado');
+ foe.x=20;foe.y=20;eye.x=10;eye.y=10;g.updateVision();assert.equal(g.intel.has(foe.id),false,'Casa conhecida vazia');
+ eye.x=19;eye.y=19;g.updateVision();assert.equal(g.intel.get(foe.id).y,20);foe.hp=0;g.units=g.units.filter(u=>u.hp>0);g.updateVision();assert.equal(g.intel.has(foe.id),false,'Morta');
+ const h=g.add('blue','helicopter',23,19);g.terrain[KEY(23,19)]='forest';g.updateVision();assert.ok(g.intel.has(h.id),'Aeronave sobre floresta é vista pelo céu');
+});
+check('Dificuldade: fácil ataca no mínimo na rodada 6, normal na 4, difícil na 3; RTS 150/90/60 s',()=>{
+ for(const [level,first,seconds] of [['easy',6,150],['normal',4,90],['hard',3,60]]){
+  const {g}=staged();g.difficulty=level;let found=0;for(let r=2;r<=8&&!found;r++){g.round=r;g.planAI();if(g.plan.phase==='attack')found=r;}assert.equal(found,first,level);
+  const s=staged('rts').g;s.difficulty=level;s.time=seconds-1;s.planAI();assert.equal(s.plan.phase,'prepare',level+' RTS antes');s.time=seconds+.1;s.planAI();assert.equal(s.plan.phase,'attack',level+' RTS depois');
+ }
+});
+check('Partida simulada sem o jogador: a IA acaba atacando em grupo, sem perseguir unidades isoladas antes do prazo',()=>{
+ for(const mode of ['turns','rts']){const g=new Game('river','normal',71,mode);let first=null;
+  if(mode==='turns')for(let i=0;i<30&&!g.winner&&!first;i++){g.endTurn();settle(g);if(g.plan.phase==='attack')first={round:g.round,wave:g.plan.wave.length};}
+  else for(let t=0;t<600&&!g.winner&&!first;t+=1){advance(g,1);if(g.plan.phase==='attack')first={time:Math.round(g.time),wave:g.plan.wave.length};}
+  assert.ok(first,'IA deve lançar um ataque ('+mode+')');assert.ok(first.wave>=6);console.log('   '+mode+': primeiro ataque '+JSON.stringify(first));}
+});
+console.log(checks+' verificações de IA planejada concluídas.');
 }

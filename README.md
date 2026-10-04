@@ -28,7 +28,8 @@ Todo o jogo funciona só com o mouse; os atalhos de teclado continuam como alter
 
 | Ação | Mouse | Teclado |
 |---|---|---|
-| Selecionar | Clique esquerdo ou arraste uma caixa | — |
+| Selecionar | Clique esquerdo ou arraste uma caixa; abre a barra de comando na base do campo | — |
+| Produção | Clique no QG ou no botão **QG** do canto inferior esquerdo; a barra de comando mostra o recrutamento | — |
 | Somar à seleção | Botão **+ Somar** e depois cliques/caixas | **Shift** + clique |
 | Ordem contextual | Botão direito: no chão move; no inimigo ataca; no posto captura com infantaria; no aliado ferido repara com engenheiro | — |
 | Atacar / Mover / Reparar | Botões **Atacar**, **Mover**, **Reparar** e clique no alvo; clicar de novo cancela | **A** / **M** / **R**; **Esc** cancela |
@@ -41,7 +42,7 @@ Todo o jogo funciona só com o mouse; os atalhos de teclado continuam como alter
 | Grade das casas | Botão Grade | **G** |
 | Tela cheia | Botão no topo; ativada ao iniciar a operação | **Esc** sai |
 
-No celular, use os botões de ordem e toque no destino, inclusive durante a pausa tática; toque ou arraste no minimapa para mover a câmera. Por turnos, aguarde a ordem terminar antes de emitir outra. Menus preservam a pausa anterior ao fechar; sair da aba pausa a operação. O **Manual** detalha as regras.
+Não há painel fixo: com seleção, uma barra de comando fina aparece na base do campo, entre os grupos/registro e o minimapa, com nome, vida e ordens (armas e altitude nos helicópteros; recrutamento quando o QG está selecionado); o botão **i** abre os detalhes. Nada cobre a área em volta da tropa. Em telas estreitas a barra ocupa uma linha própria acima dos cantos. Use os botões de ordem e toque no destino, inclusive durante a pausa tática; toque ou arraste no minimapa para mover a câmera. Por turnos, aguarde a ordem terminar antes de emitir outra. Menus preservam a pausa anterior ao fechar; sair da aba pausa a operação. O **Manual** detalha as regras.
 
 ### Tropas e produção
 
@@ -78,7 +79,7 @@ Os três tanques estão disponíveis no QG do jogador e da IA, com um médio ini
 - **Engenharia no RTS:** reparo de até 24 HP por segundo até completar a vida; desarme de mina em 1 segundo. As tarefas avançam somente com a simulação ativa.
 - **Névoa:** inimigos fora da visão atual ficam ocultos, mesmo em terreno explorado. Artilharia depende do reconhecimento aliado.
 - **Floresta:** tropas na floresta só são vistas a até 2 casas de um observador (batedor: 3). Disparar revela a posição por 2 s no RTS ou até o próximo turno.
-- **Helicópteros** (`air:true`): 120 HP, 2,2 casas/s no RTS, visão 6, recompensa 50. Voam sobre água e montanhas com custo 1 por casa, sem bônus de estrada, penalidade de floresta, cobertura ou bônus de montanha; a floresta não os esconde. Dividem casa com tropas terrestres e estruturas, nunca com outra aeronave; a saída aérea do QG só é bloqueada por aeronaves. Minas, a explosão da artilharia e a queda de uma aeronave não atingem a outra camada. Só infantaria e metralhadores os atacam; engenheiros os reparam. Não capturam, constroem nem transportam.
+- **Helicópteros** (`air:true`): 120 HP, 2,2 casas/s no RTS, visão 6, recompensa 50. Voam sobre água e montanhas com custo 1 por casa, sem bônus de estrada, penalidade de floresta, cobertura ou bônus de montanha; a floresta não os esconde. Dividem casa com tropas terrestres e estruturas, nunca com outra aeronave; a saída aérea do QG só é bloqueada por aeronaves. Minas, a explosão da artilharia e a queda de uma aeronave não atingem a outra camada. Infantaria e metralhadores os atacam com dano reduzido (infantaria −75%, metralhador −35%, caindo até a metade no alcance máximo do disparo); engenheiros os reparam. Não capturam, constroem nem transportam.
 - **Armas aéreas:** metralhadora 20 de dano, alcance 3, 85%, recarga 1 s (×0,35 contra veículos terrestres, ×0,5 contra estruturas); míssil ar-terra 65, alcance 5, 85%, 3 s (só alvos terrestres; ×1,5 contra veículos, ×0,5 contra tropas a pé); míssil ar-ar 70, alcance 6, 90%, 3 s (só helicópteros). Auto escolhe o míssil contra veículo/estrutura (ar-terra) ou helicóptero (ar-ar) e a metralhadora no resto; os botões Auto, Metralhadora e Míssil fixam a arma. Por turnos um disparo gasta a ação, e trocar de arma não a devolve; no RTS as duas armas dividem a recarga do último disparo. O projétil guarda arma, dano e alvo do momento do disparo. Clique de novo na mesma casa para alternar entre a aeronave e a tropa abaixo dela.
 - **Supressão:** tropa que leva dano e sobrevive perde 25 pontos de precisão por 3 s no RTS ou durante o próprio turno seguinte; novo dano renova sem acumular. Estruturas não são suprimidas.
 - **Comandante:** +20% dano e +15 pontos de precisão no raio 2. Sua morte remove metade dos créditos.
@@ -94,7 +95,7 @@ Os três tanques estão disponíveis no QG do jogador e da IA, com um médio ini
 | `js/engine.js` | Motor independente do DOM: mapas, gerador procedural, tropas, combate, economia, IA e névoa |
 | `js/assets.js` | Texturas e atlas em data URL; atualizado pelos scripts `prepare:terrain` e `prepare:tanks`; o bloco `HELI_ASSETS` traz `assets/Helicopteros/helicopters-atlas.png` |
 | `js/render.js` | Sprites, texturas de terreno, câmera, `Renderer` (Canvas e minimapa) e prévia do mapa |
-| `js/ui.js` | Som, estado da partida, painel, comandos de mouse e teclado, loop e inicialização |
+| `js/ui.js` | Som, estado da partida, barra de comando e painéis da base, comandos de mouse e teclado, loop e inicialização |
 | `tests/` | `engine.test.cjs` (motor: turnos, RTS, tanques, gerador) e `browser.test.cjs` (Chrome: controles, câmera, gerador, tanques, terreno) |
 | `scripts/` | Preparação de texturas e tanques; comparação de confrontos |
 | `assets/` | Atlas, texturas e fontes de alta resolução com prompts |

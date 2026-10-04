@@ -17,6 +17,8 @@ const TYPES={
  engineer:{move:3,name:'Engenheiro',hp:85,speed:1.25,range:1.15,min:0,damage:20,accuracy:.9,vision:4,cooldown:1.2,train:2,cost:65,reward:25,role:'Reparo +24 HP por ação'},
  antitank:{move:3,name:'Antitanque',hp:90,speed:1.05,range:3,min:0,damage:40,accuracy:.85,vision:4,cooldown:3,train:2,cost:110,reward:35,role:'Foguetes contra veículos'},
  machinegun:{move:2,name:'Metralhador',hp:110,speed:1.05,range:2.5,min:0,damage:18,accuracy:.88,vision:4,cooldown:.4,train:2,cost:90,reward:30,role:'Fogo rápido contra tropas a pé'},
+ antiAirVehicle:{move:3,vehicle:true,name:'Veículo antiaéreo',hp:90,speed:1.35,range:6,min:0,damage:70,accuracy:.8,vision:6,cooldown:3.5,train:3,cost:160,reward:45,role:'Mísseis · somente aeronaves · frágil'},
+ missileInfantry:{move:3,name:'Soldado lançador',hp:80,speed:1.25,range:3,min:0,damage:30,accuracy:.75,vision:4,cooldown:3,train:2,cost:90,reward:30,role:'Mísseis · ar 3 casas / solo 1 casa'},
  helicopter:{air:true,weapons:['gun'],move:6,name:'Helicóptero',hp:120,speed:2.2,range:3,min:0,damage:20,accuracy:.85,vision:6,cooldown:1,train:3,cost:150,reward:50,role:'Metralhadora · apoio e reconhecimento'},
  helicopterGround:{air:true,weapons:['gun','agm'],move:6,name:'Helicóptero ar-terra',hp:120,speed:2.2,range:3,min:0,damage:20,accuracy:.85,vision:6,cooldown:1,train:4,cost:230,reward:50,role:'Metralhadora e mísseis ar-terra'},
  helicopterAir:{air:true,weapons:['gun','aam'],move:6,name:'Helicóptero ar-ar',hp:120,speed:2.2,range:3,min:0,damage:20,accuracy:.85,vision:6,cooldown:1,train:4,cost:240,reward:50,role:'Metralhadora e mísseis ar-ar'},
@@ -27,6 +29,9 @@ const TYPES={
 // Armas dos helicópteros. Recarga em segundos (RTS); por turnos cada disparo gasta a ação.
 const WEAPONS={gun:{name:'Metralhadora',damage:20,range:3,accuracy:.85,cooldown:1},agm:{name:'Míssil ar-terra',damage:65,range:5,accuracy:.85,cooldown:3},aam:{name:'Míssil ar-ar',damage:70,range:6,accuracy:.9,cooldown:3}};
 const AIR=u=>!!TYPES[u?.type]?.air;
+const MISSILE=w=>['agm','aam','antiAirVehicle','missileInfantry'].includes(w);
+// IA planejada: prazo mínimo de preparo (turnos; RTS ×30 s) e margem sobre a força azul já vista para lançar a onda.
+const PLAN={easy:{prep:5,margin:1.6},normal:{prep:3,margin:1.3},hard:{prep:2,margin:1.1}},WAVE=6;
 function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n/4294967296;};}
 ﻿class Game{
  constructor(map='river',difficulty='normal',seed=1,mode='turns',options={}){
@@ -34,7 +39,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   this.map=MAPS[map]?map:'river';this.difficulty=['easy','normal','hard'].includes(difficulty)?difficulty:'normal';this.seed=seed>>>0;this.rng=seeded(seed);
   const o={...PROCEDURAL,...options},unit=v=>Math.max(0,Math.min(1,Number(v)||0));this.options={water:unit(o.water),forest:unit(o.forest),mountain:unit(o.mountain),posts:Math.max(2,Math.min(12,Math.round(Number(o.posts)/2)*2||8))};
   this.terrain=Array(SIZE).fill('plain');this.units=[];this.structures=[];this.mines=[];this.projectiles=[];this.events=[];this.logs=[];this.nextId=1;
-  this.time=0;this.round=1;this.turn='blue';this.actions=[];this.animation=null;this.aiQueue=[];this.aiWait=0;this.aiEnabled=true;this.aiDecisions=0;this.aiState='rally';this.shotsFired=0;
+  this.time=0;this.round=1;this.turn='blue';this.actions=[];this.animation=null;this.aiQueue=[];this.aiWait=0;this.aiEnabled=true;this.aiDecisions=0;this.aiState='prepare';this.plan={phase:'prepare',since:this.mode==='rts'?0:1,rally:null,objective:null,wave:[],waveStart:0};this.intel=new Map();this.shotsFired=0;
   this.credits={blue:150,red:150};this.winner=null;this.visible={blue:Array(SIZE).fill(false),red:Array(SIZE).fill(false)};this.sky={blue:Array(SIZE).fill(false),red:Array(SIZE).fill(false)};this.explored={blue:Array(SIZE).fill(false),red:Array(SIZE).fill(false)};this.memory={blue:new Map(),red:new Map()};
   this.generate();this.updateVision();this.log(this.mode==='rts'?'Operação RTS. P pausa o combate para dar ordens; P novamente retoma.':'Seu turno. Mova as tropas, execute ações e encerre quando estiver pronto.');
  }
@@ -45,7 +50,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  add(owner,type,x,y){
   const t=TYPES[type];if(!t||!INSIDE(x,y)||!['blue','red','neutral'].includes(owner))return null;
   const u={id:this.nextId++,owner,type,x,y,facing:owner==='blue'?0:Math.PI,hp:t.hp,maxHp:t.hp,level:1,xp:0,cooldown:0,setup:0,packing:0,idle:0,entrenched:false,suppressed:0,revealed:0,work:0,reserved:0,order:{type:'stop'},path:[],segment:null,navGoal:null,healText:0,moveLeft:t.move||0,actionLeft:!t.structure,moved:false,pending:false};
-  if(t.structure)u.queue=[];if(t.air)u.weaponMode='auto';(t.structure?this.structures:this.units).push(u);return u;
+  if(t.structure)u.queue=[];if(t.air){u.weaponMode='auto';u.altitude='low';u.flares=3;u.flareCooldown=0;u.flareUsed=false;}(t.structure?this.structures:this.units).push(u);return u;
  }
   generate(){
   const {water,forest,mountain,posts}=this.options,rng=this.rng;
@@ -127,13 +132,14 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   }return null;
  }
  isVisible(owner,u){if(!u||!this.visible[owner])return false;const p=TILE(u);return !!(AIR(u)?this.sky:this.visible)[owner][KEY(p.x,p.y)];}
+ effectVisible(x,y,air=false){const p=TILE({x,y});return INSIDE(p.x,p.y)&&!!(air?this.sky:this.visible).blue[KEY(p.x,p.y)];}
  // Alcance contra um alvo; sem alvo, o maior alcance do modo de arma atual.
- range(u,target){const t=TYPES[u.type];if(!t.air)return t.range+(this.terrainAt(u)==='mountain'?2:0);if(target)return WEAPONS[this.weapon(u,target)]?.range??0;const mode=u.weaponMode||'auto';return mode==='auto'?Math.max(...t.weapons.map(w=>WEAPONS[w].range)):WEAPONS[mode].range;}
+ range(u,target){const t=TYPES[u.type];if(target&&!this.weapon(u,target))return 0;if(u.type==='missileInfantry')return target&&!AIR(target)?1:3;if(!t.air)return t.range+(this.terrainAt(u)==='mountain'?2:0);if(target)return WEAPONS[this.weapon(u,target)]?.range??0;const mode=u.weaponMode||'auto';return mode==='auto'?Math.max(...t.weapons.map(w=>WEAPONS[w].range)):WEAPONS[mode].range;}
  sight(u){return TYPES[u.type].vision+(!AIR(u)&&this.terrainAt(u)==='mountain'?2:0);}
  /* Arma de a contra b, ou null se incompatível. Solo: a própria tropa (só infantaria e metralhador alcançam aeronaves).
     Helicóptero: arma manual se compatível; Auto prefere o míssil contra veículo/estrutura (ar-terra) ou aeronave (ar-ar). */
  weapon(a,b){
-  const t=TYPES[a.type],air=AIR(b);if(!t.air)return air&&a.type!=='infantry'&&a.type!=='machinegun'?null:a.type;
+  const t=TYPES[a.type],air=AIR(b);if(a.type==='antiAirVehicle')return air?a.type:null;if(a.type==='missileInfantry')return a.type;if(!t.air)return air&&a.type!=='infantry'&&a.type!=='machinegun'?null:a.type;
   const fits=w=>w==='gun'||(w==='agm')!==air,mode=a.weaponMode||'auto';if(mode!=='auto')return fits(mode)?mode:null;
   const missile=t.weapons[1];return missile&&fits(missile)&&(air||TYPES[b.type].vehicle||TYPES[b.type].structure)?missile:'gun';
  }
@@ -150,12 +156,20 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
    for(const [key]of this.memory[owner])if(this.visible[owner][key])this.memory[owner].delete(key);
    for(const s of this.structures)if(this.isVisible(owner,s))this.memory[owner].set(KEY(s.x,s.y),{id:s.id,x:s.x,y:s.y,type:s.type,owner:s.owner});
    for(const m of this.mines)if(this.units.some(u=>u.type==='engineer'&&u.owner===owner&&DIST(u,m)<=2))m.known[owner]=true;
+   // Inteligência da IA: última posição vista de cada tropa azul; sai quando morre ou quando a casa conhecida está à vista e vazia.
+   if(owner==='red'){
+    for(const e of this.units)if(e.owner==='blue'&&this.isVisible('red',e)){const p=TILE(e);this.intel.set(e.id,{id:e.id,type:e.type,x:p.x,y:p.y,hp:e.hp,maxHp:e.maxHp});}
+    for(const [id,e]of this.intel){const live=this.get(id);if(!live||live.hp<=0||(AIR(e)?sky:visible)[KEY(e.x,e.y)]&&!this.isVisible('red',live))this.intel.delete(id);}
+   }
   }
  }
  hasAura(u){return this.units.some(c=>c.owner===u.owner&&c.type==='commander'&&c.hp>0&&DIST(u,c)<=2);}
  cover(u){if(AIR(u))return 0;return Math.min(.75,TERRAIN[this.terrainAt(u)].cover+(u.entrenched?.25:0));}
  attackPower(u,w){return (AIR(u)?WEAPONS[w||'gun'].damage:TYPES[u.type].damage)*(1+(u.level-1)*.1)*(this.hasAura(u)?1.2:1);}
- accuracy(a,b,w=this.weapon(a,b)){return Math.max(.1,Math.min(.99,(AIR(a)&&WEAPONS[w]?WEAPONS[w].accuracy:TYPES[a.type].accuracy)+(a.level-1)*.05+(this.hasAura(a)?.15:0)-(b.level-1)*.05-(a.suppressed>0?.25:0)));}
+ accuracy(a,b,w=this.weapon(a,b)){return Math.max(.1,Math.min(.99,(AIR(a)&&WEAPONS[w]?WEAPONS[w].accuracy:TYPES[a.type].accuracy)+(a.level-1)*.05+(this.hasAura(a)?.15:0)-(b.level-1)*.05-(a.suppressed>0?.25:0)+(MISSILE(w)?(AIR(a)&&a.altitude==='high'?.1:0)+(AIR(b)&&b.altitude==='high'?.1:0):0)));}
+ flareReady(u){return AIR(u)&&u.flares>0&&(this.mode==='rts'?u.flareCooldown<=1e-8:!u.flareUsed);}
+ serviceSite(u,base){return AIR(u)&&u.altitude==='low'&&!u.segment&&base?.hp>0&&base.owner===u.owner&&['hq','post'].includes(base.type)&&DIST(u,base)<=1&&this.structures.includes(base);}
+ canService(u,base){return this.serviceSite(u,base)&&(u.hp<u.maxHp||u.flares<3);}
  canFire(a,b){return !!b&&b.hp>0&&b.owner!==a.owner&&b.owner!=='neutral'&&!!this.weapon(a,b)&&this.isVisible(a.owner,b)&&DIST(a,b)<=this.range(a,b)+.05&&DIST(a,b)>=TYPES[a.type].min;}
 
   acquire(u){
@@ -166,7 +180,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   }return best;
  }
 
- cancelWork(u){if(u.reserved){this.credits[u.owner]+=u.reserved;u.reserved=0;}u.work=0;}
+ cancelWork(u){if(u.reserved){this.credits[u.owner]+=u.reserved;u.reserved=0;}u.work=0;u.serviceClock=0;}
  buildSite(u){return u?.type==='infantry'&&u.hp>0&&!u.segment&&!this.structures.some(s=>DIST(s,u)<3)&&['plain','road','forest'].includes(this.terrainAt(u));}
  canBuild(u){return !!u&&(this.mode==='rts'||u.owner===this.turn)&&u.actionLeft&&!u.pending&&this.credits[u.owner]>=60&&this.buildSite(u);}
  pathCost(u,path){return path.reduce((sum,p)=>sum+this.cost(u,p.x,p.y),0);}
@@ -194,8 +208,12 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
     if(!rts&&u.type==='artillery'&&(u.moved||!this.canFire(u,target)))return false;
     route=this.pathToRange(u,target,this.range(u,target),TYPES[u.type].min,rts?Infinity:u.moveLeft);if(route===null)return false;
    }else if(type==='repair'){
-    if(u.type!=='engineer'||!target||target===u||target.owner!==u.owner||target.hp>=target.maxHp)return false;
+    if(u.type!=='engineer'||!target||AIR(target)||target===u||target.owner!==u.owner||target.hp>=target.maxHp)return false;
     route=this.pathToRange(u,target,1,0,rts?Infinity:u.moveLeft);if(route===null)return false;
+   }else if(type==='altitude'){
+    if(!AIR(u)||!['low','high'].includes(args.altitude)||args.altitude===u.altitude)return false;job.altitude=args.altitude;
+   }else if(type==='service'){
+    if(!this.canService(u,target))return false;
    }else if(type==='capture'){
     if(u.type!=='infantry'||target?.type!=='post'||target.owner===u.owner||!this.isVisible(u.owner,target))return false;
     route=this.pathToRange(u,target,1,0,rts?Infinity:u.moveLeft);if(route===null)return false;
@@ -208,7 +226,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
    if(!rts)u.actionLeft=false;
   }
   if(rts){if(type!=='build')this.cancelWork(u);u.work=0;u.idle=0;u.navWait=0;u.job=job;}
-  u.entrenched=false;u.pending=true;u.path=route.slice();job.route=route;u.order={type,targetId:job.targetId,goal:route.length?route[route.length-1]:job.goal};if(!rts)this.actions.push(job);return true;
+  u.entrenched=false;u.pending=true;u.path=route.slice();job.route=route;u.order={type,targetId:job.targetId,altitude:job.altitude,goal:route.length?route[route.length-1]:job.goal};if(!rts)this.actions.push(job);return true;
  }
  command(ids,type,args={}){
   if(this.winner||this.mode!=='rts'&&(this.turn!=='blue'||this.busy))return 0;let count=0;const assigned=new Set(),army=[...new Set(ids)].map(id=>this.get(id)).filter(u=>u?.owner==='blue'&&!TYPES[u.type].structure);
@@ -224,21 +242,28 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  shoot(u,target){
   if(u.type==='artillery'&&this.mode!=='rts')u.moveLeft=0;
   // O projétil guarda arma, dano e alvo do disparo; trocar de arma depois não o altera. Helicópteros: recarga única por arma usada.
-  const w=this.weapon(u,target)||u.type,missile=w==='agm'||w==='aam';
+  const w=this.weapon(u,target);if(!w)return;const missile=MISSILE(w);
   u.facing=Math.atan2(target.x-u.x,u.y-target.y);u.cooldown=u.reload=(AIR(u)?WEAPONS[w]:TYPES[u.type]).cooldown;u.revealed=2;const artillery=u.type==='artillery',aim=artillery?TILE(target):{x:target.x,y:target.y};
-  this.projectiles.push({attackerId:u.id,owner:u.owner,type:u.type,weapon:w,targetId:target.id,sx:u.x,sy:u.y,tx:aim.x,ty:aim.y,elapsed:0,duration:artillery?.7:u.type==='antitank'||missile?.3:.18,power:this.attackPower(u,w),distance:DIST(u,target),range:this.range(u,target),hit:this.rng()<this.accuracy(u,target,w),critical:this.rng()<.1});
+  const accuracyBase=this.accuracy(u,target,w),flareProtected=missile&&this.flareReady(target),accuracy=accuracyBase*(flareProtected?.5:1),roll=this.rng();
+  const decoy=flareProtected?{x:Math.max(0,Math.min(COLS-1,target.x+(target.id%2?1.3:-1.3))),y:Math.max(0,Math.min(ROWS-1,target.y+1.2))}:null;
+  if(flareProtected){target.flares--;target.flareUsed=true;target.flareCooldown=8;this.event('flare',target,{decoy});}
+  this.projectiles.push({attackerId:u.id,owner:u.owner,type:u.type,weapon:w,air:AIR(u)||AIR(target),targetId:target.id,sx:u.x,sy:u.y,x:u.x,y:u.y,tx:aim.x,ty:aim.y,heading:Math.atan2(aim.y-u.y,aim.x-u.x),trail:[],elapsed:0,duration:missile?Math.max(.45,Math.min(1.2,DIST(u,target)/6)):artillery?.7:u.type==='antitank'?.3:.18,power:this.attackPower(u,w),distance:DIST(u,target),range:this.range(u,target),accuracyBase,accuracy,flareProtected,attackerAltitude:u.altitude,targetAltitude:target.altitude,deflected:flareProtected&&roll>=accuracy&&roll<accuracyBase,decoy,hit:roll<accuracy,critical:this.rng()<.1});
   this.shotsFired++;this.event('shot',u,{weapon:w==='gun'?'machinegun':missile?'antitank':u.type});
  }
   impact(p){
-  const attacker=this.get(p.attackerId),target=this.get(p.targetId),center={x:p.tx,y:p.ty,owner:p.owner};
-  if(!p.hit){this.event('text',center,{text:'ERROU!',color:'#efd291'});return;}
-  this.event('blast',center,{heavy:p.type==='artillery'});
+  const attacker=this.get(p.attackerId),target=this.get(p.targetId),center={x:p.deflected?p.decoy.x:p.tx,y:p.deflected?p.decoy.y:p.ty,owner:p.owner};
+  const visibility=MISSILE(p.weapon)?{visible:this.effectVisible(center.x,center.y,p.air)}:{};
+  if(p.deflected){this.event('blast',center,{decoy:true,...visibility});return;}
+  if(!p.hit){this.event('text',center,{text:'ERROU!',color:'#efd291',...visibility});return;}
+  this.event('blast',center,{heavy:p.type==='artillery',...visibility});
   const targets=p.type==='artillery'?this.all().filter(u=>!AIR(u)&&Math.abs(u.x-p.tx)<=1.5&&Math.abs(u.y-p.ty)<=1.5):target?[target]:[];
   for(const t of targets){
    let power=p.power;if(p.type==='artillery')power*=Math.max(.4,1-.6*(DIST({x:p.sx,y:p.sy},t)-2)/Math.max(1,p.range-2))*(t.id===p.targetId?1:.5);
    if(p.type==='recon')power*=TYPES[t.type].tank?.4:!TYPES[t.type].vehicle&&!TYPES[t.type].structure?1.5:1;
    if(p.type==='antitank')power*=TYPES[t.type].vehicle?2.25:TYPES[t.type].structure?1:.5;
    if(p.type==='machinegun')power*=AIR(t)?1:TYPES[t.type].vehicle?.25:TYPES[t.type].structure?.5:1.3;
+   // Contra helicópteros: infantaria −75%, metralhador −35%; cai até metade no alcance máximo do disparo.
+   if(AIR(t)&&(p.type==='infantry'||p.type==='machinegun'))power*=(p.type==='infantry'?.25:.65)*(1-.5*Math.min(1,p.distance/p.range));
    if(p.weapon==='gun')power*=TYPES[t.type].vehicle?.35:TYPES[t.type].structure?.5:1;
    if(p.weapon==='agm')power*=TYPES[t.type].vehicle?1.5:TYPES[t.type].structure?1:.5;
    const n=Math.max(1,Math.round(power*(1-this.cover(t))*(p.critical?1.35:1)));this.hurt(t,n,attacker);
@@ -247,7 +272,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   }
  }
  hurt(u,n,attacker){
-  if(!u||u.hp<=0)return;u.hp=Math.max(0,u.hp-n);u.work=0;u.idle=0;u.entrenched=false;this.event('text',u,{text:`−${Math.round(n)}`,color:'#ffab96'});
+  if(!u||u.hp<=0)return;if(u.order.type==='service'){if(this.mode==='rts')this.finishRTS(u);else{this.actions=this.actions.filter(a=>a.id!==u.id);if(this.animation?.id===u.id)this.animation=null;u.pending=false;u.order={type:'stop'};}}u.hp=Math.max(0,u.hp-n);u.work=0;u.idle=0;u.entrenched=false;this.event('text',u,{text:`−${Math.round(n)}`,color:'#ffab96'});
   if(u.hp>0){if(!TYPES[u.type].structure)u.suppressed=this.mode==='rts'?3:2;return;}this.cancelWork(u);this.event('blast',u);this.report(`${TYPES[u.type].name} da Nação ${SIDE[u.owner]} destruído.`,u);
   if(u.type==='commander'){this.credits[u.owner]=Math.floor(this.credits[u.owner]/2);this.report('Comandante perdido. Metade dos créditos foi perdida.',u);}
   if(attacker&&attacker.hp>0&&attacker.owner!==u.owner&&u.owner!=='neutral'){
@@ -263,7 +288,9 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   if(job.type==='move'){this.finishAction(u);if(this.turn==='red'&&u.actionLeft){const enemy=this.acquire(u);if(enemy)this.order(u,'attack',{targetId:enemy.id});}return;}
   if(job.type==='attack'){
    if(this.canFire(u,target)){this.animation={...job,route:[],shots:u.type==='machinegun'?3:1,shotClock:0,fired:0};return;}
-  }else if(job.type==='repair'&&target?.owner===u.owner&&DIST(u,target)<=1){const heal=Math.min(24,target.maxHp-target.hp);target.hp+=heal;this.event('text',target,{text:'+'+Math.round(heal),color:'#a4e7bb'});valid=true;
+  }else if(job.type==='repair'&&!AIR(target)&&target?.owner===u.owner&&DIST(u,target)<=1){const heal=Math.min(24,target.maxHp-target.hp);target.hp+=heal;this.event('text',target,{text:'+'+Math.round(heal),color:'#a4e7bb'});valid=true;
+  }else if(job.type==='altitude'&&AIR(u)){u.altitude=job.altitude;this.report(`Altitude ${u.altitude==='high'?'alta':'baixa'}.`,u);valid=true;
+  }else if(job.type==='service'&&this.serviceSite(u,target)){const heal=Math.min(24,u.maxHp-u.hp);u.hp+=heal;u.flares=Math.min(3,u.flares+1);this.event('text',u,{text:'+'+Math.round(heal)+' HP · manutenção',color:'#a4e7bb'});valid=true;
   }else if(job.type==='capture'&&target?.type==='post'&&target.owner!==u.owner&&DIST(u,target)<=1){target.owner=u.owner;this.report(`Posto capturado pela Nação ${SIDE[u.owner]}.`,u);valid=true;
   }else if(job.type==='demine'&&DIST(u,job.goal)<=1){const mine=this.mines.find(m=>m.x===job.goal.x&&m.y===job.goal.y);if(mine){this.mines=this.mines.filter(m=>m!==mine);this.report('Mina removida.',u);valid=true;}
   }else if(job.type==='build'&&this.buildSite(u)){u.reserved=0;this.add(u.owner,'post',u.x,u.y);this.units=this.units.filter(v=>v!==u);this.report('Posto construído. Infantaria convertida em guarnição.',u);valid=true;}
@@ -296,10 +323,10 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  beginTurn(owner){
   this.turn=owner;if(owner==='blue')this.round++;
   for(const u of this.units){u.suppressed=Math.max(0,u.suppressed-1);u.revealed=Math.max(0,u.revealed-1);}
-  for(const u of this.units)if(u.owner===owner){u.moveLeft=TYPES[u.type].move;u.actionLeft=true;u.moved=false;u.pending=false;u.path=[];u.segment=null;u.order={type:'stop'};}
+  for(const u of this.units)if(u.owner===owner){u.moveLeft=TYPES[u.type].move;u.actionLeft=true;u.moved=false;u.pending=false;u.path=[];u.segment=null;u.order={type:'stop'};if(AIR(u))u.flareUsed=false;}
   if(this.round>1){this.credits[owner]+=this.income(owner);this.production(owner);}this.updateVision();
   this.log(owner==='blue'?`Rodada ${this.round}: seu turno.`:`Rodada ${this.round}: turno da IA.`);
-  if(owner==='red'){this.aiQueue=this.aiEnabled?this.units.filter(u=>u.owner==='red').map(u=>u.id):[];this.claims=new Set();this.aiWait=.3;this.aiBuy();}
+  if(owner==='red'){this.planAI();this.aiQueue=this.aiEnabled?this.units.filter(u=>u.owner==='red').map(u=>u.id):[];this.claims=new Set();this.aiWait=.3;this.aiBuy();}
  }
  endTurn(){if(this.mode==='rts'||this.winner||this.turn!=='blue'||this.busy)return false;for(const u of this.units)if(u.owner==='blue'&&!u.moved&&u.actionLeft&&!AIR(u))u.entrenched=true;this.beginTurn('red');return true;}
  aiBuy(){
@@ -307,25 +334,93 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   const pending=type=>army.filter(u=>u.type===type).length+hq.queue.filter(q=>q.type===type).length;
   const tankChoice=['lightTank','tank','heavyTank'].sort((a,b)=>pending(a)/(a==='tank'?2:1)-pending(b)/(b==='tank'?2:1))[0];
   // Aeronaves: ar-ar contra helicópteros visíveis, ar-terra contra blindados visíveis, padrão como apoio. Só usa o que vê.
-  const seen=this.all().filter(e=>e.owner==='blue'&&this.isVisible('red',e)),skies=seen.some(AIR),armor=seen.filter(e=>TYPES[e.type].vehicle).length;
-  const priority=pending('infantry')<2?['infantry']:skies&&!pending('helicopterAir')?['helicopterAir']:armor>=2&&!pending('helicopterGround')?['helicopterGround']:!pending('engineer')?['engineer']:!pending('recon')?['recon']:!pending('machinegun')?['machinegun','infantry']:!pending('antitank')?['antitank','infantry']:pending('artillery')<2?['artillery','tank','infantry']:!pending('helicopter')&&pending('lightTank')&&pending('heavyTank')&&pending('tank')>=2?['helicopter',tankChoice]:[tankChoice];priority.some(type=>this.enqueue('red',type));
+  const seen=this.all().filter(e=>e.owner==='blue'&&this.isVisible('red',e)),skies=seen.filter(AIR).length,armor=seen.filter(e=>TYPES[e.type].vehicle).length;
+  const airDefense=skies&&(!pending('antiAirVehicle')&&!pending('missileInfantry')||skies>=2&&(!pending('antiAirVehicle')||!pending('missileInfantry')))?!pending('antiAirVehicle')?['antiAirVehicle',...(!pending('missileInfantry')?['missileInfantry']:[])]:['missileInfantry']:null;
+  const priority=pending('infantry')<2?['infantry']:airDefense|| (skies&&!pending('helicopterAir')?['helicopterAir']:armor>=2&&!pending('helicopterGround')?['helicopterGround']:!pending('engineer')?['engineer']:!pending('recon')?['recon']:!pending('machinegun')?['machinegun','infantry']:!pending('antitank')?['antitank','infantry']:pending('artillery')<2?['artillery','tank','infantry']:!pending('helicopter')&&pending('lightTank')&&pending('heavyTank')&&pending('tank')>=2?['helicopter',tankChoice]:[tankChoice]);priority.some(type=>this.enqueue('red',type));
  }
- moveToward(u,target){const route=this.pathToRange(u,target,1);if(!route?.length)return false;const part=this.trimPath(u,route);return part.length?this.order(u,'move',part[part.length-1]):false;}
+ moveToward(u,target,near=1,leg=Infinity){const route=this.pathToRange(u,target,near);if(!route?.length)return false;const part=this.trimPath(u,route).slice(0,leg);return part.length?this.order(u,'move',part[part.length-1]):false;}
+ // Valor de combate: custo (100 sem custo) pela fração de vida. Combatentes da onda: tropas com arma, sem comandante, engenheiro e batedor.
+ power(u){return TYPES[u.type].structure?0:(TYPES[u.type].cost||100)*u.hp/u.maxHp;}
+ fighter(u){const t=TYPES[u.type];return u.owner==='red'&&!t.structure&&t.damage>0&&!['commander','engineer','recon'].includes(u.type);}
+ presumedHQ(hq){return{x:COLS-1-hq.x,y:ROWS-1-hq.y};} // mapas simétricos: o QG azul fica no ponto espelhado
+ // Ponto de encontro: casa alcançável por tanque mais próxima de 30% do caminho entre o QG vermelho e o QG azul presumido.
+ rallyPoint(hq){
+  const far=this.presumedHQ(hq),aim={x:Math.round(hq.x+(far.x-hq.x)*.3),y:Math.round(hq.y+(far.y-hq.y)*.3)},start=this.spawnCells('red','tank')[0]||hq;
+  const seen=this.reachable({type:'tank',owner:'red',x:start.x,y:start.y},Array(SIZE).fill(null),this.structureGrid());let best=null;
+  for(let k=0;k<SIZE;k++)if(seen[k]){const c={x:k%COLS,y:(k-k%COLS)/COLS};if(!best||DIST(c,aim)<DIST(best,aim))best=c;}return best||aim;
+ }
+ // Objetivo: estrutura azul conhecida menos defendida pelo que a IA viu (raio 4); sem nenhuma, o QG presumido.
+ objective(hq){
+  const guard=s=>[...this.intel.values()].filter(e=>DIST(e,s)<=4).reduce((a,e)=>a+this.power(e),0),rally=this.plan.rally||hq;
+  const best=[...this.memory.red.values()].filter(s=>s.owner==='blue').sort((a,b)=>guard(a)-guard(b)||DIST(a,rally)-DIST(b,rally))[0];
+  return best?{id:best.id,x:best.x,y:best.y}:this.presumedHQ(hq);
+ }
+ /* Plano da IA: prepara (postos, reconhecimento, reunião no ponto de encontro) até vencer o prazo e o grupo reunido (≥ 6) superar
+    a força azul vista × margem; ataca em onda; com metade da força perdida, reagrupa e volta a se preparar. */
+ planAI(){
+  const hq=this.hq('red');if(!this.aiEnabled||!hq)return;const p=this.plan,cfg=PLAN[this.difficulty],now=this.mode==='rts'?this.time:this.round,prep=this.mode==='rts'?cfg.prep*30:cfg.prep;
+  p.rally||=this.rallyPoint(hq);const fighters=this.units.filter(u=>this.fighter(u)),sum=list=>list.reduce((a,u)=>a+this.power(u),0),home=u=>DIST(u,p.rally)<=4;
+  if(p.phase==='attack'){
+   const alive=p.wave.map(id=>this.get(id)).filter(u=>u?.hp>0);
+   if(!alive.length||sum(alive)<p.waveStart*.5){p.phase='regroup';p.wave=[];p.objective=null;p.since=now;}
+   else{const t=p.objective?.id&&this.get(p.objective.id);if(!p.objective||p.objective.id&&(!t||t.owner!=='blue')||!p.objective.id&&[...this.memory.red.values()].some(s=>s.owner==='blue'))p.objective=this.objective(hq);}
+  }
+  if(p.phase==='regroup'&&(fighters.filter(home).length>=fighters.length*.7||now-p.since>=prep)){p.phase='prepare';p.since=now;}
+  if(p.phase==='prepare'&&now-p.since>=prep){
+   const gathered=fighters.filter(home);
+   if(gathered.length>=WAVE&&sum(gathered)>=sum([...this.intel.values()])*cfg.margin){p.phase='attack';p.wave=gathered.map(u=>u.id);p.waveStart=sum(gathered);p.objective=this.objective(hq);}
+  }
+ }
+ // Segurar posição: por turnos encerra a tropa (trincheira); no RTS ela fica parada com fogo automático.
+ hold(u){if(this.mode!=='rts'&&u.owner===this.turn&&!u.pending)this.order(u,'stop');}
+ // Batedor: patrulha centro do mapa → 2/3 do caminho até o QG presumido → centro; ferido, volta ao ponto de encontro.
+ scout(u,hq){
+  if(u.hp/u.maxHp<.6)return this.moveToward(u,this.plan.rally,2);
+  const far=this.presumedHQ(hq),legs=[{x:COLS>>1,y:ROWS>>1},{x:Math.round(hq.x+(far.x-hq.x)*2/3),y:Math.round(hq.y+(far.y-hq.y)*2/3)}];
+  u.scoutLeg??=0;if(DIST(u,legs[u.scoutLeg%2])<=2)u.scoutLeg++;return this.moveToward(u,legs[u.scoutLeg%2],2);
+ }
  aiAct(u){
   this.aiDecisions++;const hq=this.hq('red');if(!hq)return;
-  const army=this.units.filter(v=>v.owner==='red'),foes=this.all().filter(e=>e.owner==='blue'&&this.isVisible('red',e)),threats=foes.filter(e=>!TYPES[e.type].structure&&DIST(e,hq)<=6);this.aiState=threats.length?'defend':'attack';
-  if(u.hp/u.maxHp<.35){const medic=army.filter(e=>e.type==='engineer'&&e!==u).sort((a,b)=>DIST(a,u)-DIST(b,u))[0]||hq;if(this.moveToward(u,medic))return;}
+  const p=this.plan,home=p.rally||(p.rally=this.rallyPoint(hq)),byDist=(a,b)=>DIST(a,u)-DIST(b,u),far=this.presumedHQ(hq);
+  const army=this.units.filter(v=>v.owner==='red'),foes=this.all().filter(e=>e.owner==='blue'&&this.isVisible('red',e)),posts=this.structures.filter(s=>s.owner==='red'&&s.type==='post');
+  // Ameaças: inimigos a até 6 casas do QG ou a até 3 de um posto vermelho.
+  const threats=foes.filter(e=>!TYPES[e.type].structure&&(DIST(e,hq)<=6||posts.some(s=>DIST(e,s)<=3))),wave=p.phase==='attack'&&p.wave.includes(u.id);this.aiState=threats.length?'defend':p.phase;
+  if(AIR(u)){
+   if(u.hp/u.maxHp<=.5||u.flares===0){
+    if(u.altitude==='high'&&this.order(u,'altitude',{altitude:'low'}))return;
+    const bases=this.structures.filter(b=>b.owner===u.owner&&b.hp>0).map(b=>({b,route:this.pathToRange(u,b,1)})).filter(v=>v.route!==null).sort((a,b)=>a.route.length-b.route.length);
+    for(const {b,route}of bases){if(this.order(u,'service',{targetId:b.id}))return;if(route.length&&this.moveToward(u,b))return;}return;
+   }
+   const missileTarget=foes.find(e=>MISSILE(this.weapon(u,e))&&this.canFire(u,e)),danger=foes.some(e=>MISSILE(this.weapon(e,u))&&DIST(e,u)<=this.range(e,u));
+   const altitude=TYPES[u.type].weapons.length>1&&missileTarget&&!danger?'high':'low';if(u.altitude!==altitude&&this.order(u,'altitude',{altitude}))return;
+  }
+  if(!AIR(u)&&u.hp/u.maxHp<.35){const medic=army.filter(e=>e.type==='engineer'&&e!==u).sort(byDist)[0]||hq;if(this.moveToward(u,medic))return;}
   if(u.type==='engineer'){
-   const allies=this.all().filter(e=>e.owner==='red'&&e!==u&&e.hp<e.maxHp).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp);for(const ally of allies)if(this.order(u,'repair',{targetId:ally.id}))return;
+   const allies=this.all().filter(e=>e.owner==='red'&&e!==u&&!AIR(e)&&e.hp<e.maxHp&&DIST(e,u)<=6).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp);for(const ally of allies)if(this.order(u,'repair',{targetId:ally.id}))return;
    const mine=this.mines.find(m=>m.known.red&&DIST(m,u)<=u.moveLeft+1);if(mine&&this.order(u,'demine',mine))return;
   }
   const firing=this.acquire(u);if(firing&&this.order(u,'attack',{targetId:firing.id}))return;
-  if(u.type==='infantry'&&!threats.length){
-   const posts=[...this.memory.red.values()].filter(p=>p.type==='post'&&p.owner!=='red'&&!this.claims.has(p.id)).sort((a,b)=>DIST(a,u)-DIST(b,u));
-   for(const p of posts){const live=this.get(p.id);if(live&&this.isVisible('red',live)&&this.order(u,'capture',{targetId:p.id})||this.moveToward(u,p)){this.claims.add(p.id);return;}}
+  // Defesa: fora da onda todos respondem; na onda, só ameaças a até 6 casas.
+  for(const e of threats.filter(e=>(!wave||DIST(e,u)<=6)&&this.weapon(u,e)).sort(byDist))if(this.order(u,'attack',{targetId:e.id})||this.moveToward(u,e))return;
+  if(wave){
+   for(const e of foes.filter(e=>DIST(e,u)<=6).sort(byDist))if(this.order(u,'attack',{targetId:e.id}))return;
+   const goal=p.objective,target=goal.id&&this.get(goal.id);
+   if(u.type==='infantry'&&target?.type==='post'&&target.owner!=='red'&&this.isVisible('red',target)&&this.order(u,'capture',{targetId:target.id}))return;
+   // Coesão: quem está mais de 3 casas à frente da mediana da onda espera; os demais avançam em pernas de até 4 casas.
+   const d=p.wave.map(id=>this.get(id)).filter(Boolean).map(v=>DIST(v,goal)).sort((a,b)=>a-b);
+   if(DIST(u,goal)<d[d.length>>1]-3||!this.moveToward(u,goal,2,4))this.hold(u);return;
   }
-  const enemies=(threats.length?threats:foes).slice().sort((a,b)=>DIST(a,u)-DIST(b,u));for(const e of enemies)if(this.order(u,'attack',{targetId:e.id}))return;
-  const target=enemies[0]||[...this.memory.red.values()].find(s=>s.type==='hq'&&s.owner==='blue')||{x:1,y:ROWS-2};if(!this.moveToward(u,target))this.order(u,'stop');
+  if(u.type==='recon'&&this.scout(u,hq))return;
+  if(u.type==='infantry'&&!threats.length){
+   // Expansão segura: só postos claramente do lado vermelho (6 casas mais perto do QG vermelho que do azul presumido).
+   const targets=[...this.memory.red.values()].filter(s=>s.type==='post'&&s.owner!=='red'&&!this.claims.has(s.id)&&DIST(s,hq)+6<=DIST(s,far)).sort(byDist);
+   for(const s of targets){const live=this.get(s.id);if(live&&this.isVisible('red',live)&&this.order(u,'capture',{targetId:s.id})||this.moveToward(u,s)){this.claims.add(s.id);return;}}
+  }
+  if(u.type==='engineer'&&p.phase==='attack'){const w=p.wave.map(id=>this.get(id)).filter(Boolean);if(w.length){const c={x:Math.round(w.reduce((a,v)=>a+v.x,0)/w.length),y:Math.round(w.reduce((a,v)=>a+v.y,0)/w.length)};if(this.moveToward(u,c,2,4))return;}}
+  // Ponto de encontro: protege a área num raio de 4 e segura posição a até 3 casas.
+  for(const e of foes.filter(e=>DIST(e,home)<=4).sort(byDist))if(this.order(u,'attack',{targetId:e.id}))return;
+  if(DIST(u,home)>3&&this.moveToward(u,home,3))return;
+  this.hold(u);
  }
  finishRTS(u){
   this.cancelWork(u);u.job=null;u.path=[];u.pending=!!u.segment;u.idle=0;u.order={type:'stop'};
@@ -354,8 +449,15 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
    else{u.idle+=dt;if(u.idle>=3&&!AIR(u))u.entrenched=true;}return;
   }
   const target=this.get(job.targetId);
+  if(job.type==='altitude'){u.work+=dt;if(u.work+1e-8>=2){u.altitude=job.altitude;this.report(`Altitude ${u.altitude==='high'?'alta':'baixa'}.`,u);this.finishRTS(u);}return;}
+  if(job.type==='service'){
+   if(!this.serviceSite(u,target)){this.finishRTS(u);return;}
+   u.hp=Math.min(u.maxHp,u.hp+24*dt);u.serviceClock=(u.serviceClock||0)+dt;
+   if(u.serviceClock+1e-8>=3){u.serviceClock=Math.max(0,u.serviceClock-3);u.flares=Math.min(3,u.flares+1);}
+   if(u.hp>=u.maxHp&&u.flares===3)this.finishRTS(u);return;
+  }
   if(['attack','capture','repair'].includes(job.type)){
-   const valid=target&&target.hp>0&&(job.type==='repair'?target.owner===u.owner&&target.hp<target.maxHp:target.owner!==u.owner&&this.isVisible(u.owner,target));
+   const valid=target&&target.hp>0&&(job.type==='repair'?!AIR(target)&&target.owner===u.owner&&target.hp<target.maxHp:target.owner!==u.owner&&this.isVisible(u.owner,target));
    if(!valid){this.finishRTS(u);return;}
   }
   if(job.type==='demine'&&!this.mines.some(m=>m.x===job.goal.x&&m.y===job.goal.y)){this.finishRTS(u);return;}
@@ -385,8 +487,9 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   for(const owner of ['blue','red'])this.production(owner,dt);
   this.aiClock-=dt;
   if(this.aiEnabled&&this.aiClock<=0){
-   this.aiClock=.6;this.claims=new Set(this.units.filter(u=>u.owner==='red'&&u.order.type==='capture').map(u=>u.order.targetId));this.aiBuy();
-   for(const u of this.units.filter(u=>u.owner==='red'))if(!u.pending&&!u.segment)this.aiAct(u);
+   this.aiClock=.6;this.claims=new Set(this.units.filter(u=>u.owner==='red'&&u.order.type==='capture').map(u=>u.order.targetId));this.planAI();this.aiBuy();
+   // Ataques aéreos contínuos também precisam reavaliar recuo, manutenção e ameaças visíveis.
+   for(const u of this.units.filter(u=>u.owner==='red'))if(!u.pending&&!u.segment||AIR(u)&&u.order.type==='attack')this.aiAct(u);
   }
   for(const u of [...this.units])if(u.hp>0)this.stepRTS(u,dt);
  }
@@ -396,8 +499,19 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  }
 
  update(dt){
-  if(this.winner||!Number.isFinite(dt)||dt<=0)return;dt=Math.min(dt,.1);this.time+=dt;for(const u of this.units){u.cooldown=Math.max(0,u.cooldown-dt);if(this.mode==='rts'){u.suppressed=Math.max(0,u.suppressed-dt);u.revealed=Math.max(0,u.revealed-dt);}}
-  const hits=[];for(const p of this.projectiles){p.elapsed+=dt;if(p.elapsed>=p.duration)hits.push(p);}this.projectiles=this.projectiles.filter(p=>p.elapsed<p.duration);for(const p of hits)this.impact(p);
+  if(this.winner||!Number.isFinite(dt)||dt<=0)return;dt=Math.min(dt,.1);this.time+=dt;for(const u of this.units){u.cooldown=Math.max(0,u.cooldown-dt);if(this.mode==='rts'){u.suppressed=Math.max(0,u.suppressed-dt);u.revealed=Math.max(0,u.revealed-dt);if(AIR(u))u.flareCooldown=Math.max(0,u.flareCooldown-dt);}}
+  const hits=[];for(const p of this.projectiles){
+   p.elapsed=Math.min(p.duration,p.elapsed+dt);
+   if(MISSILE(p.weapon)){
+    const target=this.get(p.targetId);if(target){p.tx=target.x;p.ty=target.y;}const t=p.elapsed/p.duration,dx=(p.deflected?p.decoy.x:p.tx)-p.x,dy=(p.deflected?p.decoy.y:p.ty)-p.y;
+    // Interpolação pelo tempo restante garante impacto no prazo mesmo quando o alvo se move.
+    const fraction=Math.min(1,dt/Math.max(dt,p.duration-p.elapsed+dt));let x=p.x+dx*fraction,y=p.y+dy*fraction;
+    if(p.deflected){const control={x:p.tx,y:p.ty};x=(1-t)**2*p.sx+2*(1-t)*t*control.x+t*t*p.decoy.x;y=(1-t)**2*p.sy+2*(1-t)*t*control.y+t*t*p.decoy.y;}
+    p.heading=Math.atan2(y-p.y,x-p.x);p.trail.push({x:p.x,y:p.y,time:this.time});p.trail=p.trail.filter(v=>this.time-v.time<=1.2);p.x=x;p.y=y;
+    this.event('smoke',{x:p.x,y:p.y,owner:p.owner},{air:p.air,visible:this.effectVisible(p.x,p.y,p.air)});
+   }
+   if(p.elapsed+1e-8>=p.duration)hits.push(p);
+  }this.projectiles=this.projectiles.filter(p=>!hits.includes(p));for(const p of hits)this.impact(p);
   if(this.mode==='rts'){this.updateRTS(dt);this.checkVictory();return;}
   if(this.animation)this.animate(dt);else if(!this.projectiles.length&&this.actions.length){this.animation=this.actions.shift();this.animate(dt);}
   if(this.turn==='red'&&!this.busy){this.aiWait-=dt;if(this.aiWait<=0){const u=this.get(this.aiQueue.shift());if(u){this.aiAct(u);this.aiWait=.15;}else if(!this.aiQueue.length)this.beginTurn('blue');}}

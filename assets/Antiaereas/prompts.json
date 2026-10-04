@@ -1,0 +1,45 @@
+[
+  {
+    "name": "vehicle-ally",
+    "prompt": "Use case: stylized-concept. Asset type: War Grid offline tactical game sprite. Strict orthographic overhead view, facing NORTH toward the TOP edge; hand-painted military cartoon with crisp dark outlines, muted colors, readable silhouette at 56 pixels. One centered subject occupying about 85% of square canvas. No text, insignia, floor, checkerboard, border or cast background shadow. True transparent RGBA background. Subject: lightweight olive-green four-wheel anti-air missile vehicle with small cabin, thin armored chassis and two paired slender missile launcher pods pointing north; NOT a heavy tank. Gray missiles with clearly visible noses. Restrained highlights.",
+    "tool": "ImageGen integrado",
+    "source": "sources/vehicle-ally.png",
+    "column": 0,
+    "row": 0,
+    "path": "C:\\Users\\User\\.codex\\generated_images\\01a0f8f9-d4db-79c1-a768-1d3eb597b60a\\exec-79eeaed2-6c28-4bc5-8346-407d26e9d15c.png"
+  },
+  {
+    "name": "vehicle-enemy",
+    "prompt": "Use case: stylized-concept. Asset type: War Grid offline tactical game sprite. Strict orthographic overhead view, facing NORTH toward the TOP edge; hand-painted military cartoon with crisp dark outlines, muted colors, readable silhouette at 56 pixels. One centered subject occupying about 85% of square canvas. No text, insignia, floor, checkerboard, border or cast background shadow. True transparent RGBA background. Subject: lightweight muted crimson-red four-wheel anti-air missile vehicle with small cabin, thin armored chassis and two paired slender missile launcher pods pointing north; NOT a heavy tank. Gray missiles with clearly visible noses. Restrained highlights.",
+    "tool": "ImageGen integrado",
+    "source": "sources/vehicle-enemy.png",
+    "column": 0,
+    "row": 1,
+    "path": "C:\\Users\\User\\.codex\\generated_images\\01a0f8f9-d4db-79c1-a768-1d3eb597b60a\\exec-714c881a-c928-46f8-9eb2-46fc47467c59.png"
+  },
+  {
+    "name": "soldier-ally",
+    "prompt": "Use case: stylized-concept. Asset type: War Grid offline tactical game sprite. Strict orthographic overhead view, facing NORTH toward the TOP edge; hand-painted military cartoon with crisp dark outlines, muted colors, readable silhouette at 56 pixels. One centered subject occupying about 85% of square canvas. No text, insignia, floor, checkerboard, border or cast background shadow. True transparent RGBA background. Subject: one olive-green infantry soldier seen directly from above, helmet, backpack, boots, holding a long shoulder-mounted portable missile launcher with its nose pointing north, visibly distinct from a rifle. Simplify tiny details.",
+    "tool": "ImageGen integrado",
+    "source": "sources/soldier-ally.png",
+    "column": 1,
+    "row": 0,
+    "path": "C:\\Users\\User\\.codex\\generated_images\\01a0f8f9-d4db-79c1-a768-1d3eb597b60a\\exec-c8dab504-cacc-4f00-a350-93961e0fab4d.png"
+  },
+  {
+    "name": "soldier-enemy",
+    "prompt": "Use case: stylized-concept. Asset type: War Grid offline tactical game sprite. Strict orthographic overhead view, facing NORTH toward the TOP edge; hand-painted military cartoon with crisp dark outlines, muted colors, readable silhouette at 56 pixels. One centered subject occupying about 85% of square canvas. No text, insignia, floor, checkerboard, border or cast background shadow. True transparent RGBA background. Subject: one muted crimson-red infantry soldier seen directly from above, helmet, backpack, boots, holding a long shoulder-mounted portable missile launcher with its nose pointing north, visibly distinct from a rifle. Simplify tiny details.",
+    "tool": "ImageGen integrado",
+    "source": "sources/soldier-enemy.png",
+    "column": 1,
+    "row": 1,
+    "path": "C:\\Users\\User\\.codex\\generated_images\\01a0f8f9-d4db-79c1-a768-1d3eb597b60a\\exec-df8d1593-f2e5-42f9-b8e5-701ab4d27daf.png"
+  },
+  {
+    "name": "clouds",
+    "prompt": "Use case: stylized-concept. Asset type: transparent high-altitude underlay for a top-down helicopter in a 56px tactical game. A sparse soft wispy white cloud ring, very low opacity, empty transparent center, scattered soft translucent cloud puffs near edges, no aircraft, no text, no blue sky, no background, no checkerboard. Hand-painted cartoon cloud wisps. True transparent RGBA square image.",
+    "tool": "ImageGen integrado",
+    "source": "sources/clouds.png",
+    "path": "C:\\Users\\User\\.codex\\generated_images\\01a0f8f9-d4db-79c1-a768-1d3eb597b60a\\exec-242a17a3-6e52-4982-be2e-125136b6dd35.png"
+  }
+]

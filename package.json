@@ -4,8 +4,9 @@
   "private": true,
   "description": "War Grid — estratégia militar por turnos ou RTS com pausa tática, mapa 36 × 28 e gerador procedural, offline.",
   "scripts": {
-    "test": "node tests/engine.test.cjs",
-    "test:browser": "node tests/browser.test.cjs",
+    "test": "node tests/engine.test.cjs && node tests/air-defense.test.cjs",
+    "test:browser": "node tests/browser.test.cjs && node tests/air-defense.browser.test.cjs",
+    "prepare:air-defense": "node scripts/prepare-air-defense.cjs",
     "prepare:terrain": "node scripts/prepare-terrain.cjs",
     "prepare:tanks": "node scripts/prepare-tanks.cjs",
     "compare:tanks": "node scripts/compare-tanks.cjs",
