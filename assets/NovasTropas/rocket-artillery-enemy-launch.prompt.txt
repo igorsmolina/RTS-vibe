@@ -1,0 +1,5 @@
+Tool: built-in ImageGen
+Targets: sources/rocket-artillery-ally-launch-transition.png; sources/rocket-artillery-ally-launch-ready.png
+Outputs: sources/rocket-artillery-enemy-launch-transition.png; sources/rocket-artillery-enemy-launch-ready.png
+
+Edit ONLY the team paint of the supplied olive rocket artillery truck into the ENEMY red variant. Preserve exactly its launcher elevation and hydraulic pose, four seated missiles per pod, two launcher modules, cab, six wheels, complete chassis, north-up top-down camera, position, scale, framing, ink contours and illustrated military-game shading. Change olive/khaki painted panels to brick red with muted red highlights; keep tires charcoal, missile noses neutral olive metal, yellow missile bands and hydraulic metal unchanged. This is an animation frame: no geometry, placement, perspective or posture changes. Keep genuine transparent alpha outside the vehicle. No firing, flames, smoke, text, ground, shadow outside truck, scenery or checkerboard.

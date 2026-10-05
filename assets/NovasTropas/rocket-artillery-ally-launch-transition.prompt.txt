@@ -1,0 +1,25 @@
+Tool: built-in ImageGen
+References: sources/rocket-artillery-ally.png; sources/rocket-artillery-ally-launch-ready.png
+Selected output: sources/rocket-artillery-ally-launch-transition.png
+128 x 128 export: rocket-artillery-ally-launch-transition.png
+Export alignment: same scale and reference bounds as launch-ready frame.
+
+Initial prompt:
+Use case: precise-object-edit.
+Create ONE intermediate animation frame between the two provided reference sprites.
+Image 1 is the lowered transport pose. Image 2 is the fully elevated ready-to-launch pose.
+Use Image 2 as the PRIMARY EDIT TARGET. Lock its truck body, cab, six wheels, overall position and scale on the canvas, olive/khaki colors, top-down/bird's-eye camera, north-facing direction, lighting and illustrated dark-line style.
+
+Change ONLY the two rear launcher modules and their hydraulic elevation mechanisms. Show both launchers at approximately 30–35 degrees ABOVE the truck bed, halfway through raising toward the sky. They must be clearly partly raised, less elevated than Image 2 and more elevated than Image 1. Hydraulic pistons are partly extended. Launcher boxes have moderate foreshortening and are longer in projection than the fully raised pose. Rocket noses still point upward toward the sky, not flat along the ground; all rockets remain seated in their tubes. Retain exactly two rectangular multi-rocket pods and the same mechanical layout. Their lateral angle should also be intermediate between the transport and ready poses.
+Crucial animation continuity: do not move or turn the truck, resize its chassis, move the wheels, change the cab, invent panels or change the camera. The frame represents launcher motion on a stationary vehicle.
+
+Single complete centered vehicle on a square canvas, matched framing to Image 2, comfortable transparent margins, genuine transparent alpha. No firing, flames, smoke, background, ground plane, text, grid or checkerboard. Do not make a sheet or show multiple vehicles.
+
+Background and pose correction:
+Correct this intermediate animation frame of the olive rocket artillery truck.
+1. REMOVE COMPLETELY the two white/gray cloudy blobs outside the truck. They are unwanted background artifacts, not part of the vehicle. Every pixel outside the clean truck silhouette must be genuinely transparent. No clouds, smoke, ground, shadow on a background, halos, exhaust or white fill.
+2. Make the launcher elevation more clearly a HALF-RAISED position, around 30 degrees above the bed. Extend the projected length of the two rectangular launcher bodies by approximately 35 percent compared with the current raised short boxes, so they sit closer to horizontal over the bed. Reduce their sideways splay: the boxes should be almost parallel to the truck, with only a slight outward angle. Show their hydraulic pistons only partly extended. The rocket noses remain seated and angled slightly upward, before launch. Retain the same two modules, four visible rocket noses per module, olive panels and dark outlines.
+Keep the truck's cab, six wheels, chassis, color, camera angle, scale and placement EXACTLY unchanged. Preserve the north-up top-down illustrated view and the complete vehicle with transparent margins. No text, no grid, no multiple frames.
+
+Rocket count continuity correction:
+Make one precise continuity correction to this transparent olive artillery animation frame: each of its two rectangular launcher boxes must show FOUR rocket noses, matching the original vehicle, not three. Restore the missing fourth rocket and its tube in each box, evenly arranged in one row across the mouth. The left launcher has four visible rockets and the right launcher has four visible rockets: eight total, all still seated, no firing. Do not otherwise change launcher elevation or pose. Keep the partly raised launcher position, partially extended hydraulic pistons, entire chassis, cab, all six wheels, camera, framing, scale, olive colors, ink contours and true transparent background exactly as they are. No smoke, text, scenery, glow or background. Single truck, no sprite sheet.

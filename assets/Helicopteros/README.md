@@ -27,7 +27,7 @@ O script também monta pranchas sobre a composição real dos terrenos do projet
 
 ## Revisão
 
-[Prancha dos seis modelos](../../docs/helicopteros/sprites-preview.png), [leitura sobre terrenos em 48/60 px](../../docs/helicopteros/terrain-preview.jpg) e [medidas de alpha, dimensões e escala](../../docs/helicopteros/validation.json).
+`node assets/Helicopteros/prepare.cjs` grava a prancha dos seis modelos, a leitura sobre terrenos em 48/60 px e as medidas de alpha, dimensões e escala em `test-output/helicopteros/` (fora do git).
 
 As pranchas de revisão possuem fundo para comparar o contraste; os PNGs individuais e o atlas têm alpha transparente.
 

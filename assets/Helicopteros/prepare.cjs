@@ -1,7 +1,7 @@
 // Prepara somente este pacote de arte e suas pranchas de revisão. Não altera o jogo.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto'),{pathToFileURL}=require('node:url');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright-core');
-const dir=__dirname,root=process.env.WAR_GRID_PROJECT||path.resolve(dir,'../..'),docs=path.resolve(dir,'../../docs/helicopteros');
+const dir=__dirname,root=process.env.WAR_GRID_PROJECT||path.resolve(dir,'../..'),docs=path.resolve(dir,'../../test-output/helicopteros');
 const hash=buffer=>crypto.createHash('sha256').update(buffer).digest('hex');
 (async()=>{const browser=await chromium.launch({channel:'chrome',headless:true});try{
  const context=await browser.newContext();await context.setOffline(true);const page=await context.newPage();

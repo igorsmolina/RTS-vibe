@@ -1,10 +1,12 @@
-﻿# War Grid — Fronteiras
+﻿# rtsvibe — Fronteiras
 
 Jogo de estratégia militar para um jogador contra a IA. Capture postos, proteja seu comandante e destrua o QG inimigo. Escolha **Por turnos** ou **RTS com pausa tática** ao iniciar uma operação.
 
 ## Menu inicial e configurações
 
-Ao abrir o jogo, o **menu inicial** em tela cheia reúne: **Continuar partida** (quando há uma partida em andamento), **Jogar** (batalha rápida), **Campanha** (mapa-múndi; mostra o progresso salvo), **Configurações** e **Como jogar**. O botão **Menu** no topo leva de volta a ele e pausa a partida; **Esc** volta ao jogo. Setas navegam os botões e Enter escolhe.
+Ao abrir o jogo, o **menu inicial** em tela cheia reúne: **Continuar partida** (quando há uma partida em andamento), **Jogar** (batalha rápida), **Campanha** (mapa-múndi; mostra o progresso salvo), **Configurações**, **Perfil e conquistas** e **Como jogar**. O botão **Menu** no topo leva de volta a ele e pausa a partida; **Esc** volta ao jogo. Setas navegam os botões e Enter escolhe.
+
+**Tema da interface:** escolha **Sistema**, **Claro** ou **Escuro** no início ou nas configurações. Sistema é o padrão e acompanha mudanças do sistema operacional; Restaurar padrões também retorna a Sistema. A escolha fica apenas neste navegador (`rtsvibe.theme.v1`), separada dos saves e da conta; sem armazenamento, vale durante a sessão. O início recupera o desenho anterior: mapa com movimento lento ao fundo, título grande e botões à esquerda, usando a paleta atual. Os botões, painéis e barra de comandos durante a partida também acompanham o tema. Terrenos e tropas conservam suas cores. Os menus permitem rolagem em telas pequenas; movimento reduzido desativa o movimento do fundo e as transições de 120 ms. Capturas e validação: [identidade da interface](docs/identity/README.md).
 
 **Configurações** são salvas neste navegador: perfil gráfico, som, grade de casas, tela cheia ao iniciar operação, velocidade padrão, dificuldade padrão e modo padrão (turnos ou RTS). A primeira operação usa esses padrões; as seguintes repetem o modo e a dificuldade da partida anterior.
 
@@ -35,7 +37,7 @@ A IA não investe no começo: se prepara, reúne o exército no ponto de encontr
 
 O progresso fica salvo neste navegador, inclusive quando o jogo é aberto pelo `public/index.html`. A aba **Conta e save** permite:
 
-- **Exportar/Importar save:** gera o arquivo `wargrid-save.json`, que leva o perfil, a campanha e as configurações para outro navegador ou PC.
+- **Exportar/Importar save:** gera o arquivo `rtsvibe-save.json`, que leva o perfil, a campanha e as configurações para outro navegador ou PC. Saves antigos `wargrid-save.json` continuam aceitos; as chaves de progresso `wargrid.*` foram preservadas. O tema não faz parte do arquivo.
 - **Entrar na nuvem (Neon):** a cada mudança, o progresso é mesclado e enviado para o seu banco Neon. Em outro computador, basta entrar com a mesma conta. As conquistas se somam e os contadores ficam com o maior valor. Vale a campanha e as configurações salvas por último.
 
 ### Progresso na nuvem (Neon)
@@ -196,5 +198,7 @@ npm run compare:tanks    # 1.400 confrontos por sementes e lados alternados; tes
 Os testes requerem Node.js 18+ e usam o código real de `public/js/` e o próprio `public/index.html`; capturas e relatórios gerados ficam em `test-output/` (fora do Git). `PLAYWRIGHT_MODULE` permite indicar uma instalação local de Playwright. O teste de navegador bloqueia a rede e verifica ambos os modos, pausa com ordens e projéteis ativos, menus, grupos, reinício, velocidade e computador/celular.
 
 Testes automáticos verificam regras e controles; o equilíbrio das tropas ainda deve ser avaliado em partidas completas.
+
+A artilharia de mísseis anima seus lançadores nas duas equipes: transporte, transição e posição elevada. Leva 0,35 s para preparar, dispara a salva com o intervalo atual de 0,25 s entre mísseis e recolhe em 0,35 s antes de mover. No RTS, cancelar interrompe os próximos disparos e recolhe antes de executar a nova ordem. Pausa, menus e velocidade controlam a sequência; movimento reduzido mantém indicação estática. Os quadros são incorporados para uso offline e reutilizam o cache, com a arte de transporte como alternativa em caso de falha. Recursos e instruções em [assets/NovasTropas/README.md](assets/NovasTropas/README.md); verificação específica: `node tests/rocket-animation.browser.test.cjs`.
 
 Verificações específicas do redesign: `npm run test:terrain` (grade, persistência, camadas alpha, água contínua, névoa, RNG e armazenamento bloqueado).

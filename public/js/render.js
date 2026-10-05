@@ -1,14 +1,18 @@
 'use strict';
 function polygon(ctx,points,fill,stroke){ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.stroke();}}
-// Arte fornecida pelo jogador, preparada com transparência e incorporada para uso offline.
+// Arte fornecida pelo jogador, preparada com transparência e incorporada para uso offline (npm run prepare:troops).
+// Quadros: [coluna, y e altura aliados, y e altura inimigos] em pixels do original de 2172 px; escalados pela largura embutida.
 const troopAtlas=new Image(),troopFrames={
  commander:[0,80,274,402,273],infantry:[1,74,289,400,279],engineer:[2,77,272,400,270],recon:[3,66,295,387,295],
- tank:[4,33,323,356,324],artillery:[5,62,298,383,295],antitank:[6,74,285,394,282],machinegun:[7,77,287,400,287]
+ artillery:[5,62,298,383,295],antitank:[6,74,285,394,282],machinegun:[7,77,287,400,287]
 };
 const tankAtlas=new Image(),tankFrames={lightTank:0,tank:1,heavyTank:2},tankSizes={lightTank:48,tank:54,heavyTank:60};
 // Helicópteros: atlas 3 × 2 (padrão, ar-terra, ar-ar; aliados, inimigos), quadros de 128 px apontados para o norte, rotor estático.
 const heliAtlas=new Image(),heliFrames={helicopter:0,helicopterGround:1,helicopterAir:2};
 const antiAirAtlas=new Image(),highCloud=new Image(),antiAirFrames={antiAirVehicle:0,missileInfantry:1};
+// Artilharia de mísseis e drone: um PNG 128 × 128 por equipe [aliado, inimigo], frente para cima.
+const newTroopImages={rocketArtillery:[new Image(),new Image()],reconDrone:[new Image(),new Image()]},newTroopSizes={rocketArtillery:56,reconDrone:66};
+const rocketLauncherImages=Array.from({length:2},()=>[new Image(),new Image()]);
 const ambientClouds=Array.from({length:3},()=>new Image()),cloudShadows=[];
 const GRAPHICS={performance:{clouds:0,particles:0,interval:1,alpha:0},balanced:{clouds:12,particles:80,interval:.18,alpha:.13},cinematic:{clouds:24,particles:160,interval:.1,alpha:.2}};
 function flightPose(u){const level=AIR(u)?flightLevel(u):0;return{x:u.x,y:u.y-18*level/CELL,scale:1+.12*level,level};}
@@ -17,7 +21,7 @@ function radarView(){
  const selected=selectedUnits().filter(u=>u.type==='antiAirVehicle'&&u.hp>0).sort((a,b)=>a.id-b.id);
  return{source:selected[0]||active[0],contacts:game.units.filter(u=>u.owner==='red'&&u.hp>0&&AIR(u)&&game.isVisible('blue',u))};
 }
-function unitIcon(ctx,type,x,y,color,scale=1,facing=0,stride=0,firing=false){
+function unitIcon(ctx,type,x,y,color,scale=1,facing=0,stride=0,firing=false,launcherFrame=0){
  ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);ctx.lineWidth=1.6;ctx.lineCap='round';ctx.lineJoin='round';
  const dark='#10282e',steel='#a7b6ac',gold='#efd094';
  const box=(x,y,w,h,fill,stroke)=>{ctx.fillStyle=fill;ctx.fillRect(x,y,w,h);if(stroke){ctx.strokeStyle=stroke;ctx.strokeRect(x,y,w,h);}};
@@ -30,6 +34,16 @@ function unitIcon(ctx,type,x,y,color,scale=1,facing=0,stride=0,firing=false){
   if(type==='post'){box(-20,8,12,9,dark);box(8,8,12,9,dark);}ctx.restore();return;
  }
  ctx.rotate(facing);
+ if(type in newTroopImages){
+  const size=newTroopSizes[type],team=color===TEAM.red?1:0;let image=newTroopImages[type][team];
+  if(type==='rocketArtillery'&&launcherFrame){const pose=rocketLauncherImages[team][launcherFrame-1];if(pose?.complete&&pose.naturalWidth)image=pose;}
+  if(type==='rocketArtillery')ctx.translate(0,stride*.6+(firing?1:0));
+  if(image.complete&&image.naturalWidth)ctx.drawImage(image,-size/2,-size/2,size,size);
+  else if(type==='rocketArtillery'){for(const xx of [-17,12])for(const yy of [-18,-3,12])box(xx,yy,5,9,dark);box(-12,-22,24,40,color,dark);box(-10,-4,20,20,'#43534e',dark);for(let i=0;i<3;i++)for(let j=0;j<2;j++)oval(-6+i*6,2+j*7,2.2,2.2,steel);}
+  else{line([[-30,2],[30,2]],color,5);line([[-9,20],[9,20]],color,3);box(-3,-18,6,40,color,dark);oval(0,-14,4,6,'#24444b',dark);}
+  if(firing&&type==='rocketArtillery')for(const x of [-7,7])polygon(ctx,[[x-2,2],[x-4,-2],[x,-7],[x+4,-2],[x+2,2]],'#f8cc76');
+  ctx.restore();return;
+ }
  if(type in antiAirFrames){
   const size=type==='antiAirVehicle'?54:47;
   if(antiAirAtlas.complete&&antiAirAtlas.naturalWidth){const cell=antiAirAtlas.naturalWidth/2;ctx.translate(0,stride*.6+(firing?1:0));ctx.drawImage(antiAirAtlas,antiAirFrames[type]*cell,color===TEAM.red?cell:0,cell,cell,-size/2,-size/2,size,size);}
@@ -63,7 +77,7 @@ function unitIcon(ctx,type,x,y,color,scale=1,facing=0,stride=0,firing=false){
   ctx.restore();return;
  }
  if(!TYPES[type].tank&&troopFrames[type]&&troopAtlas.complete&&troopAtlas.naturalWidth){
-  const frame=troopFrames[type],enemy=color===TEAM.red,w=troopAtlas.naturalWidth/8,sy=frame[enemy?3:1],h=frame[enemy?4:2],fit=60/Math.max(w,h),dw=w*fit,dh=h*fit;
+  const frame=troopFrames[type],enemy=color===TEAM.red,k=troopAtlas.naturalWidth/2172,w=troopAtlas.naturalWidth/8,sy=frame[enemy?3:1]*k,h=frame[enemy?4:2]*k,fit=60/Math.max(w,h),dw=w*fit,dh=h*fit;
   ctx.translate(0,stride*.6+(firing?1.5:0));ctx.drawImage(troopAtlas,frame[0]*w,sy,w,h,-dw/2,-dh/2,dw,dh);
   if(firing){const mx=['infantry','commander','antitank'].includes(type)?10:0,my=-dh/2;polygon(ctx,[[mx-2,my+2],[mx-5,my-3],[mx,my-10],[mx+5,my-3],[mx+2,my+2]],'#f8cc76');}
   ctx.restore();return;
@@ -128,9 +142,9 @@ function unitIcon(ctx,type,x,y,color,scale=1,facing=0,stride=0,firing=false){
 
 // Cache de sprites por equipe, disparo e três poses de caminhada; rotação aplicada ao desenhar.
 const sprites=new Map();
-function sprite(type,color,scale,stride=0,firing=false){
- const key=type+color+scale+':'+stride+':'+firing;let s=sprites.get(key);
- if(!s){const ox=Math.ceil(38*scale),oy=Math.ceil(50*scale);s=document.createElement('canvas');s.width=ox*2;s.height=Math.ceil(82*scale);unitIcon(s.getContext('2d'),type,ox,oy,color,scale,0,stride,firing);s.ox=ox;s.oy=oy;sprites.set(key,s);}
+function sprite(type,color,scale,stride=0,firing=false,launcherFrame=0){
+ const key=type+color+scale+':'+stride+':'+firing+':'+launcherFrame;let s=sprites.get(key);
+ if(!s){const ox=Math.ceil(38*scale),oy=Math.ceil(50*scale);s=document.createElement('canvas');s.width=ox*2;s.height=Math.ceil(82*scale);unitIcon(s.getContext('2d'),type,ox,oy,color,scale,0,stride,firing,launcherFrame);s.ox=ox;s.oy=oy;sprites.set(key,s);}
  return s;
 }
 function glow(radius){const s=document.createElement('canvas'),c=s.getContext('2d');s.width=s.height=Math.ceil(radius+14)*2;c.fillStyle='#fff0b1';c.shadowColor='#ffe499';c.shadowBlur=8;c.beginPath();c.arc(s.width/2,s.height/2,radius,0,7);c.fill();return s;}
@@ -350,7 +364,8 @@ class Renderer{
   }
   if(chosen){c.strokeStyle=u.owner==='blue'?'#c6eff6':TEAM[u.owner];c.lineWidth=2.5;c.beginPath();c.ellipse(x,y+8,24*pose.scale,20*pose.scale,0,0,Math.PI*2);c.stroke();}
   const stride=u.segment&&!reducedMotion?Math.sign(Math.sin(game.time*13+u.id))*2:0,firing=!memory&&u.cooldown>(u.reload??TYPES[u.type].cooldown)-.12;
-  const s=sprite(u.type,TEAM[u.owner],TYPES[u.type].structure?.83:.86,stride,firing);c.save();c.translate(x,y+2);c.scale(pose.scale,pose.scale);if(!TYPES[u.type].structure)c.rotate(u.facing||0);c.drawImage(s,-s.ox,-s.oy);c.restore();
+  const launcherFrame=!memory&&u.type==='rocketArtillery'?(reducedMotion?((u.launcherLevel||0)>0?2:0):Math.round((u.launcherLevel||0)*2)):0;
+  const s=sprite(u.type,TEAM[u.owner],TYPES[u.type].structure?.83:.86,stride,firing,launcherFrame);c.save();c.translate(x,y+2);c.scale(pose.scale,pose.scale);if(!TYPES[u.type].structure)c.rotate(u.facing||0);c.drawImage(s,-s.ox,-s.oy);c.restore();
   if(!memory&&game.radarContact('blue',u)){const r=32*pose.scale;c.strokeStyle='#102a1c';c.lineWidth=4;c.strokeRect(x-r,y-r,r*2,r*2);c.strokeStyle='#68ef8d';c.lineWidth=1.8;c.strokeRect(x-r,y-r,r*2,r*2);}
   if(!memory&&(chosen||u.hp<u.maxHp))this.bar(x,y+24,36,u.hp/u.maxHp,u.hp/u.maxHp>.45?'#b8dba5':'#f69d87');
   if(!memory&&!TYPES[u.type].structure){
@@ -382,12 +397,15 @@ class Renderer{
   for(const id of selection){const u=game.get(id);if(!u||u.owner!=='blue'||TYPES[u.type].structure)continue;
    c.strokeStyle='#a6e1e477';c.lineWidth=1.3;c.setLineDash([5,5]);c.beginPath();c.moveTo((u.x+.5)*CELL,(u.y+.5)*CELL);if(u.segment)c.lineTo((u.segment.to.x+.5)*CELL,(u.segment.to.y+.5)*CELL);for(const p of u.path)c.lineTo((p.x+.5)*CELL,(p.y+.5)*CELL);c.stroke();c.setLineDash([]);
    if(game.turn==='blue'){const target=game.get(u.order.targetId),goal=u.order.goal||(target&&game.isVisible('blue',target)?TILE(target):u.order.last);if(goal)this.outline(goal.x,goal.y,['attack','attackMove'].includes(u.order.type)?'#f9b09a':'#b8e5e6',2);}
+   if(u.order.type==='bombard'&&u.order.cell)this.area(u.order.cell.x,u.order.cell.y,.08);
    if(u.type==='commander'){c.strokeStyle='#e9cf8944';c.lineWidth=2;polygon(c,[[u.x*CELL+28,(u.y-1.5)*CELL],[(u.x+2.5)*CELL,u.y*CELL+28],[u.x*CELL+28,(u.y+2.5)*CELL],[(u.x-1.5)*CELL,u.y*CELL+28]],'#edd0980d','#edd09855');}
   }
   for(const m of game.mines)if(m.known.blue&&game.explored.blue[KEY(m.x,m.y)]){polygon(c,[[(m.x+.5)*CELL,m.y*CELL+18],[m.x*CELL+42,m.y*CELL+42],[m.x*CELL+14,m.y*CELL+42]],'#d8bc77','#4d513d');c.fillStyle='#39403b';c.font='bold 17px sans-serif';c.textAlign='center';c.fillText('!',(m.x+.5)*CELL,m.y*CELL+37);}
   if(hover&&INSIDE(Math.round(hover.x),Math.round(hover.y))&&game.explored.blue[KEY(Math.round(hover.x),Math.round(hover.y))])this.outline(Math.round(hover.x),Math.round(hover.y),'#e9eac56b',1.2);
   if(hover){const target=entityAt(hover),art=selectedUnits().find(u=>u.type==='artillery');if(art&&target&&game.canFire(art,target)){const p=TILE(target);this.area(p.x,p.y,.12);}}
-  for(const p of game.projectiles)if(p.type==='artillery'&&(p.owner==='blue'||game.isVisible('blue',{x:p.tx,y:p.ty})))this.area(p.tx,p.ty,.1+.12*p.elapsed/p.duration);
+  // Bombardear área: prévia 3×3 em qualquer casa, inclusive sob névoa; contorno vermelho fora do alcance 3–13 de todas as selecionadas.
+  if(hover&&mode==='bombard'){const p=TILE(hover);if(INSIDE(p.x,p.y)){this.area(p.x,p.y,.16);if(!selectedUnits().some(u=>game.canBombard(u,p)))this.outline(p.x,p.y,'#f26d5b',3);}}
+  for(const p of game.projectiles)if(['artillery','rocketArtillery'].includes(p.type)&&(p.owner==='blue'||game.isVisible('blue',{x:p.tx,y:p.ty})))this.area(p.tx,p.ty,.1+.12*p.elapsed/p.duration);
   // Aeronaves por cima das tropas terrestres.
   for(const air of [false,true])for(const u of game.units)if(AIR(u)===air&&(u.owner==='blue'||game.isVisible('blue',u)))this.entity(u);
   for(const p of game.projectiles){

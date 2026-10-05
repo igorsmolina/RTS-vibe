@@ -1,0 +1,46 @@
+{
+  "provider": "built-in ImageGen",
+  "scope": "Somente imagens; integração descrita em PROPOSTA-PARA-OUTRA-IA.txt.",
+  "generations": [
+    {
+      "name": "rocket-artillery-ally",
+      "output": "sources/rocket-artillery-ally.png",
+      "prompt": "Use case: stylized-concept. Asset type: a single 2D tactical strategy game unit sprite, production art for rtsvibe. Create ONE allied rocket artillery truck, orthographic straight overhead view, nose and front cab pointing straight UP / north. Exactly six chunky wheels, three visibly arranged along EACH side. Olive green / khaki painted armored truck, compact front cab, longer rear chassis carrying TWO bulky rectangular multiple-launch rocket pods side by side with a clear gap. The pods have repeated sealed launch tube housings, thick panel grids, short hints of missile noses at their north ends, not four exposed long antiaircraft missiles. Clear wide silhouette different from an antiair vehicle, and wheel design distinct from a tank's tracks. Match illustrated existing military game sprites: dark ink contours, painted olive panels, restrained warm highlights, subtle wear, simplified large shapes, no pixel art, no glossy 3D, no isometric perspective. A consistent top-left light applied only to the object. Perfectly centered on a square canvas, whole vehicle visible with generous transparent padding, no cutoff. Design for legibility when downscaled to 128x128 and viewed at 56x56, avoid microscopic details. BACKGROUND MUST BE REAL ALPHA TRANSPARENCY. No terrain, no checkerboard baked into image, no black/white background, no cast shadow outside the vehicle, no text, lettering, symbols, watermark, smoke, fire or missile trails. Exactly one vehicle, not a sprite sheet."
+    },
+    {
+      "name": "rocket-artillery-enemy",
+      "input": "sources/rocket-artillery-ally.png",
+      "output": "sources/rocket-artillery-enemy.png",
+      "prompt": "Use case: precise-object-edit. Edit the supplied olive rocket artillery sprite to make its RED ENEMY TEAM variant. Preserve exactly the six-wheel truck, two rectangular launch pods and their missile tube details, orthographic top-down perspective, nose pointing up, pose, silhouette, outlines, lighting, crop, proportions and all mechanical details. Change only the olive/khaki painted body panels and pod paint to clearly readable muted military RED / deep brick red, with slightly lighter red highlights, consistent with the existing red enemy sprites in a 2D tactical strategy game. Keep rubber wheels dark charcoal, glass dark and metal details neutral. No added guns, missiles, objects, insignias or text. Preserve the real transparent alpha background, no background or ground shadow. Keep the entire vehicle inside the square canvas."
+    },
+    {
+      "name": "recon-drone-ally-original",
+      "output": "sources/recon-drone-ally-original.png",
+      "prompt": "Use case: stylized-concept. Asset type: a single 2D tactical strategy game unit sprite, production art for rtsvibe. Create ONE allied reconnaissance drone: a military uncrewed fixed-wing aircraft with LONG thin horizontal wings, narrow fuselage, pointed nose pointing exactly UP / north, small V-shaped tail surfaces at the bottom, compact rear pusher propeller. No weapons, missile racks or bombs. A small sensor housing under the nose is suggested through simple fuselage contour and dark sensor detailing, without tilting the camera. Strict orthographic straight overhead view, symmetrical horizontal wings, full aircraft visible, no isometric view. Olive green / khaki painted metal, dark ink contours, restrained warm highlights, subtle panel seams and painted shading. Match illustrated military game sprites, not photorealistic, not glossy 3D, not pixel art. Clearly a long-wing reconnaissance airplane, not a helicopter or quadcopter. Shape and simple high-contrast details must remain legible at 128x128 and 56x56. Centered on a square canvas with generous transparent padding on every side. Consistent top-left light applied only to the aircraft. BACKGROUND MUST BE REAL ALPHA TRANSPARENCY. No terrain, clouds, altitude labels, smoke, ground shadow, sky, checkerboard baked into image, black/white background, lettering or watermark. Exactly one aircraft, not a sprite sheet."
+    },
+    {
+      "name": "recon-drone-ally-reframed",
+      "input": "sources/recon-drone-ally-original.png",
+      "output": "sources/recon-drone-ally-before-contrast.png",
+      "prompt": "Use case: precise-object-edit. Repair the framing and silhouette edge of the supplied allied olive reconnaissance drone sprite. Preserve the exact long-wing airplane design, olive/khaki paint, narrow fuselage, sensor, rear propeller, V tail, illustrated style and orthographic overhead view with nose UP. Make the complete aircraft modestly smaller on the same square canvas so BOTH entire wing tips are complete and there is at least 8 percent transparent padding at left and right. Center the drone. Clean the edge so its only outline is dark ink with natural olive highlights; remove stray red/yellow fringe pixels outside the wing silhouette. Preserve transparent alpha. No sky, background, cloud, ground shadow, checkerboard, text, weapons or new objects."
+    },
+    {
+      "name": "recon-drone-enemy-first",
+      "input": "sources/recon-drone-ally-before-contrast.png",
+      "output": "sources/recon-drone-enemy-before-contrast.png",
+      "prompt": "Edit the provided olive reconnaissance drone into its ENEMY RED team variant. Preserve precisely the aircraft design, long full wings, narrow fuselage, north-facing pointed nose, small nose sensor, V tail and rear propeller, orthographic top-down perspective, illustrated military-game shading and dark ink contours. Change olive painted surfaces to deep brick red with lighter muted red highlights. Keep neutral dark mechanical parts and sensor glass unchanged. Preserve the scale, complete silhouette and transparent padding. Clean any stray colored pixels outside the silhouette with natural dark contours. No weapons, no text, no background, no shadows, no smoke, no glow or decorative marks. Deliver a single centered aircraft on REAL transparent alpha, no checkerboard."
+    },
+    {
+      "name": "recon-drone-ally",
+      "input": "sources/recon-drone-ally-before-contrast.png",
+      "output": "sources/recon-drone-ally.png",
+      "prompt": "Edit ONLY the readability of this top-down olive reconnaissance drone sprite for a strategy-game cell of 56 x 56 pixels. Preserve the exact aircraft model, north-facing nose, complete long wings and V tail, narrow fuselage, sensor lens, rear propeller, pose, framing and transparent background. Keep olive/khaki team color. Make the OUTER contour a clean continuous opaque very dark charcoal ink line visibly thicker, with simplified high-contrast illustrated shading. Use a bright muted khaki highlight along upper wing/body surfaces and deep dark olive underneath. Wings and tail must remain visibly legible over a busy green forest and gray rocky terrain when reduced to 56 px across. No outline glow, no pale halo, no broad drop shadow. Eliminate stray fringe pixels. Do not add armament, text, icons, smoke, background or checkerboard. True transparent alpha outside the aircraft. Single centered whole aircraft."
+    },
+    {
+      "name": "recon-drone-enemy",
+      "input": "sources/recon-drone-ally.png",
+      "output": "sources/recon-drone-enemy.png",
+      "prompt": "Create the red ENEMY team variant by editing this exact olive reconnaissance drone sprite. Change ONLY olive and khaki painted panels to deep military brick red and muted light red highlights. Preserve exactly its bold continuous dark ink silhouette, simplified illustrated shading, long wing shape, wing span, narrow fuselage, north-facing pointed nose, nose sensor, V tail, rear propeller, top-down view, framing and transparency. Keep sensor lens and mechanical parts charcoal/neutral. This must be the same aircraft model and graphic style with only its team paint changed. No weapons, text, shadow, background, sky, checkerboard, smoke or glow. Real transparent alpha."
+    }
+  ]
+}

@@ -40,9 +40,13 @@ async function cloudSync(){
  if(cloud.pending&&!cloud.error)scheduleSync();
 }
 function scheduleSync(){if(!cloud.user)return;clearTimeout(cloud.timer);cloud.timer=setTimeout(cloudSync,2000);}
+// Save local pertence a uma conta: trocar de conta não mistura campanha/perfil de outra pessoa.
+const OWNER_KEY='wargrid.owner';
+function resetLocal(){profile=newProfile();saveProfile();try{localStorage.removeItem(CAMPAIGN_KEY);}catch{}if(!campaignBattle){campaign=null;worldView=null;selectedRegion=-1;}if($('titleScreen').open)refreshTitle();}
+function bindOwner(){let o=null;try{o=localStorage.getItem(OWNER_KEY);}catch{}if(o&&o!==cloud.user.id)resetLocal();try{localStorage.setItem(OWNER_KEY,cloud.user.id);}catch{}}
 async function cloudStart(){
  if(!cloudConfigured()||!cloudReachable())return;
- try{const c=await cloudClient(),{data}=await c.auth.getSession();if(data?.user){cloud.user=data.user;await cloudSync();}}catch(e){cloud.error=e?.message||String(e);}
+ try{const c=await cloudClient(),{data}=await c.auth.getSession();if(data?.user){cloud.user=data.user;bindOwner();await cloudSync();}}catch(e){cloud.error=e?.message||String(e);}
  renderAccount();if($('titleScreen').open)refreshTitle();
 }
 async function cloudSignIn(create){
@@ -50,11 +54,14 @@ async function cloudSignIn(create){
  cloud.error='';$('accountStatus').textContent=create?'Criando conta…':'Entrando…';
  try{const c=await cloudClient(),r=create?await c.auth.signUp.email({email,password,name:email.split('@')[0]}):await c.auth.signIn.email({email,password});
   if(r.error)throw r.error;cloud.user=r.data?.user||(await c.auth.getSession()).data?.user;if(!cloud.user)throw new Error('Confirme o cadastro pelo e-mail e entre de novo.');
-  $('accountPassword').value='';await cloudSync();}
+  bindOwner();  $('accountPassword').value='';await cloudSync();}
  catch(e){cloud.error=e?.message||String(e);}
  renderAccount();
 }
-async function cloudSignOut(){try{await cloud.client?.auth.signOut();}catch{}cloud.user=null;cloud.pending=false;clearTimeout(cloud.timer);renderAccount();}
+// Envia o que falta antes de sair; só limpa o save local se a nuvem já tem tudo (offline mantém, e a mesma conta recupera ao entrar).
+async function cloudSignOut(){clearTimeout(cloud.timer);if(cloud.user)await cloudSync();const synced=!cloud.pending&&!cloud.error;
+ try{await cloud.client?.auth.signOut();}catch{}cloud.user=null;cloud.pending=false;
+ if(synced){resetLocal();try{localStorage.removeItem(OWNER_KEY);}catch{}}renderAccount();if($('profile').open)renderProfile();}
 window.addEventListener('online',()=>{if(cloud.pending)cloudSync();});
 
 // --- Diálogo Perfil e conquistas
@@ -92,7 +99,7 @@ function renderAccount(){
 function showProfileTab(name){for(const b of document.querySelectorAll('#profile [role=tab]')){const on=b.dataset.tab===name;b.setAttribute('aria-selected',String(on));$(b.getAttribute('aria-controls')).hidden=!on;}}
 function openProfile(){openMenu('profile');renderProfile();}
 // Backup em arquivo: mesmo pacote da nuvem.
-function exportSave(){const blob=new Blob([JSON.stringify(bundle(),null,1)],{type:'application/json'}),a=el('a');a.href=URL.createObjectURL(blob);a.download='wargrid-save.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
+function exportSave(){const blob=new Blob([JSON.stringify(bundle(),null,1)],{type:'application/json'}),a=el('a');a.href=URL.createObjectURL(blob);a.download='rtsvibe-save.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
 async function importSave(file){
  let b=null;try{b=validateBundle(JSON.parse(await file.text()));if(b?.campaign)deserializeCampaign(b.campaign);}catch{b=null;}
  if(!b){$('accountStatus').textContent='Arquivo inválido: nada foi alterado.';return;}

@@ -1,0 +1,13 @@
+Tool: built-in ImageGen
+Reference: sources/rocket-artillery-ally.png
+Output: sources/rocket-artillery-ally-launch-ready.png
+Export: rocket-artillery-ally-launch-ready.png (128 x 128, alpha preserved)
+
+Use case: precise-object-edit.
+Edit target: the supplied olive six-wheel rocket artillery truck.
+Create its READY-TO-LAUNCH pose. Keep the same illustrated top-down/bird's-eye camera, truck facing north/up, cab, six wheels (three per side), olive/khaki paint, dark outlines and detailed military-game style.
+
+Change only the TWO rectangular rocket launcher modules on the rear bed: both modules must be mechanically ELEVATED on visible hinged supports, tilted steeply upward approximately 65 degrees above the horizontal truck bed, with all rocket noses pointing toward the SKY, before launch. This is elevation in three-dimensional height, not simply pointing north on the flat image. Make the raised pose unmistakable from above through foreshortened launcher bodies, elevated near-upright rocket tips, visible tilt mechanisms and strong attached shadows on the truck bed. Preserve two separate multi-tube modules, not an antiaircraft turret. Keep the entire vehicle recognizable and maintain the original truck model.
+
+Composition: one complete centered vehicle with comfortable transparent margin, square high-resolution PNG. True transparent alpha outside the vehicle, preserving clean edges.
+No missile being fired, no fire, no exhaust, no smoke, no landscape, no ground plane, no text, no grid, no watermark or checkerboard. Do not change to a side view or three-quarter camera.

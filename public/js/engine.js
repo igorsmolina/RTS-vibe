@@ -26,21 +26,28 @@ const TYPES={
  engineer:{move:3,name:'Engenheiro',hp:85,speed:1.25,range:1.15,min:0,damage:20,accuracy:.9,vision:4,cooldown:1.2,train:2,cost:65,reward:25,role:'Reparo +24 HP por ação'},
  antitank:{move:3,name:'Antitanque',hp:90,speed:1.05,range:3,min:0,damage:40,accuracy:.85,vision:4,cooldown:3,train:2,cost:110,reward:35,role:'Foguetes contra veículos'},
  machinegun:{move:2,name:'Metralhador',hp:110,speed:1.05,range:2.5,min:0,damage:18,accuracy:.88,vision:4,cooldown:.4,train:2,cost:90,reward:30,role:'Fogo rápido contra tropas a pé'},
- antiAirVehicle:{move:3,vehicle:true,name:'Veículo antiaéreo',hp:90,speed:1.35,range:Infinity,min:0,damage:70,accuracy:.8,vision:6,cooldown:3.5,train:3,cost:160,reward:45,role:'Mísseis · alcance ilimitado contra aeronaves · frágil'},
+ antiAirVehicle:{move:5,vehicle:true,name:'Veículo antiaéreo',hp:40,speed:2.25,range:Infinity,min:0,damage:100,accuracy:.8,vision:6,cooldown:3.5,train:3,cost:160,reward:45,role:'Mísseis · alcance ilimitado contra aeronaves · frágil'},
  missileInfantry:{move:3,name:'Soldado lançador',hp:80,speed:1.25,range:3,min:0,damage:30,accuracy:.75,vision:4,cooldown:3,train:2,cost:90,reward:30,role:'Mísseis · ar 3 casas / solo 1 casa'},
- helicopter:{air:true,weapons:['gun'],move:6,name:'Helicóptero',hp:120,speed:2.2,range:3,min:0,damage:20,accuracy:.85,vision:6,cooldown:1,train:3,cost:150,reward:50,role:'Metralhadora · apoio e reconhecimento'},
+ helicopter:{air:true,weapons:['gun'],move:6,name:'Helicóptero',hp:120,speed:2.2,range:3,min:0,damage:20,accuracy:.85,vision:6,cooldown:1,train:3,cost:110,reward:50,role:'Metralhadora · apoio e reconhecimento'},
  helicopterGround:{air:true,weapons:['gun','agm'],move:6,name:'Helicóptero ar-terra',hp:120,speed:2.2,range:3,min:0,damage:20,accuracy:.85,vision:6,cooldown:1,train:4,cost:230,reward:50,role:'Metralhadora e mísseis ar-terra'},
- helicopterAir:{air:true,weapons:['gun','aam'],move:6,name:'Helicóptero ar-ar',hp:120,speed:2.2,range:3,min:0,damage:20,accuracy:.85,vision:6,cooldown:1,train:4,cost:240,reward:50,role:'Metralhadora e mísseis ar-ar'},
+ helicopterAir:{air:true,weapons:['gun','aam'],move:6,name:'Helicóptero ar-ar',hp:120,speed:2.2,range:3,min:0,damage:20,accuracy:.85,vision:6,cooldown:1,train:4,cost:180,reward:50,role:'Metralhadora e mísseis ar-ar'},
+ // Equilíbrio provisório das duas classes abaixo (ainda não validado em partidas).
+ rocketArtillery:{move:2,vehicle:true,name:'Artilharia de mísseis',hp:90,speed:.85,range:13,min:3,damage:20,accuracy:.8,vision:3,cooldown:10,train:4,cost:240,reward:60,role:'Bombardear área 3×3 · 4 mísseis · ×2 contra estruturas'},
+ reconDrone:{air:true,unarmed:true,weapons:[],move:7,name:'Drone de reconhecimento',hp:60,speed:2.4,range:0,min:0,damage:0,accuracy:0,vision:12,cooldown:1,train:2,cost:90,reward:30,role:'Reconhecimento · visão 12 · sempre em altitude alta · sem armas'},
  commander:{move:3,name:'Comandante',hp:140,speed:1.35,range:2,min:0,damage:40,accuracy:.9,vision:5,cooldown:1.5,reward:70,role:'Aura de comando · raio 2'},
  hq:{name:'Quartel-general',hp:300,speed:0,range:0,damage:0,vision:5,structure:true,reward:100},
  post:{name:'Posto avançado',hp:80,speed:0,range:0,damage:0,vision:3,structure:true,reward:30}
 };
 // Armas dos helicópteros. Recarga em segundos (RTS); por turnos cada disparo gasta a ação.
+const ARMORED=new Set(['tank','heavyTank']),BREAKERS=new Set(['antitank','lightTank','tank','heavyTank','artillery']);
 const WEAPONS={gun:{name:'Metralhadora',damage:20,range:3,accuracy:.85,cooldown:1},agm:{name:'Míssil ar-terra',damage:65,range:5,accuracy:.85,cooldown:3},aam:{name:'Míssil ar-ar',damage:70,range:6,accuracy:.9,cooldown:3}};
 const AIR=u=>!!TYPES[u?.type]?.air;
 const ALTITUDE_TIME=1;
 function flightLevel(u){const t=u.altitudeTransition;if(!t)return u.altitude==='high'?1:0;const p=Math.min(1,t.elapsed/(t.returning?.2:ALTITUDE_TIME));return t.from+(t.to-t.from)*p*p*(3-2*p);}
-const MISSILE=w=>['agm','aam','antiAirVehicle','missileInfantry'].includes(w);
+const MISSILE=w=>['agm','aam','antiAirVehicle','missileInfantry','rocket'].includes(w);
+// Salva da artilharia de mísseis: quatro mísseis contra a casa central, 0,25 s entre lançamentos.
+const SALVO={missiles:4,interval:.25};
+const LAUNCHER_TIME=.35;
 // IA planejada: prazo mínimo de preparo (turnos; RTS ×30 s) e margem sobre a força azul já vista para lançar a onda.
 /* Níveis da IA: preparo (turnos; RTS ×30 s), margem sobre a força azul vista, onda mínima, fila e exército máximos,
    renda e recursos de combate (reforço de onda e recuo mais cedo na Veterana). */
@@ -57,7 +64,8 @@ const DOCTRINE=[
  {type:'helicopterGround',share:.08},{type:'helicopterAir',share:.07},{type:'antitank',share:.08,min:1},
  {type:'tank',share:.08,min:1},{type:'lightTank',share:.07},{type:'machinegun',share:.07,min:1},
  {type:'artillery',share:.06,min:1},{type:'infantry',share:.14,min:2},{type:'engineer',share:.04,min:1},
- {type:'recon',share:.04,min:1},{type:'missileInfantry',share:.02}
+ {type:'recon',share:.04,min:1},{type:'missileInfantry',share:.02},
+ {type:'rocketArtillery',share:.04,min:1},{type:'reconDrone',share:.03,min:1}
 ];
 // Cronograma: a partir de certa rodada (RTS: ×30 s) a IA mantém pelo menos uma unidade destas classes.
 const SCHEDULE={antiAirVehicle:4,helicopter:1,heavyTank:6,helicopterGround:10,helicopterAir:14};
@@ -80,7 +88,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  add(owner,type,x,y){
   const t=TYPES[type];if(!t||!INSIDE(x,y)||!['blue','red','neutral'].includes(owner))return null;
   const u={id:this.nextId++,owner,type,x,y,facing:owner==='blue'?0:Math.PI,hp:t.hp,maxHp:t.hp,level:1,xp:0,cooldown:0,setup:0,packing:0,idle:0,entrenched:false,suppressed:0,revealed:0,work:0,reserved:0,order:{type:'stop'},path:[],segment:null,navGoal:null,healText:0,moveLeft:t.move||0,actionLeft:!t.structure,moved:false,pending:false};
-  if(t.structure)u.queue=[];if(t.air){u.weaponMode='auto';u.altitude='low';u.flares=3;u.flareCooldown=0;u.flareUsed=false;}if(type==='antiAirVehicle')u.radarOn=true;(t.structure?this.structures:this.units).push(u);if(type==='antiAirVehicle')this.updateRadarContacts();return u;
+  if(t.structure)u.queue=[];if(t.air){if(!t.unarmed)u.weaponMode='auto';u.altitude=t.unarmed?'high':'low';u.flares=t.unarmed?0:3;u.flareCooldown=0;u.flareUsed=false;}if(type==='antiAirVehicle')u.radarOn=true;(t.structure?this.structures:this.units).push(u);if(type==='antiAirVehicle')this.updateRadarContacts();return u;
  }
   generate(){
   const o=this.options,rng=this.rng,mid=COLS/2,T=this.terrain,seed=this.seed;
@@ -224,16 +232,18 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  isVisible(owner,u){if(!u||!this.visible[owner])return false;const p=TILE(u);return this.radarContact(owner,u)||!!(AIR(u)?this.sky:this.visible)[owner][KEY(p.x,p.y)];}
  effectVisible(x,y,air=false,contactId,sourceId){const p=TILE({x,y});if(!INSIDE(p.x,p.y))return false;if((air?this.sky:this.visible).blue[KEY(p.x,p.y)])return true;if(air)for(const id of [contactId,sourceId]){if(id===undefined)continue;const u=this.get(id);if(this.radarContact('blue',u)&&Math.hypot(x-u.x,y-u.y)<=2)return true;}return false;}
  // Alcance contra um alvo; sem alvo, o maior alcance do modo de arma atual.
- range(u,target){const t=TYPES[u.type];if(target&&!this.weapon(u,target))return 0;if(u.type==='missileInfantry')return target&&!AIR(target)?1:3;if(!t.air)return t.range+({mountain:2,hill:1}[this.terrainAt(u)]||0);if(target)return WEAPONS[this.weapon(u,target)]?.range??0;const mode=u.weaponMode||'auto';return mode==='auto'?Math.max(...t.weapons.map(w=>WEAPONS[w].range)):WEAPONS[mode].range;}
+ range(u,target){const t=TYPES[u.type];if(target&&!this.weapon(u,target)||t.unarmed)return 0;if(u.type==='rocketArtillery')return t.range;if(u.type==='missileInfantry')return target&&!AIR(target)?1:3;if(!t.air)return t.range+({mountain:2,hill:1}[this.terrainAt(u)]||0);if(target)return WEAPONS[this.weapon(u,target)]?.range??0;const mode=u.weaponMode||'auto';return mode==='auto'?Math.max(...t.weapons.map(w=>WEAPONS[w].range)):WEAPONS[mode].range;}
  sight(u){return TYPES[u.type].vision+(!AIR(u)&&['mountain','hill'].includes(this.terrainAt(u))?2:0);}
  /* Arma de a contra b, ou null se incompatível. Solo: a própria tropa (só infantaria e metralhador alcançam aeronaves).
     Helicóptero: arma manual se compatível; Auto prefere o míssil contra veículo/estrutura (ar-terra) ou aeronave (ar-ar). */
- weapon(a,b){
-  const t=TYPES[a.type],air=AIR(b);if(a.type==='antiAirVehicle')return air?a.type:null;if(a.type==='missileInfantry')return a.type;if(!t.air)return air&&a.type!=='infantry'&&a.type!=='machinegun'?null:a.type;
+ // Tanque médio e pesado: só antitanque, tanques, artilharia e míssil ar-terra ferem.
+ weapon(a,b){const w=this.pickWeapon(a,b);return w&&ARMORED.has(b.type)&&!BREAKERS.has(a.type)&&w!=='agm'?null:w;}
+ pickWeapon(a,b){
+  const t=TYPES[a.type],air=AIR(b);if(t.unarmed||a.type==='rocketArtillery')return null;if(a.type==='antiAirVehicle')return air?a.type:null;if(a.type==='missileInfantry')return a.type;if(!t.air)return air&&a.type!=='infantry'&&a.type!=='machinegun'?null:a.type;
   const fits=w=>w==='gun'||(w==='agm')!==air,mode=a.weaponMode||'auto';if(mode!=='auto')return fits(mode)?mode:null;
   const missile=t.weapons[1];return missile&&fits(missile)&&(air||TYPES[b.type].vehicle||TYPES[b.type].structure)?missile:'gun';
  }
- setWeapon(u,mode){if(!u||!TYPES[u.type]?.air||!['auto',...TYPES[u.type].weapons].includes(mode))return false;u.weaponMode=mode;return true;}
+ setWeapon(u,mode){if(!u||!TYPES[u.type]?.weapons?.length||!['auto',...TYPES[u.type].weapons].includes(mode))return false;u.weaponMode=mode;return true;}
  updateVision(){
   this.updateRadarContacts();
   for(const owner of ['blue','red']){
@@ -257,10 +267,11 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  hasAura(u){return this.units.some(c=>c.owner===u.owner&&c.type==='commander'&&c.hp>0&&DIST(u,c)<=2);}
  cover(u){if(AIR(u))return 0;return Math.min(.75,TERRAIN[this.terrainAt(u)].cover+(u.entrenched?.25:0));}
  attackPower(u,w){return (AIR(u)?WEAPONS[w||'gun'].damage:TYPES[u.type].damage)*(1+(u.level-1)*.1)*(this.hasAura(u)?1.2:1);}
- accuracy(a,b,w=this.weapon(a,b)){return Math.max(.1,Math.min(.99,(AIR(a)&&WEAPONS[w]?WEAPONS[w].accuracy:TYPES[a.type].accuracy)+(a.level-1)*.05+(this.hasAura(a)?.15:0)-(b.level-1)*.05-(a.suppressed>0?.25:0)+(MISSILE(w)?(AIR(a)&&a.altitude==='high'?.1:0)+(AIR(b)&&b.altitude==='high'?.1:0):0)));}
+ accuracy(a,b,w=this.weapon(a,b)){return Math.max(.1,Math.min(.99,(AIR(a)&&WEAPONS[w]?WEAPONS[w].accuracy:TYPES[a.type].accuracy)+(a.level-1)*.05+(this.hasAura(a)?.15:0)-(b.level-1)*.05-(a.suppressed>0?.25:0)+(MISSILE(w)?(AIR(a)&&a.altitude==='high'?.1:0)+(AIR(b)&&b.altitude==='high'?.1:0)+(b.type==='reconDrone'&&['antiAirVehicle','missileInfantry'].includes(a.type)?.1:0):0)));}
  flareReady(u){return AIR(u)&&u.flares>0&&(this.mode==='rts'?u.flareCooldown<=1e-8:!u.flareUsed);}
  serviceSite(u,base){return AIR(u)&&u.altitude==='low'&&!u.segment&&base?.hp>0&&base.owner===u.owner&&['hq','post'].includes(base.type)&&DIST(u,base)<=1&&this.structures.includes(base);}
  canService(u,base){return this.serviceSite(u,base)&&(u.hp<u.maxHp||u.flares<3);}
+ canBombard(u,cell){if(u?.type!=='rocketArtillery'||!cell||!INSIDE(cell.x,cell.y))return false;const t=TYPES[u.type],d=DIST(u,cell);return d<=t.range+.05&&d>=t.min;}
  canFire(a,b){return !!b&&b.hp>0&&b.owner!==a.owner&&b.owner!=='neutral'&&!!this.weapon(a,b)&&this.isVisible(a.owner,b)&&DIST(a,b)<=this.range(a,b)+.05&&DIST(a,b)>=TYPES[a.type].min;}
 
  // Mira da IA: antitanque em veículos, metralhador em tropa a pé, mísseis em aeronaves; prefere abates prováveis,
@@ -293,6 +304,10 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
 
  cancelWork(u){if(u.reserved){this.credits[u.owner]+=u.reserved;u.reserved=0;}u.work=0;u.serviceClock=0;}
  cancelAltitude(u){if(u.altitudeTransition&&!u.altitudeTransition.returning)u.altitudeTransition={from:flightLevel(u),to:u.altitude==='high'?1:0,elapsed:0,returning:true};}
+ advanceLauncher(u,raised,dt){
+  const level=(u.launcherLevel||0)+(raised?1:-1)*dt/LAUNCHER_TIME;
+  u.launcherLevel=level<1e-8?0:level>1-1e-8?1:level;return u.launcherLevel===(raised?1:0);
+ }
  advanceAltitude(u,altitude,dt){
   if(!u.altitudeTransition||u.altitudeTransition.returning)u.altitudeTransition={from:flightLevel(u),to:altitude==='high'?1:0,elapsed:0,returning:false};
   u.altitudeTransition.elapsed=Math.min(ALTITUDE_TIME,u.altitudeTransition.elapsed+dt);
@@ -308,7 +323,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   if(DIST(start,target)<=near&&DIST(start,target)>=min)return [];
   const cells=[];for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){const d=DIST({x,y},target);if(d<=near&&d>=min&&!this.occupied(x,y,u)&&(AIR(u)||this.structureAt(x,y)?.type!=='hq')&&Number.isFinite(this.cost(u,x,y)))cells.push({x,y});}
   cells.sort((a,b)=>DIST(a,start)-DIST(b,start));let best=null,bestCost=Infinity;
-  for(const cell of cells){const route=this.findPath(start,cell,true,this.unitGrid(u));if(!route)continue;const cost=this.pathCost(u,route);if(cost<=budget+1e-8&&cost<bestCost){best=route;bestCost=cost;}}
+  for(const cell of cells){const floor=DIST(cell,start)*.5;if(floor>=bestCost||floor>budget+1e-8)break;const route=this.findPath(start,cell,true,this.unitGrid(u));if(!route)continue;const cost=this.pathCost(u,route);if(cost<=budget+1e-8&&cost<bestCost){best=route;bestCost=cost;}}
   return best;
  }
  order(u,type,args={},batch=false){
@@ -321,7 +336,12 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
    const start=rts&&u.segment?{...u,...u.segment.to}:u,path=this.findPath(start,goal,true,this.unitGrid(u));if(!path)return false;route=this.trimPath(u,path);if(!route.length&&!(rts&&u.segment))return false;job.goal=goal;
   }else{
    if(!rts&&!u.actionLeft)return false;
-   if(type==='attack'){
+   if(u.type==='rocketArtillery'&&(type==='bombard'||type==='attack')){
+    // Casa escolhida pode estar sob névoa ou inexplorada; o ataque a um inimigo visível mira a casa dele.
+    const cell=type==='bombard'?{x:Math.round(args.x),y:Math.round(args.y)}:target&&target.owner!==u.owner&&target.owner!=='neutral'&&this.isVisible(u.owner,target)?TILE(target):null;
+    if(!cell||!INSIDE(cell.x,cell.y))return false;type=job.type='bombard';job.cell=cell;job.targetId=undefined;
+    route=this.pathToRange(u,cell,TYPES[u.type].range,TYPES[u.type].min,rts?Infinity:u.moveLeft);if(route===null)return false;
+   }else if(type==='attack'){
     if(!target||target.owner===u.owner||target.owner==='neutral'||!this.weapon(u,target)||!this.isVisible(u.owner,target))return false;
     if(!rts&&u.type==='artillery'&&(u.moved||!this.canFire(u,target)))return false;
     route=this.pathToRange(u,target,this.range(u,target),TYPES[u.type].min,rts?Infinity:u.moveLeft);if(route===null)return false;
@@ -329,7 +349,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
     if(u.type!=='engineer'||!target||AIR(target)||target===u||target.owner!==u.owner||target.hp>=target.maxHp)return false;
     route=this.pathToRange(u,target,1,0,rts?Infinity:u.moveLeft);if(route===null)return false;
    }else if(type==='altitude'){
-    if(!AIR(u)||!['low','high'].includes(args.altitude)||args.altitude===u.altitude)return false;job.altitude=args.altitude;
+    if(!AIR(u)||TYPES[u.type].unarmed||!['low','high'].includes(args.altitude)||args.altitude===u.altitude)return false;job.altitude=args.altitude;
    }else if(type==='service'){
     if(!this.canService(u,target))return false;
    }else if(type==='capture'){
@@ -344,7 +364,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
    if(!rts)u.actionLeft=false;
   }
   if(rts){this.cancelAltitude(u);if(type!=='build')this.cancelWork(u);u.work=0;u.idle=0;u.navWait=0;u.job=job;}
-  u.entrenched=false;u.pending=true;u.path=route.slice();job.route=route;u.order={type,targetId:job.targetId,altitude:job.altitude,goal:route.length?route[route.length-1]:job.goal};if(!rts)this.actions.push(job);return true;
+  u.entrenched=false;u.pending=true;u.path=route.slice();job.route=route;u.order={type,targetId:job.targetId,altitude:job.altitude,cell:job.cell,goal:route.length?route[route.length-1]:job.goal};if(!rts)this.actions.push(job);return true;
  }
  command(ids,type,args={}){
   if(this.winner||this.mode!=='rts'&&(this.turn!=='blue'||this.busy))return 0;let count=0;const assigned=new Set(),army=[...new Set(ids)].map(id=>this.get(id)).filter(u=>u?.owner==='blue'&&!TYPES[u.type].structure);
@@ -357,6 +377,12 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   }return count;
  }
  enterCell(u){if(AIR(u))return;const m=this.mines.find(m=>m.x===u.x&&m.y===u.y);if(!m)return;this.mines=this.mines.filter(v=>v!==m);this.hurt(u,40,null);this.event('blast',u);this.report(`${TYPES[u.type].name} atingido por mina: −40.`,u);}
+ // Um míssil da salva: impacto na casa escolhida (não persegue); 80% de impacto efetivo, sorteado pelo RNG do combate.
+ launch(u,cell){
+  const t=TYPES[u.type];u.facing=Math.atan2(cell.x-u.x,u.y-cell.y);u.cooldown=u.reload=t.cooldown;u.revealed=2;
+  this.projectiles.push({attackerId:u.id,owner:u.owner,type:u.type,weapon:'rocket',air:false,sourceLevel:0,targetLevel:0,sx:u.x,sy:u.y,x:u.x,y:u.y,tx:cell.x,ty:cell.y,heading:Math.atan2(cell.y-u.y,cell.x-u.x),trail:[],elapsed:0,duration:Math.max(.8,DIST(u,cell)/8),power:this.attackPower(u),hit:this.rng()<t.accuracy});
+  this.shotsFired++;this.event('shot',u,{weapon:'antitank'});
+ }
  shoot(u,target){
   if(u.type==='artillery'&&this.mode!=='rts')u.moveLeft=0;
   // O projétil guarda arma, dano e alvo do disparo; trocar de arma depois não o altera. Helicópteros: recarga única por arma usada.
@@ -369,6 +395,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   this.shotsFired++;this.event('shot',u,{weapon:w==='gun'?'machinegun':missile?'antitank':u.type});
  }
   impact(p){
+  if(p.weapon==='rocket')return this.rocketImpact(p);
   const attacker=this.get(p.attackerId),target=this.get(p.targetId),center={x:p.deflected?p.decoy.x:p.tx,y:p.deflected?p.decoy.y:p.ty,owner:p.owner};
   const visibility={flightLevel:p.targetLevel||0,air:p.air,contactId:p.targetId,sourceId:p.attackerId,...(MISSILE(p.weapon)?{visible:this.effectVisible(center.x,center.y,p.air,p.targetId,p.attackerId)}:{})};
   if(p.lostGuidance){this.event('blast',center,{lostGuidance:true,decoy:p.deflected,...visibility});return;}
@@ -388,6 +415,17 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
    const n=Math.max(1,Math.round(power*(1-this.cover(t))*(p.critical?1.35:1)));this.hurt(t,n,attacker);
    if(p.critical)this.event('text',t,{text:'CRÍTICO!',color:'#efd291'});
    this.report(`${p.owner===t.owner?'Fogo amigo':TYPES[p.type].name}: ${TYPES[t.type].name} −${n}.`,t);
+  }
+ }
+ // Impacto efetivo: 20 na casa central, metade nas 8 vizinhas, ×2 em estruturas; sem queda pela distância; não atinge aeronaves.
+ // Eventos ficam visíveis só onde o jogador enxerga: nada de dano, explosão ou erro revelado através da névoa.
+ rocketImpact(p){
+  const attacker=this.get(p.attackerId),center={x:p.tx,y:p.ty};
+  if(!p.hit){this.event('blast',center,{dud:true});return;}
+  this.event('blast',center,{heavy:true});
+  for(const t of this.all().filter(v=>!AIR(v)&&v.hp>0&&Math.abs(TILE(v).x-center.x)<=1&&Math.abs(TILE(v).y-center.y)<=1)){
+   const c=TILE(t),power=p.power*(c.x===center.x&&c.y===center.y?1:.5)*(TYPES[t.type].structure?2:1),n=Math.max(1,Math.round(power*(1-this.cover(t))));
+   this.hurt(t,n,attacker);this.report(`${p.owner===t.owner?'Fogo amigo':TYPES[p.type].name}: ${TYPES[t.type].name} −${n}.`,t);
   }
  }
  hurt(u,n,attacker){
@@ -410,6 +448,8 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   if(job.type==='move'){this.finishAction(u);if(this.turn==='red'&&u.actionLeft){const enemy=this.acquire(u);if(enemy)this.order(u,'attack',{targetId:enemy.id});}return;}
   if(job.type==='attack'){
    if(this.canFire(u,target)){this.animation={...job,route:[],shots:u.type==='machinegun'?3:1,shotClock:0,fired:0};return;}
+  }else if(job.type==='bombard'){
+   if(this.canBombard(u,job.cell)){u.moveLeft=0;u.facing=Math.atan2(job.cell.x-u.x,u.y-job.cell.y);this.animation={...job,route:[],shots:SALVO.missiles,shotClock:0,fired:0,launcherPhase:'raising'};return;}
   }else if(job.type==='repair'&&!AIR(target)&&target?.owner===u.owner&&DIST(u,target)<=1){const heal=Math.min(24,target.maxHp-target.hp);target.hp+=heal;this.event('text',target,{text:'+'+Math.round(heal),color:'#a4e7bb'});valid=true;
   }else if(job.type==='altitude'&&AIR(u)){valid=this.advanceAltitude(u,job.altitude,0);
   }else if(job.type==='service'&&this.serviceSite(u,target)){const heal=Math.min(24,u.maxHp-u.hp);u.hp+=heal;u.flares=Math.min(3,u.flares+1);this.event('text',u,{text:'+'+Math.round(heal)+' HP · manutenção',color:'#a4e7bb'});valid=true;
@@ -422,7 +462,9 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   const a=this.animation,u=this.get(a.id);if(!u){this.animation=null;return;}
   if(a.type==='altitude'){if(this.advanceAltitude(u,a.altitude,dt))this.finishAction(u);return;}
   if(a.shots!==undefined){
-   a.shotClock-=dt;if(a.shotClock<=0){const target=this.get(a.targetId);if(a.shots>0&&this.canFire(u,target)){this.shoot(u,target);a.shots--;a.fired++;a.shotClock=.12;}else{if(!a.fired)u.actionLeft=true;this.finishAction(u);}}return;
+   if(a.launcherPhase==='raising'){if(!this.advanceLauncher(u,true,dt))return;a.launcherPhase='firing';}
+   if(a.launcherPhase==='lowering'){if(this.advanceLauncher(u,false,dt))this.finishAction(u);return;}
+   a.shotClock-=dt;if(a.shotClock<=0){const target=this.get(a.targetId);if(a.shots>0&&(a.cell?this.canBombard(u,a.cell):this.canFire(u,target))){if(a.cell)this.launch(u,a.cell);else this.shoot(u,target);a.shots--;a.fired++;a.shotClock=a.cell?SALVO.interval:.12;if(a.cell&&!a.shots)a.launcherPhase='lowering';}else{if(!a.fired)u.actionLeft=true;if(a.cell)a.launcherPhase='lowering';else this.finishAction(u);}}return;
   }
   if(!u.segment){
    if(!a.route.length){this.resolveAction(a,u);return;}
@@ -460,7 +502,9 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   const seen=this.all().filter(e=>e.owner==='blue'&&e.hp>0&&this.isVisible('red',e));
   const skies=Math.min(3,seen.filter(AIR).length),armor=Math.min(4,seen.filter(e=>TYPES[e.type].vehicle&&!AIR(e)).length),foot=Math.min(6,seen.filter(e=>!TYPES[e.type].vehicle&&!TYPES[e.type].structure&&!AIR(e)).length);
   const threatened=seen.some(e=>!TYPES[e.type].structure&&DIST(e,hq)<=6);
-  const boost={antiAirVehicle:1.5*skies,missileInfantry:1.5*skies,helicopterAir:skies,antitank:.75*armor,helicopterGround:1.5*armor,heavyTank:.5*armor,machinegun:.4*foot};
+  // Drone: um para reconhecimento; artilharia de mísseis quando já conhece estrutura azul (dano ×2).
+  const boost={antiAirVehicle:1.5*skies,missileInfantry:1.5*skies,helicopterAir:skies,antitank:.75*armor,helicopterGround:1.5*armor,heavyTank:.5*armor,machinegun:.4*foot,
+   reconDrone:count('reconDrone')?0:.5,rocketArtillery:[...this.memory.red.values()].some(s=>s.owner==='blue')?.5:0};
   const norm=DOCTRINE.reduce((a,d)=>a+d.share,0),size=Math.max(8,army.length+hq.queue.length),clock=this.mode==='rts'?this.time/30:this.round;
   const ranked=DOCTRINE.map((d,i)=>({type:d.type,i,share:d.share,score:Math.max(d.min||0,SCHEDULE[d.type]&&clock>=SCHEDULE[d.type]?1:0,Math.round(d.share/norm*size))-count(d.type)+(boost[d.type]||0)})).sort((x,y)=>y.score-x.score||x.i-y.i);
   // Poupa pelo tipo de maior déficit até poder pagá-lo: o caro entra quando junta o dinheiro, e não é trocado pelas baratas.
@@ -513,12 +557,28 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   const far=this.presumedHQ(hq),legs=[{x:COLS>>1,y:ROWS>>1},{x:Math.round(hq.x+(far.x-hq.x)*2/3),y:Math.round(hq.y+(far.y-hq.y)*2/3)}];
   u.scoutLeg??=0;if(DIST(u,legs[u.scoutLeg%2])<=2)u.scoutLeg++;return this.moveToward(u,legs[u.scoutLeg%2],2);
  }
+ // Drone da IA: com artilharia de mísseis, observa 8 casas à frente dela rumo ao objetivo; sem ela, patrulha como o batedor.
+ droneAct(u,hq){
+  if(u.hp/u.maxHp<.5)return this.moveToward(u,this.plan.rally,2);
+  const rocket=this.units.find(v=>v.owner===u.owner&&v.type==='rocketArtillery');if(!rocket)return this.scout(u,hq);
+  const goal=this.plan.objective||this.presumedHQ(hq),k=Math.min(1,8/Math.max(1,DIST(rocket,goal)));
+  return this.moveToward(u,{x:Math.round(rocket.x+(goal.x-rocket.x)*k),y:Math.round(rocket.y+(goal.y-rocket.y)*k)},1);
+ }
+ /* Casas para bombardear: só o que a IA viu (intel) ou lembra (estruturas), nunca a posição real de tropas ocultas.
+    Valor da área 3×3 (vizinhas valem metade, estruturas o dobro); descarta áreas com tropa ou estrutura própria. */
+ bombardTargets(u){
+  const known=[...[...this.intel.values()].filter(e=>!AIR(e)).map(e=>({x:e.x,y:e.y,value:this.power(e)})),...[...this.memory[u.owner].values()].filter(s=>s.owner!==u.owner&&s.owner!=='neutral').map(s=>({x:s.x,y:s.y,value:2*(s.type==='hq'?300:120)}))];
+  const near=(a,b)=>Math.abs(a.x-b.x)<=1&&Math.abs(a.y-b.y)<=1,own=this.all().filter(v=>v.owner===u.owner&&v.hp>0&&!AIR(v));
+  return known.filter(c=>!own.some(v=>near(TILE(v),c))).map(c=>({x:c.x,y:c.y,score:known.filter(k=>near(k,c)).reduce((a,k)=>a+k.value*(k.x===c.x&&k.y===c.y?1:.5),0)-DIST(u,c)})).sort((a,b)=>b.score-a.score).slice(0,5);
+ }
  aiAct(u){
   this.aiDecisions++;const hq=this.hq('red');if(!hq)return;
   const p=this.plan,home=p.rally||(p.rally=this.rallyPoint(hq)),byDist=(a,b)=>DIST(a,u)-DIST(b,u),far=this.presumedHQ(hq);
   const army=this.units.filter(v=>v.owner==='red'),foes=this.all().filter(e=>e.owner==='blue'&&this.isVisible('red',e)),posts=this.structures.filter(s=>s.owner==='red'&&s.type==='post');
   // Ameaças: inimigos a até 6 casas do QG ou a até 3 de um posto vermelho.
   const threats=foes.filter(e=>!TYPES[e.type].structure&&(DIST(e,hq)<=6||posts.some(s=>DIST(e,s)<=3))),wave=p.phase==='attack'&&p.wave.includes(u.id);this.aiState=threats.length?'defend':p.phase;
+  if(u.type==='reconDrone'){if(!this.droneAct(u,hq))this.hold(u);return;}
+  if(u.type==='rocketArtillery'&&(this.mode==='rts'?u.cooldown<=0:u.actionLeft))for(const c of this.bombardTargets(u))if(this.order(u,'bombard',c))return;
   if(AIR(u)){
    if(u.hp/u.maxHp<=.5||u.flares===0){
     if(u.altitude==='high'&&this.order(u,'altitude',{altitude:'low'}))return;
@@ -557,12 +617,13 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   this.hold(u);
  }
  finishRTS(u){
-  this.cancelAltitude(u);this.cancelWork(u);u.job=null;u.path=[];u.pending=!!u.segment;u.idle=0;u.order={type:'stop'};
+  this.cancelAltitude(u);this.cancelWork(u);u.job=null;u.path=[];u.pending=!!u.segment||u.launcherLevel>0;u.idle=0;u.order={type:'stop'};
  }
  routeRTS(u){
   const job=u.job,target=this.get(job.targetId);let route;
   if(job.type==='move')route=this.findPath(u,job.goal,true);
   else if(job.type==='build')route=[];
+  else if(job.type==='bombard')route=this.pathToRange(u,job.cell,TYPES[u.type].range,TYPES[u.type].min);
   else route=this.pathToRange(u,target||job.goal,job.type==='attack'?this.range(u,target):1,job.type==='attack'?TYPES[u.type].min:0);
   job.route=route||[];u.path=job.route.slice();u.navWait=.4;
  }
@@ -577,6 +638,9 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
    else{u.x+=dx/d*step;u.y+=dy/d*step;}return;
   }
   const job=u.job;
+  // Recolhe antes de cumprir outra ordem; progresso próprio não reinicia ao receber dano.
+  const preparing=job?.type==='bombard'&&this.canBombard(u,job.cell)&&(job.left!==undefined||u.cooldown<=0);
+  if(u.launcherLevel>0&&!preparing){if(this.advanceLauncher(u,false,dt))u.pending=!!job;return;}
   if(!job){
    const enemy=u.cooldown<=0?this.acquire(u):null;
    if(enemy){u.idle=0;u.entrenched=false;this.shoot(u,enemy);}
@@ -595,7 +659,13 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
    if(!valid){this.finishRTS(u);return;}
   }
   if(job.type==='demine'&&!this.mines.some(m=>m.x===job.goal.x&&m.y===job.goal.y)){this.finishRTS(u);return;}
-  const inRange=job.type==='attack'?this.canFire(u,target):job.type==='build'||job.type!=='move'&&DIST(u,target||job.goal)<=1;
+  // Salva no RTS: parada, espera a recarga e lança os quatro mísseis; nova ordem interrompe os que faltam.
+  if(job.type==='bombard'&&this.canBombard(u,job.cell)){
+   job.route=[];u.path=[];if(job.left===undefined){if(u.cooldown>0)return;u.facing=Math.atan2(job.cell.x-u.x,u.y-job.cell.y);if(!this.advanceLauncher(u,true,dt))return;job.left=SALVO.missiles;job.clock=0;}
+   job.clock-=dt;if(job.clock<=0){this.launch(u,job.cell);job.left--;job.clock+=SALVO.interval;}
+   if(job.left<=0)this.finishRTS(u);return;
+  }
+  const inRange=job.type==='bombard'?false:job.type==='attack'?this.canFire(u,target):job.type==='build'||job.type!=='move'&&DIST(u,target||job.goal)<=1;
   if(inRange){
    job.route=[];u.path=[];
    if(job.type==='attack'){if(u.cooldown<=0)this.shoot(u,target);return;}
@@ -639,7 +709,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
    p.elapsed=Math.min(p.duration,p.elapsed+dt);
    const liveTarget=this.get(p.targetId);if(p.weapon==='antiAirVehicle'&&(!liveTarget||!this.isVisible(p.owner,liveTarget)))p.lostGuidance=true;
    if(liveTarget&&!p.lostGuidance){p.targetLevel=AIR(liveTarget)?flightLevel(liveTarget):0;if(MISSILE(p.weapon)){p.tx=liveTarget.x;p.ty=liveTarget.y;}}
-   const previousLevel=p.visualLevel??p.sourceLevel??0;p.visualLevel=(p.sourceLevel||0)+((p.targetLevel||0)-(p.sourceLevel||0))*p.elapsed/p.duration;
+   const previousLevel=p.visualLevel??p.sourceLevel??0;p.visualLevel=p.weapon==='rocket'?Math.sin(Math.PI*p.elapsed/p.duration)*3:(p.sourceLevel||0)+((p.targetLevel||0)-(p.sourceLevel||0))*p.elapsed/p.duration;
    if(MISSILE(p.weapon)){
     const t=p.elapsed/p.duration,dx=(p.deflected?p.decoy.x:p.tx)-p.x,dy=(p.deflected?p.decoy.y:p.ty)-p.y;
     // Interpolação pelo tempo restante garante impacto no prazo mesmo quando o alvo se move.

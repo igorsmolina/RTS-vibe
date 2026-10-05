@@ -1,6 +1,6 @@
 ﻿# Terrenos ilustrados naturais
 
-As 11 peças foram geradas com a ferramenta integrada **ImageGen**, em vista ortográfica de cima, luz suave do canto superior esquerdo e paleta moderada. `prompts.json` registra a especificação de cada peça; `source/redesign/` guarda as fontes em alta resolução. As fontes e imagens anteriores permanecem em `source/` como registro.
+As 11 peças foram geradas com a ferramenta integrada **ImageGen**, em vista ortográfica de cima, luz suave do canto superior esquerdo e paleta moderada. `prompts.json` registra a especificação de cada peça; `source/redesign/` guarda as fontes em alta resolução.
 
 | Peça | Camada e uso |
 |---|---|
@@ -34,4 +34,4 @@ Os bancos de margem agora são materiais de solo completos; não são mais faixa
 - `npm run test:browser`: controles, câmera, mapas, texturas, fallback e funcionamento offline.
 - `npm run test:terrain`: grade/persistência, composição determinística, alpha, água sem margens internas, névoa e armazenamento bloqueado.
 
-A revisão visual usa cenários com células isoladas, regiões densas, diagonais, três terrenos juntos e pontes horizontais/verticais; inclui zoom 0,35×/1×/1,5× e celular. Resultados e imagens em `../../docs/terrain/`.
+A revisão visual usa cenários com células isoladas, regiões densas, diagonais, três terrenos juntos e pontes horizontais/verticais; inclui zoom 0,35×/1×/1,5× e celular.
