@@ -1,3 +1,4 @@
 node_modules/
 package-lock.json
-docs/tanks/balance-results.json
+test-output/
+tmp/

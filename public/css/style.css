@@ -47,6 +47,7 @@ header{height:auto;min-height:52px;flex-wrap:wrap;gap:8px 20px;padding:4px 0}hea
 .hud-row .hud{position:relative;inset:auto}
 .hud-row .hud-left{width:auto;flex:0 1 330px;min-width:0}
 .hud-row .hud-right{margin-left:auto;flex:none}
+.radar-panel{flex:0 0 176px;width:176px;pointer-events:none!important}.radar-panel[hidden]{display:none}.radar-panel.collapsed{flex:0 0 auto;width:auto}.radar-panel button{display:block;width:100%;min-height:26px;padding:3px 7px;font-size:10px;color:#7bef9d;pointer-events:auto}.radar-panel button::after{content:' −'}.radar-panel.collapsed button::after{content:' +'}.radar-panel canvas{display:block;width:176px;height:176px}.radar-panel small{display:block;text-align:center;font-size:9px;color:#a0dbae;padding-top:3px}.radar-panel [hidden]{display:none}
 .command-bar{position:relative;flex:1 1 auto;min-width:0;max-width:880px;margin:0 auto;background:#17303cf2;border:1px solid #7c9093;border-radius:9px;box-shadow:0 10px 32px #0009;padding:6px 8px}
 .command-bar[hidden]{display:none}
 .bar-head{display:flex;align-items:center;gap:8px;min-width:0}
@@ -64,6 +65,7 @@ header{height:auto;min-height:52px;flex-wrap:wrap;gap:8px 20px;padding:4px 0}hea
 .bar-row .weapons{display:flex;gap:4px;margin:0;padding-left:6px;border-left:1px solid var(--line)}
 .bar-row .weapons[hidden]{display:none}
 .bar-row .weapons button{min-height:28px;padding:3px 8px}
+#radarControls{align-items:center;flex-wrap:wrap}#radarCount{color:#9bdfac;white-space:nowrap}
 .command-bar .recruits{display:flex;flex-wrap:wrap;gap:3px}
 .command-bar .recruit{width:42px;min-height:42px;padding:2px;gap:0}
 .command-bar .recruit span{display:none}
@@ -76,6 +78,7 @@ header{height:auto;min-height:52px;flex-wrap:wrap;gap:8px 20px;padding:4px 0}hea
 .bar-details p{font-size:11px;color:var(--muted);margin-bottom:4px}
 .bar-details .unit-stats{font-size:10.5px;line-height:1.5;max-height:none}
 @media(max-width:950px){.hud-row{flex-wrap:wrap}.command-bar{order:-1;flex:1 1 100%;max-width:none}}
+@media(max-width:950px){.radar-panel{flex-basis:112px;width:112px}.radar-panel canvas{width:112px;height:112px}.hud-row:has(.radar-panel:not([hidden])) .hud-left{flex:1 1 160px}.radar-panel.collapsed{flex-basis:auto;width:auto}}
 @media(max-width:600px){.hud-row:has(.command-bar:not([hidden])) .hud{display:none}.bar-head #selectionCount{display:none}.hud-row{left:6px;right:6px;bottom:6px;gap:6px}.hud-row .hud-left{flex:1 1 0}.bar-head .health{flex-basis:50px}.bar-row .action{padding:3px 6px;font-size:10px}}
 
 /* Campanha: mapa-múndi com painel da região. */
@@ -118,3 +121,27 @@ dialog.title-screen::backdrop{background:#0b1820}
 .settings-grid .check input{width:18px;height:18px}
 .title-btn.primary{color:var(--ink)}
 .title-btn[hidden]{display:none}
+/* Em telas baixas, o radar e os comandos dividem a faixa; listas longas continuam acessíveis por rolagem. */
+@media(max-height:500px){header{min-height:0;padding:2px 0;gap:4px 10px}.brand{width:auto}.brand small,header .brief p{display:none}header .brief h2{font-size:14px}.resources strong{font-size:15px}.resources small{font-size:8px}.battle-top{padding-block:4px}#clock{display:inline;margin:0 0 0 6px}.battle-bottom{min-height:28px;padding-block:4px}}
+@media(max-height:500px) and (max-width:950px){.hud-row:has(.radar-panel:not([hidden])){flex-wrap:nowrap}.hud-row:has(.radar-panel:not([hidden])) .command-bar{order:0;flex:1 1 auto;max-height:var(--radar-field-height);overflow-y:auto}.hud-row:has(.radar-panel:not([hidden])) .bar-details{position:static;width:auto;max-height:none;margin-bottom:6px}.hud-row:has(.radar-panel:not([hidden])):has(.command-bar:not([hidden])) .hud{display:none}}
+@media(max-height:500px){.radar-panel{flex-basis:112px;width:112px}.radar-panel canvas{width:112px;height:112px}}
+.hud-row.radar-tight:has(.radar-panel:not([hidden])) .command-bar{max-height:var(--radar-command-height);overflow-y:auto}.hud-row.radar-tight:has(.radar-panel:not([hidden])) .bar-details{position:static;width:auto;max-height:none;margin-bottom:6px}
+/* Perfil e conquistas */
+.profile-dialog{width:min(760px,calc(100vw - 24px))}
+.profile-dialog [hidden]{display:none!important}
+.profile-dialog h3{font-size:14px;margin:18px 0 6px}
+.profile-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.profile-tabs [aria-selected=true]{border-color:var(--gold);background:#365a69}
+.profile-note{color:var(--muted);margin-bottom:10px;white-space:pre-line}
+.achievement-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;max-height:52dvh;overflow:auto}
+.achievement-list li{display:grid;gap:3px;padding:9px 11px;border:1px solid var(--line);border-radius:6px;background:#17303c}
+.achievement-list li.done{border-color:var(--gold)}.achievement-list li.done b{color:var(--gold)}
+.achievement-list li.locked{opacity:.6}.achievement-list small{color:var(--muted)}
+.stat-list{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;margin:0}.stat-list dt{color:var(--muted)}.stat-list dd{margin:0}
+.history-wrap{max-height:52dvh;overflow:auto}
+.history{width:100%;border-collapse:collapse;font-size:12px}.history th,.history td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line)}
+.history tr.win td:nth-child(5){color:var(--blue)}.history tr.loss td:nth-child(5){color:var(--red)}
+.file-button{position:relative;display:inline-flex;align-items:center;padding:8px 11px;min-height:36px;background:#253f4d;border:1px solid #4c636d;border-radius:5px;cursor:pointer}
+.file-button input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.file-button:focus-within{outline:2px solid var(--gold)}
+#accountSignedIn span{margin-right:auto;align-self:center}

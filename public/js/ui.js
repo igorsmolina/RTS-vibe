@@ -28,28 +28,30 @@ class Sound{
 }
 
 const $=id=>document.getElementById(id),CELL=56,TEAM={blue:'#77c8e2',red:'#ee9986',neutral:'#e0c992'};
-const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches,audio=new Sound();
+const motionPreference=matchMedia('(prefers-reduced-motion: reduce)'),audio=new Sound();let reducedMotion=motionPreference.matches;
 let game=new Game(),selection=new Set(),groups=Array.from({length:5},()=>[]),paused=true,started=false,speed=1,mode=null,hover=null,drag=null,marker=null,resultShown=false,addMode=false,panTool=false,pointer=null,pan=null;
 let lastFrame=performance.now(),uiClock=0,lastLog=null;
 /* Configurações do jogador, salvas neste navegador (com try/catch: sem armazenamento, valem só na sessão). */
-const SETTINGS_KEY='wargrid.settings.v1',SETTING_DEFAULTS={sound:true,grid:false,speed:1,fullscreen:true,difficulty:'normal',mode:'turns'};
+const SETTINGS_KEY='wargrid.settings.v1',SETTING_DEFAULTS={sound:true,grid:false,speed:1,fullscreen:true,difficulty:'normal',mode:'turns',graphics:'balanced'};
 let settings={...SETTING_DEFAULTS};try{Object.assign(settings,JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}'));}catch{}
-function saveSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));}catch{}}
+if(!Object.hasOwn(GRAPHICS,settings.graphics))settings.graphics='balanced';
+function saveSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));}catch{}if(typeof touchProfile==='function')touchProfile('settings');}
 function changeSetting(key,value){settings[key]=value;saveSettings();}
 let showGrid=settings.grid===true;speed=[.25,.5,1,2].includes(settings.speed)?settings.speed:1;
-let logOpen=false,detailsOpen=false;try{logOpen=localStorage.getItem('wargrid.log.v1')==='true';}catch{}
+let logOpen=false,detailsOpen=false,radarCollapsed=null;try{logOpen=localStorage.getItem('wargrid.log.v1')==='true';}catch{}
 const renderer=new Renderer();
+motionPreference.addEventListener('change',e=>{reducedMotion=e.matches;renderer.ambientParticles=[];renderer.dirty=true;});
 function selectedUnits(){return [...selection].map(id=>game.get(id)).filter(u=>u&&u.owner==='blue'&&!TYPES[u.type].structure);}
 function menusClosed(){return !document.querySelector('dialog[open]');}
 function canCommand(){return started&&!game.winner&&(game.mode==='rts'||game.turn==='blue'&&!game.busy)&&menusClosed();}
 function playable(){return started&&!game.winner&&!paused&&menusClosed();}
 function say(text){$('hint').textContent=text;}
 function timeLabel(value){return game.mode==='rts'?Math.floor(value/60).toString().padStart(2,'0')+':'+Math.floor(value%60).toString().padStart(2,'0'):'Rodada '+value;}
-function entitiesAt(p){const visible=u=>u.owner==='blue'||game.isVisible('blue',u),near=game.units.filter(u=>visible(u)&&Math.hypot(u.x-p.x,u.y-p.y)<.55);return [...near.filter(AIR),...near.filter(u=>!AIR(u)),...game.structures.filter(u=>visible(u)&&Math.max(Math.abs(u.x-p.x),Math.abs(u.y-p.y))<.6)];}
+function entitiesAt(p){const visible=u=>u.owner==='blue'||game.isVisible('blue',u),near=game.units.filter(u=>{const pose=flightPose(u);return visible(u)&&(Math.hypot(u.x-p.x,u.y-p.y)<.55||AIR(u)&&Math.hypot(pose.x-p.x,pose.y-p.y)<.55*pose.scale);});return [...near.filter(AIR),...near.filter(u=>!AIR(u)),...game.structures.filter(u=>visible(u)&&Math.max(Math.abs(u.x-p.x),Math.abs(u.y-p.y))<.6)];}
 function entityAt(p){return entitiesAt(p)[0];}
 function weaponLabel(w){return w==='auto'?'Auto':WEAPONS[w].name;}
 function setSelection(ids,add=false){if(!add)selection.clear();for(const id of ids)if(game.get(id))selection.add(id);mode=null;updateUI();}
-function orderName(u){return u.pending?{move:'Em deslocamento',attack:'Atacando',repair:'Reparando',service:'Em manutenção',altitude:'Mudando altitude ('+Math.max(0,2-u.work).toFixed(1)+' s)',capture:'Capturando',build:'Construindo',demine:'Desarmando'}[u.order.type]||'Executando ordem':u.entrenched?'Entrincheirada':game.mode==='rts'?'Pronta · fogo automático':u.actionLeft?'Ação disponível':'Ação usada';}
+function orderName(u){return u.pending?{move:'Em deslocamento',attack:'Atacando',repair:'Reparando',service:'Em manutenção',altitude:(u.order.altitude==='high'?'SUBINDO':'DESCENDO')+' ('+Math.max(0,ALTITUDE_TIME-(u.altitudeTransition?.returning?0:u.altitudeTransition?.elapsed||0)).toFixed(1)+' s)',capture:'Capturando',build:'Construindo',demine:'Desarmando'}[u.order.type]||'Executando ordem':u.entrenched?'Entrincheirada':game.mode==='rts'?'Pronta · fogo automático':u.actionLeft?'Ação disponível':'Ação usada';}
 function flightStatus(u){return `\nAltitude: ${u.altitude==='high'?'ALTA':'Baixa'} · Flares: ${u.flares}/3 · ${game.flareReady(u)?'prontos':u.flares===0?'sem estoque':game.mode==='rts'?'recarga '+u.flareCooldown.toFixed(1).replace('.',',')+' s':'recarga até o próximo turno próprio'}`;}
 /* Escritas no DOM só quando o valor muda: evita recálculo de estilo e layout a cada atualização do painel. */
 function setText(id,value){const e=$(id);value=String(value);if(e.textContent!==value)e.textContent=value;}
@@ -76,13 +78,14 @@ function updateUI(){
    setText('unitName',items.length>1?`Grupo de ${items.length} tropas`:TYPES[u.type].name);
    setText('unitRole',items.length>1?[...new Set(items.map(v=>TYPES[v.type].name))].join(', '):rts&&u.type==='engineer'?'Reparo +24 HP por segundo':TYPES[u.type].role||'Estrutura de apoio');
    const t=TYPES[u.type],flight=t.air?flightStatus(u)+'\nArma: '+weaponLabel(u.weaponMode)+' · '+t.weapons.map(w=>WEAPONS[w].name+' '+WEAPONS[w].range+' casas, '+WEAPONS[w].cooldown+' s').join(' · ')+(rts?' · '+(u.cooldown>0?'recarga '+u.cooldown.toFixed(1).replace('.',',')+' s':'pronto'):''):'';
-   const rangeText=u.type==='missileInfantry'?'solo 1 / ar 3':u.type==='antiAirVehicle'?'somente ar 6':t.min+'–'+game.range(u);
-   setText('unitInfo',items.length>1?'Integridade '+Math.ceil(total)+' / '+max+' HP\n'+(rts?units.filter(v=>v.pending).length+' tropas executando ordens':units.filter(v=>v.actionLeft).length+' ações disponíveis · '+units.filter(v=>v.moveLeft>0).length+' tropas com movimento')+units.filter(AIR).map(v=>'\n'+TYPES[v.type].name+flightStatus(v)).join(''):Math.ceil(u.hp)+' / '+u.maxHp+' HP · '+(t.air?'Em voo sobre '+TERRAIN[game.terrainAt(u)].name.toLowerCase():TERRAIN[game.terrainAt(u)].name+' · '+Math.round(game.cover(u)*100)+'% defesa')+'\n'+(t.structure?(u.type==='hq'?'Treinamento serial · até 5 tropas':rts?'Renda +8 / 10 s':'Renda +8 por turno'):(rts?'Velocidade '+String(t.speed).replace('.',',')+' casas/s':'Movimento '+u.moveLeft+' / '+t.move)+' · Alcance '+rangeText+'\n'+'★'.repeat(u.level)+' '+orderName(u)+(game.hasAura(u)?' · Aura ativa':'')+(u.suppressed>0?' · Suprimida (−25 pontos de precisão)':'')+(!t.air&&CONCEAL.has(game.terrainAt(u))&&!(u.revealed>0)?' · Oculta na '+TERRAIN[game.terrainAt(u)].name.toLowerCase():'')+flight));
+   const rangeText=u.type==='missileInfantry'?'solo 1 / ar 3':u.type==='antiAirVehicle'?': ilimitado — somente aeronaves':t.min+'–'+game.range(u);
+   setText('unitInfo',items.length>1?'Integridade '+Math.ceil(total)+' / '+max+' HP\n'+(rts?units.filter(v=>v.pending).length+' tropas executando ordens':units.filter(v=>v.actionLeft).length+' ações disponíveis · '+units.filter(v=>v.moveLeft>0).length+' tropas com movimento')+units.filter(AIR).map(v=>'\n'+TYPES[v.type].name+flightStatus(v)).join(''):Math.ceil(u.hp)+' / '+u.maxHp+' HP · '+(t.air?(game.sky.blue[KEY(TILE(u).x,TILE(u).y)]?'Em voo sobre '+TERRAIN[game.terrainAt(u)].name.toLowerCase():'Em voo · terreno não observado'):TERRAIN[game.terrainAt(u)].name+' · '+Math.round(game.cover(u)*100)+'% defesa')+'\n'+(t.structure?(u.type==='hq'?'Treinamento serial · até 5 tropas':rts?'Renda +8 / 10 s':'Renda +8 por turno'):(rts?'Velocidade '+String(t.speed).replace('.',',')+' casas/s':'Movimento '+u.moveLeft+' / '+t.move)+' · Alcance'+(u.type==='antiAirVehicle'?'':' ')+rangeText+'\n'+'★'.repeat(u.level)+' '+orderName(u)+(game.hasAura(u)?' · Aura ativa':'')+(u.suppressed>0?' · Suprimida (−25 pontos de precisão)':'')+(!t.air&&CONCEAL.has(game.terrainAt(u))&&!(u.revealed>0)?' · Oculta na '+TERRAIN[game.terrainAt(u)].name.toLowerCase():'')+flight));
   }else{setText('unitName','Nenhuma unidade');setText('unitRole','Clique ou arraste no campo.');setText('unitInfo',rts?'Botão direito: ordem. Pausar congela o combate para dar ordens.':'Botão direito: ordem. Encerrar turno passa a vez à IA.');setWidth('healthBar',0);}
   const can=canCommand()&&units.length>0;setProp('move','disabled',!can||!rts&&!units.some(u=>u.moveLeft>0&&(u.type!=='artillery'||u.actionLeft||u.moved)));setProp('attackMove','disabled',!can||!rts&&!units.some(u=>u.actionLeft));setProp('stop','disabled',!can||!rts&&!units.some(u=>u.moveLeft>0||u.actionLeft));
   const noEngineer=!can||!units.some(u=>u.type==='engineer'&&(rts||u.actionLeft));setProp('repair','disabled',noEngineer);setProp('demine','disabled',noEngineer);setProp('build','disabled',!can||!units.some(u=>game.canBuild(u)));
   for(const id of ['move','attackMove','repair','demine','service'])setAttr(id,'aria-pressed',String(mode===(id==='attackMove'?'attack':id)));setText('modeLabel',mode?{move:'Escolha o destino',attack:'Escolha um inimigo',repair:'Escolha um aliado terrestre',service:'Escolha QG/posto aliado próximo',demine:'Escolha uma mina'}[mode]:'Contextual');
   const flying=units.filter(AIR);setProp('flightControls','hidden',!flying.length);
+  const radars=units.filter(v=>v.type==='antiAirVehicle'),radarEnabled=started&&!game.winner&&(rts||game.turn==='blue')&&menusClosed(),radarState=radars.every(v=>v.radarOn)?'ligado':radars.some(v=>v.radarOn)?'misto':'desligado';setProp('radarControls','hidden',!radars.length);setText('radarToggle','Radar: '+radarState);setAttr('radarToggle','aria-pressed',radarState==='misto'?'mixed':String(radarState==='ligado'));setProp('radarToggle','disabled',!radarEnabled);setText('radarCount','Contatos da equipe: '+game.radarContacts.blue.size);
   for(const [id,altitude]of [['altitudeLow','low'],['altitudeHigh','high']]){setProp(id,'disabled',!can||!flying.some(v=>v.altitude!==altitude&&(rts||v.actionLeft)));setAttr(id,'aria-pressed',String(!!flying.length&&flying.every(v=>v.altitude===altitude)));}
   setProp('service','disabled',!can||!flying.some(v=>(rts||v.actionLeft)&&game.structures.some(b=>game.canService(v,b))));
   const armed=units.filter(v=>TYPES[v.type].weapons?.length>1),current=armed[0]?.weaponMode,missiles=[...new Set(armed.map(v=>TYPES[v.type].weapons[1]))];setProp('weapons','hidden',!armed.length);
@@ -94,8 +97,8 @@ function updateUI(){
   for(let i=0;i<5;i++){$('group'+i).classList.toggle('filled',groups[i].length>0);setProp('group'+i,'title',`Grupo ${i+1}: ${groups[i].length} tropas. Clique seleciona; botão direito atribui.`);}
   if(game.logs[0]!==lastLog){lastLog=game.logs[0];$('log').replaceChildren(...game.logs.map(e=>{const div=document.createElement('div');div.className='log-line';const time=document.createElement('small');time.textContent=timeLabel(e.time);div.append(time,document.createTextNode(e.text));return div;}));setText('logLast',game.logs[0]?.text||'');}
   setAttr('logToggle','aria-expanded',String(logOpen));setProp('log','hidden',!logOpen);
-  renderer.drawMini();
-  if(game.winner&&!resultShown){resultShown=true;paused=true;audio.play(game.winner==='blue'?'victory':'defeat');$('resultTitle').textContent=game.winner==='blue'?'Vitória da Nação Azul':game.winner==='draw'?'Cessar-fogo':'Operação perdida';$('resultText').textContent=`Operação encerrada ${rts?'aos '+timeLabel(game.time):'na rodada '+game.round}. ${game.winner==='blue'?'O comando inimigo foi neutralizado.':'Reorganize suas forças e tente uma nova operação.'}`;$('backToWorld').hidden=!(typeof campaignBattle!=='undefined'&&campaignBattle);$('result').showModal();}
+  renderer.drawMini();renderer.drawRadar();
+  if(game.winner&&!resultShown){resultShown=true;paused=true;audio.play(game.winner==='blue'?'victory':'defeat');$('resultTitle').textContent=game.winner==='blue'?'Vitória da Nação Azul':game.winner==='draw'?'Cessar-fogo':'Operação perdida';$('resultText').textContent=`Operação encerrada ${rts?'aos '+timeLabel(game.time):'na rodada '+game.round}. ${game.winner==='blue'?'O comando inimigo foi neutralizado.':'Reorganize suas forças e tente uma nova operação.'}`;$('backToWorld').hidden=!(typeof campaignBattle!=='undefined'&&campaignBattle);$('resultText').textContent+=recordResult();$('result').showModal();}
 }
 function issueAt(p,forced=mode){
  if(!canCommand()){say(game.mode==='rts'?'Feche o menu para emitir ordens.':'Aguarde o seu turno e a conclusão da ordem atual.');return;}const units=selectedUnits();if(!units.length){say('Selecione suas tropas primeiro.');return;}
@@ -121,7 +124,7 @@ renderer.canvas.addEventListener('pointermove',e=>{const r=renderer.canvas.getBo
 renderer.canvas.addEventListener('pointerup',e=>{
  if(pan?.id===e.pointerId){const p=pan;pan=null;if(!p.left||Math.hypot(e.clientX-p.sx,e.clientY-p.sy)>=5)return;drag={id:e.pointerId,active:false,shift:e.shiftKey||addMode};}
  if(!drag||drag.id!==e.pointerId)return;const box=drag;drag=null;if(renderer.canvas.hasPointerCapture(e.pointerId))renderer.canvas.releasePointerCapture(e.pointerId);
- if(box.active){const x1=Math.min(box.start.x,box.end.x),x2=Math.max(box.start.x,box.end.x),y1=Math.min(box.start.y,box.end.y),y2=Math.max(box.start.y,box.end.y);setSelection(game.units.filter(u=>u.owner==='blue'&&u.x>=x1&&u.x<=x2&&u.y>=y1&&u.y<=y2).map(u=>u.id),box.shift);say(`${selectedUnits().length} tropas selecionadas.`);}
+ if(box.active){const x1=Math.min(box.start.x,box.end.x),x2=Math.max(box.start.x,box.end.x),y1=Math.min(box.start.y,box.end.y),y2=Math.max(box.start.y,box.end.y),inside=p=>p.x>=x1&&p.x<=x2&&p.y>=y1&&p.y<=y2;setSelection(game.units.filter(u=>u.owner==='blue'&&(inside(u)||AIR(u)&&inside(flightPose(u)))).map(u=>u.id),box.shift);say(`${selectedUnits().length} tropas selecionadas.`);}
  else{const list=entitiesAt(pointerPosition(e)),at=list.findIndex(v=>selection.has(v.id)),u=list.length>1&&selection.size===1&&at>=0?list[(at+1)%list.length]:list[0];
   if(box.shift&&u?.owner==='blue'){if(selection.has(u.id))selection.delete(u.id);else selection.add(u.id);updateUI();}else setSelection(u?[u.id]:[]);
   if(u&&list.length>1)say(`${TYPES[u.type].name} selecionado (${list.indexOf(u)+1}/${list.length} nesta casa). Clique de novo para alternar.`);}
@@ -135,7 +138,7 @@ function miniPan(e){if(e.buttons!==1||mode)return;const p=pointerPosition(e,$('m
 $('minimap').addEventListener('pointerdown',e=>{if(e.button!==0)return;if(mode){issueAt(pointerPosition(e,$('minimap')));return;}$('minimap').setPointerCapture(e.pointerId);miniPan(e);});$('minimap').addEventListener('pointermove',miniPan);
 function setMode(next){if(!canCommand()||!selectedUnits().length)return;if(mode===(next==='attackMove'?'attack':next)){mode=null;updateUI();say('Ordem cancelada.');return;}mode=next==='attackMove'?'attack':next;updateUI();say(next==='service'?'Clique no QG ou posto aliado na mesma casa ou ao lado do helicóptero parado em baixa altitude.':next==='repair'?(game.mode==='rts'?'Clique em um aliado terrestre para reparar até 24 HP por segundo.':'Clique em um aliado terrestre para reparar até 24 HP com uma ação.'):next==='demine'?'Clique em uma mina detectada.':'Clique no destino ou use o botão direito.');}
 for(const id of ['move','attackMove','repair','demine','service'])$(id).addEventListener('click',()=>setMode(id));
-for(const [id,altitude]of [['altitudeLow','low'],['altitudeHigh','high']])$(id).addEventListener('click',()=>{if(!canCommand())return;const n=game.command(selectedUnits().filter(AIR).map(u=>u.id),'altitude',{altitude});mode=null;updateUI();say(n?`${n} helicóptero(s): altitude ${altitude==='high'?'alta':'baixa'} ${game.mode==='rts'?'em 2 s parado; S cancela.':'com uma ação.'}${paused?' Ordem preparada durante a pausa.':''}`:'Altitude indisponível.');});
+for(const [id,altitude]of [['altitudeLow','low'],['altitudeHigh','high']])$(id).addEventListener('click',()=>{if(!canCommand())return;const n=game.command(selectedUnits().filter(AIR).map(u=>u.id),'altitude',{altitude});mode=null;updateUI();say(n?`${n} helicóptero(s): altitude ${altitude==='high'?'alta':'baixa'} em ${ALTITUDE_TIME} s ${game.mode==='rts'?'parado; S cancela.':'com uma ação.'}${paused?' Ordem preparada durante a pausa.':''}`:'Altitude indisponível.');});
 function stopSelected(){if(!canCommand())return;game.command(selectedUnits().map(u=>u.id),'stop');mode=null;updateUI();say(game.mode==='rts'?'Ordem cancelada. As tropas param ao chegar à próxima casa.':'Tropas aguardando. Movimento e ação encerrados; trincheira ativa.');}
 $('stop').addEventListener('click',stopSelected);
 // Botão direito sobre a barra emite a ordem no ponto do mapa por baixo; com uma ordem escolhida, clicar fora dos botões também.
@@ -153,6 +156,8 @@ for(const type of ['infantry','recon','engineer','artillery','lightTank','tank',
 function togglePause(){if(!started||game.winner||!menusClosed())return;paused=!paused;mode=null;drag=null;lastFrame=performance.now();updateUI();say(game.mode==='rts'?(paused?'Pausa tática. Selecione tropas e emita ordens; P retoma o combate.':'Combate retomado. Tropas e IA agem ao mesmo tempo.'):(paused?'Animações pausadas. P para continuar.':'Animações retomadas. Planeje sem pressa no seu turno.'));}
 function endPlayerTurn(){if(!canCommand()||!game.endTurn())return;paused=false;mode=null;drag=null;lastFrame=performance.now();updateUI();say('Turno da IA. Aguarde a próxima rodada.');}
 $('endTurn').addEventListener('click',endPlayerTurn);
+$('radarCollapse').addEventListener('click',()=>{radarCollapsed=!radarCollapsed;renderer.drawRadar();clampCamera();renderer.drawMini();});
+$('radarToggle').addEventListener('click',()=>{if(!started||game.winner||!menusClosed()||game.mode!=='rts'&&game.turn!=='blue')return;const units=selectedUnits().filter(u=>u.type==='antiAirVehicle'),on=units.some(u=>!u.radarOn);for(const u of units)game.setRadar(u,on);updateUI();say(`Radar ${on?'ligado':'desligado'} em ${units.length} antiaérea(s). Contatos da equipe: ${game.radarContacts.blue.size}.`);});
 function toggleGrid(){showGrid=!showGrid;changeSetting('grid',showGrid);renderer.dirty=true;updateUI();}
 $('grid').addEventListener('click',toggleGrid);
 $('pause').addEventListener('click',togglePause);$('speed').addEventListener('click',()=>{const speeds=[.25,.5,1,2];speed=speeds[(speeds.indexOf(speed)+1)%speeds.length];updateUI();});
@@ -170,7 +175,7 @@ function closeMenu(id){$(id).close();syncPause();}
 function closeChild(id){$(id).close();if(backTo){backTo=null;openTitle();}else syncPause();}
 function leaveTitleFor(fn){if($('titleScreen').open){$('titleScreen').close();backTo='titleScreen';}fn();}
 function openTitle(){backTo=null;if(!$('titleScreen').open)openMenu('titleScreen');refreshTitle();$('titlePlay').focus();}
-function refreshTitle(){paintTitle();$('titleResume').hidden=!started;const info=campaignSummary();const label=$('titleCampaign').querySelector('span');label.textContent=info?'Continuar campanha':'Campanha';$('titleCampaignInfo').textContent=info||'Mapa-múndi gerado por semente';}
+function refreshTitle(){paintTitle();$('titleResume').hidden=!started;const info=campaignSummary();const label=$('titleCampaign').querySelector('span');label.textContent=info?'Continuar campanha':'Campanha';$('titleCampaignInfo').textContent=info||'Mapa-múndi gerado por semente';$('titleProfileInfo').textContent=profileSummary();}
 // Fundo do menu: um campo gerado ao acaso, em movimento lento (CSS), sem afetar a partida atual.
 function paintTitle(){const maps=Object.keys(MAPS);drawPreview($('titleBg'),new Game(maps[Math.floor(Math.random()*maps.length)],'normal',Math.floor(Math.random()*4294967294)+1,'turns'));}
 function setupDescription(){$('setupDescription').textContent=$('modeSelect').value==='rts'?'Tropas e IA agem ao mesmo tempo. Pressione P ou Pausar para congelar o combate, selecionar tropas e preparar ordens. Continue para executá-las.':'Você joga primeiro. Cada tropa tem movimento limitado e uma ação por turno. A IA só age quando você encerra o turno. Planeje sem limite de tempo.';}
@@ -181,7 +186,7 @@ function rerollSeed(){$('seed').value=Math.floor(Math.random()*4294967294)+1;set
 for(const id of ['mapSelect','seed','genWater','genForest','genRelief','genFarmland','genPosts'])$(id).addEventListener('input',setupPreview);$('reroll').addEventListener('click',rerollSeed);
 function openSetup(){if($('result').open)$('result').close();$('mapSelect').value=game.map;// Primeira operação usa as configurações padrão; depois, repete o modo e a dificuldade da partida anterior.
 $('difficulty').value=started?game.difficulty:settings.difficulty;$('modeSelect').value=started?game.mode:settings.mode;setupDescription();rerollSeed();openMenu('setup');}
-function newOperation(map,difficulty,seed,battleMode='turns',options){game=new Game(map,difficulty,seed,battleMode,options);selection=new Set();groups=Array.from({length:5},()=>[]);paused=false;started=true;overlaid=false;backTo=null;speed=settings.speed;mode=null;drag=null;hover=null;marker=null;resultShown=false;lastLog=null;lastFrame=performance.now();if($('result').open)$('result').close();renderer.rebuild();const hq=game.hq('blue');centerCamera(hq.x,hq.y);updateUI();say(game.mode==='rts'?'Combate em tempo real. Pausar congela o combate para selecionar tropas e preparar ordens.':'Seu turno: selecione, mova e ataque. Encerrar turno passa a vez à IA.');}
+function newOperation(map,difficulty,seed,battleMode='turns',options){game=new Game(map,difficulty,seed,battleMode,options);selection=new Set();groups=Array.from({length:5},()=>[]);radarCollapsed=null;paused=false;started=true;overlaid=false;backTo=null;speed=settings.speed;mode=null;drag=null;hover=null;marker=null;resultShown=false;lastLog=null;lastFrame=performance.now();if($('result').open)$('result').close();renderer.rebuild();const hq=game.hq('blue');centerCamera(hq.x,hq.y);updateUI();say(game.mode==='rts'?'Combate em tempo real. Pausar congela o combate para selecionar tropas e preparar ordens.':'Seu turno: selecione, mova e ataque. Encerrar turno passa a vez à IA.');}
 $('newGame').addEventListener('click',openSetup);$('playAgain').addEventListener('click',openSetup);$('cancelSetup').addEventListener('click',()=>closeChild('setup'));
 $('help').addEventListener('click',()=>openMenu('manual'));$('closeHelp').addEventListener('click',()=>closeChild('manual'));
 for(const id of ['setup','manual','settings'])$(id).addEventListener('cancel',e=>{e.preventDefault();closeChild(id);});
@@ -189,6 +194,7 @@ $('review').addEventListener('click',()=>{$('result').close();updateUI();});
 $('setupForm').addEventListener('submit',e=>{e.preventDefault();if(!$('setupForm').reportValidity())return;audio.unlock();const seed=$('seed').value?Number($('seed').value):Math.floor(Math.random()*4294967294)+1;$('setup').close();if(settings.fullscreen&&!document.fullscreenElement)toggleFullscreen();newOperation($('mapSelect').value,$('difficulty').value,seed,$('modeSelect').value,setupOptions());});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&started&&!game.winner){paused=true;if(overlaid)pausedBefore=true;drag=null;mode=null;updateUI();say('Operação pausada ao sair da aba. Continue quando estiver pronto.');}lastFrame=performance.now();});
 document.addEventListener('keydown',e=>{
+ if(e.target.tagName==='BUTTON'&&(e.key==='Enter'||e.key===' '))return;
  if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName)||document.querySelector('dialog[open]'))return;const key=e.key.toLowerCase();
  if(/^[1-5]$/.test(key)){e.preventDefault();groupAction(Number(key)-1,e.ctrlKey||e.metaKey);return;}
  if(key==='p'||key===' '&&e.target===renderer.canvas){e.preventDefault();togglePause();return;}if(key==='escape'){mode=null;drag=null;selection.clear();updateUI();return;}
@@ -229,7 +235,7 @@ $('menuButton').addEventListener('click',()=>{if(started)openTitle();});
 $('titleScreen').addEventListener('cancel',e=>{e.preventDefault();if(started)closeChild('titleScreen');});
 $('titleScreen').addEventListener('keydown',e=>{if(e.key!=='ArrowDown'&&e.key!=='ArrowUp')return;const items=[...document.querySelectorAll('.title-menu button')].filter(b=>!b.hidden);const i=items.indexOf(document.activeElement);e.preventDefault();items[(i+(e.key==='ArrowDown'?1:-1)+items.length)%items.length].focus();});
 // Configurações: cada alteração vale na hora e fica salva.
-function fillSettings(){$('setSound').checked=audio.enabled;$('setGrid').checked=showGrid;$('setFullscreen').checked=settings.fullscreen;$('setSpeed').value=String(settings.speed);$('setDifficulty').value=settings.difficulty;$('setMode').value=settings.mode;}
+function fillSettings(){$('setSound').checked=audio.enabled;$('setGrid').checked=showGrid;$('setFullscreen').checked=settings.fullscreen;$('setSpeed').value=String(settings.speed);$('setDifficulty').value=settings.difficulty;$('setMode').value=settings.mode;$('setGraphics').value=settings.graphics;}
 function applySettings(){audio.enabled=settings.sound!==false;if(audio.master)audio.master.gain.value=audio.enabled?.14:0;$('sound').textContent=audio.enabled?'Som ligado':'Som desligado';$('sound').setAttribute('aria-pressed',String(audio.enabled));showGrid=settings.grid===true;fillSettings();}
 function openSettings(){fillSettings();openMenu('settings');}
 $('setSound').addEventListener('change',()=>{audio.enabled=$('setSound').checked;if(audio.master)audio.master.gain.value=audio.enabled?.14:0;audio.unlock();$('sound').textContent=audio.enabled?'Som ligado':'Som desligado';$('sound').setAttribute('aria-pressed',String(audio.enabled));changeSetting('sound',audio.enabled);});
@@ -238,6 +244,8 @@ $('setFullscreen').addEventListener('change',()=>changeSetting('fullscreen',$('s
 $('setSpeed').addEventListener('change',()=>changeSetting('speed',Number($('setSpeed').value)));
 $('setDifficulty').addEventListener('change',()=>changeSetting('difficulty',$('setDifficulty').value));
 $('setMode').addEventListener('change',()=>changeSetting('mode',$('setMode').value));
+ambientClouds.forEach((image,i)=>{image.onload=()=>{const s=document.createElement('canvas');s.width=image.width;s.height=image.height;const c=s.getContext('2d');c.drawImage(image,0,0);c.globalCompositeOperation='source-in';c.fillStyle='#071c2c';c.fillRect(0,0,s.width,s.height);cloudShadows[i]=s;renderer.dirty=true;};image.onerror=()=>{cloudShadows[i]=null;renderer.dirty=true;};image.src=ambientCloudData[i];});
+$('setGraphics').addEventListener('change',()=>{changeSetting('graphics',$('setGraphics').value);renderer.dirty=true;say('Perfil gráfico aplicado: '+$('setGraphics').selectedOptions[0].textContent+'.');});
 $('settingsReset').addEventListener('click',()=>{settings={...SETTING_DEFAULTS};saveSettings();applySettings();});
 $('settingsBack').addEventListener('click',()=>closeChild('settings'));
 applySettings();

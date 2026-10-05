@@ -1,7 +1,7 @@
-// Mapa-múndi e regras da campanha (js/world.js) no motor real, sem navegador: node tests/world.test.cjs
+// Mapa-múndi e regras da campanha (public/js/world.js) no motor real, sem navegador: node tests/world.test.cjs
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
-const ctx=vm.createContext({console}),load=f=>fs.readFileSync(path.join(__dirname,'..','js',f),'utf8');
+const ctx=vm.createContext({console}),load=f=>fs.readFileSync(path.join(__dirname,'..','public','js',f),'utf8');
 vm.runInContext(load('engine.js')+'\n'+load('world.js')+'\nObject.assign(this,{Game,MAPS,BIOMES,generateWorld,newCampaign,canAttack,battleFor,applyResult,campaignOver,serializeCampaign,deserializeCampaign});',ctx);
 const {Game,MAPS,BIOMES,generateWorld,newCampaign,canAttack,battleFor,applyResult,campaignOver,serializeCampaign,deserializeCampaign}=ctx;
 let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}

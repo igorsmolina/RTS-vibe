@@ -1,6 +1,6 @@
 // Comparação reproduzível usando ordens e combate do motor real, sem alterar atributos.
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
-const ctx=vm.createContext({console});vm.runInContext(fs.readFileSync(path.join(__dirname,'..','js','engine.js'),'utf8')+'\nthis.Game=Game;this.TYPES=TYPES;this.DIST=DIST;',ctx);const {Game,TYPES,DIST}=ctx;
+const ctx=vm.createContext({console});vm.runInContext(fs.readFileSync(path.join(__dirname,'..','public','js','engine.js'),'utf8')+'\nthis.Game=Game;this.TYPES=TYPES;this.DIST=DIST;',ctx);const {Game,TYPES,DIST}=ctx;
 const scenarios=[
  ['leve × médio',['lightTank'],['tank']],['leve × pesado',['lightTank'],['heavyTank']],['médio × pesado',['tank'],['heavyTank']],
  ['3 leves × 2 médios',Array(3).fill('lightTank'),Array(2).fill('tank')],
@@ -32,4 +32,4 @@ for(const mode of ['turns','rts'])for(const [name,left,right]of scenarios){
  for(let seed=1;seed<=50;seed++)for(const swapped of [false,true]){const result=battle(mode,seed,left,right,swapped);entry[result.winner==='left'?'winsLeft':result.winner==='right'?'winsRight':'draws']++;entry.battles.push({seed,swapped,...result});}
  assert.equal(entry.winsLeft+entry.winsRight+entry.draws,100);report.results.push(entry);console.log(`${mode}: ${name} (${entry.costLeft}/${entry.costRight} créditos): ${entry.winsLeft}/${entry.winsRight}, ${entry.draws} empates`);
 }
-const dir=path.join(__dirname,'..','docs','tanks');fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'balance-results.json'),JSON.stringify(report,null,2)+'\n');
+const dir=path.join(__dirname,'..','test-output','tanks');fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'balance-results.json'),JSON.stringify(report,null,2)+'\n');

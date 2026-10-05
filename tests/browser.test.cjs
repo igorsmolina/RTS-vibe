@@ -7,7 +7,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  {
  const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[],requests=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});await page.context().setOffline(true);
- await page.goto(pathToFileURL(path.join(__dirname,'..','index.html')).href);assert.equal(await page.title(),'War Grid — Fronteiras');assert.equal(await page.locator('#titleScreen').evaluate(e=>e.open),true,'Abre no menu inicial');await page.locator('#titlePlay').click();assert.equal(await page.locator('#setup').evaluate(e=>e.open),true);
+ await page.goto(pathToFileURL(path.join(__dirname,'..','public','index.html')).href);assert.equal(await page.title(),'War Grid — Fronteiras');assert.equal(await page.locator('#titleScreen').evaluate(e=>e.open),true,'Abre no menu inicial');await page.locator('#titlePlay').click();assert.equal(await page.locator('#setup').evaluate(e=>e.open),true);
  assert.equal(await page.locator('#modeSelect option[value="rts"]').count(),1,'A configuração deve oferecer RTS com pausa tática');
  assert.equal(await page.evaluate(()=>typeof troopAtlas!=='undefined'),true,'A arte das tropas deve ser carregada');
  await page.waitForFunction(()=>troopAtlas.complete&&troopAtlas.naturalWidth>0&&tankAtlas.complete&&tankAtlas.naturalWidth>0);
@@ -65,7 +65,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  // --- mouse, câmera e gerador
  {
  const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto(pathToFileURL(path.join(__dirname,'..','index.html')).href);await page.locator('#titlePlay').click();
+ await page.goto(pathToFileURL(path.join(__dirname,'..','public','index.html')).href);await page.locator('#titlePlay').click();
  // Gerador: controles visíveis só no mapa procedural; a prévia acompanha os parâmetros e "Gerar outro" troca a semente.
  assert.equal(await page.locator('#procedural').isHidden(),true);await page.locator('#mapSelect').selectOption('random');assert.equal(await page.locator('#procedural').isVisible(),true);
  const shot=()=>page.locator('#preview').evaluate(c=>c.toDataURL());const before=await shot();await page.locator('#genWater').fill('100');const wet=await shot();assert.notEqual(wet,before);
@@ -97,7 +97,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  }
  // --- tanques
  {
- const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});await page.context().setOffline(true);await page.goto(pathToFileURL(path.join(root,'index.html')).href);await page.evaluate(()=>terrainReady);await page.waitForFunction(()=>tankAtlas.complete&&tankAtlas.naturalWidth===384);
+ const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});await page.context().setOffline(true);await page.goto(pathToFileURL(path.join(root,'public','index.html')).href);await page.evaluate(()=>terrainReady);await page.waitForFunction(()=>tankAtlas.complete&&tankAtlas.naturalWidth===384);
  assert.equal(await page.evaluate(()=>tankAtlas.naturalHeight),256);
  const files=['light-blue','light-red','medium-blue','medium-red','heavy-blue','heavy-red'];
  for(const name of files){const input='data:image/png;base64,'+fs.readFileSync(path.join(root,'assets','Tanques',name+'.png')).toString('base64');const pixels=await page.evaluate(async src=>{const i=new Image();i.src=src;await i.decode();const c=document.createElement('canvas');c.width=c.height=128;const p=c.getContext('2d');p.drawImage(i,0,0);const d=p.getImageData(0,0,128,128).data;let clear=0,solid=0;for(let k=3;k<d.length;k+=4){if(d[k]===0)clear++;if(d[k]>=250)solid++;}return{width:i.width,height:i.height,clear,solid,corners:[d[3],d[127*4+3],d[127*128*4+3],d[d.length-1]]};},input);assert.equal(pixels.width,128);assert.equal(pixels.height,128);assert.ok(pixels.clear>5000&&pixels.solid>3000,name);assert.deepEqual(pixels.corners,[0,0,0,0]);}
@@ -123,7 +123,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  {
  const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[],requests=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});await page.context().setOffline(true);
- await page.goto(pathToFileURL(path.join(__dirname,'..','index.html')).href);
+ await page.goto(pathToFileURL(path.join(__dirname,'..','public','index.html')).href);
  assert.equal(await page.evaluate(()=>typeof terrainReady!=='undefined'),true,'Texturas devem ser carregadas');
  await page.evaluate(()=>terrainReady);assert.equal(await page.evaluate(()=>Object.values(terrainImages).every(i=>i.naturalWidth===128&&i.naturalHeight===128)),true);
  const roads=await page.evaluate(()=>Array.from({length:16},(_,mask)=>{const tile=roadOverlay(mask),c=tile.getContext('2d');return{mask,alpha:[[28,0],[55,28],[28,55],[0,28]].map(([x,y])=>c.getImageData(x,y,1,1).data[3]),corner:c.getImageData(0,0,1,1).data[3],cached:roadOverlay(mask)===tile};}));
@@ -164,7 +164,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  // --- helicópteros ---
  {
  const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});await page.context().setOffline(true);
- await page.goto(pathToFileURL(path.join(root,'index.html')).href);await page.locator('#titlePlay').click();await page.getByRole('button',{name:'Iniciar operação'}).click();await page.waitForFunction(()=>heliAtlas.complete&&heliAtlas.naturalWidth===384);assert.equal(await page.evaluate(()=>heliAtlas.naturalHeight),256);
+ await page.goto(pathToFileURL(path.join(root,'public','index.html')).href);await page.locator('#titlePlay').click();await page.getByRole('button',{name:'Iniciar operação'}).click();await page.waitForFunction(()=>heliAtlas.complete&&heliAtlas.naturalWidth===384);assert.equal(await page.evaluate(()=>heliAtlas.naturalHeight),256);
  const helis=['helicopter','helicopterGround','helicopterAir'],draw=()=>page.evaluate(helis=>['blue','red'].flatMap(owner=>helis.map(type=>{const c=document.createElement('canvas');c.width=c.height=96;const p=c.getContext('2d');unitIcon(p,type,48,48,TEAM[owner]);const normal=c.toDataURL(),alpha=p.getImageData(0,0,96,96).data.filter((v,i)=>i%4===3&&v>0).length;p.clearRect(0,0,96,96);unitIcon(p,type,48,48,TEAM[owner],1,Math.PI/2);const rotated=c.toDataURL();p.clearRect(0,0,96,96);unitIcon(p,type,48,48,TEAM[owner],1,0,0,true);return{normal,rotated,firing:c.toDataURL(),alpha};})),helis);
  const art=await draw();assert.equal(new Set(art.map(a=>a.normal)).size,6);for(const a of art){assert.ok(a.alpha>600);assert.notEqual(a.normal,a.rotated);assert.notEqual(a.normal,a.firing);}
  // Renderizar e carregar arte não consome o RNG da partida.
@@ -207,7 +207,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  // --- barra de comando ---
  {
  const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto(pathToFileURL(path.join(root,'index.html')).href);await page.locator('#titlePlay').click();await page.getByRole('button',{name:'Iniciar operação'}).click();await page.mouse.move(1,1);
+ await page.goto(pathToFileURL(path.join(root,'public','index.html')).href);await page.locator('#titlePlay').click();await page.getByRole('button',{name:'Iniciar operação'}).click();await page.mouse.move(1,1);
  assert.equal(await page.locator('#balloon').count(),0,'Sem balões');assert.equal(await page.locator('#commandBar').isHidden(),true,'Sem seleção, sem barra');
  const fix=await page.evaluate(()=>{newOperation('desert','normal',19);paused=true;game.aiEnabled=false;game.terrain.fill('plain');renderer.rebuild();const t=game.units.find(u=>u.owner==='blue'&&u.type==='tank');t.x=12;t.y=12;game.updateVision();centerCamera(12,12);return t.id;});
  const unitAt=()=>page.evaluate(id=>{const u=game.get(id),r=renderer.canvas.getBoundingClientRect();return{x:r.left+((u.x+.5)*CELL-cam.x)*cam.zoom,y:r.top+((u.y+.5)*CELL-cam.y)*cam.zoom};},fix);
@@ -240,7 +240,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  // --- campanha no mapa-múndi ---
  {
  const context=await browser.newContext({viewport:{width:1440,height:900}});await context.setOffline(true);const page=await context.newPage(),errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});
- await page.goto(pathToFileURL(path.join(root,'index.html')).href);await page.evaluate(()=>terrainReady);
+ await page.goto(pathToFileURL(path.join(root,'public','index.html')).href);await page.evaluate(()=>terrainReady);
  await page.locator('#titleCampaign').click();assert.equal(await page.locator('#campaign').evaluate(e=>e.open),true);assert.equal(await page.locator('#titleScreen').evaluate(e=>e.open),false);
  assert.match(await page.locator('#campaignStats').textContent(),/^1 suas · 1 inimigas/);
  const land=await page.evaluate(()=>{const c=document.querySelector('#worldMap'),d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let n=0;for(let i=0;i<d.length;i+=4)if(d[i+1]>d[i+2])n++;return n/(d.length/4);});assert.ok(land>.15,'Terra desenhada: '+land);
@@ -260,14 +260,14 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  assert.deepEqual(errors,[]);assert.deepEqual(requests,[]);console.log('OK campanha: mapa-múndi, ataque só na fronteira, batalha pela região, vitória pinta de azul e progresso salvo');
  await context.close();
  const denied=await browser.newContext();await denied.addInitScript(()=>{Storage.prototype.getItem=Storage.prototype.setItem=()=>{throw new Error('Storage blocked');};});const blocked=await denied.newPage(),deniedErrors=[];blocked.on('pageerror',e=>deniedErrors.push(e.message));
- await blocked.goto(pathToFileURL(path.join(root,'index.html')).href);await blocked.locator('#titleCampaign').click();assert.equal(await blocked.locator('#campaign').evaluate(e=>e.open),true);await blocked.locator('#newCampaign').click();
+ await blocked.goto(pathToFileURL(path.join(root,'public','index.html')).href);await blocked.locator('#titleCampaign').click();assert.equal(await blocked.locator('#campaign').evaluate(e=>e.open),true);await blocked.locator('#newCampaign').click();
  assert.deepEqual(deniedErrors,[]);console.log('OK campanha sem armazenamento: funciona na sessão, sem erros');await denied.close();
  }
  // --- menu inicial e configurações ---
  {
  const context=await browser.newContext({viewport:{width:1440,height:900}});await context.setOffline(true);const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  const open=id=>page.evaluate(id=>document.querySelector('#'+id).open,id);
- await page.goto(pathToFileURL(path.join(root,'index.html')).href);await page.evaluate(()=>terrainReady);
+ await page.goto(pathToFileURL(path.join(root,'public','index.html')).href);await page.evaluate(()=>terrainReady);
  assert.equal(await open('titleScreen'),true,'Abre no menu inicial');assert.equal(await page.locator('#titleResume').isHidden(),true,'Continuar só com partida');
  await page.locator('#titlePlay').click();assert.equal(await open('setup'),true);assert.equal(await open('titleScreen'),false);
  await page.locator('#cancelSetup').click();assert.equal(await open('titleScreen'),true,'Voltar leva ao título');
@@ -284,6 +284,40 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  await page.keyboard.press('ArrowDown');assert.notEqual(await page.evaluate(()=>document.activeElement.id),'titlePlay','Setas movem o foco');
  await page.locator('#titlePlay').click();await page.getByRole('button',{name:'Iniciar operação'}).click();await page.waitForTimeout(150);await page.locator('#menuButton').click();await page.keyboard.press('Escape');assert.equal(await open('titleScreen'),false,'Esc com partida fecha o menu');assert.equal(await page.evaluate(()=>paused),false,'Retoma a pausa anterior');
  assert.deepEqual(errors,[]);console.log('OK menu inicial e configurações: fluxo de voltar, pausa pelo Menu, persistência e atalhos');
+ await context.close();
+ }
+ // --- perfil, conquistas, backup em arquivo e sincronização (cliente Neon falso, sem rede)
+ {
+ const context=await browser.newContext({viewport:{width:1440,height:900},acceptDownloads:true});await context.setOffline(true);const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const open=id=>page.evaluate(id=>document.querySelector('#'+id).open,id);
+ await page.goto(pathToFileURL(path.join(root,'public','index.html')).href);await page.evaluate(()=>terrainReady);
+ assert.match(await page.locator('#titleProfileInfo').textContent(),/^0\/15 conquistas/);
+ await page.locator('#titlePlay').click();await page.getByRole('button',{name:'Iniciar operação'}).click();
+ await page.evaluate(()=>{game.stats.blue.kills.helicopter=2;game.winner='blue';});await page.waitForFunction(()=>document.querySelector('#result').open);
+ assert.match(await page.locator('#resultText').textContent(),/Conquista desbloqueada: .*Primeira vitória/);
+ await page.locator('#review').click();await page.locator('#menuButton').click();await page.locator('#titleProfile').click();assert.equal(await open('profile'),true);
+ assert.match(await page.locator('#achievementCount').textContent(),/^\d+ de 15$/);assert.equal(await page.locator('#achievementList li.done').first().locator('b').textContent(),'Primeira vitória');
+ await page.getByRole('tab',{name:'Histórico'}).click();assert.equal(await page.locator('#historyBody tr').count(),1);assert.match(await page.locator('#historyBody tr').textContent(),/Vitória.*2 \/ 0/);
+ await page.getByRole('tab',{name:'Estatísticas'}).click();assert.match(await page.locator('#statList').textContent(),/Aeronaves abatidas2/);
+ await page.getByRole('tab',{name:'Conta e save'}).click();assert.match(await page.locator('#accountStatus').textContent(),/file:\/\/|não configurada/);assert.equal(await page.locator('#accountForm').isVisible(),false,'Por file://, sem formulário de login');
+ const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#exportSave').click()]);const saved=JSON.parse(fs.readFileSync(await download.path(),'utf8'));
+ assert.equal(saved.version,1);assert.equal(saved.profile.stats.wins,1);assert.ok(saved.profile.achievements.firstWin);
+ await page.locator('#closeProfile').click();assert.equal(await open('titleScreen'),true,'Voltar leva ao título');
+ // Outro navegador: sem nada salvo, importa o arquivo e recupera o progresso.
+ await page.evaluate(()=>localStorage.clear());await page.reload();await page.evaluate(()=>terrainReady);assert.match(await page.locator('#titleProfileInfo').textContent(),/^0\/15/);
+ await page.locator('#titleProfile').click();await page.getByRole('tab',{name:'Conta e save'}).click();
+ await page.locator('#importSave').setInputFiles({name:'bad.json',mimeType:'application/json',buffer:Buffer.from('{"version":9}')});assert.match(await page.locator('#accountStatus').textContent(),/inválido/);
+ await page.locator('#importSave').setInputFiles(await download.path());await page.waitForFunction(()=>profile.stats.wins===1);assert.match(await page.locator('#accountStatus').textContent(),/Save importado: 1 vitória/);
+ await page.locator('#closeProfile').click();assert.match(await page.locator('#titleProfileInfo').textContent(),/^[1-9]\d*\/15/,'Título mostra o progresso importado');
+ // Nuvem: offline fica pendente; ao voltar a conexão, baixa, mescla e envia.
+ await page.evaluate(()=>{window.fakeStore={row:{data:{version:1,profile:{...newProfile(),achievements:{hardWin:5}},campaign:null,settings:{}}}};
+  cloud.client={auth:{signOut:async()=>({})},from:()=>({select:()=>({eq:()=>({maybeSingle:async()=>({data:fakeStore.row,error:null})})}),upsert:async row=>{fakeStore.row={data:JSON.parse(JSON.stringify(row.data))};fakeStore.user=row.user_id;return {error:null};}})};
+  cloud.user={id:'u1',email:'piloto@exemplo.com'};});
+ await page.evaluate(()=>cloudSync());assert.equal(await page.evaluate(()=>cloud.pending),true,'Offline: pendente');
+ await context.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));await page.waitForFunction(()=>!cloud.pending&&!cloud.busy&&cloud.at>0);
+ const store=await page.evaluate(()=>fakeStore);assert.equal(store.user,'u1');assert.ok(store.row.data.profile.achievements.hardWin&&store.row.data.profile.achievements.firstWin,'Nuvem recebe a união');
+ assert.equal(await page.evaluate(()=>!!profile.achievements.hardWin),true,'Conquista da nuvem chega ao navegador');assert.match(await page.locator('#titleProfileInfo').textContent(),/na nuvem/);
+ assert.deepEqual(errors,[]);console.log('OK perfil: conquistas no resultado, estatísticas, histórico, exportar/importar e sincronização com a nuvem');
  await context.close();
  }
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

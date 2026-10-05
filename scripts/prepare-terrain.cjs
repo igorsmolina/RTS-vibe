@@ -1,4 +1,4 @@
-// Otimiza as imagens preparadas com ImageGen e sincroniza a cópia em js/assets.js.
+// Otimiza as imagens preparadas com ImageGen e sincroniza a cópia em public/js/assets.js.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright-core');
 const root=path.join(__dirname,'..'),dir=path.join(root,'assets','terrain');
@@ -14,7 +14,7 @@ const root=path.join(__dirname,'..'),dir=path.join(root,'assets','terrain');
   },{name,input});
   assert.ok(output.startsWith('data:image/png;base64,'));data[name]=output;fs.writeFileSync(path.join(dir,name+'.png'),Buffer.from(output.split(',')[1],'base64'));
  }
- const file=path.join(root,'js','assets.js'),js=fs.readFileSync(file,'utf8'),block='// TERRAIN_ASSETS_BEGIN\nconst terrainData='+JSON.stringify(data)+';\n// TERRAIN_ASSETS_END';
+ const file=path.join(root,'public','js','assets.js'),js=fs.readFileSync(file,'utf8'),block='// TERRAIN_ASSETS_BEGIN\nconst terrainData='+JSON.stringify(data)+';\n// TERRAIN_ASSETS_END';
  assert.ok(js.includes('// TERRAIN_ASSETS_BEGIN'),'Missing terrain asset markers');
- fs.writeFileSync(file,js.replace(/\/\/ TERRAIN_ASSETS_BEGIN[\s\S]*?\/\/ TERRAIN_ASSETS_END/,block));console.log('OK '+Object.keys(data).length+' texturas 128x128 otimizadas e copiadas para js/assets.js');
+ fs.writeFileSync(file,js.replace(/\/\/ TERRAIN_ASSETS_BEGIN[\s\S]*?\/\/ TERRAIN_ASSETS_END/,block));console.log('OK '+Object.keys(data).length+' texturas 128x128 otimizadas e copiadas para public/js/assets.js');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

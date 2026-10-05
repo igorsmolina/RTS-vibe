@@ -3,7 +3,7 @@
 const CAMPAIGN_KEY='wargrid.campaign.v1',OWNER_TINT={blue:[64,150,210],red:[220,92,78]},OWNER_LABEL={blue:'sua',red:'inimiga',neutral:'neutra'};
 let campaign=null,campaignBattle=null,worldView=null,hoverRegion=-1,selectedRegion=-1,confirmNew=0;
 const randomSeed=()=>Math.floor(Math.random()*4294967294)+1,hexColor=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16));
-function saveCampaign(){try{localStorage.setItem(CAMPAIGN_KEY,serializeCampaign(campaign));}catch{}}
+function saveCampaign(){try{localStorage.setItem(CAMPAIGN_KEY,serializeCampaign(campaign));}catch{}touchProfile('campaign');}
 function loadCampaign(){try{const text=localStorage.getItem(CAMPAIGN_KEY);return text?deserializeCampaign(text):null;}catch{return null;}}
 // Base em pixels (oceano por profundidade, biomas, costas e fronteiras): refeita só quando o mundo muda.
 function paintWorld(){
@@ -88,7 +88,7 @@ $('attackRegion').addEventListener('click',()=>{
  newOperation(battle.map,battle.difficulty,battle.seed,battle.mode,battle.options);game.title=battle.title;campaignBattle={region};updateUI();
  say(`Campanha: batalha por ${campaign.world.regions[region].name}. Vença para conquistar a região.`);
 });
-$('backToWorld').addEventListener('click',()=>{if(!campaignBattle||!game.winner)return;applyResult(campaign,campaignBattle.region,game.winner==='blue');campaignBattle=null;saveCampaign();openCampaign();});
+$('backToWorld').addEventListener('click',()=>{if(!campaignBattle||!game.winner)return;const won=game.winner==='blue';applyResult(campaign,campaignBattle.region,won);campaignBattle=null;saveCampaign();recordCampaignResult(won);openCampaign();});
 // Uma batalha rápida abandona a batalha de campanha em andamento (sem resultado).
 $('setupForm').addEventListener('submit',()=>{if(campaignBattle){campaignBattle=null;campaign.current=null;saveCampaign();}},true);
 $('newCampaign').addEventListener('click',()=>{

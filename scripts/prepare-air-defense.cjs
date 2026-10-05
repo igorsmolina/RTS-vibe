@@ -18,7 +18,7 @@ const root=path.join(__dirname,'..'),dir=path.join(root,'assets','Antiaereas');
  assert.equal(result.tiles.length,5);
  for(const t of result.tiles)fs.writeFileSync(path.join(dir,t.name+'.png'),Buffer.from(t.data.split(',')[1],'base64'));
  fs.writeFileSync(path.join(dir,'anti-air-atlas.png'),Buffer.from(result.atlas.split(',')[1],'base64'));
- const cloud=result.tiles.find(t=>t.name==='clouds').data,file=path.join(root,'js','assets.js'),js=fs.readFileSync(file,'utf8'),block='// AIR_DEFENSE_ASSETS_BEGIN\nconst antiAirAtlasData='+JSON.stringify(result.atlas)+';\nconst highCloudData='+JSON.stringify(cloud)+';\n// AIR_DEFENSE_ASSETS_END';
+ const cloud=result.tiles.find(t=>t.name==='clouds').data,file=path.join(root,'public','js','assets.js'),js=fs.readFileSync(file,'utf8'),block='// AIR_DEFENSE_ASSETS_BEGIN\nconst antiAirAtlasData='+JSON.stringify(result.atlas)+';\nconst highCloudData='+JSON.stringify(cloud)+';\n// AIR_DEFENSE_ASSETS_END';
  fs.writeFileSync(file,js.includes('// AIR_DEFENSE_ASSETS_BEGIN')?js.replace(/\/\/ AIR_DEFENSE_ASSETS_BEGIN[\s\S]*?\/\/ AIR_DEFENSE_ASSETS_END/,block):js+'\n'+block+'\n');
  console.log('OK quatro sprites RGBA 128x128, atlas 2x2 e nuvens incorporados offline.');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

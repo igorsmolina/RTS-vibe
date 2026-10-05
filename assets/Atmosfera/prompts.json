@@ -1,0 +1,17 @@
+[
+  {
+    "name": "cloud-long",
+    "prompt": "Use case: stylized-concept. Asset type: translucent atmospheric cloud sprite for War Grid top-down hand-painted military strategy game. Orthographic overhead view of ONE isolated horizontal cloud formation, centered in a wide composition, wispy soft edges and scattered translucent tendrils. Off-white with faint cool gray interior shading. Readable when displayed across several 56px tiles, airy and unobtrusive. True transparent RGBA background, including semitransparent cloud edges. No blue sky, landscape, aircraft, text, checkerboard, borders, or cast shadow. Not a ring. Formation: long thin wind-stretched irregular bank, approximately 3:1 shape.",
+    "source": "sources/cloud-long.png"
+  },
+  {
+    "name": "cloud-soft",
+    "prompt": "Use case: stylized-concept. Asset type: translucent atmospheric cloud sprite for War Grid top-down hand-painted military strategy game. Orthographic overhead view of ONE isolated horizontal cloud formation, centered in a wide composition, wispy soft edges and scattered translucent tendrils. Off-white with faint cool gray interior shading. Readable when displayed across several 56px tiles, airy and unobtrusive. True transparent RGBA background, including semitransparent cloud edges. No blue sky, landscape, aircraft, text, checkerboard, borders, or cast shadow. Not a ring. Formation: loose cluster of rounded soft cloud puffs, approximately 2:1 shape, with transparent gaps.",
+    "source": "sources/cloud-soft.png"
+  },
+  {
+    "name": "cloud-wisps",
+    "prompt": "Use case: stylized-concept. Asset type: translucent atmospheric cloud sprite for War Grid top-down hand-painted military strategy game. Orthographic overhead view of ONE isolated horizontal cloud formation, centered in a wide composition, wispy soft edges and scattered translucent tendrils. Off-white with faint cool gray interior shading. Readable when displayed across several 56px tiles, airy and unobtrusive. True transparent RGBA background, including semitransparent cloud edges. No blue sky, landscape, aircraft, text, checkerboard, borders, or cast shadow. Not a ring. Formation: sparse delicate cirrus wisps, approximately 3:1 shape, most of the canvas transparent.",
+    "source": "sources/cloud-wisps.png"
+  }
+]

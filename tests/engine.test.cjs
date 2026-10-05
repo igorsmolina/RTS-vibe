@@ -1,7 +1,7 @@
-// Motor real de js/engine.js, sem navegador: turnos, RTS, tanques e gerador. node tests/engine.test.cjs
+// Motor real de public/js/engine.js, sem navegador: turnos, RTS, tanques e gerador. node tests/engine.test.cjs
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
-const ctx=vm.createContext({console});vm.runInContext(fs.readFileSync(path.join(__dirname,'..','js','engine.js'),'utf8')+'\nthis.Game=Game;this.TYPES=TYPES;this.COLS=COLS;this.ROWS=ROWS;this.KEY=KEY;this.DIST=DIST;this.TERRAIN=TERRAIN;this.MAPS=MAPS;',ctx);const {Game,TYPES,COLS,ROWS,KEY,DIST,TERRAIN,MAPS}=ctx;
+const ctx=vm.createContext({console});vm.runInContext(fs.readFileSync(path.join(__dirname,'..','public','js','engine.js'),'utf8')+'\nthis.Game=Game;this.TYPES=TYPES;this.COLS=COLS;this.ROWS=ROWS;this.KEY=KEY;this.DIST=DIST;this.TERRAIN=TERRAIN;this.MAPS=MAPS;',ctx);const {Game,TYPES,COLS,ROWS,KEY,DIST,TERRAIN,MAPS}=ctx;
 // --- engine ---
 {
 function field(){const g=new Game('river','normal',17);g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.aiEnabled=false;g.add('blue','hq',0,13);g.add('red','hq',17,0);g.add('blue','infantry',0,12);g.add('red','infantry',17,1);g.rng=()=>.2;g.updateVision();return g;}
