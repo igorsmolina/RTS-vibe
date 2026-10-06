@@ -4,6 +4,22 @@ const COLS=36,ROWS=28,SIZE=COLS*ROWS,STEP=1/30;
 const KEY=(x,y)=>y*COLS+x,INSIDE=(x,y)=>Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&y>=0&&x<COLS&&y<ROWS;
 const TILE=u=>({x:Math.round(u.x),y:Math.round(u.y)}),DIST=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 const DIRS=[[1,0],[-1,0],[0,1],[0,-1]],SIDE={blue:'Azul',red:'Vermelha',neutral:'Neutra'};
+const NATION_COLORS={blue:'#77c8e2',green:'#8acb91',gold:'#e0c067',violet:'#b79ae8'},NATION_SECONDARY={white:'#ffffff',black:'#182128',cream:'#f3e8c9'};
+const NATION_DEFAULTS=Object.freeze({name:'Azul',primary:'blue',secondary:'white',pattern:'plain',emblem:'none'});
+const NATION_DOCTRINES={
+ balanced:{name:'Equilibrada',text:'Sem modificadores',income:1,damage:1,hp:1},
+ economic:{name:'Econômica',text:'Renda +15% · dano −10%',income:1.15,damage:.9,hp:1},
+ offensive:{name:'Ofensiva',text:'Dano +10% · vida das tropas −10%',income:1,damage:1.1,hp:.9},
+ defensive:{name:'Defensiva',text:'Vida das tropas +15% · renda −10%',income:.9,damage:1,hp:1.15}
+};
+function cleanDoctrine(id){return typeof id==='string'&&Object.hasOwn(NATION_DOCTRINES,id)?id:'balanced';}
+function enemyDoctrine(seed){let n=Math.imul((seed>>>0)^0x9e3779b9,0x85ebca6b);n=Math.imul(n^(n>>>16),0xc2b2ae35);return Object.keys(NATION_DOCTRINES)[(n^(n>>>16))>>>0&3];}
+function cleanNation(value){
+ const n=value&&typeof value==='object'?value:{},out={...NATION_DEFAULTS};
+ if(typeof n.name==='string'&&n.name.trim())out.name=n.name.trim().slice(0,32);
+ for(const key of ['primary','secondary','pattern','emblem'])if((key==='primary'?Object.keys(NATION_COLORS):key==='secondary'?Object.keys(NATION_SECONDARY):key==='pattern'?['plain','horizontal','vertical']:['none','star','diamond','circle']).includes(n[key]))out[key]=n[key];
+ return out;
+}
 const TERRAIN={plain:{name:'Planície',cover:0,color:'#77816a'},field:{name:'Campo',cover:0,color:'#9b9a63'},hedge:{name:'Sebe',cover:.25,color:'#4f6a45'},hill:{name:'Colina',cover:.2,color:'#8f9470'},forest:{name:'Floresta',cover:.3,color:'#4b6654'},mountain:{name:'Montanha',cover:.5,color:'#868879'},river:{name:'Rio',cover:0,color:'#477986'},bridge:{name:'Ponte',cover:0,color:'#a69977'},road:{name:'Estrada',cover:0,color:'#b0a487'}};
 const PROCEDURAL={water:.35,forest:.35,relief:.35,farmland:.6,posts:8};
 /* Perfis dos campos de batalha: relevo (colinas), serra (montanha intransitável), água, floresta, campos e sebes.
@@ -72,7 +88,8 @@ const SCHEDULE={antiAirVehicle:4,helicopter:1,heavyTank:6,helicopterGround:10,he
 const DEFENSE=['infantry','machinegun','antitank','missileInfantry','antiAirVehicle','lightTank'];
 function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n/4294967296;};}
 ﻿class Game{
- constructor(map='river',difficulty='normal',seed=1,mode='turns',options={}){
+ constructor(map='river',difficulty='normal',seed=1,mode='turns',options={},doctrines={}){
+  this.doctrines=Object.freeze({blue:cleanDoctrine(doctrines?.blue),red:cleanDoctrine(doctrines?.red)});this.nationName=NATION_DEFAULTS.name;
   this.mode=mode==='rts'?'rts':'turns';this.economyClock=0;this.aiClock=0;this.visionClock=0;this.claims=new Set();
   this.map=MAPS[map]?map:'river';this.difficulty=Object.hasOwn(PLAN,difficulty)?difficulty:'normal';this.seed=seed>>>0;this.rng=seeded(seed);
   const o={...PROCEDURAL,...options},unit=v=>Math.max(0,Math.min(1,Number(v)||0));this.options={water:unit(o.water),forest:unit(o.forest),relief:unit(options.relief??options.mountain??PROCEDURAL.relief),farmland:unit(o.farmland),posts:Math.max(2,Math.min(12,Math.round(Number(o.posts)/2)*2||8))};
@@ -85,10 +102,15 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  all(){return [...this.units,...this.structures];}
  get(id){return this.units.find(u=>u.id===id)||this.structures.find(u=>u.id===id);}
  hq(owner){return this.structures.find(u=>u.owner===owner&&u.type==='hq');}
+ baseHp(owner,type){return Math.round(TYPES[type].hp*(TYPES[type].structure?1:NATION_DOCTRINES[this.doctrines[owner]||'balanced'].hp));}
+ nationLabel(owner){return owner==='blue'?this.nationName:SIDE[owner];}
+ producer(owner,base){return ['blue','red'].includes(owner)&&!!base&&base.hp>0&&base.owner===owner&&['hq','post'].includes(base.type)&&this.structures.includes(base);}
+ producers(owner){return this.structures.filter(s=>this.producer(owner,s));}
+ queueLimit(base){return base?.type==='post'?3:5;}
  add(owner,type,x,y){
   const t=TYPES[type];if(!t||!INSIDE(x,y)||!['blue','red','neutral'].includes(owner))return null;
   const u={id:this.nextId++,owner,type,x,y,facing:owner==='blue'?0:Math.PI,hp:t.hp,maxHp:t.hp,level:1,xp:0,cooldown:0,setup:0,packing:0,idle:0,entrenched:false,suppressed:0,revealed:0,work:0,reserved:0,order:{type:'stop'},path:[],segment:null,navGoal:null,healText:0,moveLeft:t.move||0,actionLeft:!t.structure,moved:false,pending:false};
-  if(t.structure)u.queue=[];if(t.air){if(!t.unarmed)u.weaponMode='auto';u.altitude=t.unarmed?'high':'low';u.flares=t.unarmed?0:3;u.flareCooldown=0;u.flareUsed=false;}if(type==='antiAirVehicle')u.radarOn=true;(t.structure?this.structures:this.units).push(u);if(type==='antiAirVehicle')this.updateRadarContacts();return u;
+  u.hp=u.maxHp=this.baseHp(owner,type);if(t.structure)u.queue=[];if(t.air){if(!t.unarmed)u.weaponMode='auto';u.altitude=t.unarmed?'high':'low';u.flares=t.unarmed?0:3;u.flareCooldown=0;u.flareUsed=false;}if(type==='antiAirVehicle')u.radarOn=true;(t.structure?this.structures:this.units).push(u);if(type==='antiAirVehicle')this.updateRadarContacts();return u;
  }
   generate(){
   const o=this.options,rng=this.rng,mid=COLS/2,T=this.terrain,seed=this.seed;
@@ -232,8 +254,9 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  isVisible(owner,u){if(!u||!this.visible[owner])return false;const p=TILE(u);return this.radarContact(owner,u)||!!(AIR(u)?this.sky:this.visible)[owner][KEY(p.x,p.y)];}
  effectVisible(x,y,air=false,contactId,sourceId){const p=TILE({x,y});if(!INSIDE(p.x,p.y))return false;if((air?this.sky:this.visible).blue[KEY(p.x,p.y)])return true;if(air)for(const id of [contactId,sourceId]){if(id===undefined)continue;const u=this.get(id);if(this.radarContact('blue',u)&&Math.hypot(x-u.x,y-u.y)<=2)return true;}return false;}
  // Alcance contra um alvo; sem alvo, o maior alcance do modo de arma atual.
- range(u,target){const t=TYPES[u.type];if(target&&!this.weapon(u,target)||t.unarmed)return 0;if(u.type==='rocketArtillery')return t.range;if(u.type==='missileInfantry')return target&&!AIR(target)?1:3;if(!t.air)return t.range+({mountain:2,hill:1}[this.terrainAt(u)]||0);if(target)return WEAPONS[this.weapon(u,target)]?.range??0;const mode=u.weaponMode||'auto';return mode==='auto'?Math.max(...t.weapons.map(w=>WEAPONS[w].range)):WEAPONS[mode].range;}
- sight(u){return TYPES[u.type].vision+(!AIR(u)&&['mountain','hill'].includes(this.terrainAt(u))?2:0);}
+ weaponRange(u,w,altitude=u.altitude){if(!TYPES[u.type].weapons?.includes(w))return 0;return WEAPONS[w].range+(altitude==='high'&&w!=='gun'?5:0);}
+ range(u,target,altitude=u.altitude){const t=TYPES[u.type];if(target&&!this.weapon(u,target)||t.unarmed)return 0;if(u.type==='rocketArtillery')return t.range;if(u.type==='missileInfantry')return target&&!AIR(target)?1:3;if(!t.air)return t.range+({mountain:2,hill:1}[this.terrainAt(u)]||0);if(target)return this.weaponRange(u,this.weapon(u,target),altitude);const mode=u.weaponMode||'auto';return mode==='auto'?Math.max(...t.weapons.map(w=>this.weaponRange(u,w,altitude))):this.weaponRange(u,mode,altitude);}
+ sight(u){return AIR(u)&&!TYPES[u.type].unarmed&&u.altitude==='high'?15:TYPES[u.type].vision+(!AIR(u)&&['mountain','hill'].includes(this.terrainAt(u))?2:0);}
  /* Arma de a contra b, ou null se incompatível. Solo: a própria tropa (só infantaria e metralhador alcançam aeronaves).
     Helicóptero: arma manual se compatível; Auto prefere o míssil contra veículo/estrutura (ar-terra) ou aeronave (ar-ar). */
  // Tanque médio e pesado: só antitanque, tanques, artilharia e míssil ar-terra ferem.
@@ -249,10 +272,10 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   for(const owner of ['blue','red']){
    const visible=this.visible[owner],sky=this.sky[owner],explored=this.explored[owner];visible.fill(false);sky.fill(false);
    for(const list of [this.units,this.structures])for(const u of list){
-    if(u.owner!==owner||u.hp<=0)continue;const r=this.sight(u),limit=r+.05,x0=Math.max(0,Math.floor(u.x-r)),x1=Math.min(COLS-1,Math.ceil(u.x+r));
-    for(let y=Math.max(0,Math.floor(u.y-r));y<=Math.min(ROWS-1,Math.ceil(u.y+r));y++){const dy=Math.abs(u.y-y);for(let x=x0;x<=x1;x++){const d=Math.abs(u.x-x)+dy;if(d<=limit){const k=KEY(x,y);explored[k]=true;sky[k]=true;if(!CONCEAL.has(this.terrain[k])||d<=(u.type==='recon'?3:2)+.05)visible[k]=true;}}}
+    if(u.owner!==owner||u.hp<=0)continue;const r=this.sight(u),limit=r+.05,high=AIR(u)&&!TYPES[u.type].unarmed&&u.altitude==='high',detection=high?1:u.type==='recon'?3:2,x0=Math.max(0,Math.floor(u.x-r)),x1=Math.min(COLS-1,Math.ceil(u.x+r));
+    for(let y=Math.max(0,Math.floor(u.y-r));y<=Math.min(ROWS-1,Math.ceil(u.y+r));y++){const dy=Math.abs(u.y-y);for(let x=x0;x<=x1;x++){const d=Math.abs(u.x-x)+dy;if(d<=limit){const k=KEY(x,y),terrain=this.terrain[k],concealed=CONCEAL.has(terrain)||high&&(terrain==='hill'||terrain==='mountain');explored[k]=true;sky[k]=true;if(!concealed||d<=detection+.05)visible[k]=true;}}}
    }
-   // Floresta esconde além de 2 casas (batedor: 3); quem disparou fica visível a qualquer observador com alcance de visão.
+   // Helicóptero alto: cobertura terrestre até 1 casa; disparos revelam a quem tem alcance de visão, inclusive do alto.
    for(const e of this.units)if(e.owner!==owner&&e.revealed>0){const p=TILE(e),k=KEY(p.x,p.y);if(!visible[k]&&this.all().some(o=>o.owner===owner&&o.hp>0&&DIST(o,e)<=this.sight(o)+.05))visible[k]=true;}
    for(const [key]of this.memory[owner])if(this.visible[owner][key])this.memory[owner].delete(key);
    for(const s of this.structures)if(this.isVisible(owner,s))this.memory[owner].set(KEY(s.x,s.y),{id:s.id,x:s.x,y:s.y,type:s.type,owner:s.owner});
@@ -266,7 +289,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  }
  hasAura(u){return this.units.some(c=>c.owner===u.owner&&c.type==='commander'&&c.hp>0&&DIST(u,c)<=2);}
  cover(u){if(AIR(u))return 0;return Math.min(.75,TERRAIN[this.terrainAt(u)].cover+(u.entrenched?.25:0));}
- attackPower(u,w){return (AIR(u)?WEAPONS[w||'gun'].damage:TYPES[u.type].damage)*(1+(u.level-1)*.1)*(this.hasAura(u)?1.2:1);}
+ attackPower(u,w){return (AIR(u)?WEAPONS[w||'gun'].damage:TYPES[u.type].damage)*(1+(u.level-1)*.1)*(this.hasAura(u)?1.2:1)*NATION_DOCTRINES[this.doctrines[u.owner]||'balanced'].damage;}
  accuracy(a,b,w=this.weapon(a,b)){return Math.max(.1,Math.min(.99,(AIR(a)&&WEAPONS[w]?WEAPONS[w].accuracy:TYPES[a.type].accuracy)+(a.level-1)*.05+(this.hasAura(a)?.15:0)-(b.level-1)*.05-(a.suppressed>0?.25:0)+(MISSILE(w)?(AIR(a)&&a.altitude==='high'?.1:0)+(AIR(b)&&b.altitude==='high'?.1:0)+(b.type==='reconDrone'&&['antiAirVehicle','missileInfantry'].includes(a.type)?.1:0):0)));}
  flareReady(u){return AIR(u)&&u.flares>0&&(this.mode==='rts'?u.flareCooldown<=1e-8:!u.flareUsed);}
  serviceSite(u,base){return AIR(u)&&u.altitude==='low'&&!u.segment&&base?.hp>0&&base.owner===u.owner&&['hq','post'].includes(base.type)&&DIST(u,base)<=1&&this.structures.includes(base);}
@@ -430,13 +453,13 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  }
  hurt(u,n,attacker){
   if(!u||u.hp<=0)return;if(u.order.type==='service'){if(this.mode==='rts')this.finishRTS(u);else{this.actions=this.actions.filter(a=>a.id!==u.id);if(this.animation?.id===u.id)this.animation=null;u.pending=false;u.order={type:'stop'};}}u.hp=Math.max(0,u.hp-n);u.work=0;u.idle=0;u.entrenched=false;this.event('text',u,{text:`−${Math.round(n)}`,color:'#ffab96'});
-  if(u.hp>0){if(!TYPES[u.type].structure)u.suppressed=this.mode==='rts'?3:2;return;}this.cancelWork(u);this.event('blast',u);this.report(`${TYPES[u.type].name} da Nação ${SIDE[u.owner]} destruído.`,u);
+  if(u.hp>0){if(!TYPES[u.type].structure)u.suppressed=this.mode==='rts'?3:2;return;}this.cancelWork(u);if(u.queue)u.queue=[];this.event('blast',u);this.report(`${TYPES[u.type].name} da Nação ${this.nationLabel(u.owner)} destruído.`,u);
   // Placar por tipo (perfil do jogador): perdas de cada lado e abates de quem atirou; estruturas não contam.
   if(!TYPES[u.type].structure&&this.stats[u.owner]){const l=this.stats[u.owner].losses;l[u.type]=(l[u.type]||0)+1;const k=attacker&&attacker.owner!==u.owner&&this.stats[attacker.owner]?.kills;if(k)k[u.type]=(k[u.type]||0)+1;}
   if(u.type==='commander'){this.credits[u.owner]=Math.floor(this.credits[u.owner]/2);this.report('Comandante perdido. Metade dos créditos foi perdida.',u);}
   if(attacker&&attacker.hp>0&&attacker.owner!==u.owner&&u.owner!=='neutral'){
    this.credits[attacker.owner]+=TYPES[u.type].reward||0;attacker.xp++;const level=attacker.xp>=3?3:2;
-   if(level>attacker.level){attacker.level=level;const gain=Math.round(TYPES[attacker.type].hp*.1);attacker.maxHp=Math.round(TYPES[attacker.type].hp*(1+(level-1)*.1));attacker.hp=Math.min(attacker.maxHp,attacker.hp+gain);this.report(`${TYPES[attacker.type].name} promovido a ${level===3?'Elite':'Veterano'}.`,attacker);}
+   if(level>attacker.level){attacker.level=level;const base=this.baseHp(attacker.owner,attacker.type),gain=Math.round(base*.1);attacker.maxHp=Math.round(base*(1+(level-1)*.1));attacker.hp=Math.min(attacker.maxHp,attacker.hp+gain);this.report(`${TYPES[attacker.type].name} promovido a ${level===3?'Elite':'Veterano'}.`,attacker);}
   }
   this.units=this.units.filter(v=>v.hp>0);this.structures=this.structures.filter(v=>v.hp>0);
   if(u.type==='antiAirVehicle'||AIR(u))this.updateVision();
@@ -453,7 +476,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   }else if(job.type==='repair'&&!AIR(target)&&target?.owner===u.owner&&DIST(u,target)<=1){const heal=Math.min(24,target.maxHp-target.hp);target.hp+=heal;this.event('text',target,{text:'+'+Math.round(heal),color:'#a4e7bb'});valid=true;
   }else if(job.type==='altitude'&&AIR(u)){valid=this.advanceAltitude(u,job.altitude,0);
   }else if(job.type==='service'&&this.serviceSite(u,target)){const heal=Math.min(24,u.maxHp-u.hp);u.hp+=heal;u.flares=Math.min(3,u.flares+1);this.event('text',u,{text:'+'+Math.round(heal)+' HP · manutenção',color:'#a4e7bb'});valid=true;
-  }else if(job.type==='capture'&&target?.type==='post'&&target.owner!==u.owner&&DIST(u,target)<=1){target.owner=u.owner;this.report(`Posto capturado pela Nação ${SIDE[u.owner]}.`,u);valid=true;
+  }else if(job.type==='capture'&&target?.type==='post'&&target.owner!==u.owner&&DIST(u,target)<=1){target.queue=[];target.owner=u.owner;this.report(`Posto capturado pela Nação ${this.nationLabel(u.owner)}.`,u);valid=true;
   }else if(job.type==='demine'&&DIST(u,job.goal)<=1){const mine=this.mines.find(m=>m.x===job.goal.x&&m.y===job.goal.y);if(mine){this.mines=this.mines.filter(m=>m!==mine);this.report('Mina removida.',u);valid=true;}
   }else if(job.type==='build'&&this.buildSite(u)){u.reserved=0;this.add(u.owner,'post',u.x,u.y);this.units=this.units.filter(v=>v!==u);this.report('Posto construído. Infantaria convertida em guarnição.',u);valid=true;}
   if(!valid){u.actionLeft=true;this.cancelWork(u);}this.finishAction(u);
@@ -476,14 +499,15 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   if(d<=step){u.x=seg.to.x;u.y=seg.to.y;u.moveLeft=Math.max(0,u.moveLeft-seg.cost);u.moved=true;if(u.type==='artillery')u.actionLeft=false;u.segment=null;this.enterCell(u);this.updateVision();}
   else{u.x+=dx/d*step;u.y+=dy/d*step;}
  }
- income(owner){return Math.round(this.structures.filter(s=>s.owner===owner).reduce((n,s)=>n+(s.type==='hq'?15:8),0)*(owner==='red'?PLAN[this.difficulty].income:1));}
-  spawnCells(owner,type){const hq=this.hq(owner),cells=[];if(!hq)return cells;for(let r=1;r<=2;r++)for(let y=hq.y-r;y<=hq.y+r;y++)for(let x=hq.x-r;x<=hq.x+r;x++)if(INSIDE(x,y)&&DIST(hq,{x,y})===r&&Number.isFinite(this.cost({type},x,y))&&(TYPES[type].air||!this.structureAt(x,y)&&!this.mines.some(m=>m.x===x&&m.y===y)))cells.push({x,y});return cells;}
+ income(owner){return Math.round(this.producers(owner).reduce((n,s)=>n+(s.type==='hq'?15:8),0)*(owner==='red'?PLAN[this.difficulty].income:1)*NATION_DOCTRINES[this.doctrines[owner]||'balanced'].income);}
+ spawnCells(owner,type,base=this.hq(owner)){const cells=[];if(!this.producer(owner,base)||!TYPES[type])return cells;for(let r=1;r<=2;r++)for(let y=base.y-r;y<=base.y+r;y++)for(let x=base.x-r;x<=base.x+r;x++)if(INSIDE(x,y)&&DIST(base,{x,y})===r&&Number.isFinite(this.cost({type},x,y))&&(TYPES[type].air||!this.structureAt(x,y)&&!this.mines.some(m=>m.x===x&&m.y===y)))cells.push({x,y});return cells;}
 
  trainDuration(type){return TYPES[type].train*(this.mode==='rts'?10:1);}
- enqueue(owner,type){const hq=this.hq(owner),t=TYPES[type];if(this.winner||this.mode!=='rts'&&(owner!==this.turn||this.busy)||!hq||!t?.cost||hq.queue.length>=5||this.credits[owner]<t.cost)return false;this.credits[owner]-=t.cost;hq.queue.push({type,progress:0});this.report(`${t.name} em treinamento (${this.trainDuration(type)} ${this.mode==='rts'?'s':'turno(s)'}).`,hq);return true;}
+ enqueue(owner,type,base=this.hq(owner)){const t=TYPES[type];if(this.winner||this.mode!=='rts'&&(owner!==this.turn||this.busy)||!this.producer(owner,base)||!t?.cost||base.queue.length>=this.queueLimit(base)||this.credits[owner]<t.cost)return false;this.credits[owner]-=t.cost;base.queue.push({type,progress:0});this.report(`${t.name} em treinamento (${this.trainDuration(type)} ${this.mode==='rts'?'s':'turno(s)'}).`,base);return true;}
  production(owner,elapsed=1){
-  const hq=this.hq(owner),job=hq?.queue[0];if(!job)return;const t=TYPES[job.type],duration=this.trainDuration(job.type);job.progress=Math.min(duration,job.progress+elapsed);if(job.progress+1e-8<duration)return;
-  const cell=this.spawnCells(owner,job.type).find(p=>!this.occupied(p.x,p.y,null,!!t.air));if(!cell)return;this.add(owner,job.type,cell.x,cell.y);hq.queue.shift();this.report(`${t.name} pronto para receber ordens.`,hq);this.event('ready',hq);
+  for(const base of this.producers(owner)){const job=base.queue[0];if(!job)continue;const t=TYPES[job.type],duration=this.trainDuration(job.type);job.progress=Math.min(duration,job.progress+elapsed);if(job.progress+1e-8<duration)continue;
+   const cell=this.spawnCells(owner,job.type,base).find(p=>!this.occupied(p.x,p.y,null,!!t.air));if(!cell)continue;this.add(owner,job.type,cell.x,cell.y);base.queue.shift();this.report(`${t.name} pronto para receber ordens.`,base);this.event('ready',base);
+  }
  }
  beginTurn(owner){
   this.turn=owner;if(owner==='blue')this.round++;
@@ -495,9 +519,11 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  }
  endTurn(){if(this.mode==='rts'||this.winner||this.turn!=='blue'||this.busy)return false;for(const u of this.units)if(u.owner==='blue'&&!u.moved&&u.actionLeft&&!AIR(u))u.entrenched=true;this.beginTurn('red');return true;}
  aiBuy(){
-  if(!this.aiEnabled)return;const hq=this.hq('red'),cfg=PLAN[this.difficulty];if(!hq||hq.queue.length>=cfg.queue)return;
-  const army=this.units.filter(u=>u.owner==='red');if(army.length+hq.queue.length>=cfg.army)return;
-  const count=type=>army.filter(u=>u.type===type).length+hq.queue.filter(q=>q.type===type).length;
+  if(!this.aiEnabled)return;const hq=this.hq('red'),cfg=PLAN[this.difficulty],bases=this.producers('red'),queue=bases.flatMap(s=>s.queue);if(!hq||queue.length>=cfg.queue)return;
+  const army=this.units.filter(u=>u.owner==='red');if(army.length+queue.length>=cfg.army)return;
+  const count=type=>army.filter(u=>u.type===type).length+queue.filter(q=>q.type===type).length;
+  const wait=s=>s.queue.reduce((n,q)=>n+Math.max(0,this.trainDuration(q.type)-q.progress),0),rally=this.plan.rally||hq;
+  const buy=type=>{const base=bases.filter(s=>s.queue.length<this.queueLimit(s)&&this.spawnCells('red',type,s).some(p=>!this.occupied(p.x,p.y,null,!!TYPES[type].air))).sort((a,b)=>wait(a)-wait(b)||DIST(a,rally)-DIST(b,rally)||a.id-b.id)[0];return base?this.enqueue('red',type,base):false;};
   // Só o que a IA vê conta: aeronaves, blindados e tropas a pé azuis ajustam a doutrina; ameaça perto do QG libera compra imediata.
   const seen=this.all().filter(e=>e.owner==='blue'&&e.hp>0&&this.isVisible('red',e));
   const skies=Math.min(3,seen.filter(AIR).length),armor=Math.min(4,seen.filter(e=>TYPES[e.type].vehicle&&!AIR(e)).length),foot=Math.min(6,seen.filter(e=>!TYPES[e.type].vehicle&&!TYPES[e.type].structure&&!AIR(e)).length);
@@ -505,16 +531,16 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   // Drone: um para reconhecimento; artilharia de mísseis quando já conhece estrutura azul (dano ×2).
   const boost={antiAirVehicle:1.5*skies,missileInfantry:1.5*skies,helicopterAir:skies,antitank:.75*armor,helicopterGround:1.5*armor,heavyTank:.5*armor,machinegun:.4*foot,
    reconDrone:count('reconDrone')?0:.5,rocketArtillery:[...this.memory.red.values()].some(s=>s.owner==='blue')?.5:0};
-  const norm=DOCTRINE.reduce((a,d)=>a+d.share,0),size=Math.max(8,army.length+hq.queue.length),clock=this.mode==='rts'?this.time/30:this.round;
+  const norm=DOCTRINE.reduce((a,d)=>a+d.share,0),size=Math.max(8,army.length+queue.length),clock=this.mode==='rts'?this.time/30:this.round;
   const ranked=DOCTRINE.map((d,i)=>({type:d.type,i,share:d.share,score:Math.max(d.min||0,SCHEDULE[d.type]&&clock>=SCHEDULE[d.type]?1:0,Math.round(d.share/norm*size))-count(d.type)+(boost[d.type]||0)})).sort((x,y)=>y.score-x.score||x.i-y.i);
   // Poupa pelo tipo de maior déficit até poder pagá-lo: o caro entra quando junta o dinheiro, e não é trocado pelas baratas.
   const top=ranked[0];
-  if(this.credits.red>=TYPES[top.type].cost){this.enqueue('red',top.type);return;}
+  if(this.credits.red>=TYPES[top.type].cost){buy(top.type);return;}
   // Sem nenhum lançador de mísseis, compra o barato enquanto poupa pelo veículo antiaéreo; com um deles, espera.
-  if(top.type==='antiAirVehicle'&&!count('missileInfantry')&&this.credits.red>=TYPES.missileInfantry.cost){this.enqueue('red','missileInfantry');return;}
+  if(top.type==='antiAirVehicle'&&!count('missileInfantry')&&this.credits.red>=TYPES.missileInfantry.cost){buy('missileInfantry');return;}
   // Poupa para a classe escolhida; só gasta com o que tem para defender a base.
   // Defesa aérea em espera não é trocada por um lançador barato.
-  if(threatened&&!['antiAirVehicle','missileInfantry'].includes(top.type)){const pick=ranked.find(r=>DEFENSE.includes(r.type)&&TYPES[r.type].cost<=this.credits.red);if(pick)this.enqueue('red',pick.type);}
+  if(threatened&&!['antiAirVehicle','missileInfantry'].includes(top.type)){const pick=ranked.find(r=>DEFENSE.includes(r.type)&&TYPES[r.type].cost<=this.credits.red);if(pick)buy(pick.type);}
  }
  moveToward(u,target,near=1,leg=Infinity){const route=this.pathToRange(u,target,near);if(!route?.length)return false;const part=this.trimPath(u,route).slice(0,leg);return part.length?this.order(u,'move',part[part.length-1]):false;}
  // Valor de combate: custo (100 sem custo) pela fração de vida. Combatentes da onda: tropas com arma, sem comandante, engenheiro e batedor.
@@ -585,7 +611,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
     const bases=this.structures.filter(b=>b.owner===u.owner&&b.hp>0).map(b=>({b,route:this.pathToRange(u,b,1)})).filter(v=>v.route!==null).sort((a,b)=>a.route.length-b.route.length);
     for(const {b,route}of bases){if(this.order(u,'service',{targetId:b.id}))return;if(route.length&&this.moveToward(u,b))return;}return;
    }
-   const missileTarget=foes.find(e=>MISSILE(this.weapon(u,e))&&this.canFire(u,e)),danger=foes.some(e=>MISSILE(this.weapon(e,u))&&DIST(e,u)<=this.range(e,u));
+   const missileTarget=foes.find(e=>MISSILE(this.weapon(u,e))&&DIST(u,e)<=this.range(u,e,'high')+.05),danger=foes.some(e=>MISSILE(this.weapon(e,u))&&DIST(e,u)<=this.range(e,u));
    const altitude=TYPES[u.type].weapons.length>1&&missileTarget&&!danger?'high':'low';if(u.altitude!==altitude&&this.order(u,'altitude',{altitude}))return;
   }
   if(!AIR(u)&&u.hp/u.maxHp<(TYPES[u.type].cost>=150?.4:.35)){const medic=army.filter(e=>e.type==='engineer'&&e!==u).sort(byDist)[0]||hq;if(this.moveToward(u,medic))return;}
@@ -698,8 +724,8 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   for(const u of [...this.units])if(u.hp>0)this.stepRTS(u,dt);
  }
   checkVictory(){
-  const alive=owner=>!!this.hq(owner)&&(this.units.some(u=>u.owner===owner)||this.hq(owner).queue.length>0),blue=alive('blue'),red=alive('red');
-  if(!blue||!red){this.winner=!blue&&!red?'draw':blue?'blue':'red';this.log(this.winner==='draw'?'As duas forças foram neutralizadas.':`Vitória da Nação ${SIDE[this.winner]}.`);}
+  const alive=owner=>!!this.hq(owner)&&(this.units.some(u=>u.owner===owner)||this.producers(owner).some(s=>s.queue.length>0)),blue=alive('blue'),red=alive('red');
+  if(!blue||!red){this.winner=!blue&&!red?'draw':blue?'blue':'red';this.log(this.winner==='draw'?'As duas forças foram neutralizadas.':`Vitória da Nação ${this.nationLabel(this.winner)}.`);}
  }
 
  update(dt){

@@ -10,9 +10,24 @@ Ao abrir o jogo, o **menu inicial** em tela cheia reúne: **Continuar partida** 
 
 **Configurações** são salvas neste navegador: perfil gráfico, som, grade de casas, tela cheia ao iniciar operação, velocidade padrão, dificuldade padrão e modo padrão (turnos ou RTS). A primeira operação usa esses padrões; as seguintes repetem o modo e a dificuldade da partida anterior.
 
+**Personalizar nação**, nas configurações, permite editar o nome (1–32 caracteres), cor principal (azul, verde, dourado ou violeta), cor secundária (branco, preto ou creme), bandeira (lisa, horizontal ou vertical) e emblema (nenhum, estrela, losango ou círculo). A prévia acompanha a edição; **Salvar** aplica nome e visual na hora, inclusive durante a batalha. A cor aparece nos indicadores aliados, minimapa e territórios da campanha; a arte das tropas é preservada. A identidade acompanha exportação/importação e o fluxo de sincronização existente. Saves antigos recebem a identidade Azul. Novos registros de operação guardam o nome usado no resultado; renomear não altera o histórico anterior.
+
+**Doutrinas** são escolhidas no preparo de cada batalha, rápida ou de campanha. A inimiga é sorteada pela semente e aparece antes da escolha; reabrir o preparo conserva o sorteio. Ambas ficam travadas durante o combate, inclusive ao importar configurações. A última escolha do jogador fica salva para a próxima operação.
+
+| Doutrina | Vantagem | Penalidade |
+|---|---|---|
+| Equilibrada | Sem modificadores | Nenhuma |
+| Econômica | Renda +15% | Dano −10% |
+| Ofensiva | Dano +10% | Vida das tropas −10% |
+| Defensiva | Vida das tropas +15% | Renda −10% |
+
+Vida vale para tropas iniciais, reforços e veterania, com reparo limitado à vida modificada; estruturas mantêm seus atributos. Dano inclui tiros, mísseis e bombardeios, mas não minas. A renda combina doutrina e dificuldade antes de arredondar. Preços, tempos, créditos iniciais e recompensas permanecem iguais. Percentuais iniciais de balanceamento, ainda sem validação em partidas completas.
+
 **Perfil gráfico** muda durante a partida: **Desempenho** remove a decoração animada; **Equilibrado** (padrão) adiciona nuvens translúcidas, sombras, reflexos na água, vegetação ao vento e poeira; **Cinematográfico** aumenta a densidade com limite de partículas. Mísseis, flares e indicação de altitude continuam em todos os perfis. A pausa congela os efeitos; movimento reduzido mantém a decoração estática. Os perfis não alteram o combate nem sua sequência aleatória.
 
 **Altitude aérea:** subir ou descer leva **1 segundo de simulação** nos dois modos. Em turnos consome uma ação; no RTS termina a casa em curso e permanece sem mover/atirar durante a transição. A altitude anterior e seus bônus valem até concluir; parar ou substituir a ordem no RTS cancela e retorna o desenho suavemente. Alta eleva o desenho 18 px e aumenta a escala em 12%, com sombra afastada, marcador na casa e **ALTA**; a transição mostra **SUBINDO/DESCENDO** e progresso. Clique na aeronave elevada ou na casa ocupada para selecioná-la.
+
+**Visão e alcance dos helicópteros:** baixa: visão **6**, míssil ar-terra **5**, míssil ar-ar **6** casas; alta: visão **15**, ar-terra **10**, ar-ar **11**. Metralhadora: **3** nas duas altitudes. Os três helicópteros exploram o terreno e detectam aeronaves até 15 casas no alto, mas detectam alvos terrestres em floresta, sebe/arbustos, colina e montanha somente até **1 casa**. Observadores aliados e alvos que disparam ainda podem revelar essas posições. Valores usam a distância em casas do jogo e mudam apenas ao concluir a transição; drone e radares mantêm suas regras. O painel mostra visão e alcances atuais. Equilíbrio provisório, ainda não validado em partidas completas.
 
 Fontes ImageGen, prompts e três nuvens RGBA otimizadas estão em `assets/Atmosfera/`, incorporadas em `public/js/assets.js`.
 
@@ -98,7 +113,7 @@ Todo o jogo funciona só com o mouse; os atalhos de teclado continuam como alter
 | Ação | Mouse | Teclado |
 |---|---|---|
 | Selecionar | Clique esquerdo ou arraste uma caixa; abre a barra de comando na base do campo | — |
-| Produção | Clique no QG ou no botão **QG** do canto inferior esquerdo; a barra de comando mostra o recrutamento | — |
+| Produção | Clique em QG ou posto aliado; o botão **QG** centraliza no quartel-general. A barra mostra a fila da estrutura selecionada | — |
 | Somar à seleção | Botão **+ Somar** e depois cliques/caixas | **Shift** + clique |
 | Ordem contextual | Botão direito: no chão move; no inimigo ataca; no posto captura com infantaria; no aliado ferido repara com engenheiro | — |
 | Atacar / Mover / Reparar | Botões **Atacar**, **Mover**, **Reparar** e clique no alvo; clicar de novo cancela | **A** / **M** / **R**; **Esc** cancela |
@@ -130,12 +145,14 @@ No RTS não há orçamento de movimento nem ação por turno. A velocidade depen
 | Tanque médio | 4 | 150 | 3 turnos / 30 s | Equilíbrio; conserva os atributos do tanque original |
 | Tanque pesado | 3 | 240 | 4 turnos / 40 s | Mais vida e dano por tiro; menor velocidade e cadência |
 | Artilharia | 2 | 100 | 3 turnos / 30 s | Move **ou** dispara por turno; explosão 3×3 com fogo amigo |
-| Helicóptero | 6 | 150 | 3 turnos / 30 s | Metralhadora; apoio e reconhecimento aéreo |
+| Helicóptero | 6 | 110 | 3 turnos / 30 s | Metralhadora; apoio e reconhecimento aéreo |
 | Helicóptero ar-terra | 6 | 230 | 4 turnos / 40 s | Metralhadora e mísseis contra alvos terrestres |
-| Helicóptero ar-ar | 6 | 240 | 4 turnos / 40 s | Metralhadora e mísseis contra helicópteros |
+| Helicóptero ar-ar | 6 | 180 | 4 turnos / 40 s | Metralhadora e mísseis contra helicópteros |
 | Comandante | 3 | — | — | Aura de dano/precisão em raio 2; unidade inicial |
 
-Os custos de treinamento são descontados ao comprar. A fila serial aceita 5 tropas e avança no início do turno do dono, a partir da segunda rodada, ou continuamente no RTS. Uma saída ocupada mantém a unidade pronta até o próximo turno com espaço livre ou até liberar espaço no RTS.
+Os custos de treinamento são descontados uma vez ao comprar. Cada QG aceita **5 tropas** e cada posto aliado **3 tropas**, contando a unidade em produção. O catálogo, os preços e os tempos são os mesmos. Cada estrutura tem fila serial independente e produz simultaneamente às demais: no início do turno do dono a partir da segunda rodada, ou continuamente no RTS. Reforços surgem a até duas casas da estrutura; saída bloqueada mantém a unidade pronta até o próximo turno com espaço livre ou até liberar espaço no RTS. Captura ou destruição de posto elimina sua fila **sem reembolso**; o novo dono recebe uma fila vazia. Ter reforços encomendados em posto impede derrota por ausência de tropas, desde que o QG ainda exista.
+
+A IA recruta também nos postos. Conta encomendas de todas as estruturas ao calcular composição e limite de exército; mantém a frequência, orçamento e limite total de encomendas por dificuldade. Entre estruturas disponíveis para a tropa escolhida, prefere a menor espera acumulada, depois a mais próxima do ponto de reunião e, em empate, a de menor identificador.
 
 Os três tanques estão disponíveis no QG do jogador e da IA, com um médio inicial por lado. O batedor causa 40% do dano contra qualquer tanque; o antitanque mantém o multiplicador 2,25 contra veículos. O pesado usa vida adicional, sem outro sistema de blindagem. A IA prioriza infantaria e especialistas antes de ampliar os tanques, buscando a proporção leve:médio:pesado de 1:2:1; pode poupar créditos para a classe desejada. [Atributos, comparação por sementes e capturas](docs/tanks/README.md).
 
@@ -149,8 +166,8 @@ Os três tanques estão disponíveis no QG do jogador e da IA, com um médio ini
 - **Engenharia no RTS:** reparo de até 24 HP por segundo até completar a vida; desarme de mina em 1 segundo. As tarefas avançam somente com a simulação ativa.
 - **Névoa:** inimigos fora da visão atual ficam ocultos, mesmo em terreno explorado. Artilharia depende do reconhecimento aliado.
 - **Floresta:** tropas na floresta só são vistas a até 2 casas de um observador (batedor: 3). Disparar revela a posição por 2 s no RTS ou até o próximo turno.
-- **Helicópteros** (`air:true`): 120 HP, 2,2 casas/s no RTS, visão 6, recompensa 50. Voam sobre água e montanhas com custo 1 por casa, sem bônus de estrada, penalidade de floresta, cobertura ou bônus de montanha; a floresta não os esconde. Dividem casa com tropas terrestres e estruturas, nunca com outra aeronave; a saída aérea do QG só é bloqueada por aeronaves. Minas, a explosão da artilharia e a queda de uma aeronave não atingem a outra camada. Infantaria e metralhadores os atacam com dano reduzido (infantaria −75%, metralhador −35%, caindo até a metade no alcance máximo do disparo); engenheiros os reparam. Não capturam, constroem nem transportam.
-- **Armas aéreas:** metralhadora 20 de dano, alcance 3, 85%, recarga 1 s (×0,35 contra veículos terrestres, ×0,5 contra estruturas); míssil ar-terra 65, alcance 5, 85%, 3 s (só alvos terrestres; ×1,5 contra veículos, ×0,5 contra tropas a pé); míssil ar-ar 70, alcance 6, 90%, 3 s (só helicópteros). Auto escolhe o míssil contra veículo/estrutura (ar-terra) ou helicóptero (ar-ar) e a metralhadora no resto; os botões Auto, Metralhadora e Míssil fixam a arma. Por turnos um disparo gasta a ação, e trocar de arma não a devolve; no RTS as duas armas dividem a recarga do último disparo. O projétil guarda arma, dano e alvo do momento do disparo. Clique de novo na mesma casa para alternar entre a aeronave e a tropa abaixo dela.
+- **Helicópteros** (`air:true`): 120 HP, 2,2 casas/s no RTS, visão 6 em baixa / 15 em alta, recompensa 50. Voam sobre água e montanhas com custo 1 por casa, sem bônus de estrada, penalidade de floresta, cobertura ou bônus de montanha; a floresta não os esconde. Dividem casa com tropas terrestres e estruturas, nunca com outra aeronave; a saída aérea do QG só é bloqueada por aeronaves. Minas, a explosão da artilharia e a queda de uma aeronave não atingem a outra camada. Infantaria e metralhadores os atacam com dano reduzido (infantaria −75%, metralhador −35%, caindo até a metade no alcance máximo do disparo); engenheiros os reparam. Não capturam, constroem nem transportam.
+- **Armas aéreas:** metralhadora 20 de dano, alcance 3, 85%, recarga 1 s (×0,35 contra veículos terrestres, ×0,5 contra estruturas); míssil ar-terra 65, alcance 5 em baixa / 10 em alta, 85%, 3 s (só alvos terrestres; ×1,5 contra veículos, ×0,5 contra tropas a pé); míssil ar-ar 70, alcance 6 em baixa / 11 em alta, 90%, 3 s (só helicópteros). Auto escolhe o míssil contra veículo/estrutura (ar-terra) ou helicóptero (ar-ar) e a metralhadora no resto; os botões Auto, Metralhadora e Míssil fixam a arma. Por turnos um disparo gasta a ação, e trocar de arma não a devolve; no RTS as duas armas dividem a recarga do último disparo. O projétil guarda arma, dano e alvo do momento do disparo. Clique de novo na mesma casa para alternar entre a aeronave e a tropa abaixo dela.
 - **Supressão:** tropa que leva dano e sobrevive perde 25 pontos de precisão por 3 s no RTS ou durante o próprio turno seguinte; novo dano renova sem acumular. Estruturas não são suprimidas.
 - **Comandante:** +20% dano e +15 pontos de precisão no raio 2. Sua morte remove metade dos créditos.
 - **Vitória:** destrua o QG inimigo ou elimine as tropas inimigas sem reforços pendentes.

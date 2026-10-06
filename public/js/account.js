@@ -78,7 +78,7 @@ function renderProfile(){
   ...Object.entries(DIFFICULTY_NAME).map(([k,n])=>[`${n}: vitórias / jogadas`,`${s.byDifficulty[k]?.won||0} / ${s.byDifficulty[k]?.played||0}`])];
  const top=Object.entries(s.kills).filter(([t])=>TYPES[t]).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([t,n])=>`${TYPES[t].name} ${n}`).join(' · ');if(top)rows.push(['Mais abatidos',top]);
  $('statList').replaceChildren(...rows.flatMap(([k,v])=>[el('dt',k),el('dd',String(v))]));
- $('historyBody').replaceChildren(...profile.history.map(h=>{const tr=el('tr');for(const v of [when(h.date),MAPS[h.map]||h.map,DIFFICULTY_NAME[h.difficulty]||h.difficulty,MODE_NAME[h.mode],RESULT_NAME[h.result],duration(h),`${sumOf(h.kills)} / ${sumOf(h.lost)}`])tr.append(el('td',v));tr.className=h.result;return tr;}));
+ $('historyBody').replaceChildren(...profile.history.map(h=>{const tr=el('tr');for(const v of [when(h.date),(MAPS[h.map]||h.map)+(h.nationName?' · '+h.nationName:''),DIFFICULTY_NAME[h.difficulty]||h.difficulty,MODE_NAME[h.mode],RESULT_NAME[h.result],duration(h),`${sumOf(h.kills)} / ${sumOf(h.lost)}`])tr.append(el('td',v));tr.className=h.result;return tr;}));
  $('historyEmpty').hidden=profile.history.length>0;renderAccount();
 }
 function renderAccount(){

@@ -22,4 +22,41 @@ check('Movimento, cadência, recompensa, produção bloqueada e fragilidade das 
 check('Probabilidades reproduzíveis: sorteios uniformes controlados e sequência aleatória fixa',()=>{const results=[];for(const mode of ['turns','rts'])for(const type of ['antiAirVehicle','missileInfantry','helicopterAir'])for(const altitude of ['low','high'])for(const flares of [0,3]){const g=field(mode),a=g.add('blue',type,5,5),b=g.add('red','helicopter',6,5);b.altitude=altitude;const base=g.accuracy(a,b),expected=base*(flares?.5:1);let hits=0,deflected=0;for(let i=0;i<2000;i++){b.flares=flares;b.flareUsed=false;b.flareCooldown=0;let draws=0;g.rng=()=>draws++?(1):((i+.5)/2000);g.shoot(a,b);const p=g.projectiles.pop();hits+=Number(p.hit);deflected+=Number(p.deflected);assert.equal(draws,2);assert.equal(p.targetAltitude,altitude);near(p.accuracy,expected);g.events=[];}near(hits/2000,expected);near(deflected/2000,flares?base-expected:0);results.push({mode,type,targetAltitude:altitude,flare:!!flares,shots:2000,hits,deflected,accuracy:expected});}
  fs.mkdirSync('test-output/air-defense',{recursive:true});fs.writeFileSync('test-output/air-defense/probabilities.json',JSON.stringify(results,null,2)+'\n');
  const snap=seed=>{const g=field();g.rng=ctx.seeded(seed);const a=g.add('blue','antiAirVehicle',5,5),b=g.add('red','helicopter',6,5);const out=[];for(let i=0;i<50;i++){b.flareUsed=false;b.flares=3;g.shoot(a,b);const p=g.projectiles.pop();out.push([p.hit,p.deflected,p.critical]);}return JSON.stringify(out);};assert.equal(snap(19),snap(19));assert.notEqual(snap(19),snap(20));});
+check('Voo alto: visão 15 nos três helicópteros, chão aberto e céu até o limite',()=>{
+ for(const mode of ['turns','rts'])for(const owner of ['blue','red'])for(const type of ['helicopter','helicopterGround','helicopterAir']){
+  const g=field(mode),h=g.add(owner,type,10,10),enemy=owner==='blue'?'red':'blue',land=g.add(enemy,'tank',25,10),air=g.add(enemy,'helicopter',25,11);
+  g.updateVision();assert.equal(g.isVisible(owner,land),false);h.altitude='high';g.updateVision();assert.equal(g.isVisible(owner,land),true);assert.equal(g.explored[owner][KEY(25,10)],true);assert.equal(g.isVisible(owner,air),false);air.y=10;g.updateVision();assert.equal(g.isVisible(owner,air),true);land.x=26;g.updateVision();assert.equal(g.isVisible(owner,land),false);
+ }
+});
+check('Voo alto: cobertura terrestre a 1 casa, visão aliada e disparos revelam sem ocultar aeronaves',()=>{
+ for(const mode of ['turns','rts'])for(const terrain of ['forest','hedge','hill','mountain']){
+  const g=field(mode),h=g.add('blue','helicopterGround',10,10),land=g.add('red','tank',12,10),air=g.add('red','helicopter',12,10);h.altitude='high';g.terrain[KEY(11,10)]=g.terrain[KEY(12,10)]=terrain;g.updateVision();assert.equal(g.isVisible('blue',land),false);assert.equal(g.isVisible('blue',air),true);assert.equal(g.explored.blue[KEY(12,10)],true);
+  land.x=11;g.updateVision();assert.equal(g.isVisible('blue',land),true);land.x=12;const scout=g.add('blue','recon',14,10);g.updateVision();assert.equal(g.isVisible('blue',land),true);g.units=g.units.filter(u=>u!==scout);land.revealed=2;g.updateVision();assert.equal(g.isVisible('blue',land),true);land.revealed=0;g.updateVision();assert.equal(g.isVisible('blue',land),false);
+  h.altitude='low';g.updateVision();assert.equal(g.isVisible('blue',land),true);
+ }
+ const g=field(),d=g.add('blue','reconDrone',10,10),land=g.add('red','tank',12,10);g.terrain[KEY(12,10)]='forest';g.updateVision();assert.equal(g.isVisible('blue',land),true);land.x=22;g.updateVision();assert.equal(g.isVisible('blue',land),true);land.x=23;g.updateVision();assert.equal(g.isVisible('blue',land),false);assert.equal(g.range(d),0);
+});
+check('Mísseis altos: ataque e aquisição até 10/11 sem deslocar; baixa 5/6, gun 3',()=>{
+ for(const mode of ['turns','rts'])for(const [type,targetType,low,high]of [['helicopterGround','tank',5,10],['helicopterAir','helicopter',6,11],['helicopter','infantry',3,3]]){
+  const g=field(mode),h=g.add('blue',type,10,10),target=g.add('red',targetType,10+low,10);g.updateVision();assert.equal(g.canFire(h,target),true);target.x++;g.updateVision();assert.equal(g.canFire(h,target),false);
+  h.altitude='high';target.x=10+high;g.updateVision();assert.equal(g.canFire(h,target),true);assert.equal(g.acquire(h),target);assert.ok(g.order(h,'attack',{targetId:target.id}));assert.equal(h.path.length,0);
+  target.x++;g.updateVision();assert.equal(g.canFire(h,target),false);h.weaponMode='gun';target.x=13;g.updateVision();assert.equal(g.canFire(h,target),targetType!=='tank');target.x=14;g.updateVision();assert.equal(g.canFire(h,target),false);
+  h.weaponMode='auto';target.x=10+high;g.updateVision();if(mode==='turns')settle(g);else advance(g,.1);assert.equal(h.x,10);assert.ok(g.shotsFired>0);
+ }
+ const g=field(),aa=g.add('blue','antiAirVehicle',10,10),s=g.add('blue','missileInfantry',10,11),air=g.add('red','helicopter',11,10),land=g.add('red','infantry',11,11);assert.equal(g.range(aa,air),Infinity);assert.equal(g.range(s,air),3);assert.equal(g.range(s,land),1);
+});
+check('Bônus de visão/alcance somente após transição; cancelar mantém baixa; projétil mantém duração e alcance do disparo',()=>{
+ for(const mode of ['turns','rts']){
+  const g=field(mode),h=g.add('blue','helicopterGround',10,10),target=g.add('red','tank',20,10);g.updateVision();assert.ok(g.order(h,'altitude',{altitude:'high'}));advance(g,.9);assert.equal(g.sight(h),6);assert.equal(g.range(h,target),5);advance(g,.1);assert.equal(g.sight(h),15);assert.equal(g.range(h,target),10);h.actionLeft=true;assert.ok(g.order(h,'altitude',{altitude:'low'}));advance(g,.9);assert.equal(g.sight(h),15);assert.equal(g.range(h,target),10);advance(g,.1);assert.equal(g.sight(h),6);assert.equal(g.range(h,target),5);
+ }
+ const g=field('rts'),h=g.add('blue','helicopterGround',10,10),target=g.add('red','tank',20,10);g.order(h,'altitude',{altitude:'high'});advance(g,.5);g.order(h,'stop');advance(g,.3);assert.equal(g.sight(h),6);assert.equal(g.range(h,target),5);h.altitude='high';g.shoot(h,target);const p=g.projectiles.at(-1);assert.equal(p.duration,1.2);assert.equal(p.range,10);assert.equal(p.power,65);near(p.accuracyBase,.95);assert.equal(h.cooldown,3);h.altitude='low';assert.equal(p.range,10);assert.equal(p.duration,1.2);
+});
+check('IA sobe para alvo identificado no alcance alto e prioriza ameaça/manutenção',()=>{
+ for(const mode of ['turns','rts'])for(const [type,targetType,distance]of [['helicopterGround','tank',10],['helicopterAir','helicopter',11]]){
+  const g=field(mode);g.turn='red';const h=g.add('red',type,10,10),target=g.add('blue',targetType,10+distance,10),scout=g.add('red','reconDrone',20,11);g.updateVision();assert.equal(g.isVisible('red',target),true);assert.equal(g.canFire(h,target),false);g.aiAct(h);assert.equal(h.order.type,'altitude');assert.equal(h.order.altitude,'high');
+  const r=field(mode);r.turn='red';const a=r.add('red',type,10,10);r.add('blue',targetType,10+distance,10);r.add('red','reconDrone',20,11);r.add('blue','antiAirVehicle',11,10);r.updateVision();r.aiAct(a);assert.notEqual(a.order.altitude,'high');
+  const hidden=field(mode);hidden.turn='red';const blind=hidden.add('red',type,10,10);hidden.add('blue',targetType,10+distance,10);hidden.updateVision();hidden.aiAct(blind);assert.notEqual(blind.order.altitude,'high');
+  const m=field(mode);m.turn='red';const wounded=m.add('red',type,10,10);wounded.altitude='high';wounded.hp=40;m.add('red','post',9,10);m.add('blue',targetType,10+distance,10);m.add('red','reconDrone',20,11);m.updateVision();m.aiAct(wounded);assert.equal(wounded.order.type,'altitude');assert.equal(wounded.order.altitude,'low');
+ }
+});
 console.log(checks+' verificações de defesa aérea concluídas.');

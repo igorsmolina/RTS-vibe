@@ -26,7 +26,7 @@ function newProfile(){return {version:1,savedAt:0,campaignAt:0,settingsAt:0,
 function matchRecord(game,region,now){
  const s=game.stats?.blue||{kills:{},losses:{}};
  return {id:now.toString(36)+'-'+(game.seed>>>0).toString(36),date:now,map:game.map,seed:game.seed,difficulty:game.difficulty,mode:game.mode,
-  result:game.winner==='blue'?'win':game.winner==='draw'?'draw':'loss',time:Math.round(game.time||0),round:game.round,kills:{...s.kills},lost:{...s.losses},region:region??null};
+  result:game.winner==='blue'?'win':game.winner==='draw'?'draw':'loss',time:Math.round(game.time||0),round:game.round,kills:{...s.kills},lost:{...s.losses},region:region??null,nationName:cleanNation({name:game.nationName}).name};
 }
 function unlock(p,m,now){const fresh=[];for(const a of ACHIEVEMENTS)if(!p.achievements[a.id]&&a.test(p,m)){p.achievements[a.id]=now;fresh.push(a);}return fresh;}
 const bump=(o,k,v=1)=>{o[k]=(o[k]||0)+v;};
@@ -55,7 +55,7 @@ function mergeMax(a,b){
 }
 const num=v=>typeof v==='number'&&Number.isFinite(v)?v:0;
 function cleanHistory(list){return (Array.isArray(list)?list:[]).filter(h=>h&&typeof h.id==='string'&&h.id.length<80&&Number.isFinite(h.date)&&['win','loss','draw'].includes(h.result))
- .map(h=>({id:h.id,date:h.date,map:String(h.map||''),seed:num(h.seed),difficulty:String(h.difficulty||''),mode:h.mode==='rts'?'rts':'turns',result:h.result,time:num(h.time),round:num(h.round),kills:mergeMax({},h.kills),lost:mergeMax({},h.lost),region:Number.isInteger(h.region)?h.region:null}));}
+ .map(h=>({id:h.id,date:h.date,map:String(h.map||''),seed:num(h.seed),difficulty:String(h.difficulty||''),mode:h.mode==='rts'?'rts':'turns',result:h.result,time:num(h.time),round:num(h.round),kills:mergeMax({},h.kills),lost:mergeMax({},h.lost),region:Number.isInteger(h.region)?h.region:null,...(typeof h.nationName==='string'?{nationName:cleanNation({name:h.nationName}).name}:{})}));}
 function mergeProfiles(a,b){
  const p=newProfile();for(const k of ['savedAt','campaignAt','settingsAt'])p[k]=Math.max(num(a?.[k]),num(b?.[k]));
  p.stats=mergeMax(mergeMax(p.stats,a?.stats),b?.stats);
@@ -69,7 +69,9 @@ function mergeProfiles(a,b){
 function validateBundle(b){
  if(!b||typeof b!=='object'||b.version!==1||!b.profile||typeof b.profile!=='object')return null;
  if(b.campaign!==null&&b.campaign!==undefined&&typeof b.campaign!=='string')return null;
- return {version:1,profile:mergeProfiles(newProfile(),b.profile),campaign:b.campaign??null,settings:b.settings&&typeof b.settings==='object'&&!Array.isArray(b.settings)?b.settings:{}};
+ const settings=b.settings&&typeof b.settings==='object'&&!Array.isArray(b.settings)?{...b.settings}:{};
+ if(Object.hasOwn(settings,'nation'))settings.nation=cleanNation(settings.nation);if(Object.hasOwn(settings,'doctrine'))settings.doctrine=cleanDoctrine(settings.doctrine);
+ return {version:1,profile:mergeProfiles(newProfile(),b.profile),campaign:b.campaign??null,settings};
 }
 function mergeBundles(local,remote){
  return {version:1,profile:mergeProfiles(local.profile,remote.profile),

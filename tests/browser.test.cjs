@@ -144,7 +144,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  for(const map of ['river','desert','mountain','random'])for(const seed of [17,83]){
   const state=await page.evaluate(({map,seed})=>{
    const snapshot=g=>JSON.stringify({terrain:g.terrain,army:g.all(),mines:g.mines,path:g.findPath({type:'tank',owner:'blue',x:4,y:ROWS-2},{x:COLS-5,y:1}),next:g.rng()});
-   const expected=snapshot(new Game(map,'normal',seed));newOperation(map,'normal',seed);renderer.paintGround();renderer.drawMini();renderer.draw(0);return{expected,actual:snapshot(game)};
+   const expected=snapshot(new Game(map,'normal',seed,'turns',{}, {blue:settings.doctrine,red:enemyDoctrine(seed)}));newOperation(map,'normal',seed);renderer.paintGround();renderer.drawMini();renderer.draw(0);return{expected,actual:snapshot(game)};
   },{map,seed});assert.equal(state.actual,state.expected,map+'/'+seed);
  }
  const lifecycle=await page.evaluate(async()=>{
@@ -180,7 +180,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  assert.equal(await page.locator('#weapons').isVisible(),true);assert.equal(await page.locator('#weaponMissile').textContent(),'Míssil ar-terra');assert.equal(await page.locator('#weaponAuto').getAttribute('aria-pressed'),'true');assert.match(await page.locator('#unitInfo').textContent(),/Arma: Auto · Metralhadora 3 casas, 1 s · Míssil ar-terra 5 casas, 3 s/);
  await page.locator('#weaponGun').click();assert.equal(await page.evaluate(()=>selectedUnits()[0].weaponMode),'gun');assert.equal(await page.locator('#weaponGun').getAttribute('aria-pressed'),'true');
  const enemy=await page.evaluate(()=>{const r=renderer.canvas.getBoundingClientRect(),t=game.units.find(u=>u.type==='lightTank'&&u.owner==='red');return{x:r.left+((t.x+.5)*CELL-cam.x)*cam.zoom,y:r.top+((t.y+.5)*CELL-cam.y)*cam.zoom};});
- await page.mouse.click(enemy.x,enemy.y,{button:'right'});await page.waitForFunction(()=>!game.busy);assert.equal(await page.evaluate(()=>game.units.find(u=>u.type==='lightTank'&&u.owner==='red').hp),103,'Metralhadora escolhida: 20 × 0,35');
+ await page.mouse.click(enemy.x,enemy.y,{button:'right'});await page.waitForFunction(()=>!game.busy);assert.equal(await page.evaluate(()=>{const t=game.units.find(u=>u.type==='lightTank'&&u.owner==='red');return t.maxHp-t.hp;}),7,'Metralhadora escolhida: 20 × 0,35');
  await page.locator('#weaponMissile').click();assert.equal(await page.evaluate(()=>[selectedUnits()[0].weaponMode,selectedUnits()[0].actionLeft].join()),'agm,false','Trocar arma não devolve a ação');
  await page.evaluate(()=>setSelection([game.add('blue','helicopter',9,ROWS-5).id]));assert.equal(await page.locator('#weapons').isHidden(),true,'Padrão só tem metralhadora');
  console.log('OK botões Auto/Metralhadora/Míssil, arma ativa, alcance, recarga e ação única por turno');
@@ -306,7 +306,7 @@ const root=path.join(__dirname,'..'),types=['lightTank','tank','heavyTank'];
  // Outro navegador: sem nada salvo, importa o arquivo e recupera o progresso.
  await page.evaluate(()=>localStorage.clear());await page.reload();await page.evaluate(()=>terrainReady);assert.match(await page.locator('#titleProfileInfo').textContent(),/^0\/15/);
  await page.locator('#titleProfile').click();await page.getByRole('tab',{name:'Conta e save'}).click();
- await page.locator('#importSave').setInputFiles({name:'bad.json',mimeType:'application/json',buffer:Buffer.from('{"version":9}')});assert.match(await page.locator('#accountStatus').textContent(),/inválido/);
+ await page.locator('#importSave').setInputFiles({name:'bad.json',mimeType:'application/json',buffer:Buffer.from('{"version":9}')});await page.waitForFunction(()=>document.querySelector('#accountStatus').textContent.includes('Arquivo inválido'));assert.match(await page.locator('#accountStatus').textContent(),/inválido/);
  await page.locator('#importSave').setInputFiles(await download.path());await page.waitForFunction(()=>profile.stats.wins===1);assert.match(await page.locator('#accountStatus').textContent(),/Save importado: 1 vitória/);
  await page.locator('#closeProfile').click();assert.match(await page.locator('#titleProfileInfo').textContent(),/^[1-9]\d*\/15/,'Título mostra o progresso importado');
  // Nuvem: offline fica pendente; ao voltar a conexão, baixa, mescla e envia.

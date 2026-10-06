@@ -24,8 +24,8 @@ function paintWorld(){
 }
 // Posse por cor: azul e vermelho tingem as regiões; refeito quando a posse muda.
 function composeWorld(){
- const key=campaign.owners.join();if(worldView.owners===key)return;const {ids,base}=worldView,img=new ImageData(new Uint8ClampedArray(base.data),base.width,base.height);
- for(let k=0;k<ids.length;k++){const tint=ids[k]>=0&&OWNER_TINT[campaign.owners[ids[k]]];if(!tint)continue;for(let i=0;i<3;i++)img.data[k*4+i]=img.data[k*4+i]*.5+tint[i]*.5;}
+ const key=campaign.owners.join()+TEAM.blue;if(worldView.owners===key)return;const {ids,base}=worldView,img=new ImageData(new Uint8ClampedArray(base.data),base.width,base.height),tints={...OWNER_TINT,blue:hexColor(TEAM.blue)};
+ for(let k=0;k<ids.length;k++){const tint=ids[k]>=0&&tints[campaign.owners[ids[k]]];if(!tint)continue;for(let i=0;i<3;i++)img.data[k*4+i]=img.data[k*4+i]*.5+tint[i]*.5;}
  worldView.img=img;worldView.owners=key;
 }
 function drawWorld(){
@@ -39,12 +39,12 @@ function drawWorld(){
  c.font='600 12px Segoe UI, sans-serif';c.textAlign='center';c.lineWidth=3;c.strokeStyle='#0c1b21d0';
  for(const r of w.regions){
   const x=r.x*sx,y=r.y*sy,owner=campaign.owners[r.id];
-  if(r.id===w.homes.blue||r.id===w.homes.red){c.fillStyle=r.id===w.homes.blue?'#77c8e2':'#ee9986';c.beginPath();c.arc(x,y-13,6,0,Math.PI*2);c.fill();c.lineWidth=2;c.stroke();c.lineWidth=3;}
+  if(r.id===w.homes.blue||r.id===w.homes.red){c.fillStyle=r.id===w.homes.blue?TEAM.blue:TEAM.red;c.beginPath();c.arc(x,y-13,6,0,Math.PI*2);c.fill();c.lineWidth=2;c.stroke();c.lineWidth=3;}
   c.strokeText(r.name,x,y+5);c.fillStyle=owner==='blue'?'#d4f1fb':owner==='red'?'#ffd6cc':'#f3efdf';c.fillText(r.name,x,y+5);
  }
 }
 function renderCampaignStats(){
- const n=o=>campaign.owners.filter(v=>v===o).length,over=campaignOver(campaign);
+ const n=o=>campaign.owners.filter(v=>v===o).length,over=campaignOver(campaign);$('campaignNationName').textContent=settings.nation.name;drawNationFlag('campaignNationFlag',settings.nation);
  $('campaignStats').textContent=`${n('blue')} suas · ${n('red')} inimigas · ${n('neutral')} neutras · ${campaign.battles} batalha(s)`+(over?(over==='blue'?' · Campanha vencida':' · Campanha perdida'):'');
  $('campaignEvents').replaceChildren(...campaign.events.map(t=>{const li=document.createElement('li');li.textContent=t;return li;}));
  const order=campaign.world.regions.slice().sort((a,b)=>Number(canAttack(campaign,b.id))-Number(canAttack(campaign,a.id))||a.name.localeCompare(b.name));
@@ -62,7 +62,7 @@ function showRegion(id){
   drawPreview($('regionPreview'),new Game(battle.map,'normal',battle.seed,'turns',battle.options));
  }
  if($('regionSelect').value!==String(selectedRegion>=0?selectedRegion:''))$('regionSelect').value=selectedRegion>=0?String(selectedRegion):'';
- drawWorld();
+ showDoctrines('campaignDoctrine','campaignDoctrineInfo','campaignEnemyDoctrineInfo',r&&canAttack(campaign,r.id)?battleFor(campaign,r.id).seed:null);$('campaignDoctrine').disabled=!r||!canAttack(campaign,r.id);drawWorld();
 }
 function openCampaign(){
  if(!campaign){campaign=loadCampaign()||newCampaign(randomSeed(),$('difficulty').value,$('modeSelect').value);
@@ -83,7 +83,7 @@ $('worldMap').addEventListener('pointerleave',()=>{if(hoverRegion>=0){hoverRegio
 $('worldMap').addEventListener('click',e=>{if(worldView)showRegion(worldPixel(e));});
 // Atacar: batalha com mapa, opções e dificuldade da região; a vitória conquista a região.
 $('attackRegion').addEventListener('click',()=>{
- if(selectedRegion<0||!canAttack(campaign,selectedRegion))return;campaign.mode=$('campaignMode').value;const battle=battleFor(campaign,selectedRegion),region=selectedRegion;
+ if(selectedRegion<0||!canAttack(campaign,selectedRegion))return;campaign.mode=$('campaignMode').value;changeSetting('doctrine',cleanDoctrine($('campaignDoctrine').value));const battle=battleFor(campaign,selectedRegion),region=selectedRegion;
  campaign.current=region;saveCampaign();$('campaign').close();audio.unlock();if(!document.fullscreenElement)toggleFullscreen();
  newOperation(battle.map,battle.difficulty,battle.seed,battle.mode,battle.options);game.title=battle.title;campaignBattle={region};updateUI();
  say(`Campanha: batalha por ${campaign.world.regions[region].name}. Vença para conquistar a região.`);
