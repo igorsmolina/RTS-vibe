@@ -117,7 +117,7 @@ function hit(g,a,b,w){if(w)assert.ok(g.setWeapon(a,w));const hp=b.hp;g.shoot(a,b
 check('Helicópteros: atributos provisórios, produção e camada aérea explícita',()=>{
  for(const t of air){const s=TYPES[t];assert.equal(s.air,true);assert.equal(s.hp,120);assert.equal(s.move,6);assert.equal(s.speed,2.2);assert.equal(s.vision,6);assert.equal(s.reward,50);assert.equal(s.vehicle,undefined);}
  assert.equal(JSON.stringify(air.map(t=>[TYPES[t].cost,TYPES[t].train])),'[[110,3],[230,4],[180,4]]');assert.equal(new Game('river','normal',1,'rts').trainDuration('helicopterAir'),40);
- assert.equal(JSON.stringify(air.map(t=>TYPES[t].weapons)),'[["gun"],["gun","agm"],["gun","aam"]]');for(const t of Object.keys(TYPES).filter(t=>!air.includes(t)&&t!=='reconDrone'))assert.ok(!TYPES[t].air,t);
+ assert.equal(JSON.stringify(air.map(t=>TYPES[t].weapons)),'[["gun"],["gun","agm"],["gun","aam"]]');for(const t of Object.keys(TYPES).filter(t=>!air.includes(t)&&!TYPES[t].drone))assert.ok(!TYPES[t].air,t);
 });
 check('Voo sobre água e montanha com custo 1, sem bônus de estrada, floresta, cobertura ou montanha',()=>{
  const g=field(),h=g.add('blue','helicopter',3,5);for(const t of ['plain','road','forest','mountain','river','bridge']){g.terrain[KEY(4,5)]=t;assert.equal(g.cost(h,4,5),1,t);}

@@ -22,6 +22,7 @@ Fonte: `public/js/engine.js` (`TYPES`, `WEAPONS`, `weapon`, `impact`). "—" = n
 | Helicóptero ar-terra (míssil) | 32,5 | **97,5** | **97,5** | — | 65 |
 | Helicóptero ar-ar (míssil) | — | — | — | 70 | — |
 | Drone de reconhecimento | — | — | — | — | — |
+| Drone furtivo ⁴ | 20 | 20 | — | 20 | 20 |
 
 Tanque médio e tanque pesado só levam dano de antitanque, tanques, artilharia e míssil ar-terra; as demais tropas não conseguem mirar neles.
 Quartel-general e posto avançado não atacam (dano 0).
@@ -39,6 +40,7 @@ Quartel-general e posto avançado não atacam (dano 0).
 1. Contra aeronave, o dano cai de 100% para 50% conforme a distância chega ao alcance máximo do disparo.
 2. Artilharia: 70 a 2 casas, 28 a 6 casas. Tropas ao redor (área 3×3) levam metade, inclusive as suas (fogo amigo).
 3. Artilharia de mísseis: por míssil com impacto efetivo (80% de chance), casa central / oito vizinhas; 4 mísseis por salva, alcance 3–13, sem queda pela distância. Atinge as suas tropas e não atinge aeronaves. Só ataca pela ordem Bombardear área. Equilíbrio provisório.
+4. Drone furtivo: 2 mísseis no total, sem reposição, alcance 2, um por ação (RTS: 3 s entre disparos). Nunca dispara automaticamente, só contra alvos escolhidos pelo jogador ou pela IA. Equilíbrio provisório.
 
 ## O que muda o número final
 
@@ -69,6 +71,7 @@ Quartel-general e posto avançado não atacam (dano 0).
 | Veículo antiaéreo | 40 |
 | Helicópteros | 120 |
 | Drone de reconhecimento | 60 |
+| Drone furtivo | 50 |
 | Quartel-general | 300 |
 | Posto avançado | 80 |
 
@@ -81,5 +84,6 @@ Quartel-general e posto avançado não atacam (dano 0).
 | Helicóptero ar-ar | 180 |
 | Artilharia de mísseis | 240 |
 | Drone de reconhecimento | 90 |
+| Drone furtivo | 160 |
 
 O veículo antiaéreo anda tão rápido quanto o batedor (5 casas por turno; velocidade 2,25 no RTS).

@@ -21,7 +21,7 @@ const root=path.join(__dirname,'..'),out=path.join(root,'test-output','air-defen
   await page.evaluate(ids=>{game.get(ids.h2).altitude='high';setSelection([ids.h2]);},flightIds);assert.match(await page.locator('#unitInfo').textContent(),/Míssil ar-ar 11 casas/);
  }
  await page.setViewportSize({width:1440,height:1000});console.log('OK visão e alcance efetivos durante subida/descida, painel desktop/celular nos dois modos offline.');
- let ids=await fixture();assert.equal(await page.locator('[data-recruit]').count(),16);assert.equal(await page.locator('#flightControls').isVisible(),true);assert.match(await page.locator('#unitInfo').textContent(),/Flares: 3\/3 · prontos/);
+ let ids=await fixture();assert.equal(await page.locator('[data-recruit]').count(),17);assert.equal(await page.locator('#flightControls').isVisible(),true);assert.match(await page.locator('#unitInfo').textContent(),/Flares: 3\/3 · prontos/);
  await page.evaluate(ids=>setSelection([ids.h,ids.h2]),ids);await page.locator('#altitudeHigh').click();assert.equal(await page.evaluate(ids=>game.get(ids.h).job.type,ids),'altitude');assert.equal(await page.evaluate(ids=>game.get(ids.h2).job.type,ids),'altitude');await page.waitForTimeout(150);assert.equal(await page.evaluate(ids=>game.get(ids.h).work,ids),0);assert.match(await page.locator('#hint').textContent(),/Ordem preparada/);
  await page.locator('#pause').click();await page.waitForFunction(ids=>game.get(ids.h).altitude==='high'&&game.get(ids.h2).altitude==='high',ids);await page.locator('#pause').click();assert.match(await page.locator('#unitInfo').textContent(),/ALTA/);await page.locator('#stop').click();
  console.log('OK altitude em grupo durante pausa, transição de 1 s e indicação ALTA.');

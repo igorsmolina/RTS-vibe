@@ -49,18 +49,20 @@ const TYPES={
  helicopterAir:{air:true,weapons:['gun','aam'],move:6,name:'Helicóptero ar-ar',hp:120,speed:2.2,range:3,min:0,damage:20,accuracy:.85,vision:6,cooldown:1,train:4,cost:180,reward:50,role:'Metralhadora e mísseis ar-ar'},
  // Equilíbrio provisório das duas classes abaixo (ainda não validado em partidas).
  rocketArtillery:{move:2,vehicle:true,name:'Artilharia de mísseis',hp:90,speed:.85,range:13,min:3,damage:20,accuracy:.8,vision:3,cooldown:10,train:4,cost:240,reward:60,role:'Bombardear área 3×3 · 4 mísseis · ×2 contra estruturas'},
- reconDrone:{air:true,unarmed:true,weapons:[],move:7,name:'Drone de reconhecimento',hp:60,speed:2.4,range:0,min:0,damage:0,accuracy:0,vision:12,cooldown:1,train:2,cost:90,reward:30,role:'Reconhecimento · visão 12 · sempre em altitude alta · sem armas'},
+ reconDrone:{air:true,drone:true,unarmed:true,weapons:[],move:7,name:'Drone de reconhecimento',hp:60,speed:2.4,range:0,min:0,damage:0,accuracy:0,vision:12,cooldown:1,train:2,cost:90,reward:30,role:'Reconhecimento · visão 12 · sempre em altitude alta · sem armas'},
+ // Drone furtivo: equilíbrio provisório. Invisível ao radar; descoberto pela visão inimiga, fica revelado até ser destruído.
+ stealthDrone:{air:true,drone:true,stealth:true,weapons:['stealthMissile'],missiles:2,move:6,name:'Drone furtivo',hp:50,speed:2.2,range:2,min:0,damage:20,accuracy:.85,vision:12,cooldown:3,train:3,cost:160,reward:45,role:'Furtivo ao radar · visão 12 · 2 mísseis, alcance 2, só por ordem · sempre em altitude alta'},
  commander:{move:3,name:'Comandante',hp:140,speed:1.35,range:2,min:0,damage:40,accuracy:.9,vision:5,cooldown:1.5,reward:70,role:'Aura de comando · raio 2'},
  hq:{name:'Quartel-general',hp:300,speed:0,range:0,damage:0,vision:5,structure:true,reward:100},
  post:{name:'Posto avançado',hp:80,speed:0,range:0,damage:0,vision:3,structure:true,reward:30}
 };
 // Armas dos helicópteros. Recarga em segundos (RTS); por turnos cada disparo gasta a ação.
 const ARMORED=new Set(['tank','heavyTank']),BREAKERS=new Set(['antitank','lightTank','tank','heavyTank','artillery']);
-const WEAPONS={gun:{name:'Metralhadora',damage:20,range:3,accuracy:.85,cooldown:1},agm:{name:'Míssil ar-terra',damage:65,range:5,accuracy:.85,cooldown:3},aam:{name:'Míssil ar-ar',damage:70,range:6,accuracy:.9,cooldown:3}};
+const WEAPONS={gun:{name:'Metralhadora',damage:20,range:3,accuracy:.85,cooldown:1},agm:{name:'Míssil ar-terra',damage:65,range:5,accuracy:.85,cooldown:3},aam:{name:'Míssil ar-ar',damage:70,range:6,accuracy:.9,cooldown:3},stealthMissile:{name:'Míssil furtivo',damage:20,range:2,accuracy:.85,cooldown:3}};
 const AIR=u=>!!TYPES[u?.type]?.air;
 const ALTITUDE_TIME=1;
 function flightLevel(u){const t=u.altitudeTransition;if(!t)return u.altitude==='high'?1:0;const p=Math.min(1,t.elapsed/(t.returning?.2:ALTITUDE_TIME));return t.from+(t.to-t.from)*p*p*(3-2*p);}
-const MISSILE=w=>['agm','aam','antiAirVehicle','missileInfantry','rocket'].includes(w);
+const MISSILE=w=>['agm','aam','antiAirVehicle','missileInfantry','rocket','stealthMissile'].includes(w);
 // Salva da artilharia de mísseis: quatro mísseis contra a casa central, 0,25 s entre lançamentos.
 const SALVO={missiles:4,interval:.25};
 const LAUNCHER_TIME=.35;
@@ -81,7 +83,7 @@ const DOCTRINE=[
  {type:'tank',share:.08,min:1},{type:'lightTank',share:.07},{type:'machinegun',share:.07,min:1},
  {type:'artillery',share:.06,min:1},{type:'infantry',share:.14,min:2},{type:'engineer',share:.04,min:1},
  {type:'recon',share:.04,min:1},{type:'missileInfantry',share:.02},
- {type:'rocketArtillery',share:.04,min:1},{type:'reconDrone',share:.03,min:1}
+ {type:'rocketArtillery',share:.04,min:1},{type:'reconDrone',share:.03,min:1},{type:'stealthDrone',share:.03,min:1}
 ];
 // Cronograma: a partir de certa rodada (RTS: ×30 s) a IA mantém pelo menos uma unidade destas classes.
 const SCHEDULE={antiAirVehicle:4,helicopter:1,heavyTank:6,helicopterGround:10,helicopterAir:14};
@@ -110,7 +112,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  add(owner,type,x,y){
   const t=TYPES[type];if(!t||!INSIDE(x,y)||!['blue','red','neutral'].includes(owner))return null;
   const u={id:this.nextId++,owner,type,x,y,facing:owner==='blue'?0:Math.PI,hp:t.hp,maxHp:t.hp,level:1,xp:0,cooldown:0,setup:0,packing:0,idle:0,entrenched:false,suppressed:0,revealed:0,work:0,reserved:0,order:{type:'stop'},path:[],segment:null,navGoal:null,healText:0,moveLeft:t.move||0,actionLeft:!t.structure,moved:false,pending:false};
-  u.hp=u.maxHp=this.baseHp(owner,type);if(t.structure)u.queue=[];if(t.air){if(!t.unarmed)u.weaponMode='auto';u.altitude=t.unarmed?'high':'low';u.flares=t.unarmed?0:3;u.flareCooldown=0;u.flareUsed=false;}if(type==='antiAirVehicle')u.radarOn=true;(t.structure?this.structures:this.units).push(u);if(type==='antiAirVehicle')this.updateRadarContacts();return u;
+  u.hp=u.maxHp=this.baseHp(owner,type);if(t.structure)u.queue=[];if(t.air){if(!t.unarmed)u.weaponMode='auto';u.altitude=t.drone?'high':'low';u.flares=t.drone?0:3;u.flareCooldown=0;u.flareUsed=false;}if(t.stealth){u.missiles=t.missiles;u.spotted={blue:false,red:false};}if(type==='antiAirVehicle')u.radarOn=true;(t.structure?this.structures:this.units).push(u);if(type==='antiAirVehicle')this.updateRadarContacts();return u;
  }
   generate(){
   const o=this.options,rng=this.rng,mid=COLS/2,T=this.terrain,seed=this.seed;
@@ -249,20 +251,20 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   }return null;
  }
  radarContact(owner,u){return !!u&&AIR(u)&&u.hp>0&&u.owner!==owner&&u.altitude==='high'&&!!this.radarContacts[owner]?.has(u.id);}
- updateRadarContacts(){for(const owner of ['blue','red']){const contacts=this.radarContacts[owner];contacts.clear();if(this.units.some(u=>u.owner===owner&&u.hp>0&&u.type==='antiAirVehicle'&&u.radarOn))for(const u of this.units)if(u.owner!==owner&&u.hp>0&&AIR(u)&&u.altitude==='high')contacts.add(u.id);}}
+ updateRadarContacts(){for(const owner of ['blue','red']){const contacts=this.radarContacts[owner];contacts.clear();if(this.units.some(u=>u.owner===owner&&u.hp>0&&u.type==='antiAirVehicle'&&u.radarOn))for(const u of this.units)if(u.owner!==owner&&u.hp>0&&AIR(u)&&!TYPES[u.type].stealth&&u.altitude==='high')contacts.add(u.id);}}
  setRadar(u,on){if(!u||u.type!=='antiAirVehicle'||u.hp<=0||!this.units.includes(u)||typeof on!=='boolean')return false;u.radarOn=on;this.updateVision();return true;}
- isVisible(owner,u){if(!u||!this.visible[owner])return false;const p=TILE(u);return this.radarContact(owner,u)||!!(AIR(u)?this.sky:this.visible)[owner][KEY(p.x,p.y)];}
+ isVisible(owner,u){if(!u||!this.visible[owner])return false;if(u.spotted)return u.hp>0&&!!u.spotted[owner];const p=TILE(u);return this.radarContact(owner,u)||!!(AIR(u)?this.sky:this.visible)[owner][KEY(p.x,p.y)];}
  effectVisible(x,y,air=false,contactId,sourceId){const p=TILE({x,y});if(!INSIDE(p.x,p.y))return false;if((air?this.sky:this.visible).blue[KEY(p.x,p.y)])return true;if(air)for(const id of [contactId,sourceId]){if(id===undefined)continue;const u=this.get(id);if(this.radarContact('blue',u)&&Math.hypot(x-u.x,y-u.y)<=2)return true;}return false;}
  // Alcance contra um alvo; sem alvo, o maior alcance do modo de arma atual.
- weaponRange(u,w,altitude=u.altitude){if(!TYPES[u.type].weapons?.includes(w))return 0;return WEAPONS[w].range+(altitude==='high'&&w!=='gun'?5:0);}
+ weaponRange(u,w,altitude=u.altitude){if(!TYPES[u.type].weapons?.includes(w))return 0;return WEAPONS[w].range+(altitude==='high'&&w!=='gun'&&w!=='stealthMissile'?5:0);}
  range(u,target,altitude=u.altitude){const t=TYPES[u.type];if(target&&!this.weapon(u,target)||t.unarmed)return 0;if(u.type==='rocketArtillery')return t.range;if(u.type==='missileInfantry')return target&&!AIR(target)?1:3;if(!t.air)return t.range+({mountain:2,hill:1}[this.terrainAt(u)]||0);if(target)return this.weaponRange(u,this.weapon(u,target),altitude);const mode=u.weaponMode||'auto';return mode==='auto'?Math.max(...t.weapons.map(w=>this.weaponRange(u,w,altitude))):this.weaponRange(u,mode,altitude);}
- sight(u){return AIR(u)&&!TYPES[u.type].unarmed&&u.altitude==='high'?15:TYPES[u.type].vision+(!AIR(u)&&['mountain','hill'].includes(this.terrainAt(u))?2:0);}
+ sight(u){return AIR(u)&&!TYPES[u.type].drone&&u.altitude==='high'?15:TYPES[u.type].vision+(!AIR(u)&&['mountain','hill'].includes(this.terrainAt(u))?2:0);}
  /* Arma de a contra b, ou null se incompatível. Solo: a própria tropa (só infantaria e metralhador alcançam aeronaves).
     Helicóptero: arma manual se compatível; Auto prefere o míssil contra veículo/estrutura (ar-terra) ou aeronave (ar-ar). */
  // Tanque médio e pesado: só antitanque, tanques, artilharia e míssil ar-terra ferem.
  weapon(a,b){const w=this.pickWeapon(a,b);return w&&ARMORED.has(b.type)&&!BREAKERS.has(a.type)&&w!=='agm'?null:w;}
  pickWeapon(a,b){
-  const t=TYPES[a.type],air=AIR(b);if(t.unarmed||a.type==='rocketArtillery')return null;if(a.type==='antiAirVehicle')return air?a.type:null;if(a.type==='missileInfantry')return a.type;if(!t.air)return air&&a.type!=='infantry'&&a.type!=='machinegun'?null:a.type;
+  const t=TYPES[a.type],air=AIR(b);if(t.unarmed||a.type==='rocketArtillery')return null;if(t.stealth)return a.missiles>0?'stealthMissile':null;if(a.type==='antiAirVehicle')return air?a.type:null;if(a.type==='missileInfantry')return a.type;if(!t.air)return air&&a.type!=='infantry'&&a.type!=='machinegun'?null:a.type;
   const fits=w=>w==='gun'||(w==='agm')!==air,mode=a.weaponMode||'auto';if(mode!=='auto')return fits(mode)?mode:null;
   const missile=t.weapons[1];return missile&&fits(missile)&&(air||TYPES[b.type].vehicle||TYPES[b.type].structure)?missile:'gun';
  }
@@ -272,9 +274,11 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   for(const owner of ['blue','red']){
    const visible=this.visible[owner],sky=this.sky[owner],explored=this.explored[owner];visible.fill(false);sky.fill(false);
    for(const list of [this.units,this.structures])for(const u of list){
-    if(u.owner!==owner||u.hp<=0)continue;const r=this.sight(u),limit=r+.05,high=AIR(u)&&!TYPES[u.type].unarmed&&u.altitude==='high',detection=high?1:u.type==='recon'?3:2,x0=Math.max(0,Math.floor(u.x-r)),x1=Math.min(COLS-1,Math.ceil(u.x+r));
+    if(u.owner!==owner||u.hp<=0)continue;const r=this.sight(u),limit=r+.05,high=AIR(u)&&!TYPES[u.type].drone&&u.altitude==='high',detection=high?1:u.type==='recon'?3:2,x0=Math.max(0,Math.floor(u.x-r)),x1=Math.min(COLS-1,Math.ceil(u.x+r));
     for(let y=Math.max(0,Math.floor(u.y-r));y<=Math.min(ROWS-1,Math.ceil(u.y+r));y++){const dy=Math.abs(u.y-y);for(let x=x0;x<=x1;x++){const d=Math.abs(u.x-x)+dy;if(d<=limit){const k=KEY(x,y),terrain=this.terrain[k],concealed=CONCEAL.has(terrain)||high&&(terrain==='hill'||terrain==='mountain');explored[k]=true;sky[k]=true;if(!concealed||d<=detection+.05)visible[k]=true;}}}
    }
+   // Drone furtivo: a primeira vez no céu visto por este lado o descobre de vez.
+   for(const e of this.units)if(e.spotted&&e.owner!==owner&&e.hp>0&&!e.spotted[owner]){const p=TILE(e);if(sky[KEY(p.x,p.y)]){e.spotted[owner]=true;if(owner==='blue')this.log('Drone furtivo inimigo descoberto.');else if(e.owner==='blue')this.log('Seu drone furtivo foi descoberto.');}}
    // Helicóptero alto: cobertura terrestre até 1 casa; disparos revelam a quem tem alcance de visão, inclusive do alto.
    for(const e of this.units)if(e.owner!==owner&&e.revealed>0){const p=TILE(e),k=KEY(p.x,p.y);if(!visible[k]&&this.all().some(o=>o.owner===owner&&o.hp>0&&DIST(o,e)<=this.sight(o)+.05))visible[k]=true;}
    for(const [key]of this.memory[owner])if(this.visible[owner][key])this.memory[owner].delete(key);
@@ -307,6 +311,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
    if(!this.canFire(u,e))continue;
    const w=this.weapon(u,e),t=TYPES[e.type],d=DIST(u,e);let role=1;
    if(u.type==='artillery')role=around(friends,e)?-10:2+around(foes,e)*2;
+   else if(u.type==='stealthDrone')role=['antiAirVehicle','missileInfantry'].includes(e.type)?4:2;
    else if(AIR(u))role=w!=='gun'?3:1;
    else if(u.type==='antitank')role=t.vehicle?3:0;
    else if(u.type==='machinegun')role=AIR(e)||(!t.vehicle&&!t.structure)?2:0;
@@ -372,7 +377,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
     if(u.type!=='engineer'||!target||AIR(target)||target===u||target.owner!==u.owner||target.hp>=target.maxHp)return false;
     route=this.pathToRange(u,target,1,0,rts?Infinity:u.moveLeft);if(route===null)return false;
    }else if(type==='altitude'){
-    if(!AIR(u)||TYPES[u.type].unarmed||!['low','high'].includes(args.altitude)||args.altitude===u.altitude)return false;job.altitude=args.altitude;
+    if(!AIR(u)||TYPES[u.type].drone||!['low','high'].includes(args.altitude)||args.altitude===u.altitude)return false;job.altitude=args.altitude;
    }else if(type==='service'){
     if(!this.canService(u,target))return false;
    }else if(type==='capture'){
@@ -409,7 +414,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  shoot(u,target){
   if(u.type==='artillery'&&this.mode!=='rts')u.moveLeft=0;
   // O projétil guarda arma, dano e alvo do disparo; trocar de arma depois não o altera. Helicópteros: recarga única por arma usada.
-  const w=this.weapon(u,target);if(!w)return;const missile=MISSILE(w);
+  const w=this.weapon(u,target);if(!w)return;const missile=MISSILE(w);if(w==='stealthMissile')u.missiles--;
   u.facing=Math.atan2(target.x-u.x,u.y-target.y);u.cooldown=u.reload=(AIR(u)?WEAPONS[w]:TYPES[u.type]).cooldown;u.revealed=2;const artillery=u.type==='artillery',aim=artillery?TILE(target):{x:target.x,y:target.y};
   const accuracyBase=this.accuracy(u,target,w),flareProtected=missile&&this.flareReady(target),accuracy=accuracyBase*(flareProtected?.5:1),roll=this.rng();
   const decoy=flareProtected?{x:Math.max(0,Math.min(COLS-1,target.x+(target.id%2?1.3:-1.3))),y:Math.max(0,Math.min(ROWS-1,target.y+1.2))}:null;
@@ -530,7 +535,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   const threatened=seen.some(e=>!TYPES[e.type].structure&&DIST(e,hq)<=6);
   // Drone: um para reconhecimento; artilharia de mísseis quando já conhece estrutura azul (dano ×2).
   const boost={antiAirVehicle:1.5*skies,missileInfantry:1.5*skies,helicopterAir:skies,antitank:.75*armor,helicopterGround:1.5*armor,heavyTank:.5*armor,machinegun:.4*foot,
-   reconDrone:count('reconDrone')?0:.5,rocketArtillery:[...this.memory.red.values()].some(s=>s.owner==='blue')?.5:0};
+   reconDrone:count('reconDrone')?0:.5,stealthDrone:!count('stealthDrone')&&(this.mode==='rts'?this.time/30:this.round)>=3?.4:0,rocketArtillery:[...this.memory.red.values()].some(s=>s.owner==='blue')?.5:0};
   const norm=DOCTRINE.reduce((a,d)=>a+d.share,0),size=Math.max(8,army.length+queue.length),clock=this.mode==='rts'?this.time/30:this.round;
   const ranked=DOCTRINE.map((d,i)=>({type:d.type,i,share:d.share,score:Math.max(d.min||0,SCHEDULE[d.type]&&clock>=SCHEDULE[d.type]?1:0,Math.round(d.share/norm*size))-count(d.type)+(boost[d.type]||0)})).sort((x,y)=>y.score-x.score||x.i-y.i);
   // Poupa pelo tipo de maior déficit até poder pagá-lo: o caro entra quando junta o dinheiro, e não é trocado pelas baratas.
@@ -545,7 +550,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
  moveToward(u,target,near=1,leg=Infinity){const route=this.pathToRange(u,target,near);if(!route?.length)return false;const part=this.trimPath(u,route).slice(0,leg);return part.length?this.order(u,'move',part[part.length-1]):false;}
  // Valor de combate: custo (100 sem custo) pela fração de vida. Combatentes da onda: tropas com arma, sem comandante, engenheiro e batedor.
  power(u){return TYPES[u.type].structure?0:(TYPES[u.type].cost||100)*u.hp/u.maxHp;}
- fighter(u){const t=TYPES[u.type];return u.owner==='red'&&!t.structure&&t.damage>0&&!['commander','engineer','recon'].includes(u.type);}
+ fighter(u){const t=TYPES[u.type];return u.owner==='red'&&!t.structure&&t.damage>0&&!['commander','engineer','recon','stealthDrone'].includes(u.type);}
  presumedHQ(hq){return{x:COLS-1-hq.x,y:ROWS-1-hq.y};} // mapas simétricos: o QG azul fica no ponto espelhado
  // Ponto de encontro: casa alcançável por tanque mais próxima de 30% do caminho entre o QG vermelho e o QG azul presumido.
  rallyPoint(hq){
@@ -584,6 +589,16 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   u.scoutLeg??=0;if(DIST(u,legs[u.scoutLeg%2])<=2)u.scoutLeg++;return this.moveToward(u,legs[u.scoutLeg%2],2);
  }
  // Drone da IA: com artilharia de mísseis, observa 8 casas à frente dela rumo ao objetivo; sem ela, patrulha como o batedor.
+ // Drone furtivo da IA: com mísseis, ataca o que estiver ao alcance (prefere antiaéreas e lançadores) ou caça o mais próximo
+ // desses que já viu; ferido ou sem mísseis, patrulha como o batedor.
+ stealthAct(u,hq,foes){
+  if(u.missiles>0&&u.hp/u.maxHp>=.5){
+   const target=this.acquire(u);if(target&&this.order(u,'attack',{targetId:target.id}))return true;
+   const prey=foes.filter(e=>this.weapon(u,e)&&!TYPES[e.type].structure).sort((a,b)=>Number(['antiAirVehicle','missileInfantry'].includes(b.type))-Number(['antiAirVehicle','missileInfantry'].includes(a.type))||DIST(a,u)-DIST(b,u))[0];
+   if(prey&&DIST(prey,u)<=10&&this.moveToward(u,prey,TYPES[u.type].range))return true;
+  }
+  return this.scout(u,hq);
+ }
  droneAct(u,hq){
   if(u.hp/u.maxHp<.5)return this.moveToward(u,this.plan.rally,2);
   const rocket=this.units.find(v=>v.owner===u.owner&&v.type==='rocketArtillery');if(!rocket)return this.scout(u,hq);
@@ -604,6 +619,7 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   // Ameaças: inimigos a até 6 casas do QG ou a até 3 de um posto vermelho.
   const threats=foes.filter(e=>!TYPES[e.type].structure&&(DIST(e,hq)<=6||posts.some(s=>DIST(e,s)<=3))),wave=p.phase==='attack'&&p.wave.includes(u.id);this.aiState=threats.length?'defend':p.phase;
   if(u.type==='reconDrone'){if(!this.droneAct(u,hq))this.hold(u);return;}
+  if(u.type==='stealthDrone'){if(!this.stealthAct(u,hq,foes))this.hold(u);return;}
   if(u.type==='rocketArtillery'&&(this.mode==='rts'?u.cooldown<=0:u.actionLeft))for(const c of this.bombardTargets(u))if(this.order(u,'bombard',c))return;
   if(AIR(u)){
    if(u.hp/u.maxHp<=.5||u.flares===0){
@@ -668,7 +684,8 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
   const preparing=job?.type==='bombard'&&this.canBombard(u,job.cell)&&(job.left!==undefined||u.cooldown<=0);
   if(u.launcherLevel>0&&!preparing){if(this.advanceLauncher(u,false,dt))u.pending=!!job;return;}
   if(!job){
-   const enemy=u.cooldown<=0?this.acquire(u):null;
+   // Drone furtivo não dispara sozinho: só contra alvos escolhidos pelo jogador ou pela IA.
+   const enemy=u.cooldown<=0&&!TYPES[u.type].stealth?this.acquire(u):null;
    if(enemy){u.idle=0;u.entrenched=false;this.shoot(u,enemy);}
    else{u.idle+=dt;if(u.idle>=3&&!AIR(u))u.entrenched=true;}return;
   }
@@ -681,7 +698,8 @@ function seeded(seed){let n=seed>>>0;return()=>{n=(Math.imul(n,1664525)+10139042
    if(u.hp>=u.maxHp&&u.flares===3)this.finishRTS(u);return;
   }
   if(['attack','capture','repair'].includes(job.type)){
-   const valid=target&&target.hp>0&&(job.type==='repair'?!AIR(target)&&target.owner===u.owner&&target.hp<target.maxHp:target.owner!==u.owner&&this.isVisible(u.owner,target));
+   // Sem arma compatível (ex.: drone furtivo sem mísseis), o ataque termina em vez de perseguir o alvo.
+   const valid=target&&target.hp>0&&(job.type==='repair'?!AIR(target)&&target.owner===u.owner&&target.hp<target.maxHp:target.owner!==u.owner&&this.isVisible(u.owner,target)&&(job.type!=='attack'||!!this.weapon(u,target)));
    if(!valid){this.finishRTS(u);return;}
   }
   if(job.type==='demine'&&!this.mines.some(m=>m.x===job.goal.x&&m.y===job.goal.y)){this.finishRTS(u);return;}

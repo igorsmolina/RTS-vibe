@@ -11,7 +11,7 @@ const tankAtlas=new Image(),tankFrames={lightTank:0,tank:1,heavyTank:2},tankSize
 const heliAtlas=new Image(),heliFrames={helicopter:0,helicopterGround:1,helicopterAir:2};
 const antiAirAtlas=new Image(),highCloud=new Image(),antiAirFrames={antiAirVehicle:0,missileInfantry:1};
 // Artilharia de mísseis e drone: um PNG 128 × 128 por equipe [aliado, inimigo], frente para cima.
-const newTroopImages={rocketArtillery:[new Image(),new Image()],reconDrone:[new Image(),new Image()]},newTroopSizes={rocketArtillery:56,reconDrone:66};
+const newTroopImages={rocketArtillery:[new Image(),new Image()],reconDrone:[new Image(),new Image()],stealthDrone:[new Image(),new Image()]},newTroopSizes={rocketArtillery:56,reconDrone:66,stealthDrone:60};
 const rocketLauncherImages=Array.from({length:2},()=>[new Image(),new Image()]);
 const ambientClouds=Array.from({length:3},()=>new Image()),cloudShadows=[];
 const GRAPHICS={performance:{clouds:0,particles:0,interval:1,alpha:0},balanced:{clouds:12,particles:80,interval:.18,alpha:.13},cinematic:{clouds:24,particles:160,interval:.1,alpha:.2}};
@@ -40,6 +40,7 @@ function unitIcon(ctx,type,x,y,color,scale=1,facing=0,stride=0,firing=false,laun
   if(type==='rocketArtillery')ctx.translate(0,stride*.6+(firing?1:0));
   if(image.complete&&image.naturalWidth)ctx.drawImage(image,-size/2,-size/2,size,size);
   else if(type==='rocketArtillery'){for(const xx of [-17,12])for(const yy of [-18,-3,12])box(xx,yy,5,9,dark);box(-12,-22,24,40,color,dark);box(-10,-4,20,20,'#43534e',dark);for(let i=0;i<3;i++)for(let j=0;j<2;j++)oval(-6+i*6,2+j*7,2.2,2.2,steel);}
+  else if(type==='stealthDrone')polygon(ctx,[[0,-26],[29,17],[0,7],[-29,17]],'#50575c',dark);
   else{line([[-30,2],[30,2]],color,5);line([[-9,20],[9,20]],color,3);box(-3,-18,6,40,color,dark);oval(0,-14,4,6,'#24444b',dark);}
   if(firing&&type==='rocketArtillery')for(const x of [-7,7])polygon(ctx,[[x-2,2],[x-4,-2],[x,-7],[x+4,-2],[x+2,2]],'#f8cc76');
   ctx.restore();return;
@@ -356,6 +357,8 @@ class Renderer{
  entity(u,memory=false){
   const c=this.ctx,x=(u.x+.5)*CELL,groundY=(u.y+.5)*CELL,pose=flightPose(u),y=(pose.y+.5)*CELL,chosen=selection.has(u.id);c.save();
   if(memory)c.globalAlpha=.55;
+  // Seu drone furtivo ainda não descoberto pelo inimigo aparece translúcido.
+  else if(u.owner==='blue'&&u.spotted&&!u.spotted.red)c.globalAlpha=.6;
   if(!memory&&AIR(u)){
    c.save();c.translate(x+7+pose.level*12,groundY+15+pose.level*12);c.scale(1,.55);const shadow=c.createRadialGradient(0,0,5,0,0,26+pose.level*5);shadow.addColorStop(0,pose.level>.5?'#071c2c32':'#071c2c60');shadow.addColorStop(1,'#071c2c00');c.fillStyle=shadow;c.beginPath();c.arc(0,0,26+pose.level*5,0,7);c.fill();c.restore();
    if(pose.level>0){c.save();c.globalAlpha=.22*pose.level;if(highCloud.complete&&highCloud.naturalWidth)c.drawImage(highCloud,x-38,groundY-31,76,76);else{c.fillStyle='#e7edf1';for(const [dx,dy]of [[-25,12],[25,-5],[-16,-22]]){c.beginPath();c.ellipse(x+dx,groundY+dy,14,7,0,0,7);c.fill();}}c.restore();}
