@@ -172,6 +172,7 @@ dialog .title-foot{margin:22px 0 0;font-size:12px;color:var(--muted)}
 .file-button{position:relative;display:inline-flex;align-items:center;cursor:pointer}
 .file-button input{position:absolute;inset:0;opacity:0;cursor:pointer}
 #accountSignedIn span{margin-right:auto;align-self:center}
+#passwordBox{margin-top:16px}#passwordBox summary{min-height:44px;padding:10px 0;cursor:pointer;font-weight:600}
 .account-layout{display:grid;grid-template-columns:minmax(0,440px) minmax(0,1fr);gap:32px;margin:20px 0 32px}.account-main{min-width:0;max-width:440px}
 .account-layout:has(#accountForm[hidden]):has(#accountSignedIn[hidden]){display:none}
 @media(max-width:1023px){.account-layout{grid-template-columns:1fr}.account-layout .conversation{display:none}}

@@ -62,6 +62,15 @@ async function cloudSignIn(create){
 async function cloudSignOut(){clearTimeout(cloud.timer);if(cloud.user)await cloudSync();const synced=!cloud.pending&&!cloud.error;
  try{await cloud.client?.auth.signOut();}catch{}cloud.user=null;cloud.pending=false;
  if(synced){resetLocal();try{localStorage.removeItem(OWNER_KEY);}catch{}}renderAccount();if($('profile').open)renderProfile();}
+// Neon Auth (Better Auth): confere a senha atual e encerra as sessões dos outros aparelhos.
+async function cloudChangePassword(){
+ const currentPassword=$('passwordCurrent').value,newPassword=$('passwordNew').value,status=$('accountStatus');
+ if(!currentPassword||newPassword.length<8){status.textContent='Informe a senha atual e uma nova senha com pelo menos 8 caracteres.';return;}
+ status.textContent='Trocando senha…';
+ try{const r=await cloud.client.auth.changePassword({currentPassword,newPassword,revokeOtherSessions:true});if(r?.error)throw r.error;
+  $('passwordCurrent').value=$('passwordNew').value='';status.textContent='Senha alterada. Outros aparelhos precisarão entrar de novo.';}
+ catch(e){status.textContent='Não foi possível trocar a senha: '+(e?.message||String(e));}
+}
 window.addEventListener('online',()=>{if(cloud.pending)cloudSync();});
 
 // --- Diálogo Perfil e conquistas
@@ -84,7 +93,7 @@ function renderProfile(){
 function renderAccount(){
  if(!$('profile').open)return;
  const on=cloudConfigured()&&cloudReachable();$('accountForm').hidden=!on||!!cloud.user;$('accountSignedIn').hidden=!cloud.user;
- $('accountUser').textContent=cloud.user?.email||'';
+ $('passwordBox').hidden=!cloud.user;$('accountUser').textContent=cloud.user?.email||'';
  let status;
  if(!cloudConfigured())status='Nuvem não configurada: siga "Progresso na nuvem (Neon)" no README e preencha js/neon-config.js. Seu progresso está salvo neste navegador.';
  else if(!cloudReachable())status='Para sincronizar, abra o jogo por "Jogar online.bat" (ou npm start). Por arquivo (file://) o login do Neon não funciona; o progresso fica neste navegador.';
@@ -110,6 +119,8 @@ $('closeProfile').addEventListener('click',()=>closeChild('profile'));
 $('profile').addEventListener('cancel',e=>{e.preventDefault();closeChild('profile');});
 for(const b of document.querySelectorAll('#profile [role=tab]'))b.addEventListener('click',()=>showProfileTab(b.dataset.tab));
 $('accountSignIn').addEventListener('click',()=>cloudSignIn(false));$('accountSignUp').addEventListener('click',()=>cloudSignIn(true));
-$('accountSignOut').addEventListener('click',cloudSignOut);$('accountSync').addEventListener('click',()=>cloudSync());
+$('accountSignOut').addEventListener('click',cloudSignOut);$('passwordChange').addEventListener('click',cloudChangePassword);
+for(const c of document.querySelectorAll('.show-password'))c.addEventListener('change',()=>{for(const i of c.form.querySelectorAll('[autocomplete$=password]'))i.type=c.checked?'text':'password';});
+$('accountSync').addEventListener('click',()=>cloudSync());
 $('exportSave').addEventListener('click',exportSave);$('importSave').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(f)importSave(f);});
 cloudStart();
