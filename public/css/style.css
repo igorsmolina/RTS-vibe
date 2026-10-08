@@ -181,3 +181,10 @@ dialog #campaignStats,dialog #regionInfo,dialog #campaignEvents{font-size:14px;l
 .campaign-nation{display:flex;align-items:center;gap:10px;overflow-wrap:anywhere}.nation-preview{display:flex;align-items:center;gap:18px;padding:12px;background:var(--menu-soft);border-radius:8px}.nation-preview canvas{width:120px;height:80px;flex:none;border:1px solid var(--line)}.nation-preview strong{min-width:0;overflow-wrap:anywhere}.nation-colors{display:grid;grid-template-columns:1fr 1fr;gap:12px}.nation-colors .field{min-width:0}.nation-colors select{width:100%}
 .doctrine-fields{min-width:0;margin:8px 0 12px;padding:12px;border:1px solid var(--line);border-radius:6px}.doctrine-fields legend{font-weight:600}.doctrine-fields p,.doctrine-fields small{font-size:13px;line-height:1.5;overflow-wrap:anywhere}.doctrine-fields p{margin:0 0 10px}.doctrine-fields select{width:100%}
 @media(max-width:600px){.brand .nation-name{display:inline-block;max-width:160px;vertical-align:middle;margin-right:8px}.nation-colors{grid-template-columns:1fr}.nation-preview{gap:12px}}
+
+/* Comandos de aviação: controles nativos, quebrando linha em telas pequenas. */
+#planeControls,#airportControls,#bomberPanel,#bombLineControls{flex-wrap:wrap;gap:6px}#planeControls label,#bomberPanel label,#bombLineControls label{display:inline-flex;align-items:center;gap:4px;font-size:11px}#bomberPanel input[type=number],#bombLineControls input{width:48px}#planeControls select{max-width:140px}#minimap{aspect-ratio:4/3}#bomberPanel[hidden],#bombLineControls[hidden],#planeControls[hidden],#airportControls[hidden]{display:none}
+
+.recruit[hidden]{display:none}
+
+#bomberPanel{font-size:11px;margin-top:4px}#bomberPanel summary{cursor:pointer;line-height:16px}#bomberPanel .bar-row{flex-wrap:wrap;gap:6px}

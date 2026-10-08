@@ -1,7 +1,7 @@
 'use strict';
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const ctx=vm.createContext({console});vm.runInContext(fs.readFileSync('public/js/engine.js','utf8')+'\nthis.api={Game,TYPES,PLAN};',ctx);
-const {Game,TYPES,PLAN}=ctx.api;
+const ctx=vm.createContext({console});vm.runInContext(fs.readFileSync('public/js/engine.js','utf8')+'\nthis.api={Game,TYPES,PLAN,COLS};',ctx);
+const {Game,TYPES,PLAN,COLS}=ctx.api;
 function field(mode='turns',doctrines){const g=new Game('river','normal',17,mode,{},doctrines);g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.aiEnabled=false;g.add('blue','hq',0,27);g.add('red','hq',35,0);g.add('blue','infantry',0,26);g.add('red','infantry',35,1);g.credits.blue=g.credits.red=5000;g.updateVision();return g;}
 let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
 check('Postos: três vagas contando a produção, QG com cinco, preço único e filas independentes',()=>{
@@ -30,14 +30,14 @@ check('Captura e destruição eliminam a fila sem reembolso; fila no posto evita
 });
 check('IA usa posto com menor espera, respeita saída livre, filas totais e limite de exército',()=>{
  for(const mode of ['turns','rts']){const g=field(mode),p=g.add('red','post',20,10),hq=g.hq('red');g.aiEnabled=true;g.turn='red';g.plan.rally=p;hq.queue.push({type:'heavyTank',progress:0});g.aiBuy();assert.equal(p.queue.length,1);assert.equal(hq.queue.length,1);
-  const before=g.credits.red;g.aiBuy();assert.equal(g.credits.red,before,'Limite global de encomendas da dificuldade normal');
-  g.units=[];for(let i=0;i<PLAN.normal.army-2;i++)g.add('red','infantry',i,3);g.aiBuy();assert.equal(g.credits.red,before,'Exército mais encomendas não excede o limite');
-  p.queue=[];hq.queue=[];g.units=[];for(const c of g.spawnCells('red','helicopter',p))g.add('red','helicopter',c.x,c.y);for(const c of g.spawnCells('red','infantry',p))g.add('red','infantry',c.x,c.y);g.units=g.units.slice(0,12);g.terrain.fill('river');g.terrain[hq.y*36+hq.x]='plain';g.terrain[(hq.y+1)*36+hq.x]='plain';g.aiBuy();assert.equal(p.queue.length,0);
+  while(hq.queue.length+p.queue.length<PLAN.normal.queue)hq.queue.push({type:"infantry",progress:0});const before=g.credits.red;g.aiBuy();assert.equal(g.credits.red,before,'Limite global de encomendas da dificuldade normal');
+  g.units=[];for(let i=0;i<PLAN.normal.army-PLAN.normal.queue;i++)g.add('red','infantry',i,3);g.aiBuy();assert.equal(g.credits.red,before,'Exército mais encomendas não excede o limite');
+  p.queue=[];hq.queue=[];g.units=[];for(const c of g.spawnCells('red','helicopter',p))g.add('red','helicopter',c.x,c.y);for(const c of g.spawnCells('red','infantry',p))g.add('red','infantry',c.x,c.y);g.units=g.units.slice(0,12);g.terrain.fill('river');g.terrain[hq.y*COLS+hq.x]='plain';g.terrain[(hq.y+1)*COLS+hq.x]='plain';g.aiBuy();assert.equal(p.queue.length,0);
  }
 });
 check('Doutrinas isoladas: renda, vida inicial/reforços, dano e estruturas; atributos globais preservados',()=>{
  const original=JSON.stringify(TYPES),g=field('turns',{blue:'economic',red:'defensive'});g.difficulty='hard';g.add('blue','post',10,10);g.add('red','post',20,20);
- assert.equal(g.income('blue'),Math.round(23*1.15));assert.equal(g.income('red'),Math.round(23*1.2*.9));assert.equal(g.attackPower(g.units[0]),35*.9);assert.equal(g.units[1].maxHp,115);assert.equal(g.hq('red').maxHp,300);
+ assert.equal(g.income('blue'),Math.round(69*1.15));assert.equal(g.income('red'),Math.round(69*1.2*.9));assert.equal(g.attackPower(g.units[0]),35*.9);assert.equal(g.units[1].maxHp,115);assert.equal(g.hq('red').maxHp,300);
  const h=field('turns',{blue:'offensive'});assert.equal(h.units[0].maxHp,90);assert.equal(h.attackPower(h.units[0]),35*1.1);const p=h.add('blue','post',10,10);h.enqueue('blue','infantry',p);h.production('blue');assert.ok(h.units.some(u=>u.x===10&&u.y===9&&u.maxHp===90));
  const a=h.add('blue','rocketArtillery',5,5);assert.equal(h.attackPower(a),20*1.1);const heli=h.add('blue','helicopterGround',6,5);assert.equal(h.attackPower(heli,'agm'),65*1.1);
  const defaults=new Game();assert.equal(defaults.units.find(u=>u.type==='infantry').maxHp,100);assert.equal(JSON.stringify(TYPES),original);
