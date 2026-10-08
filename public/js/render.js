@@ -162,13 +162,22 @@ function terrainMinimapColor(type,map){return map==='desert'?({plain:'#c4b18a',f
 const CROPS={temperate:['#cdb768','#7f9b4f','#8d7552','#a3b46b'],desert:['#94a35a','#b8aa66']};
 let fieldPatches=new WeakMap();
 // Sob a névoa (conceal), o lote considera só casas exploradas: a cor não revela campos vizinhos desconhecidos.
-function fieldStyle(g,x,y,conceal=false){
- let root;
- if(conceal){root=KEY(x,y);const seen=new Set([root]),stack=[root];while(stack.length){const c=stack.pop(),cx=c%COLS,cy=(c-cx)/COLS;for(const [dx,dy]of terrainDirs){const nx=cx+dx,ny=cy+dy,n=KEY(nx,ny);if(INSIDE(nx,ny)&&!seen.has(n)&&g.terrain[n]==='field'&&g.explored.blue[n]){seen.add(n);stack.push(n);if(n<root)root=n;}}}}
- else{let ids=fieldPatches.get(g);
- if(!ids){ids=new Int32Array(SIZE).fill(-1);for(let k=0;k<SIZE;k++){if(g.terrain[k]!=='field'||ids[k]>=0)continue;const stack=[k];ids[k]=k;while(stack.length){const c=stack.pop(),cx=c%COLS,cy=(c-cx)/COLS;for(const [dx,dy]of terrainDirs){const nx=cx+dx,ny=cy+dy,n=KEY(nx,ny);if(INSIDE(nx,ny)&&ids[n]<0&&g.terrain[n]==='field'){ids[n]=k;stack.push(n);}}}}fieldPatches.set(g,ids);}
- root=ids[KEY(x,y)];}
- const h=terrainVisualHash(g.seed,root%COLS,(root-root%COLS)/COLS),palette=CROPS[g.map==='desert'?'desert':'temperate'];
+function fieldPatchIds(g,known){
+ const ids=new Int32Array(SIZE).fill(-1);
+ for(let k=0;k<SIZE;k++){
+  if(ids[k]>=0||known&&!known[k]||g.terrain[k]!=='field')continue;
+  const stack=[k];ids[k]=k;
+  while(stack.length){const c=stack.pop(),cx=c%COLS,cy=(c-cx)/COLS;for(const [dx,dy]of terrainDirs){const nx=cx+dx,ny=cy+dy,n=KEY(nx,ny);if(INSIDE(nx,ny)&&ids[n]<0&&(!known||known[n])&&g.terrain[n]==='field'){ids[n]=k;stack.push(n);}}}
+ }
+ return ids;
+}
+function fieldStyle(g,x,y,conceal=false,patches){
+ let ids=patches;
+ if(!ids){
+  if(conceal)ids=fieldPatchIds(g,g.explored.blue);
+  else{ids=fieldPatches.get(g);if(!ids){ids=fieldPatchIds(g);fieldPatches.set(g,ids);}}
+ }
+ const k=KEY(x,y),root=ids[k]<0?k:ids[k],h=terrainVisualHash(g.seed,root%COLS,(root-root%COLS)/COLS),palette=CROPS[g.map==='desert'?'desert':'temperate'];
  return{color:palette[h%palette.length],vertical:!!((h>>>4)&1)};
 }
 function terrainVisualHash(seed,x,y){let n=(seed^Math.imul(x+1,0x9e3779b1)^Math.imul(y+1,0x85ebca6b))>>>0;n=Math.imul(n^(n>>>16),0x7feb352d);return(n^(n>>>15))>>>0;}
@@ -234,11 +243,11 @@ function roadOverlay(mask){
  const tile=document.createElement('canvas');tile.width=tile.height=CELL;const c=tile.getContext('2d'),path=roadPath(mask);c.lineCap=c.lineJoin='round';
  c.lineWidth=24;c.strokeStyle='#a995724d';c.stroke(path);c.lineWidth=20;c.strokeStyle='#b9a27b';c.stroke(path);c.lineWidth=18;c.strokeStyle=c.createPattern(materialTile('road',0,0,0),'repeat');c.stroke(path);roadOverlays.set(mask,tile);return tile;
 }
-function terrainTile(g,x,y,concealNeighbors=false){
+function terrainTile(g,x,y,concealNeighbors=false,patches){
  const type=g.terrain[KEY(x,y)],desert=g.map==='desert',soil=desert?'sand':'plain',vegetation=type+(desert?'-desert':''),bank=desert?'bank-desert':'bank',water=type==='river'||type==='bridge';
  const t=terrainTopology(g,x,y,concealNeighbors);
  const bush=desert?'forest-desert':'forest',required=[soil,...(['forest','mountain'].includes(type)?[vegetation]:[]),...(type==='hedge'?[bush]:[]),...(water?['water',bank]:[]),...(type==='road'?['road']:[]),...(type==='bridge'?['bridge']:[])];if(!required.every(terrainImageReady))return null;
- const crop=type==='field'?fieldStyle(g,x,y,concealNeighbors):null,phase=terrainVisualHash(g.seed,0,0),variant=terrainVisualHash(g.seed,x,y)%4,organic=['forest','mountain','river','bridge','hill','hedge','field'].includes(type),key=[type,desert,organic?t.sameMask:0,type==='road'?t.roadMask:0,type==='bridge'?t.vertical:0,(x+(phase&1))&1,(y+((phase>>>1)&1))&1,organic?variant:0,crop?crop.color+crop.vertical:''].join(':');
+ const crop=type==='field'?fieldStyle(g,x,y,concealNeighbors,patches):null,phase=terrainVisualHash(g.seed,0,0),variant=terrainVisualHash(g.seed,x,y)%4,organic=['forest','mountain','river','bridge','hill','hedge','field'].includes(type),key=[type,desert,organic?t.sameMask:0,type==='road'?t.roadMask:0,type==='bridge'?t.vertical:0,(x+(phase&1))&1,(y+((phase>>>1)&1))&1,organic?variant:0,crop?crop.color+crop.vertical:''].join(':');
  if(terrainTiles.has(key))return terrainTiles.get(key);
  const tile=document.createElement('canvas');tile.width=tile.height=CELL;const c=tile.getContext('2d');c.drawImage(materialTile(soil,x,y,g.seed),0,0);
  if(type==='forest'||type==='mountain'){
@@ -253,12 +262,12 @@ function terrainTile(g,x,y,concealNeighbors=false){
  else if(type==='hill')drawHill(c,t.sameMask,variant,desert);
  if(terrainTiles.size>=1024)terrainTiles.delete(terrainTiles.keys().next().value);terrainTiles.set(key,tile);return tile;
 }
-function terrainFallback(c,g,x,y,concealNeighbors=false){
+function terrainFallback(c,g,x,y,concealNeighbors=false,patches){
  const type=g.terrain[KEY(x,y)],t=terrainTopology(g,x,y,concealNeighbors);c.fillStyle=terrainMinimapColor(type==='road'?'plain':type,g.map);c.fillRect(0,0,CELL,CELL);
  if(type==='forest')for(const [px,py,r]of [[16,17,11],[39,22,10],[25,39,12]]){c.fillStyle='#233f3650';c.beginPath();c.ellipse(px+2,py+3,r,r*.8,0,0,7);c.fill();c.fillStyle=g.map==='desert'?'#667148':'#4a6b4a';c.beginPath();c.arc(px,py,r,0,7);c.fill();}
  if(type==='mountain'){polygon(c,[[6,43],[17,12],[34,6],[48,38],[30,48]],g.map==='desert'?'#a79779':'#9b9d92');polygon(c,[[17,12],[34,6],[30,48]],'#c5c6b2');}
  if(type==='road'){c.lineCap=c.lineJoin='round';c.strokeStyle='#b9a27b';c.lineWidth=20;c.stroke(roadPath(t.roadMask));}
- if(type==='field')drawCrops(c,fieldStyle(g,x,y,concealNeighbors),t.sameMask);
+ if(type==='field')drawCrops(c,fieldStyle(g,x,y,concealNeighbors,patches),t.sameMask);
  if(type==='hedge'){c.fillStyle=terrainMinimapColor('plain',g.map);c.fillRect(0,0,CELL,CELL);drawHedge(c,t.sameMask&15,g.map==='desert'?'#6f7146':'#3f5e3c');}
  if(type==='hill')drawHill(c,t.sameMask,terrainVisualHash(g.seed,x,y)%4,g.map==='desert');
  if(type==='river'||type==='bridge'){c.strokeStyle='#b1ced05c';c.beginPath();c.moveTo(5,20);c.bezierCurveTo(16,14,35,26,51,20);c.stroke();if(type==='bridge'){c.save();c.translate(28,28);if(!t.vertical)c.rotate(Math.PI/2);c.fillStyle='#b4a080';c.fillRect(-10,-28,20,56);c.strokeStyle='#574d3b';for(let yy=-26;yy<28;yy+=7){c.beginPath();c.moveTo(-10,yy);c.lineTo(10,yy);c.stroke();}c.restore();}}
@@ -269,6 +278,8 @@ function drawUnexploredTerrainEdges(c,g){
  let cached=fogTerrainCache.get(g),changed=!cached;if(cached)for(let k=0;k<SIZE;k++)if(cached.known[k]!==Number(g.explored.blue[k])){changed=true;break;}
  if(changed){
   cached={known:Uint8Array.from(g.explored.blue,Number),items:[]};
+  // Reuse explored crop components until the fog changes, instead of traversing each border cell every frame.
+  cached.fields=fieldPatchIds(g,cached.known);
   for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)if(g.explored.blue[KEY(x,y)]){
    const clip=new Path2D();let capped=false;
    terrainNeighbors.forEach(([dx,dy],d)=>{if(!INSIDE(x+dx,y+dy)||g.explored.blue[KEY(x+dx,y+dy)])return;capped=true;
@@ -278,7 +289,7 @@ function drawUnexploredTerrainEdges(c,g){
    if(capped)cached.items.push({x,y,clip,whole:['road','bridge','hedge','field'].includes(g.terrain[KEY(x,y)])});
   }fogTerrainCache.set(g,cached);
  }
- const bounds=viewCells();for(const {x,y,clip,whole}of cached.items){if(x<bounds.x0||x>=bounds.x1||y<bounds.y0||y>=bounds.y1)continue;const tile=terrainTile(g,x,y,true);c.save();if(!whole)c.clip(clip);c.translate(x*CELL,y*CELL);if(tile)c.drawImage(tile,0,0);else terrainFallback(c,g,x,y,true);c.restore();}
+ const bounds=viewCells();for(const {x,y,clip,whole}of cached.items){if(x<bounds.x0||x>=bounds.x1||y<bounds.y0||y>=bounds.y1)continue;const tile=terrainTile(g,x,y,true,cached.fields);c.save();if(!whole)c.clip(clip);c.translate(x*CELL,y*CELL);if(tile)c.drawImage(tile,0,0);else terrainFallback(c,g,x,y,true,cached.fields);c.restore();}
 }
 function viewCells(){return{x0:Math.max(0,Math.floor(cam.x/CELL)-1),y0:Math.max(0,Math.floor(cam.y/CELL)-1),x1:Math.min(COLS,Math.ceil((cam.x+renderer.canvas.clientWidth/cam.zoom)/CELL)+1),y1:Math.min(ROWS,Math.ceil((cam.y+renderer.canvas.clientHeight/cam.zoom)/CELL)+1)};}
 function miniTransform(canvas){const s=Math.min(canvas.width/COLS,canvas.height/ROWS);return{s,ox:(canvas.width-COLS*s)/2,oy:(canvas.height-ROWS*s)/2};}
