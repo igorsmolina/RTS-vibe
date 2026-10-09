@@ -4,11 +4,11 @@ const ctx=vm.createContext({console});vm.runInContext(fs.readFileSync('public/js
 const {Game,TYPES,PLAN,COLS}=ctx.api;
 function field(mode='turns',doctrines){const g=new Game('river','normal',17,mode,{},doctrines);g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.aiEnabled=false;g.add('blue','hq',0,27);g.add('red','hq',35,0);g.add('blue','infantry',0,26);g.add('red','infantry',35,1);g.credits.blue=g.credits.red=5000;g.updateVision();return g;}
 let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
-check('Postos: três vagas contando a produção, QG com cinco, preço único e filas independentes',()=>{
+check('Postos: cinco vagas contando a produção, QG com cinco, preço único e filas independentes',()=>{
  const g=field(),p=g.add('blue','post',10,10),q=g.add('blue','post',20,20),start=g.credits.blue;
- for(let i=0;i<3;i++)assert.ok(g.enqueue('blue','infantry',p));assert.equal(g.enqueue('blue','infantry',p),false);
+ for(let i=0;i<5;i++)assert.ok(g.enqueue('blue','infantry',p));assert.equal(g.enqueue('blue','infantry',p),false);
  assert.ok(g.enqueue('blue','tank',q));for(let i=0;i<5;i++)assert.ok(g.enqueue('blue','infantry'));assert.equal(g.enqueue('blue','infantry'),false);
- assert.equal(p.queue.length,3);assert.equal(q.queue.length,1);assert.equal(g.hq('blue').queue.length,5);assert.equal(g.credits.blue,start-8*50-150);
+ assert.equal(p.queue.length,5);assert.equal(q.queue.length,1);assert.equal(g.hq('blue').queue.length,5);assert.equal(g.credits.blue,start-10*50-150);
  for(const base of [g.add('neutral','post',15,15),g.hq('red'),{...p},null]){const credits=g.credits.blue;assert.equal(g.enqueue('blue','infantry',base),false);assert.equal(g.credits.blue,credits);}
  p.hp=0;assert.equal(g.enqueue('blue','infantry',p),false);p.hp=80;
  g.credits.blue=49;assert.equal(g.enqueue('blue','infantry',q),false);assert.equal(g.credits.blue,49);
@@ -26,7 +26,7 @@ check('Captura e destruição eliminam a fila sem reembolso; fila no posto evita
  const g=field(),p=g.add('blue','post',10,10);g.enqueue('blue','tank',p);g.units=g.units.filter(u=>u.owner!=='blue');g.checkVictory();assert.equal(g.winner,null);
  const enemy=g.add('red','infantry',10,9),credits=g.credits.blue;g.turn='red';g.updateVision();g.resolveAction({type:'capture',targetId:p.id},enemy);assert.equal(p.owner,'red');assert.equal(p.queue.length,0);assert.equal(g.credits.blue,credits);
  g.turn='blue';const q=g.add('blue','post',20,20);g.enqueue('blue','tank',q);const before=g.credits.blue;g.hurt(q,999,null);assert.equal(q.queue.length,0);assert.equal(g.credits.blue,before);assert.ok(!g.structures.includes(q));
- const h=field(),s=h.add('blue','post',12,12);h.enqueue('blue','infantry',s);h.hurt(h.hq('blue'),999,null);h.checkVictory();assert.equal(h.winner,'red');
+ const h=field(),s=h.add('blue','post',12,12);h.enqueue('blue','infantry',s);h.hurt(h.hq('blue'),999,null);h.checkVictory();assert.equal(h.winner,null);h.hurt(s,999,null);h.checkVictory();assert.equal(h.winner,'red');
 });
 check('IA usa posto com menor espera, respeita saída livre, filas totais e limite de exército',()=>{
  for(const mode of ['turns','rts']){const g=field(mode),p=g.add('red','post',20,10),hq=g.hq('red');g.aiEnabled=true;g.turn='red';g.plan.rally=p;hq.queue.push({type:'heavyTank',progress:0});g.aiBuy();assert.equal(p.queue.length,1);assert.equal(hq.queue.length,1);

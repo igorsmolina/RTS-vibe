@@ -52,7 +52,7 @@ console.log(checks+' verificações concluídas.');
 // --- rts ---
 {
 function field(){const g=new Game('river','normal',17,'rts');g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.aiEnabled=false;g.add('blue','hq',0,13);g.add('red','hq',17,0);g.add('blue','infantry',0,12);g.add('red','infantry',17,1);g.rng=()=>.2;g.updateVision();return g;}
-function advance(g,seconds){for(let t=0;t<seconds-1e-8;t+=1/30){g.update(Math.min(1/30,seconds-t));const occupied=new Set();for(const u of g.units){assert.ok(Number.isFinite(u.x)&&Number.isFinite(u.y));const key=u.x+','+u.y;assert.ok(!occupied.has(key),'Tropas não devem sobrepor');occupied.add(key);}}}
+function advance(g,seconds){for(let t=0;t<seconds-1e-8;t+=1/30){g.update(Math.min(1/30,seconds-t));const occupied=new Set();for(const u of g.units){assert.ok(Number.isFinite(u.x)&&Number.isFinite(u.y));const key=(TYPES[u.type].air?'air:':'ground:')+u.x+','+u.y;assert.ok(!occupied.has(key),'Tropas não devem sobrepor');occupied.add(key);}}}
 function snapshot(g){return JSON.stringify({time:g.time,units:g.units,structures:g.structures,credits:g.credits,projectiles:g.projectiles,decisions:g.aiDecisions,shots:g.shotsFired});}
 let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
 check('RTS é opcional e não encerra turnos',()=>{assert.equal(new Game().mode,'turns');const g=field();assert.equal(g.mode,'rts');assert.equal(g.endTurn(),false);assert.equal(g.round,1);});

@@ -1,0 +1,33 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const ctx=vm.createContext({console});vm.runInContext(fs.readFileSync('public/js/engine.js','utf8')+'\nthis.api={Game,TYPES,PLAN};',ctx);const {Game,TYPES,PLAN}=ctx.api;
+function field(mode='turns'){const g=new Game('river','normal',17,mode);g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.aiEnabled=false;g.add('blue','hq',1,94);g.add('red','hq',126,1);g.add('blue','infantry',2,94);g.add('red','infantry',125,1);g.credits.blue=g.credits.red=10000;g.updateVision();return g;}
+let checks=0;function check(name,fn){try{fn();checks++;console.log('OK '+name);}catch(e){console.error(name,e);process.exitCode=1;}}
+check('late purchase inherits progress; mixed types retain batch order and individual prices',()=>{
+ for(const mode of ['turns','rts'])for(const owner of ['blue','red']){const g=field(mode);g.turn=owner;const p=g.add(owner,'post',20,20),duration=g.trainDuration('infantry'),money=g.credits[owner];
+ assert.ok(g.enqueue(owner,'infantry',p));g.production(owner,duration*.8);assert.ok(g.enqueue(owner,'tank',p));assert.ok(g.enqueue(owner,'infantry',p));
+ assert.equal(p.queue[2].progress,p.queue[0].progress);assert.equal(p.queue[2].batch,p.queue[0].batch);assert.notEqual(p.queue[1].batch,p.queue[0].batch);
+ g.production(owner,duration*.2);assert.equal(p.queue.length,1);assert.equal(p.queue[0].type,'tank');assert.equal(p.queue[0].progress,0);assert.equal(g.units.filter(u=>u.owner===owner&&u.type==='infantry').length,3);assert.equal(g.credits[owner],money-2*TYPES.infantry.cost-TYPES.tank.cost);
+ }
+});
+check('all producers accept five; airports spawn four and retain the fifth ready',()=>{
+ for(const mode of ['turns','rts'])for(const owner of ['blue','red'])for(const type of ['hq','post','airportDirt']){const g=field(mode);g.turn=owner;const p=type==='hq'?g.hq(owner):g.add(owner,type,10,85),troop=type==='airportDirt'?(owner==='blue'?'fighterBlue':'fighterRed'):'infantry';for(let i=0;i<5;i++)assert.ok(g.enqueue(owner,troop,p));const money=g.credits[owner];assert.equal(g.enqueue(owner,troop,p),false);assert.equal(g.credits[owner],money);g.production(owner,g.trainDuration(troop));assert.equal(p.queue.length,type==='airportDirt'?1:0);if(type==='airportDirt'){assert.equal(g.docked(p).length,4);assert.equal(p.queue[0].progress,g.trainDuration(troop));g.units=g.units.filter(u=>u.id!==g.docked(p)[0].id);g.production(owner,0);assert.equal(p.queue.length,0);assert.equal(g.docked(p).length,4);}}
+});
+check('partial exits close completed batches, block following types, and never recharge',()=>{
+ const g=field('rts'),p=g.add('blue','post',20,20);for(let i=0;i<3;i++)g.enqueue('blue','infantry',p);g.enqueue('blue','tank',p);const cells=g.spawnCells('blue','infantry',p);for(const c of cells.slice(1))g.add('blue','tank',c.x,c.y);const money=g.credits.blue;g.production('blue',10);assert.equal(p.queue.length,3);assert.equal(p.queue.filter(q=>q.type==='infantry').length,2);const closed=p.queue[0].batch;g.enqueue('blue','infantry',p);assert.notEqual(p.queue.at(-1).batch,closed);assert.equal(p.queue.at(-1).progress,0);g.production('blue',100);assert.equal(p.queue.find(q=>q.type==='tank').progress,0);assert.equal(g.credits.blue,money-TYPES.infantry.cost);g.units=g.units.filter(u=>!cells.some(c=>c.x===u.x&&c.y===u.y));g.production('blue',100);assert.equal(p.queue[0].type,'tank');assert.equal(p.queue[0].progress,0);g.production('blue',1);assert.equal(p.queue[0].progress,1);
+});
+check('fractional RTS ticks mark a blocked batch fully ready',()=>{const g=field('rts'),p=g.add('blue','post',20,20);g.enqueue('blue','infantry',p);for(const c of g.spawnCells('blue','infantry',p))g.add('blue','tank',c.x,c.y);for(let i=0;i<300;i++)g.production('blue',1/30);assert.equal(p.queue[0].progress,10);});
+check('legacy entries stay individual; capture and destruction discard pending batches',()=>{
+ const g=field(),p=g.add('blue','post',20,20);p.queue.push({type:'infantry',progress:0},{type:'infantry',progress:0});g.production('blue',1);assert.equal(p.queue.length,1);assert.equal(p.queue[0].progress,0);g.enqueue('blue','infantry',p);assert.ok(p.queue[0].batch!=null);assert.equal(p.queue[0].batch,p.queue[1].batch);const money=g.credits.blue;g.captureStructure(p,'red');assert.equal(p.queue.length,0);assert.equal(g.credits.blue,money);g.turn='red';g.enqueue('red','infantry',p);g.hurt(p,999,null);assert.equal(p.queue.length,0);
+});
+check('batch queues prevent premature defeat and respect army/order limits',()=>{
+ const g=field('rts'),p=g.add('red','post',20,20);g.units=g.units.filter(u=>u.owner==='blue');g.enqueue('red','infantry',p);g.enqueue('red','infantry',p);g.checkVictory();assert.equal(g.winner,null);g.aiEnabled=true;while(p.queue.length<PLAN.normal.queue)p.queue.push({type:'infantry',progress:0});const money=g.credits.red;g.aiBuy();assert.equal(g.credits.red,money);p.queue.length=1;for(let i=0;i<PLAN.normal.army-1;i++)g.add('red','infantry',i,4);g.aiBuy();assert.equal(g.credits.red,money);
+});
+check('AI estimates each batch once and stops at the first matching unfinished batch',()=>{
+ const g=field('rts'),hq=g.hq('red'),p=g.add('red','post',20,20);g.enqueue('red','infantry',hq);g.enqueue('red','infantry',hq);g.production('red',8);g.enqueue('red','tank',hq);g.enqueue('red','infantry',hq);assert.equal(g.productionWait(hq,'infantry'),2);assert.equal(g.productionWait(hq,'tank'),32);assert.equal(g.productionWait(hq,'engineer'),52);p.queue.push({type:'tank',progress:27});assert.equal(g.productionWait(p,'engineer'),23);g.difficulty='hard';g.aiEnabled=true;g.plan.rally=p;g.aiBuy();assert.equal(p.queue.at(-1).type,'engineer');assert.equal(hq.queue.length,4);
+ const h=field('rts'),a=h.hq('red'),b=h.add('red','post',20,20);h.enqueue('red','engineer',a);h.production('red',18);h.enqueue('red','tank',a);h.aiEnabled=true;h.plan.rally=b;h.aiBuy();assert.equal(a.queue.length,3);assert.equal(b.queue.length,0);assert.equal(a.queue[0].batch,a.queue[2].batch);
+});
+check('AA flight is 2.5 seconds at 30 cells, minimum .45; other missiles unchanged',()=>{
+ for(const mode of ['turns','rts'])for(const owner of ['blue','red']){const g=field(mode),a=g.add(owner,'antiAirVehicle',40,40),h=g.add(owner==='blue'?'red':'blue','helicopter',70,40);g.updateVision();g.shoot(a,h);assert.equal(g.projectiles.at(-1).duration,2.5);h.x=41;g.shoot(a,h);assert.equal(g.projectiles.at(-1).duration,.45);const s=g.add(owner,'missileInfantry',39,40);h.x=42;g.shoot(s,h);assert.equal(g.projectiles.at(-1).duration,.5);const f=g.add(owner,owner==='blue'?'fighterBlue':'fighterRed',45,40);assert.equal(g.planeWeapon(f,'antiRadiation').speed,14);}
+});
+console.log(checks+' batch/missile checks passed');

@@ -13,12 +13,12 @@ check('Artilharia de mísseis: atributos, alcance 3–13 sem bônus de colina e 
  g.terrain[KEY(5,5)]='hill';assert.equal(g.range(u),13);assert.equal(g.canBombard(u,{x:19,y:5}),false);
  assert.equal(g.weapon(u,foe),null);assert.equal(g.canFire(u,foe),false);assert.equal(g.acquire(u),undefined);
 });
-check('Bombardeio sob a névoa: casa inexplorada, 4 mísseis, ação e movimento gastos, nada revelado',()=>{
+check('Bombardeio fora do reconhecimento: 4 misseis, explosoes publicas sem revelar tropas',()=>{
  const g=field(),u=g.add('blue','rocketArtillery',2,20),hidden=g.add('red','infantry',14,20);g.updateVision();const cell=KEY(14,20);
- assert.equal(g.explored.blue[cell],false);assert.equal(g.isVisible('blue',hidden),false);
+ assert.equal(g.explored.blue[cell],true);assert.equal(g.isVisible('blue',hidden),false);
  assert.ok(g.order(u,'bombard',{x:14,y:20}));settle(g);
  assert.equal(g.shotsFired,4);assert.equal(u.actionLeft,false);assert.equal(u.moveLeft,0);assert.equal(hidden.hp,20,'4 × 20 na casa central');
- assert.equal(g.explored.blue[cell],false);assert.ok(!g.events.some(e=>e.visible&&DIST(e,{x:14,y:20})<=1.5),'Nenhum efeito visível na névoa');assert.ok(!g.logs.some(l=>/Infantaria/.test(l.text)));
+ assert.equal(g.explored.blue[cell],true);assert.ok(!g.events.some(e=>e.kind==='text'&&e.visible&&DIST(e,{x:14,y:20})<=1.5),'Nenhum efeito visível na névoa');assert.ok(g.events.some(e=>e.kind==='blast'&&e.visible&&e.publicMissile));assert.ok(!g.logs.some(l=>/Infantaria/.test(l.text)));
  assert.equal(g.order(u,'bombard',{x:14,y:20}),false,'Uma salva por turno');
 });
 check('Dano: ×2 contra estruturas, metade nas vizinhas, fogo amigo, aeronaves ilesas, sem queda pela distância',()=>{
@@ -68,7 +68,7 @@ check('Drone: visão 12 com ocultação da floresta, sem revelar minas',()=>{
  assert.equal(g.visible.blue[KEY(22,10)],true);assert.equal(g.visible.blue[KEY(23,10)],false);assert.equal(g.visible.blue[KEY(10,15)],false);assert.equal(g.visible.blue[KEY(10,12)],true);assert.equal(g.mines[0].known.blue,false);
 });
 check('Drone: radar inimigo detecta globalmente; antiaérea 99% e lançador 95%, sem flares',()=>{
- const g=field(),d=g.add('blue','reconDrone',3,25),aa=g.add('red','antiAirVehicle',33,2),s=g.add('red','missileInfantry',4,25),heli=g.add('blue','helicopter',4,24);heli.altitude='high';g.updateVision();
+ const g=field(),d=g.add('blue','reconDrone',3,25),aa=g.add('red','antiAirVehicle',18,10),s=g.add('red','missileInfantry',4,25),heli=g.add('blue','helicopter',4,24);heli.altitude='high';g.updateVision();
  assert.equal(g.radarContact('red',d),true);assert.equal(g.isVisible('red',d),true);assert.ok(g.canFire(aa,d));
  assert.equal(g.accuracy(aa,d),.99);assert.equal(Math.round(g.accuracy(s,d)*100),95);assert.equal(Math.round(g.accuracy(aa,heli)*100),90,'Helicóptero alto continua 90%');
  g.setRadar(aa,false);assert.equal(g.radarContact('red',d),false);

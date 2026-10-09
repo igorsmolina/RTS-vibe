@@ -188,3 +188,5 @@ dialog #campaignStats,dialog #regionInfo,dialog #campaignEvents{font-size:14px;l
 .recruit[hidden]{display:none}
 
 #bomberPanel{font-size:11px;margin-top:4px}#bomberPanel summary{cursor:pointer;line-height:16px}#bomberPanel .bar-row{flex-wrap:wrap;gap:6px}
+
+.army-editor{width:min(820px,calc(100vw - 24px))}.army-summary{display:flex;flex-wrap:wrap;align-items:center;gap:10px;grid-column:1/-1;margin-block:10px}.army-budget{display:flex;justify-content:space-between;gap:16px;padding:12px;background:var(--menu-soft);position:sticky;top:0;z-index:1}.army-units{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-block:12px}.army-unit{display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--line);border-radius:6px;min-width:0}.army-unit canvas{width:48px;height:48px;flex:none}.army-unit label{flex:1;min-width:0}.army-unit label small{display:block}.army-unit input{width:64px;flex:none}.army-editor #armyError{min-height:1.4em;color:#b33c29}.army-editor .dialog-buttons{flex-wrap:wrap}@media(max-width:600px){.army-units{grid-template-columns:1fr}.army-unit input{font-size:16px}}
