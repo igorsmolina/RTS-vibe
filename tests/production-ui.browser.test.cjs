@@ -1,0 +1,44 @@
+'use strict';
+const assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs'),{pathToFileURL}=require('node:url'),{chromium}=require('playwright-core');
+(async()=>{const browser=await chromium.launch({channel:'chrome',headless:true});try{
+ const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.context().setOffline(true);
+ await page.goto(pathToFileURL(path.join(__dirname,'../public/index.html')).href);await page.evaluate(()=>terrainReady);
+ await page.evaluate(()=>{for(const d of document.querySelectorAll('dialog[open]'))d.close();newOperation('river','normal',19);paused=true;const tank=game.units.find(u=>u.owner==='blue'&&u.type==='tank');setSelection([tank.id]);});
+ assert.equal(await page.locator('#build').evaluate(e=>e.hidden),true,'Tanque não constrói posto');
+ assert.equal(await page.locator('#repair').evaluate(e=>e.hidden),true,'Tanque não repara');
+ await page.keyboard.press('R');assert.equal(await page.evaluate(()=>mode),null,'Atalho sem capacidade');
+ await page.evaluate(()=>{const infantry=game.units.find(u=>u.owner==='blue'&&u.type==='infantry');setSelection([infantry.id]);game.credits.blue=0;updateUI();});
+ assert.equal(await page.locator('#build').evaluate(e=>e.hidden),false);assert.equal(await page.locator('#build').isDisabled(),true);
+ await page.evaluate(()=>{const e=game.units.find(u=>u.owner==='blue'&&u.type==='engineer');setSelection([e.id]);});
+ assert.equal(await page.locator('#repair').isVisible(),true);assert.equal(await page.locator('#demine').isVisible(),true);assert.equal(await page.locator('#build').evaluate(e=>e.hidden),true);assert.equal(await page.locator('#buildAirport').isVisible(),true);
+ await page.evaluate(()=>{setSelection(game.units.filter(u=>u.owner==='blue'&&['tank','engineer'].includes(u.type)).map(u=>u.id));setMode('repair');});assert.equal(await page.evaluate(()=>mode),'repair');
+ await page.evaluate(()=>{for(const e of selectedUnits().filter(u=>u.type==='engineer'))selection.delete(e.id);updateUI();});assert.equal(await page.evaluate(()=>mode),null,'Remoção da única capacidade cancela ordem');
+ await page.evaluate(()=>{const e=game.units.find(u=>u.owner==='blue'&&u.type==='engineer');e.actionLeft=false;setSelection([e.id]);});assert.equal(await page.locator('#repair').isVisible(),true);assert.equal(await page.locator('#repair').isDisabled(),true);await page.keyboard.press('R');assert.equal(await page.evaluate(()=>mode),null);
+ await page.evaluate(()=>{const es=game.units.filter(u=>u.owner==='blue'&&u.type==='engineer');for(const e of es)e.actionLeft=false;game.credits.blue=99999;setSelection(es.map(u=>u.id));});assert.equal(await page.locator('#buildAirport').isDisabled(),true);
+ const sent=await page.evaluate(()=>{game.busy=false;const e=game.units.find(u=>u.owner==='blue'&&u.type==='engineer'),tank=game.units.find(u=>u.owner==='blue'&&u.type==='tank');e.actionLeft=true;tank.hp-=5;setSelection([e.id,tank.id]);const command=game.command;let ids;try{game.command=function(list){ids=list;return 1;};issueAt({x:tank.x,y:tank.y},'repair');}finally{game.command=command;}return{ids,engineer:e.id};});assert.deepEqual(sent.ids,[sent.engineer],'Reparo misto envia somente engenheiro');
+ await page.evaluate(()=>{const d=game.add('blue','reconDrone',10,10);setSelection([d.id]);});assert.equal(await page.locator('#attackMove').evaluate(e=>e.hidden),true);assert.equal(await page.locator('#service').evaluate(e=>e.hidden),true);await page.keyboard.press('A');assert.equal(await page.evaluate(()=>mode),null);
+ await page.evaluate(()=>{const d=game.add('blue','stealthDrone',10,10);d.missiles=0;setSelection([d.id]);});assert.equal(await page.locator('#attackMove').evaluate(e=>e.hidden),false);assert.equal(await page.locator('#attackMove').isDisabled(),true);
+ await page.evaluate(()=>{const p=game.add('blue','multiroleBlue',10,10),r=game.add('blue','rocketArtillery',10,11);for(const w of BOMB_TYPES)p.ammo[w]=0;setSelection([p.id,r.id]);});await page.keyboard.press('B');assert.equal(await page.evaluate(()=>mode),'bombard','B usa artilharia quando avião está sem bombas');
+ await page.evaluate(()=>{const a=game.add('blue','antiAirVehicle',10,10);setSelection([a.id]);});assert.equal(await page.locator('#service').isVisible(),true);assert.equal(await page.locator('#radarControls').isVisible(),true);assert.equal(await page.locator('#flightControls').isVisible(),false);
+ await page.evaluate(()=>{setSelection([game.hq('blue').id]);game.credits.blue=99999;updateUI();});
+ assert.equal(await page.locator('#productionPanel').isVisible(),true);assert.deepEqual(await page.locator('#recruits>details>summary').allTextContents(),['Infantaria','Tanques','Apoio','Artilharia','Aeronaves']);
+ assert.equal(await page.locator('#recruits>details').first().evaluate(e=>e.open),true);
+ const canvasBefore=await page.locator('#battlefield').boundingBox();assert.equal(canvasBefore.x,320);
+ await page.locator('#productionClose').click();assert.equal(await page.locator('#productionPanel').isVisible(),false);assert.equal(await page.evaluate(()=>selection.size),1);await page.locator('#productionToggle').click();
+ const folder=page.locator('#recruits>details').nth(1);await folder.locator('summary').focus();await page.keyboard.press('Space');assert.equal(await folder.evaluate(e=>e.open),true,'Space abre pasta nativa');assert.equal(await page.evaluate(()=>paused),true,'Space na pasta não retoma combate');await page.keyboard.press('Enter');assert.equal(await folder.evaluate(e=>e.open),false,'Enter recolhe pasta');assert.equal(await page.evaluate(()=>game.turn),'blue','Enter na pasta não encerra turno');
+ await folder.locator('summary').click();await page.locator('[data-recruit=tank]').click();assert.equal(await page.evaluate(()=>game.hq('blue').queue[0].type),'tank');
+ await page.evaluate(()=>{setSelection([game.units.find(u=>u.owner==='blue').id]);});assert.equal(await page.locator('#productionPanel').isVisible(),false);
+ await page.evaluate(()=>{const p=game.add('blue','post',20,20);setSelection([p.id]);});await page.locator('[data-recruit=infantry]').click();assert.equal(await page.evaluate(()=>selectedProducer().queue[0].type),'infantry');assert.equal(await page.evaluate(()=>game.hq('blue').queue[0].type),'tank','Filas independentes');
+ await page.evaluate(()=>{const a=game.add('blue','airportDirt',30,30);setSelection([a.id]);});assert.deepEqual(await page.locator('#recruits>details:not([hidden])>summary').allTextContents(),['Aeronaves']);assert.equal(await page.locator('#recruits>details:not([hidden])').evaluate(e=>e.open),true);await page.locator('[data-recruit=fighterBlue]').click();assert.equal(await page.evaluate(()=>selectedProducer().queue[0].type),'fighterBlue');
+ await page.evaluate(()=>{const a=selectedProducer();game.structures=game.structures.filter(s=>s!==a);updateUI();});assert.equal(await page.locator('#productionPanel').isVisible(),false,'Perda da estrutura fecha painel');
+ const out=path.join(__dirname,'../test-output/production-ui');fs.mkdirSync(out,{recursive:true});
+ for(const theme of ['light','dark'])for(const [width,height]of [[1440,1000],[390,844],[568,320]]){
+  await page.setViewportSize({width,height});await page.evaluate(theme=>{setMenuTheme(theme);setSelection([game.hq('blue').id]);},theme);
+  await page.evaluate(()=>new Promise(requestAnimationFrame));const panel=await page.locator('#productionPanel').boundingBox();assert.ok(panel.width<=320&&panel.x>=0&&panel.y+panel.height<=height+1,JSON.stringify({theme,width,height,panel}));assert.equal(await page.locator('#productionPanel').evaluate(e=>e.scrollWidth<=e.clientWidth),true);
+  await page.screenshot({path:path.join(out,`production-${width}-${height}-${theme}.png`)});
+  await page.evaluate(()=>{openProfile();showProfileTab('account');});assert.equal(await page.locator('.account-card').count(),3);assert.equal(await page.locator('#tabAccount').evaluate(e=>e.scrollWidth<=e.clientWidth),true);assert.match(await page.locator('#accountStatus').textContent(),/file:\/\/|não configurada/);
+  await page.screenshot({path:path.join(out,`account-${width}-${height}-${theme}.png`)});await page.locator('#closeProfile').click();
+ }
+ await page.evaluate(()=>{startTutorial();setSelection([game.hq('blue').id]);});assert.equal(await page.locator('#productionPanel #tutorial').count(),1);await page.locator('#productionClose').click();assert.equal(await page.locator('.map-frame>#tutorial').count(),1);
+ assert.deepEqual(errors,[]);console.log('OK comandos por capacidade, atalhos, pastas, fila, recolhimento, treinamento, conta e temas offline.');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

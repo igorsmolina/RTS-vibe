@@ -6,11 +6,11 @@ function advance(g,s){for(let t=0;t<s-1e-8;t+=1/30)g.update(Math.min(1/30,s-t));
 function settle(g){let n=0;while(g.busy&&n++<5000)g.update(1/30);assert.ok(n<5000);}
 let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
 
-check('Artilharia de mísseis: atributos, alcance 3–13 sem bônus de colina e sem tiro direto',()=>{
- const t=TYPES.rocketArtillery;assert.deepEqual([t.hp,t.move,t.speed,t.min,t.range,t.vision,t.cost,t.train,t.cooldown],[90,2,.85,3,13,3,240,4,10]);assert.equal(t.vehicle,true);
+check('Artilharia de mísseis: atributos, alcance 3–30 sem bônus de colina e sem tiro direto',()=>{
+ const t=TYPES.rocketArtillery;assert.deepEqual([t.hp,t.move,t.speed,t.min,t.range,t.vision,t.cost,t.train,t.cooldown],[90,2,.85,3,30,3,240,4,10]);assert.equal(t.vehicle,true);
  const g=field(),u=g.add('blue','rocketArtillery',5,5),foe=g.add('red','infantry',6,5);g.updateVision();
- assert.equal(g.canBombard(u,{x:18,y:5}),true);assert.equal(g.canBombard(u,{x:19,y:5}),false);assert.equal(g.canBombard(u,{x:5,y:7}),false);assert.equal(g.canBombard(u,{x:5,y:8}),true);
- g.terrain[KEY(5,5)]='hill';assert.equal(g.range(u),13);assert.equal(g.canBombard(u,{x:19,y:5}),false);
+ assert.equal(g.canBombard(u,{x:35,y:5}),true);assert.equal(g.canBombard(u,{x:36,y:5}),false);assert.equal(g.canBombard(u,{x:5,y:7}),false);assert.equal(g.canBombard(u,{x:5,y:8}),true);
+ g.terrain[KEY(5,5)]='hill';assert.equal(g.range(u),30);assert.equal(g.canBombard(u,{x:36,y:5}),false);
  assert.equal(g.weapon(u,foe),null);assert.equal(g.canFire(u,foe),false);assert.equal(g.acquire(u),undefined);
 });
 check('Bombardeio fora do reconhecimento: 4 misseis, explosoes publicas sem revelar tropas',()=>{
@@ -31,8 +31,8 @@ check('Dano: ×2 contra estruturas, metade nas vizinhas, fogo amigo, aeronaves i
 });
 check('Por turnos: aproxima dentro do movimento; fora do alcance a ordem é recusada sem gastar ação',()=>{
  const g=field(),u=g.add('blue','rocketArtillery',2,20);g.updateVision();
- assert.equal(g.order(u,'bombard',{x:18,y:20}),false);assert.equal(u.actionLeft,true);
- assert.ok(g.order(u,'bombard',{x:17,y:20}));settle(g);assert.equal(u.x,4);assert.equal(g.shotsFired,4);
+ assert.equal(g.order(u,'bombard',{x:35,y:20}),false);assert.equal(u.actionLeft,true);
+ assert.ok(g.order(u,'bombard',{x:34,y:20}));settle(g);assert.equal(u.x,4);assert.equal(g.shotsFired,4);
  const h=field(),r=h.add('blue','rocketArtillery',2,20),seen=h.add('red','infantry',5,20);h.updateVision();assert.ok(h.order(r,'attack',{targetId:seen.id}));assert.equal(r.order.type,'bombard');assert.deepEqual({...r.order.cell},{x:5,y:20});
 });
 check('RTS: preparo antes da salva, intervalo de 0,25 s, recarga de 10 s, pausa congela mísseis',()=>{
@@ -63,9 +63,9 @@ check('Drone: nasce alto, sem armas, flares, altitude, manutenção, captura ou 
   assert.equal(g.order(d,'altitude',{altitude:'low'}),false);assert.equal(g.setWeapon(d,'auto'),false);assert.equal(g.canService(d,post),false);assert.equal(g.canBuild(d),false);
   assert.ok(g.order(d,'move',{x:12,y:5}));if(mode==='turns'){settle(g);assert.equal(d.x,12);}else{advance(g,.5);assert.ok(Math.abs(d.x-6.2)<1e-6);}}
 });
-check('Drone: visão 12 com ocultação da floresta, sem revelar minas',()=>{
+check('Drone: visão 12 através da floresta, sem revelar minas',()=>{
  const g=field(),d=g.add('blue','reconDrone',10,10);g.mines.push({x:12,y:10,known:{blue:false,red:false}});g.terrain[KEY(10,15)]='forest';g.terrain[KEY(10,12)]='forest';g.updateVision();
- assert.equal(g.visible.blue[KEY(22,10)],true);assert.equal(g.visible.blue[KEY(23,10)],false);assert.equal(g.visible.blue[KEY(10,15)],false);assert.equal(g.visible.blue[KEY(10,12)],true);assert.equal(g.mines[0].known.blue,false);
+ assert.equal(g.visible.blue[KEY(22,10)],true);assert.equal(g.visible.blue[KEY(23,10)],false);assert.equal(g.visible.blue[KEY(10,15)],true);assert.equal(g.visible.blue[KEY(10,12)],true);assert.equal(g.mines[0].known.blue,false);
 });
 check('Drone: radar inimigo detecta globalmente; antiaérea 99% e lançador 95%, sem flares',()=>{
  const g=field(),d=g.add('blue','reconDrone',3,25),aa=g.add('red','antiAirVehicle',18,10),s=g.add('red','missileInfantry',4,25),heli=g.add('blue','helicopter',4,24);heli.altitude='high';g.updateVision();

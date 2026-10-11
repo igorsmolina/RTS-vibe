@@ -1,12 +1,16 @@
 ﻿# rtsvibe — Fronteiras
 
-Jogo de estratégia militar para um jogador contra a IA. Capture postos, proteja seu comandante e destrua o QG inimigo. Escolha **Por turnos** ou **RTS com pausa tática** ao iniciar uma operação.
+Jogo de estratégia militar com modo solo contra a IA e multiplayer privado por código. Capture postos, proteja seu comandante e destrua as bases inimigas. Escolha **Por turnos** ou **RTS** ao iniciar uma operação; pausa tática está disponível no modo solo.
+
+**Multiplayer:** execute `npm.cmd run start:multiplayer` para servir o jogo com salas para dois jogadores. Para jogar pela internet, publique o servidor preparado para o Render e compartilhe o endereço HTTPS. [Instalação, regras e hospedagem](docs/multiplayer.md). O modo solo continua abrindo por duplo clique.
 
 ## Menu inicial e configurações
 
+[Sprites de mísseis](assets/Misseis/README.md) e [regras de drones/cruzeiros](docs/misseis-drones-bombardeiros.md): seis PNGs transparentes, visão dos drones através do terreno e bombardeiros com bombas e cruzeiros.
+
 Ao abrir o jogo, o **menu inicial** em tela cheia reúne: **Continuar partida** (quando há uma partida em andamento), **Jogar** (batalha rápida), **Campanha** (mapa-múndi; mostra o progresso salvo), **Configurações**, **Perfil e conquistas** e **Como jogar**. O botão **Menu** no topo leva de volta a ele e pausa a partida; **Esc** volta ao jogo. Setas navegam os botões e Enter escolhe.
 
-**Tema da interface:** escolha **Sistema**, **Claro** ou **Escuro** no início ou nas configurações. Sistema é o padrão e acompanha mudanças do sistema operacional; Restaurar padrões também retorna a Sistema. A escolha fica apenas neste navegador (`rtsvibe.theme.v1`), separada dos saves e da conta; sem armazenamento, vale durante a sessão. O início recupera o desenho anterior: mapa com movimento lento ao fundo, título grande e botões à esquerda, usando a paleta atual. Os botões, painéis e barra de comandos durante a partida também acompanham o tema. Terrenos e tropas conservam suas cores. Os menus permitem rolagem em telas pequenas; movimento reduzido desativa o movimento do fundo e as transições de 120 ms. Capturas e validação: [identidade da interface](docs/identity/README.md).
+**Tema da interface:** escolha **Sistema**, **Claro** ou **Escuro** no início ou nas configurações. Sistema é o padrão e acompanha mudanças do sistema operacional; Restaurar padrões também retorna a Sistema. A escolha fica apenas neste navegador (`rtsvibe.theme.v1`), separada dos saves e da conta; sem armazenamento, vale durante a sessão. A identidade **Carta de operações** usa papel verde-acinzentado, tinta verde-escura, réguas e fontes condensadas do sistema. O tema escuro vira **Sala de operações**. No computador, o menu fica à esquerda e a carta à direita; em telas menores, a carta vira fundo. A partida reúne os comandos numa faixa superior. Terrenos e tropas conservam suas cores. Os menus permitem rolagem em telas pequenas; movimento reduzido desativa animações e transições.
 
 **Configurações** são salvas neste navegador: perfil gráfico, som, grade de casas, tela cheia ao iniciar operação, velocidade padrão, dificuldade padrão e modo padrão (turnos ou RTS). A primeira operação usa esses padrões; as seguintes repetem o modo e a dificuldade da partida anterior.
 
@@ -35,10 +39,10 @@ Fontes ImageGen, prompts e três nuvens RGBA otimizadas estão em `assets/Atmosf
 
 | Nível | Renda inimiga | Preparo antes do ataque | Margem | Exército máximo |
 |---|---:|---|---:|---:|
-| Fácil | −20% | 5 turnos / 150 s | 1,6 | 14 |
-| Normal | normal | 3 turnos / 90 s | 1,15 | 16 |
-| Difícil | +20% | 2 turnos / 60 s | 1,05 | 18 |
-| Veterano | +35% | 2 turnos / 60 s, onda de 5 e volta mais rápida | 1,0 | 20 |
+| Fácil | −20% | 5 turnos / 150 s | 1,6 | 40 |
+| Normal | normal | 3 turnos / 90 s | 1,15 | 48 |
+| Difícil | +20% | 2 turnos / 60 s | 1,05 | 56 |
+| Veterano | +35% | 2 turnos / 60 s, onda de 5 e volta mais rápida | 1,0 | 64 |
 
 A IA não investe no começo: se prepara, reúne o exército no ponto de encontro e ataca em grupo quando a força reunida supera o que ela viu do seu exército. Nos níveis Normal e acima, reforça a onda em andamento. Compra por **doutrina de exército variado**: antiaéreas, helicópteros, pesados, helicópteros ar-terra e ar-ar, antitanques e tanques entram em ordem de prioridade, e um cronograma garante pelo menos uma unidade de cada uma dessas classes a partir de certa rodada (antiaérea na 4ª, helicóptero na 1ª, pesado na 6ª, ar-terra na 10ª, ar-ar na 14ª; no RTS, ×30 s). Poupa pelo tipo que quer até poder pagá-lo. Mira abates prováveis e tropas de maior valor; artilharia escolhe o ponto com mais inimigos e nenhum aliado; unidades caras feridas recuam. Os valores são provisórios e ainda não foram validados em partidas completas.
 
@@ -77,7 +81,9 @@ O Vercel publica só a pasta `public/` (configurada em `vercel.json`); testes, s
 
 ## Como jogar
 
-Abra o **`public/index.html`** no Chrome, Edge ou Firefox. Funciona offline, sem instalação nem servidor; basta manter as pastas `css/` e `js/` ao lado do HTML (a pasta `assets/` só guarda as fontes da arte e não é necessária para jogar). Ao iniciar uma operação o jogo entra em tela cheia (botão **Tela cheia** no topo alterna) e a página inteira vira o campo de batalha, sem rolagem.
+Use **Treinamento** para praticar oito comandos. O **Manual de campo** tem categorias, busca sem acentos e fichas das unidades. **Mais** reúne grade, som, tela cheia e campanha. A interface usa os temas Carta e Sala de operações.
+
+Abra o **`public/index.html`** no Chrome, Edge ou Firefox. Funciona offline, sem instalação nem servidor; basta manter as pastas `css/` e `js/` ao lado do HTML (a pasta `assets/` só guarda as fontes da arte e não é necessária para jogar). Ao iniciar uma operação o jogo entra em tela cheia, conforme a configuração; **Mais → Tela cheia** alterna. A página inteira vira o campo de batalha, sem rolagem. O treinamento usa uma semente fixa e um posto neutro próximo ao QG, com as mesmas regras de movimento e captura.
 
 As treze classes usam arte preparada com fundo transparente: aliados em verde/caqui e inimigos em vermelho. A mesma arte aparece no mapa, no retrato da seleção e no recrutamento, com rotação, movimento e efeito de disparo. Os atlas estão incorporados em `js/assets.js`; `assets/troops-atlas.png` guarda as tropas e `assets/Tanques/tanks-atlas.png` guarda os três tanques nas duas equipes. Versões preparadas com ImageGen e prompts ficam em `assets/Tanques/`.
 
@@ -126,7 +132,7 @@ Todo o jogo funciona só com o mouse; os atalhos de teclado continuam como alter
 | Grade das casas | Botão Grade | **G** |
 | Tela cheia | Botão no topo; ativada ao iniciar a operação | **Esc** sai |
 
-Não há painel fixo: com seleção, uma barra de comando fina aparece na base do campo, entre os grupos/registro e o minimapa, com nome, vida e ordens (armas e altitude nos helicópteros; recrutamento quando o QG está selecionado); o botão **i** abre os detalhes. Nada cobre a área em volta da tropa. Em telas estreitas a barra ocupa uma linha própria acima dos cantos. Use os botões de ordem e toque no destino, inclusive durante a pausa tática; toque ou arraste no minimapa para mover a câmera. Por turnos, aguarde a ordem terminar antes de emitir outra. Menus preservam a pausa anterior ao fechar; sair da aba pausa a operação. O **Manual** detalha as regras.
+A barra de comando aparece na base do campo e mostra apenas as capacidades da seleção. Funções possíveis, mas sem créditos, ação ou condições, permanecem desativadas; o botão **i** abre os detalhes. Selecionar QG, posto ou aeroporto aliado abre a **produção na lateral esquerda**, com pastas de Infantaria, Tanques, Apoio, Artilharia e Aeronaves e a fila da estrutura. **Fechar** recolhe sem limpar a seleção; **Produção** reabre. No computador o campo reserva 320 px para a lateral; em telas menores ela funciona como gaveta. Use botões de ordem e toque no destino, inclusive durante a pausa tática; o minimapa move a câmera. Menus preservam a pausa anterior; sair da aba pausa a operação. O **Manual** detalha as regras.
 
 ### Tropas e produção
 
@@ -144,17 +150,17 @@ No RTS não há orçamento de movimento nem ação por turno. A velocidade depen
 | Tanque leve | 5 | 100 | 2 turnos / 20 s | Mobilidade, visão 5 e menor custo |
 | Tanque médio | 4 | 150 | 3 turnos / 30 s | Equilíbrio; conserva os atributos do tanque original |
 | Tanque pesado | 3 | 240 | 4 turnos / 40 s | Mais vida e dano por tiro; menor velocidade e cadência |
-| Artilharia | 2 | 100 | 3 turnos / 30 s | Move **ou** dispara por turno; explosão 3×3 com fogo amigo |
-| Helicóptero | 6 | 110 | 3 turnos / 30 s | Metralhadora; apoio e reconhecimento aéreo |
-| Helicóptero ar-terra | 6 | 230 | 4 turnos / 40 s | Metralhadora e mísseis contra alvos terrestres |
-| Helicóptero ar-ar | 6 | 180 | 4 turnos / 40 s | Metralhadora e mísseis contra helicópteros |
+| Artilharia | 3 | 180 | 4 turnos / 40 s | Move **ou** dispara por turno; explosão 3×3 com fogo amigo |
+| Helicóptero | 8 | 140 | 3 turnos / 30 s | Metralhadora; apoio e reconhecimento aéreo |
+| Helicóptero ar-terra | 8 | 230 | 4 turnos / 40 s | Metralhadora e mísseis contra alvos terrestres |
+| Helicóptero ar-ar | 8 | 180 | 4 turnos / 40 s | Metralhadora e mísseis contra aeronaves |
 | Comandante | 3 | — | — | Aura de dano/precisão em raio 2; unidade inicial |
 
-Os custos de treinamento são descontados uma vez ao comprar. Cada QG aceita **5 tropas** e cada posto aliado **3 tropas**, contando a unidade em produção. O catálogo, os preços e os tempos são os mesmos. Cada estrutura tem fila serial independente e produz simultaneamente às demais: no início do turno do dono a partir da segunda rodada, ou continuamente no RTS. Reforços surgem a até duas casas da estrutura; saída bloqueada mantém a unidade pronta até o próximo turno com espaço livre ou até liberar espaço no RTS. Captura ou destruição de posto elimina sua fila **sem reembolso**; o novo dono recebe uma fila vazia. Ter reforços encomendados em posto impede derrota por ausência de tropas, desde que o QG ainda exista.
+Os custos de treinamento são descontados uma vez ao comprar. QG, postos e aeroportos aceitam **5 encomendas por estrutura**, incluindo tropas prontas sem saída. Tipos iguais compartilham o lote em treinamento; tipos diferentes aguardam em sequência. Cada estrutura produz simultaneamente às demais: no início do turno do dono a partir da segunda rodada, ou continuamente no RTS. Reforços surgem a até duas casas da estrutura; saída bloqueada mantém a unidade pronta até liberar espaço. Um lote parcialmente implantado termina de sair antes de o próximo começar. Captura ou destruição elimina sua fila **sem reembolso**; o novo dono recebe uma fila vazia. Um QG ou posto vivo mantém a equipe na partida, mesmo sem tropas; aeroportos e encomendas sozinhos não impedem derrota.
 
 A IA recruta também nos postos. Conta encomendas de todas as estruturas ao calcular composição e limite de exército; mantém a frequência, orçamento e limite total de encomendas por dificuldade. Entre estruturas disponíveis para a tropa escolhida, prefere a menor espera acumulada, depois a mais próxima do ponto de reunião e, em empate, a de menor identificador.
 
-Os três tanques estão disponíveis no QG do jogador e da IA, com um médio inicial por lado. O batedor causa 40% do dano contra qualquer tanque; o antitanque mantém o multiplicador 2,25 contra veículos. O pesado usa vida adicional, sem outro sistema de blindagem. A IA prioriza infantaria e especialistas antes de ampliar os tanques, buscando a proporção leve:médio:pesado de 1:2:1; pode poupar créditos para a classe desejada. [Atributos, comparação por sementes e capturas](docs/tanks/README.md).
+Os três tanques estão disponíveis no QG do jogador e da IA. A formação sugerida inclui um médio; a formação inimiga varia pela semente. O batedor causa 40% do dano contra o tanque leve e não perfura médios/pesados. Antitanque mantém o multiplicador 2,25 contra veículos. Médios e pesados resistem às armas comuns; canhões, artilharia, armas antitanque, mísseis ar-terra e bombardeios são suas contramedidas. A IA segue sua doutrina de composição, ajustada ao que observa, e pode poupar para a classe desejada.
 
 ### Outras regras
 
@@ -166,11 +172,11 @@ Os três tanques estão disponíveis no QG do jogador e da IA, com um médio ini
 - **Engenharia no RTS:** reparo de até 24 HP por segundo até completar a vida; desarme de mina em 1 segundo. As tarefas avançam somente com a simulação ativa.
 - **Névoa:** inimigos fora da visão atual ficam ocultos, mesmo em terreno explorado. Artilharia depende do reconhecimento aliado.
 - **Floresta:** tropas na floresta só são vistas a até 2 casas de um observador (batedor: 3). Disparar revela a posição por 2 s no RTS ou até o próximo turno.
-- **Helicópteros** (`air:true`): 120 HP, 2,2 casas/s no RTS, visão 6 em baixa / 15 em alta, recompensa 50. Voam sobre água e montanhas com custo 1 por casa, sem bônus de estrada, penalidade de floresta, cobertura ou bônus de montanha; a floresta não os esconde. Dividem casa com tropas terrestres e estruturas, nunca com outra aeronave; a saída aérea do QG só é bloqueada por aeronaves. Minas, a explosão da artilharia e a queda de uma aeronave não atingem a outra camada. Infantaria e metralhadores os atacam com dano reduzido (infantaria −75%, metralhador −35%, caindo até a metade no alcance máximo do disparo); engenheiros os reparam. Não capturam, constroem nem transportam.
+- **Helicópteros** (`air:true`): 120 HP, 3,2 casas/s no RTS, visão 6 em baixa / 15 em alta, recompensa 50. Voam sobre água e montanhas com custo 1 por passo reto e √2 por diagonal, sem bônus de estrada, penalidade de floresta, cobertura ou bônus de montanha; a floresta não os esconde. Dividem casa com tropas terrestres e estruturas, nunca com outra aeronave; a saída aérea do QG só é bloqueada por aeronaves. Minas, a explosão da artilharia e a queda de uma aeronave não atingem a outra camada. Infantaria e metralhadores os atacam com dano reduzido (infantaria −75%, metralhador −35%, caindo até a metade no alcance máximo do disparo). A manutenção em baixa altitude, junto a uma base aliada, recupera vida e flares. Não capturam, constroem nem transportam.
 - **Armas aéreas:** metralhadora 20 de dano, alcance 3, 85%, recarga 1 s (×0,35 contra veículos terrestres, ×0,5 contra estruturas); míssil ar-terra 65, alcance 5 em baixa / 10 em alta, 85%, 3 s (só alvos terrestres; ×1,5 contra veículos, ×0,5 contra tropas a pé); míssil ar-ar 70, alcance 6 em baixa / 11 em alta, 90%, 3 s (só helicópteros). Auto escolhe o míssil contra veículo/estrutura (ar-terra) ou helicóptero (ar-ar) e a metralhadora no resto; os botões Auto, Metralhadora e Míssil fixam a arma. Por turnos um disparo gasta a ação, e trocar de arma não a devolve; no RTS as duas armas dividem a recarga do último disparo. O projétil guarda arma, dano e alvo do momento do disparo. Clique de novo na mesma casa para alternar entre a aeronave e a tropa abaixo dela.
 - **Supressão:** tropa que leva dano e sobrevive perde 25 pontos de precisão por 3 s no RTS ou durante o próprio turno seguinte; novo dano renova sem acumular. Estruturas não são suprimidas.
 - **Comandante:** +20% dano e +15 pontos de precisão no raio 2. Sua morte remove metade dos créditos.
-- **Vitória:** destrua o QG inimigo ou elimine as tropas inimigas sem reforços pendentes.
+- **Vitória:** elimine todos os QGs e postos do adversário. Tropas, aeroportos e filas não substituem essas bases. Se ambos perderem todas as bases, há empate.
 
 ## Desenvolvimento e verificação
 
@@ -188,12 +194,12 @@ Use **Radar · N contatos** para recolher/expandir (Enter ou Espaço também fun
 |---|---|
 | `public/index.html` | Marcação da página e diálogos |
 | `public/css/style.css` | Estilos do jogo e layout em tela cheia |
-| `public/css/tailwind.css` | Saída gerada do Tailwind; não há fonte para regenerar, então edite `style.css` |
 | `public/js/engine.js` | Motor independente do DOM: perfis dos mapas, gerador (relevo, água, vegetação, campos e sebes, postos, estradas), tropas, combate, economia, IA e névoa |
 | `public/js/world.js` | Mapa-múndi da campanha sem DOM: continentes, biomas, regiões, rotas marítimas e regras de conquista/salvamento |
 | `public/js/campaign.js` | Tela da campanha: desenho do mundo, escolha de região, batalha pelo bioma e progresso no navegador |
 | `public/js/assets.js` | Texturas e atlas em data URL; atualizado pelos scripts `prepare:terrain` e `prepare:tanks`; o bloco `HELI_ASSETS` traz `assets/Helicopteros/helicopters-atlas.png` |
 | `public/js/render.js` | Sprites, texturas de terreno, câmera, `Renderer` (Canvas e minimapa) e prévia do mapa |
+| `public/js/tutorial.js` | Treinamento guiado por eventos, sem mudar as regras |
 | `public/js/ui.js` | Som, estado da partida, barra de comando e painéis da base, comandos de mouse e teclado, loop e inicialização |
 | `tests/` | `engine.test.cjs` (motor: turnos, RTS, tanques, mapas e terrenos), `world.test.cjs` (mapa-múndi e campanha) e `browser.test.cjs` (Chrome: controles, câmera, gerador, campanha, tanques, terreno) |
 | `scripts/` | Preparação de texturas e tanques; comparação de confrontos; servidor local (`serve.cjs`) |

@@ -1,0 +1,182 @@
+{
+ "targets": {
+  "p95": 50,
+  "longTaskMax": 100,
+  "tickMax": 50,
+  "over50pct": 5,
+  "miniPerFrame": 1
+ },
+ "regression": [
+  "p95",
+  "p99",
+  "drawP95",
+  "tickP95",
+  "tickP99",
+  "allocMBs",
+  "heapGrowthMB",
+  "nodesGrowth",
+  "canvasGrowth"
+ ],
+ "slack": {
+  "p95": 10,
+  "p99": 12,
+  "drawP95": 6,
+  "tickP95": 2,
+  "tickP99": 3,
+  "allocMBs": 3,
+  "heapGrowthMB": 2,
+  "nodesGrowth": 50,
+  "canvasGrowth": 4
+ },
+ "engine-scaling": {
+  "*": {
+   "tickP95": 87.6,
+   "tickP99": 106.3
+  }
+ },
+ "pathfinding-worst": {
+  "*": {
+   "tickP95": 22.2,
+   "tickP99": 31.9
+  }
+ },
+ "ai-spikes": {
+  "*": {
+   "tickP95": 43.2,
+   "tickP99": 52.7
+  }
+ },
+ "combat-burst": {
+  "*": {
+   "tickP95": 8.1,
+   "tickP99": 12.2
+  }
+ },
+ "turns-ai": {
+  "*": {
+   "tickP95": 6,
+   "tickP99": 15.4
+  }
+ },
+ "production-load": {
+  "*": {
+   "tickP95": 17.7,
+   "tickP99": 21.8
+  }
+ },
+ "vision-load": {
+  "*": {
+   "tickP95": 22.2,
+   "tickP99": 36.5
+  }
+ },
+ "zoom-performance": {
+  "*": {
+   "p95": 82.9,
+   "drawP95": 29.5
+  }
+ },
+ "cold-cache": {
+  "*": {
+   "p95": 72.4,
+   "drawP95": 34.3
+  }
+ },
+ "frame-breakdown": {
+  "*": {
+   "drawP95": 38.3
+  }
+ },
+ "screen-size": {
+  "*": {
+   "p95": 72.6,
+   "drawP95": 36.5
+  }
+ },
+ "resize": {
+  "*": {
+   "p95": 114.1,
+   "drawP95": 28.8,
+   "heapGrowthMB": 4,
+   "nodesGrowth": 112
+  }
+ },
+ "quality-switch": {
+  "*": {
+   "p95": 187.1,
+   "drawP95": 22.4
+  }
+ },
+ "fog-reveal": {
+  "*": {
+   "p95": 93.4,
+   "drawP95": 20
+  }
+ },
+ "minimap-load": {
+  "*": {
+   "p95": 301.8,
+   "drawP95": 60.4
+  }
+ },
+ "selection-load": {
+  "*": {
+   "p95": 103.8,
+   "drawP95": 44.2
+  }
+ },
+ "heavy-combat-camera": {
+  "*": {
+   "p95": 708,
+   "drawP95": 86.1
+  }
+ },
+ "visibility": {
+  "*": {
+   "p95": 426.7,
+   "drawP95": 52
+  }
+ },
+ "speed-change": {
+  "*": {
+   "p95": 249.7,
+   "drawP95": 30.9
+  }
+ },
+ "ui-dom": {
+  "*": {
+   "nodesGrowth": 211,
+   "listenersGrowth": 10
+  }
+ },
+ "dialogs-in-battle": {
+  "*": {
+   "p95": 187.1,
+   "drawP95": 29.8,
+   "heapGrowthMB": 4.6,
+   "nodesGrowth": 127,
+   "listenersGrowth": 10
+  }
+ },
+ "soak": {
+  "*": {
+   "heapGrowthMB": 3.7,
+   "nodesGrowth": 112,
+   "listenersGrowth": 10
+  }
+ },
+ "restart": {
+  "*": {
+   "heapGrowthMB": 2.6,
+   "nodesGrowth": 2185,
+   "listenersGrowth": 10
+  }
+ },
+ "multiplayer-load": {
+  "*": {
+   "p95": 103.8,
+   "drawP95": 32.5,
+   "tickP95": 78.7
+  }
+ }
+}

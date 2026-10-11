@@ -1,6 +1,6 @@
 # Tabela de dano — War Grid
 
-Dano por disparo que acerta, com tropa de nível 1, sem comandante por perto e em terreno aberto.
+Dano por disparo que acerta, com tropa de nível 1, sem bônus de aura, doutrina equilibrada e em terreno aberto (o comandante recebe a própria aura no jogo).
 Fonte: `public/js/engine.js` (`TYPES`, `WEAPONS`, `weapon`, `impact`). "—" = não pode atirar naquele alvo.
 
 | Atacante | Tropa a pé | Veículo | Tanque médio/pesado | Aeronave | Estrutura |
@@ -10,37 +10,41 @@ Fonte: `public/js/engine.js` (`TYPES`, `WEAPONS`, `weapon`, `impact`). "—" = n
 | Comandante | 40 | 40 | — | — | 40 |
 | Metralhador | 23,4 | 4,5 | — | 11,7 → 5,9 ¹ | 9 |
 | Antitanque | 20 | **90** | **90** | — | 40 |
-| Soldado lançador | 30 | 30 | — | 30 | 30 |
-| Batedor | **48** | 32 (tanque leve: 12,8) | — | — | 32 |
+| Soldado lançador | 40 | 40 | — | 40 | 40 |
+| Batedor | **36** | 24 (tanque leve: 9,6) | — | — | 24 |
 | Tanque leve | 35 | 35 | 35 | — | 35 |
 | Tanque médio | 60 | 60 | 60 | — | 60 |
 | Tanque pesado | 80 | 80 | 80 | — | 80 |
-| Artilharia ² | 70 → 28 | 70 → 28 | 70 → 28 | — | 70 → 28 |
+| Artilharia ² | 85 → 68 | 85 → 68 | 85 → 68 | — | 85 → 68 |
 | Artilharia de mísseis ³ | 20 / 10 | 20 / 10 | 20 / 10 | — | **40 / 20** |
-| Veículo antiaéreo | — | — | — | **100** | — |
-| Helicóptero (metralhadora) | 20 | 7 | — | 20 | 10 |
+| Veículo antiaéreo | — | — | — | **80** | — |
+| Helicóptero básico (Minigun) | 12 | 1 | 1 | 4 (avião em voo: 1) | 2 |
+| Helicópteros especializados (Canhão) | 12 | 30 | 30 | 20 (avião em voo: 7) | 10 |
 | Helicóptero ar-terra (míssil) | 32,5 | **97,5** | **97,5** | — | 65 |
 | Helicóptero ar-ar (míssil) | — | — | — | 70 | — |
 | Drone de reconhecimento | — | — | — | — | — |
-| Drone furtivo ⁴ | 20 | 20 | — | 20 | 20 |
+| Drone furtivo ⁴ | 35 | 35 | — | 35 | 35 |
+| Bombardeiros (cruzeiro, centro / vizinhas) | 160 / 80 | 160 / 80 | 160 / 80 | Só pousada: 160 / 80 | 160 / 80 |
 
-Tanque médio e tanque pesado só levam dano de antitanque, tanques, artilharia e míssil ar-terra; as demais tropas não conseguem mirar neles.
+Cruzeiro: alcance 40, área 3×3 fixa, fogo amigo, uma aplicação por estrutura. Os dois bombardeiros levam 2 cruzeiros e suas bombas; não usam metralhadora ou outros mísseis. Interceptação antiaérea: 75% por tentativa. [Regras de mísseis e drones](misseis-drones-bombardeiros.md).
+
+Tanque médio e tanque pesado resistem a armas comuns; antitanque, tanques, artilharias, canhões de helicópteros, mísseis ar-terra e bombas são as contramedidas. A Minigun do helicóptero básico também os atinge, com dano mínimo.
 Quartel-general e posto avançado não atacam (dano 0).
 
 ## Categorias de alvo
 
 - **Tropa a pé:** infantaria, engenheiro, comandante, metralhador, antitanque, soldado lançador.
-- **Veículo:** tanque leve, artilharia, batedor, veículo antiaéreo.
-- **Tanque médio/pesado:** blindados que só armas antitanque ferem.
-- **Aeronave:** helicópteros. Só infantaria, metralhador, soldado lançador, veículo antiaéreo e helicópteros alcançam.
-- **Estrutura:** quartel-general, posto avançado.
+- **Veículo:** tanque leve, artilharias, batedor, veículo antiaéreo e aviões no solo.
+- **Tanque médio/pesado:** blindados protegidos contra armas comuns, com exceção das armas principais dos helicópteros.
+- **Aeronave:** helicópteros, drones e aviões em voo; depende da arma compatível, da visão e do alcance. Aeronaves no solo usam a camada terrestre.
+- **Estrutura:** quartel-general, posto avançado, aeroportos e canteiros.
 
 ## Notas
 
 1. Contra aeronave, o dano cai de 100% para 50% conforme a distância chega ao alcance máximo do disparo.
-2. Artilharia: 70 a 2 casas, 28 a 6 casas. Tropas ao redor (área 3×3) levam metade, inclusive as suas (fogo amigo).
-3. Artilharia de mísseis: por míssil com impacto efetivo (80% de chance), casa central / oito vizinhas; 4 mísseis por salva, alcance 3–13, sem queda pela distância. Atinge as suas tropas e não atinge aeronaves. Só ataca pela ordem Bombardear área. Equilíbrio provisório.
-4. Drone furtivo: 2 mísseis no total, sem reposição, alcance 2, um por ação (RTS: 3 s entre disparos). Nunca dispara automaticamente, só contra alvos escolhidos pelo jogador ou pela IA. Equilíbrio provisório.
+2. Artilharia: 85 a 2 casas, 68 a 16 casas. Tropas ao redor (área 3×3) levam metade, inclusive as suas (fogo amigo).
+3. Artilharia de mísseis: por míssil com impacto efetivo (80% de chance), casa central / oito vizinhas; 4 mísseis por salva, alcance 3–30, sem queda pela distância. Atinge as suas tropas e não atinge aeronaves em voo. Bombardear escolhe a área; atacar um inimigo visível mira a casa dele. Equilíbrio provisório.
+4. Drone furtivo: 2 mísseis no total, sem reposição, alcance 8, um por ação (RTS: 3 s entre disparos). Nunca dispara automaticamente, só contra alvos escolhidos pelo jogador ou pela IA. Equilíbrio provisório.
 
 ## O que muda o número final
 
@@ -66,9 +70,9 @@ Quartel-general e posto avançado não atacam (dano 0).
 | Tanque leve | 110 |
 | Tanque médio | 170 |
 | Tanque pesado | 280 |
-| Artilharia | 80 |
+| Artilharia | 100 |
 | Artilharia de mísseis | 90 |
-| Veículo antiaéreo | 40 |
+| Veículo antiaéreo | 70 |
 | Helicópteros | 120 |
 | Drone de reconhecimento | 60 |
 | Drone furtivo | 50 |
@@ -79,7 +83,7 @@ Quartel-general e posto avançado não atacam (dano 0).
 
 | Tropa | Preço |
 |---|---|
-| Helicóptero padrão | 110 |
+| Helicóptero padrão | 140 |
 | Helicóptero ar-terra | 230 |
 | Helicóptero ar-ar | 180 |
 | Artilharia de mísseis | 240 |
@@ -87,3 +91,5 @@ Quartel-general e posto avançado não atacam (dano 0).
 | Drone furtivo | 160 |
 
 O veículo antiaéreo anda tão rápido quanto o batedor (5 casas por turno; velocidade 2,25 no RTS).
+
+Mísseis ar-ar aplicam dano normal; não há abate automático.

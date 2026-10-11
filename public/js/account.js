@@ -29,7 +29,7 @@ async function cloudClient(){if(!cloud.client){const {createClient}=await import
 async function cloudSync(){
  if(!cloud.user||cloud.busy){cloud.pending=!!cloud.user;return;}
  if(!navigator.onLine){cloud.pending=true;renderAccount();return;}
- cloud.busy=true;cloud.pending=false;
+ cloud.busy=true;cloud.pending=false;renderAccount();
  try{
   const c=await cloudClient(),{data,error}=await c.from('profiles').select('data').eq('user_id',cloud.user.id).maybeSingle();if(error)throw error;
   const remote=data&&validateBundle(data.data),merged=remote?mergeBundles(bundle(),remote):bundle();if(remote)applyBundle(merged);
@@ -81,12 +81,13 @@ const duration=h=>h.mode==='rts'?`${Math.floor(h.time/60)}:${String(h.time%60).p
 function renderProfile(){
  $('achievementList').replaceChildren(...ACHIEVEMENTS.map(a=>{const at=profile.achievements[a.id],li=el('li',undefined,at?'done':'locked');li.append(el('b',a.name),el('span',a.text),el('small',at?'Desbloqueada em '+when(at):'Bloqueada'));return li;}));
  $('achievementCount').textContent=`${Object.keys(profile.achievements).length} de ${ACHIEVEMENTS.length}`;
+ setProp('achievementProgress','max',ACHIEVEMENTS.length);setProp('achievementProgress','value',Object.keys(profile.achievements).length);
  const s=profile.stats,kills=sumOf(s.kills),lost=sumOf(s.lost),rows=[['Operações',s.matches],['Vitórias / derrotas / empates',`${s.wins} / ${s.losses} / ${s.draws}`],['Aproveitamento',s.matches?Math.round(s.wins/s.matches*100)+'%':'—'],
   ['Abates / perdas',`${kills} / ${lost}`],['Aeronaves abatidas',sumOf(s.kills,t=>t.air)],['Veículos destruídos',sumOf(s.kills,t=>t.vehicle)],['Tempo em RTS',`${Math.round(s.seconds/60)} min`],['Rodadas por turnos',s.rounds],
   ['Regiões conquistadas',s.regions],['Campanhas vencidas',s.campaigns],
   ...Object.entries(DIFFICULTY_NAME).map(([k,n])=>[`${n}: vitórias / jogadas`,`${s.byDifficulty[k]?.won||0} / ${s.byDifficulty[k]?.played||0}`])];
  const top=Object.entries(s.kills).filter(([t])=>TYPES[t]).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([t,n])=>`${TYPES[t].name} ${n}`).join(' · ');if(top)rows.push(['Mais abatidos',top]);
- $('statList').replaceChildren(...rows.flatMap(([k,v])=>[el('dt',k),el('dd',String(v))]));
+ $('statList').replaceChildren(...rows.map(([k,v])=>{const tile=el('div');tile.append(el('dt',k),el('dd',String(v)));return tile;}));
  $('historyBody').replaceChildren(...profile.history.map(h=>{const tr=el('tr');for(const v of [when(h.date),(MAPS[h.map]||h.map)+(h.nationName?' · '+h.nationName:''),DIFFICULTY_NAME[h.difficulty]||h.difficulty,MODE_NAME[h.mode],RESULT_NAME[h.result],duration(h),`${sumOf(h.kills)} / ${sumOf(h.lost)}`])tr.append(el('td',v));tr.className=h.result;return tr;}));
  $('historyEmpty').hidden=profile.history.length>0;renderAccount();
 }
@@ -95,8 +96,8 @@ function renderAccount(){
  const on=cloudConfigured()&&cloudReachable();$('accountForm').hidden=!on||!!cloud.user;$('accountSignedIn').hidden=!cloud.user;
  $('passwordBox').hidden=!cloud.user;$('accountUser').textContent=cloud.user?.email||'';
  let status;
- if(!cloudConfigured())status='Nuvem não configurada: siga "Progresso na nuvem (Neon)" no README e preencha js/neon-config.js. Seu progresso está salvo neste navegador.';
- else if(!cloudReachable())status='Para sincronizar, abra o jogo por "Jogar online.bat" (ou npm start). Por arquivo (file://) o login do Neon não funciona; o progresso fica neste navegador.';
+ if(!cloudConfigured())status='Sincronização não configurada. Seu progresso está salvo neste navegador; exporte um backup para continuar em outro dispositivo.';
+ else if(!cloudReachable())status='Modo arquivo (file://): o progresso permanece neste navegador. Para entrar e sincronizar, abra a versão online pelo arquivo "Jogar online.bat".';
  else if(!cloud.user)status='Entre para guardar o progresso na nuvem e continuar em outro navegador ou computador.';
  else if(cloud.busy)status='Sincronizando…';
  else if(cloud.error)status='Falha na sincronização: '+cloud.error+(cloud.pending?' · tentará de novo':'');
@@ -104,6 +105,10 @@ function renderAccount(){
  else status=cloud.at?'Sincronizado às '+new Date(cloud.at).toLocaleTimeString('pt-BR',{timeStyle:'short'}):'Conectado.';
  if(cloud.error&&!cloud.user)status=cloud.error;
  $('accountStatus').textContent=status;
+ const state=cloud.busy?'Sincronizando':cloud.error?'Erro':!on?'Local / offline':!cloud.user?'Desconectado':cloud.busy?'Sincronizando':cloud.pending?'Pendente':cloud.at?'Sincronizado':'Conectado';
+ $('syncState').textContent=state;$('syncState').dataset.state=cloud.busy?'busy':cloud.error?'error':cloud.pending?'pending':cloud.user&&on?'connected':'local';
+ $('accountSync').hidden=!cloud.user;$('accountSync').disabled=cloud.busy||!on;
+ $('accountIntro').textContent=cloud.user?'Conta conectada. Gerencie seu acesso abaixo.':on?'Entre ou crie uma conta para continuar em outros dispositivos.':'Você pode jogar sem conta. O progresso permanece neste navegador; use o backup em arquivo para levá-lo a outro dispositivo.';
 }
 function showProfileTab(name){for(const b of document.querySelectorAll('#profile [role=tab]')){const on=b.dataset.tab===name;b.setAttribute('aria-selected',String(on));$(b.getAttribute('aria-controls')).hidden=!on;}}
 function openProfile(){openMenu('profile');renderProfile();}

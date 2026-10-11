@@ -1,0 +1,1837 @@
+{
+  "seed": 173,
+  "sha256": "2475a58883285bf5b6cbc04efe247a2aedf842c3132aa989106a4c7d87dde00c",
+  "units": [
+    {
+      "id": "infantry",
+      "name": "Infantaria",
+      "cost": 50,
+      "hp": 100,
+      "hpPerCredit": 2,
+      "reference": "infantry",
+      "weapon": "infantry",
+      "expectedShot": 32.580000000000005,
+      "expectedDamagePerCredit": 0.6516000000000001,
+      "expectedAction": 32.580000000000005,
+      "dpsUpper": 40.72500000000001,
+      "range": 1.15,
+      "vision": 4,
+      "trainTurns": 1,
+      "trainSeconds": 10,
+      "trainSecondsPerCredit": 0.2,
+      "ammo": null
+    },
+    {
+      "id": "lightTank",
+      "name": "Tanque leve",
+      "cost": 100,
+      "hp": 110,
+      "hpPerCredit": 1.1,
+      "reference": "infantry",
+      "weapon": "lightTank",
+      "expectedShot": 27.150000000000002,
+      "expectedDamagePerCredit": 0.2715,
+      "expectedAction": 27.150000000000002,
+      "dpsUpper": 13.575000000000001,
+      "range": 2,
+      "vision": 5,
+      "trainTurns": 2,
+      "trainSeconds": 20,
+      "trainSecondsPerCredit": 0.2,
+      "ammo": null
+    },
+    {
+      "id": "tank",
+      "name": "Tanque médio",
+      "cost": 150,
+      "hp": 170,
+      "hpPerCredit": 1.1333333333333333,
+      "reference": "infantry",
+      "weapon": "tank",
+      "expectedShot": 43.47,
+      "expectedDamagePerCredit": 0.2898,
+      "expectedAction": 43.47,
+      "dpsUpper": 17.388,
+      "range": 3,
+      "vision": 4,
+      "trainTurns": 3,
+      "trainSeconds": 30,
+      "trainSecondsPerCredit": 0.2,
+      "ammo": null
+    },
+    {
+      "id": "heavyTank",
+      "name": "Tanque pesado",
+      "cost": 240,
+      "hp": 280,
+      "hpPerCredit": 1.1666666666666667,
+      "reference": "infantry",
+      "weapon": "heavyTank",
+      "expectedShot": 57.959999999999994,
+      "expectedDamagePerCredit": 0.24149999999999996,
+      "expectedAction": 57.959999999999994,
+      "dpsUpper": 16.56,
+      "range": 3,
+      "vision": 4,
+      "trainTurns": 4,
+      "trainSeconds": 40,
+      "trainSecondsPerCredit": 0.16666666666666666,
+      "ammo": null
+    },
+    {
+      "id": "artillery",
+      "name": "Artilharia",
+      "cost": 180,
+      "hp": 100,
+      "hpPerCredit": 0.5555555555555556,
+      "reference": "infantry",
+      "weapon": "artillery",
+      "expectedShot": 74.8,
+      "expectedDamagePerCredit": 0.41555555555555557,
+      "expectedAction": 74.8,
+      "dpsUpper": 14.96,
+      "range": 16,
+      "vision": 3,
+      "trainTurns": 4,
+      "trainSeconds": 40,
+      "trainSecondsPerCredit": 0.2222222222222222,
+      "ammo": null
+    },
+    {
+      "id": "recon",
+      "name": "Batedor",
+      "cost": 75,
+      "hp": 75,
+      "hpPerCredit": 1,
+      "reference": "infantry",
+      "weapon": "recon",
+      "expectedShot": 33.57,
+      "expectedDamagePerCredit": 0.4476,
+      "expectedAction": 33.57,
+      "dpsUpper": 30.518181818181816,
+      "range": 2,
+      "vision": 7,
+      "trainTurns": 1,
+      "trainSeconds": 10,
+      "trainSecondsPerCredit": 0.13333333333333333,
+      "ammo": null
+    },
+    {
+      "id": "engineer",
+      "name": "Engenheiro",
+      "cost": 65,
+      "hp": 85,
+      "hpPerCredit": 1.3076923076923077,
+      "reference": "infantry",
+      "weapon": "engineer",
+      "expectedShot": 18.63,
+      "expectedDamagePerCredit": 0.2866153846153846,
+      "expectedAction": 18.63,
+      "dpsUpper": 15.525,
+      "range": 1.15,
+      "vision": 4,
+      "trainTurns": 2,
+      "trainSeconds": 20,
+      "trainSecondsPerCredit": 0.3076923076923077,
+      "ammo": null
+    },
+    {
+      "id": "antitank",
+      "name": "Antitanque",
+      "cost": 110,
+      "hp": 90,
+      "hpPerCredit": 0.8181818181818182,
+      "reference": "tank",
+      "weapon": "antitank",
+      "expectedShot": 79.22,
+      "expectedDamagePerCredit": 0.7201818181818181,
+      "expectedAction": 79.22,
+      "dpsUpper": 26.406666666666666,
+      "range": 3,
+      "vision": 4,
+      "trainTurns": 2,
+      "trainSeconds": 20,
+      "trainSecondsPerCredit": 0.18181818181818182,
+      "ammo": null
+    },
+    {
+      "id": "machinegun",
+      "name": "Metralhador",
+      "cost": 90,
+      "hp": 110,
+      "hpPerCredit": 1.2222222222222223,
+      "reference": "infantry",
+      "weapon": "machinegun",
+      "expectedShot": 21.032,
+      "expectedDamagePerCredit": 0.2336888888888889,
+      "expectedAction": 63.096000000000004,
+      "dpsUpper": 52.58,
+      "range": 2.5,
+      "vision": 4,
+      "trainTurns": 2,
+      "trainSeconds": 20,
+      "trainSecondsPerCredit": 0.2222222222222222,
+      "ammo": null
+    },
+    {
+      "id": "antiAirVehicle",
+      "name": "Veículo antiaéreo",
+      "cost": 160,
+      "hp": 70,
+      "hpPerCredit": 0.4375,
+      "reference": "helicopter",
+      "weapon": "antiAirVehicle",
+      "expectedShot": 66.24,
+      "expectedDamagePerCredit": 0.414,
+      "expectedAction": 66.24,
+      "dpsUpper": 18.92571428571428,
+      "range": 30,
+      "vision": 6,
+      "trainTurns": 3,
+      "trainSeconds": 30,
+      "trainSecondsPerCredit": 0.1875,
+      "ammo": null
+    },
+    {
+      "id": "missileInfantry",
+      "name": "Soldado lançador",
+      "cost": 90,
+      "hp": 80,
+      "hpPerCredit": 0.8888888888888888,
+      "reference": "helicopter",
+      "weapon": "missileInfantry",
+      "expectedShot": 31.049999999999997,
+      "expectedDamagePerCredit": 0.345,
+      "expectedAction": 31.049999999999997,
+      "dpsUpper": 10.349999999999998,
+      "range": 3,
+      "vision": 4,
+      "trainTurns": 2,
+      "trainSeconds": 20,
+      "trainSecondsPerCredit": 0.2222222222222222,
+      "ammo": null
+    },
+    {
+      "id": "helicopter",
+      "name": "Helicóptero",
+      "cost": 140,
+      "hp": 120,
+      "hpPerCredit": 0.8571428571428571,
+      "reference": "infantry",
+      "weapon": "gun",
+      "expectedShot": 10.54,
+      "expectedDamagePerCredit": 0.07528571428571428,
+      "expectedAction": 52.699999999999996,
+      "dpsUpper": 52.699999999999996,
+      "range": 3,
+      "vision": 6,
+      "trainTurns": 3,
+      "trainSeconds": 30,
+      "trainSecondsPerCredit": 0.21428571428571427,
+      "ammo": null
+    },
+    {
+      "id": "helicopterGround",
+      "name": "Helicóptero ar-terra",
+      "cost": 230,
+      "hp": 120,
+      "hpPerCredit": 0.5217391304347826,
+      "reference": "tank",
+      "weapon": "agm",
+      "expectedShot": 86.19,
+      "expectedDamagePerCredit": 0.3747391304347826,
+      "expectedAction": 86.19,
+      "dpsUpper": 28.729999999999997,
+      "range": 5,
+      "vision": 6,
+      "trainTurns": 4,
+      "trainSeconds": 40,
+      "trainSecondsPerCredit": 0.17391304347826086,
+      "ammo": null
+    },
+    {
+      "id": "helicopterAir",
+      "name": "Helicóptero ar-ar",
+      "cost": 180,
+      "hp": 120,
+      "hpPerCredit": 0.6666666666666666,
+      "reference": "helicopter",
+      "weapon": "aam",
+      "expectedShot": 65.25,
+      "expectedDamagePerCredit": 0.3625,
+      "expectedAction": 65.25,
+      "dpsUpper": 21.75,
+      "range": 6,
+      "vision": 6,
+      "trainTurns": 4,
+      "trainSeconds": 40,
+      "trainSecondsPerCredit": 0.2222222222222222,
+      "ammo": null
+    },
+    {
+      "id": "rocketArtillery",
+      "name": "Artilharia de mísseis",
+      "cost": 240,
+      "hp": 90,
+      "hpPerCredit": 0.375,
+      "reference": "tank",
+      "weapon": "rocket",
+      "expectedShot": 16,
+      "expectedDamagePerCredit": 0.06666666666666667,
+      "expectedAction": 64,
+      "dpsUpper": 6.4,
+      "range": 30,
+      "vision": 3,
+      "trainTurns": 4,
+      "trainSeconds": 40,
+      "trainSecondsPerCredit": 0.16666666666666666,
+      "ammo": null
+    },
+    {
+      "id": "reconDrone",
+      "name": "Drone de reconhecimento",
+      "cost": 90,
+      "hp": 60,
+      "hpPerCredit": 0.6666666666666666,
+      "reference": "infantry",
+      "weapon": "",
+      "expectedShot": 0,
+      "expectedDamagePerCredit": 0,
+      "expectedAction": 0,
+      "dpsUpper": 0,
+      "range": 0,
+      "vision": 12,
+      "trainTurns": 2,
+      "trainSeconds": 20,
+      "trainSecondsPerCredit": 0.2222222222222222,
+      "ammo": null
+    },
+    {
+      "id": "stealthDrone",
+      "name": "Drone furtivo",
+      "cost": 160,
+      "hp": 50,
+      "hpPerCredit": 0.3125,
+      "reference": "antiAirVehicle",
+      "weapon": "stealthMissile",
+      "expectedShot": 34.39,
+      "expectedDamagePerCredit": 0.2149375,
+      "expectedAction": 34.39,
+      "dpsUpper": 11.463333333333333,
+      "range": 8,
+      "vision": 12,
+      "trainTurns": 3,
+      "trainSeconds": 30,
+      "trainSecondsPerCredit": 0.1875,
+      "ammo": 2
+    },
+    {
+      "id": "commander",
+      "name": "Comandante",
+      "cost": null,
+      "hp": 140,
+      "hpPerCredit": null,
+      "reference": "infantry",
+      "weapon": "commander",
+      "expectedShot": 49.203,
+      "expectedDamagePerCredit": null,
+      "expectedAction": 49.203,
+      "dpsUpper": 32.802,
+      "range": 2,
+      "vision": 5,
+      "trainTurns": null,
+      "trainSeconds": null,
+      "trainSecondsPerCredit": null,
+      "ammo": null
+    },
+    {
+      "id": "fighterBlue",
+      "name": "Caça aliado",
+      "cost": 610,
+      "hp": 150,
+      "hpPerCredit": 0.2459016393442623,
+      "reference": "bomberRed",
+      "weapon": "jetAam",
+      "expectedShot": 61.521428571428565,
+      "expectedDamagePerCredit": 0.10085480093676814,
+      "expectedAction": 61.521428571428565,
+      "dpsUpper": 102.53571428571428,
+      "range": 14,
+      "vision": 12,
+      "trainTurns": 3,
+      "trainSeconds": 30,
+      "trainSecondsPerCredit": 0.04918032786885246,
+      "ammo": {
+        "jetAam": 4,
+        "antiRadiation": 2,
+        "jetGun": 80
+      }
+    },
+    {
+      "id": "fighterRed",
+      "name": "Caça inimigo",
+      "cost": 590,
+      "hp": 160,
+      "hpPerCredit": 0.2711864406779661,
+      "reference": "bomberBlue",
+      "weapon": "jetAam",
+      "expectedShot": 61.85828571428572,
+      "expectedDamagePerCredit": 0.10484455205811138,
+      "expectedAction": 61.85828571428572,
+      "dpsUpper": 103.09714285714287,
+      "range": 14,
+      "vision": 12,
+      "trainTurns": 3,
+      "trainSeconds": 30,
+      "trainSecondsPerCredit": 0.05084745762711865,
+      "ammo": {
+        "jetAam": 4,
+        "antiRadiation": 2,
+        "jetGun": 80
+      }
+    },
+    {
+      "id": "multiroleBlue",
+      "name": "Multifunção aliado",
+      "cost": 750,
+      "hp": 180,
+      "hpPerCredit": 0.24,
+      "reference": "tank",
+      "weapon": "jetAgm",
+      "expectedShot": 99.36500000000001,
+      "expectedDamagePerCredit": 0.13248666666666667,
+      "expectedAction": 99.36500000000001,
+      "dpsUpper": 165.60833333333335,
+      "range": 10,
+      "vision": 12,
+      "trainTurns": 4,
+      "trainSeconds": 40,
+      "trainSecondsPerCredit": 0.05333333333333334,
+      "ammo": {
+        "jetAam": 2,
+        "jetAgm": 4,
+        "antiRadiation": 2,
+        "jetGun": 80
+      }
+    },
+    {
+      "id": "multiroleRed",
+      "name": "Multifunção inimigo",
+      "cost": 920,
+      "hp": 200,
+      "hpPerCredit": 0.21739130434782608,
+      "reference": "tank",
+      "weapon": "jetAgm",
+      "expectedShot": 125.72999999999998,
+      "expectedDamagePerCredit": 0.13666304347826083,
+      "expectedAction": 125.72999999999998,
+      "dpsUpper": 209.54999999999995,
+      "range": 12,
+      "vision": 12,
+      "trainTurns": 4,
+      "trainSeconds": 40,
+      "trainSecondsPerCredit": 0.043478260869565216,
+      "ammo": {
+        "jetAam": 2,
+        "jetAgm": 5,
+        "antiRadiation": 3,
+        "jetGun": 80
+      }
+    },
+    {
+      "id": "stealthFighterBlue",
+      "name": "Caça furtivo aliado",
+      "cost": 1000,
+      "hp": 180,
+      "hpPerCredit": 0.18,
+      "reference": "bomberRed",
+      "weapon": "jetAam",
+      "expectedShot": 61.521428571428565,
+      "expectedDamagePerCredit": 0.06152142857142857,
+      "expectedAction": 61.521428571428565,
+      "dpsUpper": 102.53571428571428,
+      "range": 14,
+      "vision": 12,
+      "trainTurns": 5,
+      "trainSeconds": 50,
+      "trainSecondsPerCredit": 0.05,
+      "ammo": {
+        "jetAam": 6,
+        "antiRadiation": 2,
+        "jetGun": 80
+      }
+    },
+    {
+      "id": "stealthFighterRed",
+      "name": "Caça furtivo inimigo",
+      "cost": 1030,
+      "hp": 190,
+      "hpPerCredit": 0.18446601941747573,
+      "reference": "bomberBlue",
+      "weapon": "jetAam",
+      "expectedShot": 61.85828571428572,
+      "expectedDamagePerCredit": 0.06005658807212206,
+      "expectedAction": 61.85828571428572,
+      "dpsUpper": 103.09714285714287,
+      "range": 14,
+      "vision": 12,
+      "trainTurns": 5,
+      "trainSeconds": 50,
+      "trainSecondsPerCredit": 0.04854368932038835,
+      "ammo": {
+        "jetAam": 6,
+        "antiRadiation": 2,
+        "jetGun": 80
+      }
+    },
+    {
+      "id": "bomberBlue",
+      "name": "Bombardeiro furtivo aliado",
+      "cost": 1296,
+      "hp": 240,
+      "hpPerCredit": 0.18518518518518517,
+      "reference": "hq",
+      "weapon": "cruiseMissile",
+      "expectedShot": 160,
+      "expectedDamagePerCredit": 0.12345679012345678,
+      "expectedAction": 160,
+      "dpsUpper": 26.666666666666664,
+      "range": 40,
+      "vision": 12,
+      "trainTurns": 6,
+      "trainSeconds": 60,
+      "trainSecondsPerCredit": 0.046296296296296294,
+      "ammo": {
+        "bombCommon": 4,
+        "bombFragment": 4,
+        "bombIncendiary": 4,
+        "cruiseMissile": 2
+      }
+    },
+    {
+      "id": "bomberRed",
+      "name": "Bombardeiro pesado inimigo",
+      "cost": 2224,
+      "hp": 340,
+      "hpPerCredit": 0.1528776978417266,
+      "reference": "hq",
+      "weapon": "cruiseMissile",
+      "expectedShot": 160,
+      "expectedDamagePerCredit": 0.07194244604316546,
+      "expectedAction": 160,
+      "dpsUpper": 26.666666666666664,
+      "range": 40,
+      "vision": 12,
+      "trainTurns": 8,
+      "trainSeconds": 80,
+      "trainSecondsPerCredit": 0.03597122302158273,
+      "ammo": {
+        "bombCommon": 16,
+        "bombFragment": 16,
+        "bombIncendiary": 16,
+        "cruiseMissile": 2
+      }
+    }
+  ],
+  "matrixRows": 1014,
+  "weaponRows": 126,
+  "constants": {
+    "NATION_DOCTRINES": {
+      "balanced": {
+        "name": "Equilibrada",
+        "text": "Sem modificadores",
+        "income": 1,
+        "damage": 1,
+        "hp": 1
+      },
+      "economic": {
+        "name": "Econômica",
+        "text": "Renda +15% · dano −10%",
+        "income": 1.15,
+        "damage": 0.9,
+        "hp": 1
+      },
+      "offensive": {
+        "name": "Ofensiva",
+        "text": "Dano +10% · vida das tropas −10%",
+        "income": 1,
+        "damage": 1.1,
+        "hp": 0.9
+      },
+      "defensive": {
+        "name": "Defensiva",
+        "text": "Vida das tropas +15% · renda −10%",
+        "income": 0.9,
+        "damage": 1,
+        "hp": 1.15
+      }
+    },
+    "TERRAIN": {
+      "plain": {
+        "name": "Planície",
+        "cover": 0,
+        "color": "#77816a"
+      },
+      "field": {
+        "name": "Campo",
+        "cover": 0,
+        "color": "#9b9a63"
+      },
+      "hedge": {
+        "name": "Sebe",
+        "cover": 0.25,
+        "color": "#4f6a45"
+      },
+      "hill": {
+        "name": "Colina",
+        "cover": 0.2,
+        "color": "#8f9470"
+      },
+      "forest": {
+        "name": "Floresta",
+        "cover": 0.3,
+        "color": "#4b6654"
+      },
+      "mountain": {
+        "name": "Montanha",
+        "cover": 0.5,
+        "color": "#868879"
+      },
+      "river": {
+        "name": "Rio",
+        "cover": 0,
+        "color": "#477986"
+      },
+      "bridge": {
+        "name": "Ponte",
+        "cover": 0,
+        "color": "#a69977"
+      },
+      "road": {
+        "name": "Estrada",
+        "cover": 0,
+        "color": "#b0a487"
+      }
+    },
+    "STARTING_BUDGET": 600,
+    "AMMO_PRICE": {
+      "jetGun": 1,
+      "jetAam": 20,
+      "antiRadiation": 25,
+      "jetAgm": 25,
+      "cruiseMissile": 60,
+      "bombCommon": 12,
+      "bombFragment": 14,
+      "bombIncendiary": 18
+    },
+    "PLAN": {
+      "easy": {
+        "prep": 5,
+        "margin": 1.6,
+        "wave": 6,
+        "queue": 4,
+        "army": 40,
+        "planes": 2,
+        "income": 0.8,
+        "reinforce": false,
+        "followUp": 1
+      },
+      "normal": {
+        "prep": 3,
+        "margin": 1.15,
+        "wave": 6,
+        "queue": 4,
+        "army": 48,
+        "planes": 3,
+        "income": 1,
+        "reinforce": true,
+        "followUp": 1
+      },
+      "hard": {
+        "prep": 2,
+        "margin": 1.05,
+        "wave": 6,
+        "queue": 6,
+        "army": 56,
+        "planes": 4,
+        "income": 1.2,
+        "reinforce": true,
+        "followUp": 1
+      },
+      "veteran": {
+        "prep": 2,
+        "margin": 1,
+        "wave": 5,
+        "queue": 6,
+        "army": 64,
+        "planes": 5,
+        "income": 1.35,
+        "reinforce": true,
+        "followUp": 0.5
+      }
+    },
+    "DOCTRINE": [
+      {
+        "type": "antiAirVehicle",
+        "share": 0.09
+      },
+      {
+        "type": "helicopter",
+        "share": 0.09,
+        "min": 1
+      },
+      {
+        "type": "heavyTank",
+        "share": 0.14,
+        "min": 1
+      },
+      {
+        "type": "helicopterGround",
+        "share": 0.08
+      },
+      {
+        "type": "helicopterAir",
+        "share": 0.07
+      },
+      {
+        "type": "antitank",
+        "share": 0.08,
+        "min": 1
+      },
+      {
+        "type": "tank",
+        "share": 0.08,
+        "min": 1
+      },
+      {
+        "type": "lightTank",
+        "share": 0.07
+      },
+      {
+        "type": "machinegun",
+        "share": 0.07,
+        "min": 1
+      },
+      {
+        "type": "artillery",
+        "share": 0.06,
+        "min": 1
+      },
+      {
+        "type": "infantry",
+        "share": 0.14,
+        "min": 2
+      },
+      {
+        "type": "engineer",
+        "share": 0.04,
+        "min": 1
+      },
+      {
+        "type": "recon",
+        "share": 0.04,
+        "min": 1
+      },
+      {
+        "type": "missileInfantry",
+        "share": 0.02
+      },
+      {
+        "type": "rocketArtillery",
+        "share": 0.04,
+        "min": 1
+      },
+      {
+        "type": "reconDrone",
+        "share": 0.03,
+        "min": 1
+      },
+      {
+        "type": "stealthDrone",
+        "share": 0.03,
+        "min": 1
+      }
+    ],
+    "SCHEDULE": {
+      "antiAirVehicle": 4,
+      "helicopter": 1,
+      "heavyTank": 6,
+      "helicopterGround": 10,
+      "helicopterAir": 14
+    },
+    "DEFENSE": [
+      "infantry",
+      "machinegun",
+      "antitank",
+      "missileInfantry",
+      "antiAirVehicle",
+      "lightTank"
+    ],
+    "SALVO": {
+      "missiles": 4,
+      "interval": 0.25
+    }
+  },
+  "maps": [
+    {
+      "map": "river",
+      "mode": "rts",
+      "terrain": {
+        "field": 4502,
+        "hedge": 3144,
+        "hill": 1050,
+        "plain": 1616,
+        "river": 418,
+        "forest": 950,
+        "road": 596,
+        "bridge": 12
+      },
+      "posts": 24,
+      "neutralAirports": 2,
+      "startingCost": 565,
+      "nearestPost": {
+        "id": 10,
+        "distance": 70,
+        "steps": 69,
+        "cost": 40.5
+      }
+    },
+    {
+      "map": "river",
+      "mode": "turns",
+      "terrain": {
+        "field": 4502,
+        "hedge": 3144,
+        "hill": 1050,
+        "plain": 1616,
+        "river": 418,
+        "forest": 950,
+        "road": 596,
+        "bridge": 12
+      },
+      "posts": 24,
+      "neutralAirports": 2,
+      "startingCost": 565,
+      "nearestPost": {
+        "id": 10,
+        "distance": 70,
+        "steps": 69,
+        "cost": 40.5
+      }
+    },
+    {
+      "map": "desert",
+      "mode": "rts",
+      "terrain": {
+        "plain": 9116,
+        "hill": 2128,
+        "mountain": 88,
+        "field": 90,
+        "river": 64,
+        "forest": 178,
+        "road": 624
+      },
+      "posts": 24,
+      "neutralAirports": 2,
+      "startingCost": 565,
+      "nearestPost": {
+        "id": 6,
+        "distance": 100,
+        "steps": 99,
+        "cost": 54.5
+      }
+    },
+    {
+      "map": "desert",
+      "mode": "turns",
+      "terrain": {
+        "plain": 9116,
+        "hill": 2128,
+        "mountain": 88,
+        "field": 90,
+        "river": 64,
+        "forest": 178,
+        "road": 624
+      },
+      "posts": 24,
+      "neutralAirports": 2,
+      "startingCost": 565,
+      "nearestPost": {
+        "id": 6,
+        "distance": 100,
+        "steps": 99,
+        "cost": 54.5
+      }
+    },
+    {
+      "map": "mountain",
+      "mode": "rts",
+      "terrain": {
+        "field": 2254,
+        "plain": 4608,
+        "hill": 1860,
+        "hedge": 1180,
+        "forest": 1320,
+        "river": 70,
+        "mountain": 296,
+        "road": 692,
+        "bridge": 8
+      },
+      "posts": 24,
+      "neutralAirports": 2,
+      "startingCost": 565,
+      "nearestPost": {
+        "id": 22,
+        "distance": 76,
+        "steps": 75,
+        "cost": 41
+      }
+    },
+    {
+      "map": "mountain",
+      "mode": "turns",
+      "terrain": {
+        "field": 2254,
+        "plain": 4608,
+        "hill": 1860,
+        "hedge": 1180,
+        "forest": 1320,
+        "river": 70,
+        "mountain": 296,
+        "road": 692,
+        "bridge": 8
+      },
+      "posts": 24,
+      "neutralAirports": 2,
+      "startingCost": 565,
+      "nearestPost": {
+        "id": 22,
+        "distance": 76,
+        "steps": 75,
+        "cost": 41
+      }
+    },
+    {
+      "map": "random",
+      "mode": "rts",
+      "terrain": {
+        "field": 3422,
+        "hedge": 2222,
+        "hill": 1252,
+        "plain": 3304,
+        "river": 442,
+        "forest": 1086,
+        "road": 548,
+        "bridge": 12
+      },
+      "posts": 24,
+      "neutralAirports": 2,
+      "startingCost": 565,
+      "nearestPost": {
+        "id": 12,
+        "distance": 68,
+        "steps": 67,
+        "cost": 41.5
+      }
+    },
+    {
+      "map": "random",
+      "mode": "turns",
+      "terrain": {
+        "field": 3422,
+        "hedge": 2222,
+        "hill": 1252,
+        "plain": 3304,
+        "river": 442,
+        "forest": 1086,
+        "road": 548,
+        "bridge": 12
+      },
+      "posts": 24,
+      "neutralAirports": 2,
+      "startingCost": 565,
+      "nearestPost": {
+        "id": 12,
+        "distance": 68,
+        "steps": 67,
+        "cost": 41.5
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "IA normal: três compras de aviões e quarto bloqueado",
+      "out": [
+        {
+          "mode": "rts",
+          "planes": [
+            "fighterRed",
+            "multiroleRed",
+            "stealthFighterRed"
+          ],
+          "nextQueue": [
+            "infantry"
+          ],
+          "types": [
+            "fighterRed",
+            "multiroleRed",
+            "stealthFighterRed"
+          ]
+        },
+        {
+          "mode": "turns",
+          "planes": [
+            "fighterRed",
+            "multiroleRed",
+            "stealthFighterRed"
+          ],
+          "nextQueue": [
+            "infantry"
+          ],
+          "types": [
+            "fighterRed",
+            "multiroleRed",
+            "stealthFighterRed"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Formação inicial: caça vermelho cabe, azul não",
+      "budget": 600,
+      "redCost": 590,
+      "blueCost": 610,
+      "redFits": true,
+      "blueFits": false
+    },
+    {
+      "name": "Mísseis de cruzeiro consecutivos contra QG aberto",
+      "hp": [
+        140,
+        0
+      ],
+      "ammo": 0
+    },
+    {
+      "name": "Flares renovam cada turno mas não entre disparos da mesma ação",
+      "out": [
+        {
+          "mode": "rts",
+          "probabilities": [
+            0.4,
+            0.8
+          ],
+          "flares": 2,
+          "flareCooldown": 8
+        },
+        {
+          "mode": "turns",
+          "probabilities": [
+            0.4,
+            0.8
+          ],
+          "flares": 2,
+          "flareCooldown": 8
+        }
+      ]
+    },
+    {
+      "name": "Drone furtivo: precisão de saída e dano total sem contramedidas",
+      "accuracy": 0.95,
+      "expectedShot": 34.39,
+      "totalTwo": 68.78
+    },
+    {
+      "name": "Minigun em turnos: cinco impactos mínimos no tanque pesado",
+      "damage": 5,
+      "shots": 5,
+      "frames": 32
+    },
+    {
+      "name": "Economia e doutrinas, sem posto/com quatro/com doze",
+      "out": [
+        {
+          "doctrine": "balanced",
+          "posts": 0,
+          "income": 15
+        },
+        {
+          "doctrine": "balanced",
+          "posts": 4,
+          "income": 47
+        },
+        {
+          "doctrine": "balanced",
+          "posts": 12,
+          "income": 111
+        },
+        {
+          "doctrine": "economic",
+          "posts": 0,
+          "income": 17
+        },
+        {
+          "doctrine": "economic",
+          "posts": 4,
+          "income": 54
+        },
+        {
+          "doctrine": "economic",
+          "posts": 12,
+          "income": 128
+        },
+        {
+          "doctrine": "offensive",
+          "posts": 0,
+          "income": 15
+        },
+        {
+          "doctrine": "offensive",
+          "posts": 4,
+          "income": 47
+        },
+        {
+          "doctrine": "offensive",
+          "posts": 12,
+          "income": 111
+        },
+        {
+          "doctrine": "defensive",
+          "posts": 0,
+          "income": 14
+        },
+        {
+          "doctrine": "defensive",
+          "posts": 4,
+          "income": 42
+        },
+        {
+          "doctrine": "defensive",
+          "posts": 12,
+          "income": 100
+        }
+      ]
+    },
+    {
+      "name": "Perda do comandante: saldo corta, fila e renda preservadas",
+      "before": 760,
+      "after": 380,
+      "queue": [
+        "heavyTank"
+      ],
+      "income": 15
+    },
+    {
+      "name": "Doutrina defensiva não aumenta HP das estruturas",
+      "infantry": 115,
+      "hq": 300,
+      "post": 80,
+      "airportDirt": 350
+    },
+    {
+      "name": "Precisão antiaérea contra os dois drones altos",
+      "out": [
+        {
+          "attacker": "antiAirVehicle",
+          "target": "reconDrone",
+          "accuracy": 0.99
+        },
+        {
+          "attacker": "missileInfantry",
+          "target": "reconDrone",
+          "accuracy": 0.95
+        },
+        {
+          "attacker": "antiAirVehicle",
+          "target": "stealthDrone",
+          "accuracy": 0.9
+        },
+        {
+          "attacker": "missileInfantry",
+          "target": "stealthDrone",
+          "accuracy": 0.85
+        }
+      ]
+    },
+    {
+      "name": "Cobertura da montanha mais trincheira desaparece após primeiro impacto",
+      "hp": [
+        100,
+        85,
+        55
+      ],
+      "entrenched": false,
+      "suppressed": 3
+    },
+    {
+      "name": "Canhão ar-ar é o mesmo ar-terra contra blindados",
+      "ground": {
+        "weapon": "gun",
+        "damage": 30,
+        "accuracy": 0.85,
+        "range": 3,
+        "distance": 1,
+        "cover": 0,
+        "power": 20,
+        "criticalIgnored": false,
+        "criticalDamage": 41,
+        "expected": 26.435000000000002
+      },
+      "air": {
+        "weapon": "gun",
+        "damage": 30,
+        "accuracy": 0.85,
+        "range": 3,
+        "distance": 1,
+        "cover": 0,
+        "power": 20,
+        "criticalIgnored": false,
+        "criticalDamage": 41,
+        "expected": 26.435000000000002
+      }
+    },
+    {
+      "name": "Artilharia de mísseis: cadência RTS executada em 35 segundos",
+      "launches": [
+        0.3667,
+        0.6,
+        0.8667,
+        1.1,
+        11.4333,
+        11.6667,
+        11.9333,
+        12.1667,
+        22.5,
+        22.7333,
+        23,
+        23.2333,
+        33.5667,
+        33.8,
+        34.0667,
+        34.3
+      ],
+      "firstOfSalvos": [
+        0.3667,
+        11.4333,
+        22.5,
+        33.5667
+      ],
+      "nominalDps": 6.4
+    },
+    {
+      "name": "Aviação: dano de uma ordem real, ambos os modos, sorteios 0,5",
+      "out": [
+        {
+          "mode": "rts",
+          "type": "fighterBlue",
+          "target": "helicopter",
+          "accepted": true,
+          "elapsed": 29.433,
+          "damage": 1160,
+          "spent": {
+            "jetAam": 4,
+            "jetGun": 80
+          },
+          "finished": true
+        },
+        {
+          "mode": "rts",
+          "type": "fighterRed",
+          "target": "helicopter",
+          "accepted": true,
+          "elapsed": 28.8,
+          "damage": 1180,
+          "spent": {
+            "jetAam": 4,
+            "jetGun": 80
+          },
+          "finished": true
+        },
+        {
+          "mode": "rts",
+          "type": "multiroleBlue",
+          "target": "tank",
+          "accepted": true,
+          "elapsed": 1,
+          "damage": 113,
+          "spent": {
+            "jetAgm": 1
+          },
+          "finished": true
+        },
+        {
+          "mode": "rts",
+          "type": "multiroleRed",
+          "target": "tank",
+          "accepted": true,
+          "elapsed": 1,
+          "damage": 135,
+          "spent": {
+            "jetAgm": 1
+          },
+          "finished": true
+        },
+        {
+          "mode": "rts",
+          "type": "stealthFighterBlue",
+          "target": "helicopter",
+          "accepted": true,
+          "elapsed": 31.033,
+          "damage": 1300,
+          "spent": {
+            "jetAam": 6,
+            "jetGun": 80
+          },
+          "finished": true
+        },
+        {
+          "mode": "rts",
+          "type": "stealthFighterRed",
+          "target": "helicopter",
+          "accepted": true,
+          "elapsed": 28.3,
+          "damage": 1330,
+          "spent": {
+            "jetAam": 6,
+            "jetGun": 80
+          },
+          "finished": true
+        },
+        {
+          "mode": "rts",
+          "type": "bomberBlue",
+          "target": "hq",
+          "accepted": true,
+          "elapsed": 1.267,
+          "damage": 160,
+          "spent": {
+            "cruiseMissile": 1
+          },
+          "finished": true
+        },
+        {
+          "mode": "rts",
+          "type": "bomberRed",
+          "target": "hq",
+          "accepted": true,
+          "elapsed": 1.267,
+          "damage": 160,
+          "spent": {
+            "cruiseMissile": 1
+          },
+          "finished": true
+        },
+        {
+          "mode": "turns",
+          "type": "fighterBlue",
+          "target": "helicopter",
+          "accepted": true,
+          "elapsed": 2.233,
+          "damage": 180,
+          "spent": {
+            "jetAam": 1,
+            "jetGun": 10
+          },
+          "finished": true
+        },
+        {
+          "mode": "turns",
+          "type": "fighterRed",
+          "target": "helicopter",
+          "accepted": true,
+          "elapsed": 2.467,
+          "damage": 185,
+          "spent": {
+            "jetAam": 1,
+            "jetGun": 10
+          },
+          "finished": true
+        },
+        {
+          "mode": "turns",
+          "type": "multiroleBlue",
+          "target": "tank",
+          "accepted": true,
+          "elapsed": 1.033,
+          "damage": 113,
+          "spent": {
+            "jetAgm": 1
+          },
+          "finished": true
+        },
+        {
+          "mode": "turns",
+          "type": "multiroleRed",
+          "target": "tank",
+          "accepted": true,
+          "elapsed": 1.033,
+          "damage": 135,
+          "spent": {
+            "jetAgm": 1
+          },
+          "finished": true
+        },
+        {
+          "mode": "turns",
+          "type": "stealthFighterBlue",
+          "target": "helicopter",
+          "accepted": true,
+          "elapsed": 2.233,
+          "damage": 180,
+          "spent": {
+            "jetAam": 1,
+            "jetGun": 10
+          },
+          "finished": true
+        },
+        {
+          "mode": "turns",
+          "type": "stealthFighterRed",
+          "target": "helicopter",
+          "accepted": true,
+          "elapsed": 2.333,
+          "damage": 185,
+          "spent": {
+            "jetAam": 1,
+            "jetGun": 10
+          },
+          "finished": true
+        },
+        {
+          "mode": "turns",
+          "type": "bomberBlue",
+          "target": "hq",
+          "accepted": true,
+          "elapsed": 1.3,
+          "damage": 160,
+          "spent": {
+            "cruiseMissile": 1
+          },
+          "finished": true
+        },
+        {
+          "mode": "turns",
+          "type": "bomberRed",
+          "target": "hq",
+          "accepted": true,
+          "elapsed": 1.3,
+          "damage": 160,
+          "spent": {
+            "cruiseMissile": 1
+          },
+          "finished": true
+        }
+      ]
+    },
+    {
+      "name": "Contra-pontos baratos: duelos RTS curtos, semente 173",
+      "out": [
+        {
+          "blue": [
+            "antitank",
+            "antitank"
+          ],
+          "red": [
+            "heavyTank"
+          ],
+          "survivors": [
+            {
+              "type": "antitank",
+              "owner": "blue",
+              "hp": 10,
+              "level": 1
+            },
+            {
+              "type": "antitank",
+              "owner": "blue",
+              "hp": 99,
+              "level": 2
+            }
+          ],
+          "elapsed": 30.00000000000065
+        },
+        {
+          "blue": [
+            "helicopterAir"
+          ],
+          "red": [
+            "heavyTank"
+          ],
+          "survivors": [
+            {
+              "type": "helicopterAir",
+              "owner": "blue",
+              "hp": 132,
+              "level": 2
+            }
+          ],
+          "elapsed": 30.00000000000065
+        },
+        {
+          "blue": [
+            "missileInfantry",
+            "missileInfantry"
+          ],
+          "red": [
+            "helicopter"
+          ],
+          "survivors": [
+            {
+              "type": "helicopter",
+              "owner": "red",
+              "hp": 38,
+              "level": 2
+            }
+          ],
+          "elapsed": 30.00000000000065
+        },
+        {
+          "blue": [
+            "infantry"
+          ],
+          "red": [
+            "lightTank"
+          ],
+          "survivors": [
+            {
+              "type": "lightTank",
+              "owner": "red",
+              "hp": 121,
+              "level": 2
+            }
+          ],
+          "elapsed": 30.00000000000065
+        }
+      ]
+    },
+    {
+      "name": "Defesa aérea curta: 12 sementes, dois lançadores versus básico ou uma antiaérea",
+      "out": [
+        {
+          "seed": 1,
+          "blue": [
+            "missileInfantry",
+            "missileInfantry"
+          ],
+          "survivors": [
+            {
+              "type": "helicopter",
+              "owner": "red",
+              "hp": 12
+            }
+          ]
+        },
+        {
+          "seed": 1,
+          "blue": [
+            "antiAirVehicle"
+          ],
+          "survivors": [
+            {
+              "type": "helicopter",
+              "owner": "red",
+              "hp": 52
+            }
+          ]
+        },
+        {
+          "seed": 2,
+          "blue": [
+            "missileInfantry",
+            "missileInfantry"
+          ],
+          "survivors": [
+            {
+              "type": "helicopter",
+              "owner": "red",
+              "hp": 52
+            }
+          ]
+        },
+        {
+          "seed": 2,
+          "blue": [
+            "antiAirVehicle"
+          ],
+          "survivors": [
+            {
+              "type": "antiAirVehicle",
+              "owner": "blue",
+              "hp": 15
+            }
+          ]
+        },
+        {
+          "seed": 3,
+          "blue": [
+            "missileInfantry",
+            "missileInfantry"
+          ],
+          "survivors": [
+            {
+              "type": "helicopter",
+              "owner": "red",
+              "hp": 52
+            }
+          ]
+        },
+        {
+          "seed": 3,
+          "blue": [
+            "antiAirVehicle"
+          ],
+          "survivors": [
+            {
+              "type": "antiAirVehicle",
+              "owner": "blue",
+              "hp": 46
+            }
+          ]
+        },
+        {
+          "seed": 4,
+          "blue": [
+            "missileInfantry",
+            "missileInfantry"
+          ],
+          "survivors": [
+            {
+              "type": "helicopter",
+              "owner": "red",
+              "hp": 52
+            }
+          ]
+        },
+        {
+          "seed": 4,
+          "blue": [
+            "antiAirVehicle"
+          ],
+          "survivors": [
+            {
+              "type": "antiAirVehicle",
+              "owner": "blue",
+              "hp": 46
+            }
+          ]
+        },
+        {
+          "seed": 5,
+          "blue": [
+            "missileInfantry",
+            "missileInfantry"
+          ],
+          "survivors": [
+            {
+              "type": "helicopter",
+              "owner": "red",
+              "hp": 52
+            }
+          ]
+        },
+        {
+          "seed": 5,
+          "blue": [
+            "antiAirVehicle"
+          ],
+          "survivors": [
+            {
+              "type": "antiAirVehicle",
+              "owner": "blue",
+              "hp": 64
+            }
+          ]
+        },
+        {
+          "seed": 6,
+          "blue": [
+            "missileInfantry",
+            "missileInfantry"
+          ],
+          "survivors": [
+            {
+              "type": "helicopter",
+              "owner": "red",
+              "hp": 52
+            }
+          ]
+        },
+        {
+          "seed": 6,
+          "blue": [
+            "antiAirVehicle"
+          ],
+          "survivors": [
+            {
+              "type": "antiAirVehicle",
+              "owner": "blue",
+              "hp": 65
+            }
+          ]
+        },
+        {
+          "seed": 7,
+          "blue": [
+            "missileInfantry",
+            "missileInfantry"
+          ],
+          "survivors": [
+            {
+              "type": "helicopter",
+              "owner": "red",
+              "hp": 52
+            }
+          ]
+        },
+        {
+          "seed": 7,
+          "blue": [
+            "antiAirVehicle"
+          ],
+          "survivors": [
+            {
+              "type": "antiAirVehicle",
+              "owner": "blue",
+              "hp": 63
+            }
+          ]
+        },
+        {
+          "seed": 8,
+          "blue": [
+            "missileInfantry",
+            "missileInfantry"
+          ],
+          "survivors": [
+            {
+              "type": "missileInfantry",
+              "owner": "blue",
+              "hp": 23
+            }
+          ]
+        },
+        {
+          "seed": 8,
+          "blue": [
+            "antiAirVehicle"
+          ],
+          "survivors": [
+            {
+              "type": "antiAirVehicle",
+              "owner": "blue",
+              "hp": 64
+            }
+          ]
+        },
+        {
+          "seed": 9,
+          "blue": [
+            "missileInfantry",
+            "missileInfantry"
+          ],
+          "survivors": [
+            {
+              "type": "helicopter",
+              "owner": "red",
+              "hp": 78
+            }
+          ]
+        },
+        {
+          "seed": 9,
+          "blue": [
+            "antiAirVehicle"
+          ],
+          "survivors": [
+            {
+              "type": "antiAirVehicle",
+              "owner": "blue",
+              "hp": 62
+            }
+          ]
+        },
+        {
+          "seed": 10,
+          "blue": [
+            "missileInfantry",
+            "missileInfantry"
+          ],
+          "survivors": [
+            {
+              "type": "helicopter",
+              "owner": "red",
+              "hp": 38
+            }
+          ]
+        },
+        {
+          "seed": 10,
+          "blue": [
+            "antiAirVehicle"
+          ],
+          "survivors": [
+            {
+              "type": "antiAirVehicle",
+              "owner": "blue",
+              "hp": 44
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "blue": [
+            "missileInfantry",
+            "missileInfantry"
+          ],
+          "survivors": [
+            {
+              "type": "missileInfantry",
+              "owner": "blue",
+              "hp": 18
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "blue": [
+            "antiAirVehicle"
+          ],
+          "survivors": [
+            {
+              "type": "antiAirVehicle",
+              "owner": "blue",
+              "hp": 45
+            }
+          ]
+        },
+        {
+          "seed": 173,
+          "blue": [
+            "missileInfantry",
+            "missileInfantry"
+          ],
+          "survivors": [
+            {
+              "type": "helicopter",
+              "owner": "red",
+              "hp": 38
+            }
+          ]
+        },
+        {
+          "seed": 173,
+          "blue": [
+            "antiAirVehicle"
+          ],
+          "survivors": [
+            {
+              "type": "antiAirVehicle",
+              "owner": "blue",
+              "hp": 64
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

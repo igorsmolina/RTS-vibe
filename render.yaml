@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: rts-vibe-multiplayer
+    runtime: node
+    plan: free
+    buildCommand: npm install --omit=dev --ignore-scripts --no-audit --no-fund
+    startCommand: npm run start:multiplayer
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production

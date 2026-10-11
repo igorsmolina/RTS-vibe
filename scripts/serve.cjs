@@ -6,7 +6,7 @@ const TYPES={'.html':'text/html','.js':'text/javascript','.css':'text/css','.jso
 http.createServer((req,res)=>{
  const file=path.join(root,decodeURIComponent(new URL(req.url,'http://x').pathname).replace(/\/$/,'/index.html'));
  if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}
- fs.readFile(file,(err,data)=>{if(err){res.writeHead(404).end('Não encontrado');return;}res.writeHead(200,{'Content-Type':TYPES[path.extname(file).toLowerCase()]||'application/octet-stream'});res.end(data);});
+ fs.readFile(file,(err,data)=>{if(err){res.writeHead(404).end('Não encontrado');return;}res.writeHead(200,{'Content-Type':TYPES[path.extname(file).toLowerCase()]||'application/octet-stream','Cache-Control':'no-cache'});res.end(data);});
 }).listen(port,'127.0.0.1',()=>{
  const url=`http://localhost:${port}/`;console.log(`rtsvibe em ${url} — feche esta janela para parar.`);
  if(!process.env.NO_OPEN)exec(process.platform==='win32'?`start "" "${url}"`:process.platform==='darwin'?`open ${url}`:`xdg-open ${url}`);

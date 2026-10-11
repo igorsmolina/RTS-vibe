@@ -7,7 +7,7 @@ function applyMenuTheme(){
  const theme=menuTheme==='system'?(menuSystem.matches?'dark':'light'):menuTheme;
  document.documentElement.dataset.menuTheme=theme;
  for(const id of ['titleTheme','setTheme']){const select=document.getElementById(id);if(select)select.value=menuTheme;}
- const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=theme==='dark'?'#2D1D1A':'#F4F5EF';
+ const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=theme==='dark'?'#17221C':'#E9EDE3';
 }
 function setMenuTheme(value){menuTheme=['system','light','dark'].includes(value)?value:'system';try{localStorage.setItem(MENU_THEME_KEY,menuTheme);}catch{}applyMenuTheme();}
 menuSystem.addEventListener('change',()=>{if(menuTheme==='system')applyMenuTheme();});

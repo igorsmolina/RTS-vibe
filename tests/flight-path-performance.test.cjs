@@ -1,0 +1,15 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const ctx=vm.createContext({console});vm.runInContext(fs.readFileSync(path.join(__dirname,'../public/js/engine.js'),'utf8')+'\nObject.assign(this,{Game,KEY,DIST});',ctx);
+const {Game,KEY,DIST}=ctx,g=new Game('river','normal',123,'rts',{posts:2});g.units=[];g.structures=[];g.terrain.fill('plain');
+const aa=g.add('red','antiAirVehicle',110,10),plane=g.add('blue','fighterBlue',26,20);plane.x=26.5;let searches=0;const find=g.findPath;
+g.findPath=function(...args){searches++;return find.apply(this,args);};
+for(let y=0;y<96;y++)g.terrain[KEY(64,y)]='river';
+assert.equal(g.pathToRange(aa,plane,30),null);assert.equal(searches,1,'alvo inacessível deve exigir uma busca, sem repetir A* para cada casa de tiro');
+g.terrain[KEY(64,20)]='bridge';searches=0;const route=g.pathToRange(aa,plane,30);
+assert.ok(route?.length);assert.equal(searches,1);assert.ok(DIST(route.at(-1),plane)<=30);assert.ok(route.some(p=>p.x===64&&p.y===20));
+const heli=g.add('red','helicopter',40,40),target={x:45.5,y:44.5};searches=0;const flight=g.pathToRange(heli,target,3,1);
+assert.ok(flight?.length);assert.equal(searches,1);assert.ok(DIST(flight.at(-1),target)<=3&&DIST(flight.at(-1),target)>=1);
+const moving=g.add('blue','tank',10,50);moving.x=10.4;moving.segment={from:{x:10,y:50},to:{x:11,y:50},cost:1};
+const reverse=g.pathToRange(moving,{x:8,y:50},0);assert.ok(reverse?.length);assert.equal(reverse[0].x,10);assert.equal(reverse[0].y,50,'nova rota parte do fim do segmento sem bloquear a própria unidade');
+console.log('OK RTS: uma busca por alcance, alvo aéreo fracionário, rio inacessível, ponte e voo diagonal.');
