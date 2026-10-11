@@ -37,9 +37,9 @@ const MAPS={river:'Vale dos Rios',desert:'Deserto Aberto',mountain:'Passe de Mon
 const HELICOPTER_MINIGUN={name:'Minigun',damage:4,range:3,accuracy:.85,cooldown:.2,shots:5,infantryMultiplier:3,vehicleMultiplier:.25,structureMultiplier:.5},HELICOPTER_CANNON={name:'Canhão',damage:20,range:3,accuracy:.85,cooldown:1,shots:1,infantryMultiplier:.6,vehicleMultiplier:1.5,structureMultiplier:.5};
 const TYPES={
  infantry:{move:3,name:'Infantaria',hp:100,speed:1.35,range:1.15,min:0,damage:35,accuracy:.9,vision:4,cooldown:.8,train:1,cost:50,reward:20,role:'Captura e construção'},
- lightTank:{move:5,vehicle:true,tank:true,name:'Tanque leve',hp:110,speed:2,range:2,min:0,damage:35,accuracy:.75,vision:5,cooldown:2,train:2,cost:100,reward:35,role:'Mobilidade e baixo custo'},
- tank:{move:4,vehicle:true,tank:true,name:'Tanque médio',hp:170,speed:1.55,range:3,min:0,damage:60,accuracy:.7,vision:4,cooldown:2.5,train:3,cost:150,reward:50,role:'Equilíbrio entre mobilidade e canhão'},
- heavyTank:{move:3,vehicle:true,tank:true,name:'Tanque pesado',hp:280,speed:1.05,range:3,min:0,damage:80,accuracy:.7,vision:4,cooldown:3.5,train:4,cost:240,reward:80,role:'Resistência e dano por disparo'},
+ lightTank:{move:6,vehicle:true,tank:true,name:'Tanque leve',hp:110,speed:2,range:3,min:0,damage:35,accuracy:.75,vision:5,cooldown:2,train:2,cost:100,reward:35,role:'Mais rápido dos tanques · alcance 3 · não perfura pesados'},
+ tank:{move:5,vehicle:true,tank:true,name:'Tanque médio',hp:170,speed:1.7,range:5,min:0,damage:60,accuracy:.75,vision:5,cooldown:2.5,train:3,cost:150,reward:50,role:'Alcance 5 · precisão cai após 3 casas · velocidade intermediária'},
+ heavyTank:{move:4,vehicle:true,tank:true,name:'Tanque pesado',hp:280,speed:1.5,range:7,min:0,damage:80,accuracy:.85,vision:5,cooldown:3.5,train:4,cost:240,reward:80,role:'Alcance 7 · maior dano e precisão dos tanques · requer reconhecimento distante'},
  artillery:{move:3,vehicle:true,name:'Artilharia',hp:100,speed:1.2,range:16,min:2,damage:85,accuracy:.85,vision:3,cooldown:5,train:4,cost:180,reward:40,role:'Cerco de longo alcance · área 3×3 · fogo amigo'},
  recon:{move:5,vehicle:true,name:'Batedor',hp:75,speed:2.25,range:2,min:0,damage:24,accuracy:.9,vision:7,cooldown:1.1,train:1,cost:75,reward:25,role:'Reconhecimento rápido'},
  engineer:{move:3,name:'Engenheiro',hp:85,speed:1.25,range:1.15,min:0,damage:20,accuracy:.9,vision:4,cooldown:1.2,train:2,cost:65,reward:25,role:'Reparo +24 HP por ação'},
@@ -538,7 +538,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  /* Arma de a contra b, ou null se incompatível. Solo: a própria tropa (só infantaria e metralhador alcançam aeronaves).
     Helicóptero: arma manual se compatível; Auto prefere o míssil contra veículo/estrutura (ar-terra) ou aeronave (ar-ar). */
  // Minigun/canhão dos helicópteros também atingem blindados; armas comuns continuam bloqueadas.
- weapon(a,b){const w=this.pickWeapon(a,b);return w&&ARMORED.has(b.type)&&!BREAKERS.has(a.type)&&w!=='agm'&&w!=='jetAgm'&&!(w==='gun'&&TYPES[a.type].gun)?null:w;}
+ weapon(a,b){if(a.type==='lightTank'&&b.type==='heavyTank')return null;const w=this.pickWeapon(a,b);return w&&ARMORED.has(b.type)&&!BREAKERS.has(a.type)&&w!=='agm'&&w!=='jetAgm'&&!(w==='gun'&&TYPES[a.type].gun)?null:w;}
  pickWeapon(a,b){
   const t=TYPES[a.type],air=AIR(b);if(t.plane){const mode=a.weaponMode||'auto';return mode==='auto'?t.weapons.find(w=>this.planeWeaponFits(a,w,b))||null:this.planeWeaponFits(a,mode,b)?mode:null;}if(t.unarmed||a.type==='rocketArtillery')return null;if(t.stealth)return a.missiles>0?'stealthMissile':null;if(a.type==='antiAirVehicle')return air?a.type:null;if(a.type==='missileInfantry')return a.type;if(!t.air)return air&&a.type!=='infantry'&&a.type!=='machinegun'?null:a.type;
   const fits=w=>w==='gun'||(w==='agm')!==air,mode=a.weaponMode||'auto';if(mode!=='auto')return fits(mode)?mode:null;
@@ -574,7 +574,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  hasAura(u){return this.units.some(c=>c.owner===u.owner&&c.type==='commander'&&c.hp>0&&DIST(u,c)<=2);}
  cover(u){if(AIR(u))return 0;return Math.min(.75,TERRAIN[this.terrainAt(u)].cover+(u.entrenched?.25:0));}
  attackPower(u,w){return (PLANE(u)&&w||AIR(u)?this.weaponStats(u,w||'gun').damage:TYPES[u.type].damage)*(1+(u.level-1)*.1)*(this.hasAura(u)?1.2:1)*NATION_DOCTRINES[this.doctrines[u.owner]||'balanced'].damage;}
- accuracy(a,b,w=this.weapon(a,b)){if(PLANE(a)){const model=TYPES[a.type],t=!BOMB_TYPES.includes(w)&&model.weaponModel?TYPES[model.weaponModel]:model,s=this.planeWeapon(a,w),d=s.range?Math.min(1,DIST(a,b)/s.range):0,red=t.team==='red';let base=w==='jetGun'?.85-.2*d:w==='jetAam'?(t.radar?(red?.9-.2*d:.95-.1*d):(red?.9-.1*d:.85-.1*d)):.7+t.evasion/2+(t===TYPES.multiroleRed?.1:0);return Math.max(.1,Math.min(.95,(base+(a.level-1)*.05+(this.hasAura(a)?.15:0)-(PLANE(b)?0:(b.level-1)*.05)-(a.suppressed>0?.25:0))*(w==='jetGun'&&PLANE(b)&&AIR(b)?1-this.planeEvasion(b)/2:1)));}return Math.max(.1,Math.min(.99,(AIR(a)&&this.weaponStats(a,w)?this.weaponStats(a,w).accuracy:TYPES[a.type].accuracy)+(a.level-1)*.05+(this.hasAura(a)?.15:0)-(PLANE(b)?0:(b.level-1)*.05)-(a.suppressed>0?.25:0)+(MISSILE(w)?(AIR(a)&&a.altitude==='high'?.1:0)+(AIR(b)&&b.altitude==='high'?.1:0)+(b.type==='reconDrone'&&['antiAirVehicle','missileInfantry'].includes(a.type)?.1:0):0)));}
+ accuracy(a,b,w=this.weapon(a,b)){if(PLANE(a)){const model=TYPES[a.type],t=!BOMB_TYPES.includes(w)&&model.weaponModel?TYPES[model.weaponModel]:model,s=this.planeWeapon(a,w),d=s.range?Math.min(1,DIST(a,b)/s.range):0,red=t.team==='red';let base=w==='jetGun'?.85-.2*d:w==='jetAam'?(t.radar?(red?.9-.2*d:.95-.1*d):(red?.9-.1*d:.85-.1*d)):.7+t.evasion/2+(t===TYPES.multiroleRed?.1:0);return Math.max(.1,Math.min(.95,(base+(a.level-1)*.05+(this.hasAura(a)?.15:0)-(PLANE(b)?0:(b.level-1)*.05)-(a.suppressed>0?.25:0))*(w==='jetGun'&&PLANE(b)&&AIR(b)?1-this.planeEvasion(b)/2:1)));}return Math.max(.1,Math.min(.99,(AIR(a)&&this.weaponStats(a,w)?this.weaponStats(a,w).accuracy:TYPES[a.type].accuracy)-(a.type==='tank'?Math.max(0,DIST(a,b)-3)*.1:0)+(a.level-1)*.05+(this.hasAura(a)?.15:0)-(PLANE(b)?0:(b.level-1)*.05)-(a.suppressed>0?.25:0)+(MISSILE(w)?(AIR(a)&&a.altitude==='high'?.1:0)+(AIR(b)&&b.altitude==='high'?.1:0)+(b.type==='reconDrone'&&['antiAirVehicle','missileInfantry'].includes(a.type)?.1:0):0)));}
  flareReady(u){return AIR(u)&&u.flares>0&&(this.mode==='rts'?u.flareCooldown<=1e-8:!u.flareUsed);}
  serviceSite(u,base){return (u.type==='antiAirVehicle'||AIR(u)&&!PLANE(u)&&u.altitude==='low')&&!u.segment&&base?.hp>0&&base.owner===u.owner&&['hq','post'].includes(base.type)&&DIST(u,base)<=1&&this.structures.includes(base);}
  canService(u,base){return this.serviceSite(u,base)&&(u.type==='antiAirVehicle'?u.smokeCharges<2:u.hp<u.maxHp||u.flares<3);}
@@ -703,6 +703,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   this.shotsFired++;this.event('shot',u,{weapon:'antitank'});
  }
  shoot(u,target,weapon){
+  if(u.type==='lightTank'&&target?.type==='heavyTank')return false;
   if(u.type==='artillery'&&this.mode!=='rts')u.moveLeft=0;
   // O projétil guarda arma, dano e alvo do disparo; trocar de arma depois não o altera. Helicópteros: recarga única por arma usada.
   const w=weapon||this.weapon(u,target);if(!w||PLANE(u)&&!this.planeWeaponFits(u,w,target))return false;const missile=MISSILE(w);if(PLANE(u))u.ammo[w]--;if(w==='stealthMissile')u.missiles--;
@@ -725,6 +726,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   this.event('blast',center,{heavy:p.type==='artillery',...(p.weapon==='gun'?{weapon:'gun'}:{}),...blastVisibility});
   const targets=p.radiationLost?this.all().filter(t=>{const c=NEAREST(t,center);return !AIR(t)&&t.hp>0&&Math.round(c.x)===Math.round(p.tx)&&Math.round(c.y)===Math.round(p.ty);}):p.type==='artillery'?this.all().filter(u=>{const c=NEAREST(u,center);return !AIR(u)&&Math.abs(c.x-p.tx)<=1.5&&Math.abs(c.y-p.ty)<=1.5;}):target?[target]:[];
   for(const t of targets){
+   if(p.type==='lightTank'&&t.type==='heavyTank')continue;
    let power=p.power;if(p.type==='artillery')power*=Math.max(.8,Math.min(1,1-.2*(DIST({x:p.sx,y:p.sy},t)-2)/Math.max(1,p.range-2)))*(t.id===p.targetId?1:.5);
    if(p.type==='recon')power*=TYPES[t.type].tank?.4:!TYPES[t.type].vehicle&&!TYPES[t.type].structure?1.5:1;
    if(p.type==='antitank')power*=TYPES[t.type].vehicle?2.25:TYPES[t.type].structure?1:.5;

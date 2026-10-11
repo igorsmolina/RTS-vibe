@@ -34,7 +34,16 @@ async function peer(url,session){
     if(mode==='turns'){assert.equal(u.actionLeft,false);assert.equal((await client.command('order',args)).ok,false);}const view=service.viewState(room,side);assert.ok(view.units.some(v=>v.id===u.id&&v.weaponMode==='gun'));
     if(type==='helicopter'){g.shoot(u,target,'gun');const projectile=g.projectiles.at(-1);g.hurt(u,999,null);service.tick();const own=service.viewState(room,side).projectiles.find(p=>p.weapon==='gun');assert.ok(own);assert.equal(own.type,'helicopter','a Minigun própria conserva a aparência após perder o atirador');assert.equal(own.power,undefined);assert.equal(projectile.power,4);}
    }
-   await blue.send({type:'leave'});red.ws.close();console.log('OK geração, produção, armas de helicópteros e turnos humanos: '+map+' / '+mode);
+   for(const side of ['blue','red']){
+    let g=fixture(room);g.turn=side;const client=side==='blue'?blue:red,other=side==='blue'?'red':'blue',light=g.add(side,'lightTank',40,40),armor=g.add(other,'heavyTank',42,40);armor.cooldown=100;g.updateVision();
+    const shots=g.shotsFired;assert.equal((await client.command('order',{ids:[light.id],type:'attack',args:{targetId:armor.id}})).ok,false);assert.equal(g.shotsFired,shots);assert.equal(light.actionLeft,true);
+    g=fixture(room);g.turn=side;const medium=g.add(side,'tank',40,40),aim=g.add(other,'infantry',45,40);aim.cooldown=100;g.updateVision();
+    assert.equal((await client.command('order',{ids:[medium.id],type:'attack',args:{targetId:aim.id}})).ok,true);let n=0;while(!g.projectiles.length&&n++<30)service.tick();assert.ok(g.projectiles.length);assert.ok(Math.abs(g.projectiles[0].accuracy-.55)<1e-8);assert.equal(medium.x,40);advance(20);assert.equal(aim.hp,40);
+    g=fixture(room);g.turn=side;const heavy=g.add(side,'heavyTank',40,40),hidden=g.add(other,'infantry',47,40);hidden.cooldown=100;g.updateVision();assert.equal(service.viewState(room,side).units.some(u=>u.id===hidden.id),false);
+    assert.equal((await client.command('order',{ids:[heavy.id],type:'attack',args:{targetId:hidden.id}})).ok,false);g.add(side,'recon',46,42);g.updateVision();assert.ok(service.viewState(room,side).units.some(u=>u.id===hidden.id));
+    assert.equal((await client.command('order',{ids:[heavy.id],type:'attack',args:{targetId:hidden.id}})).ok,true);advance(20);assert.equal(hidden.hp,20);assert.equal(heavy.x,40);assert.equal(heavy.moveLeft,4);assert.ok(service.viewState(room,side).units.some(u=>u.id===heavy.id&&u.moveLeft===4));
+   }
+   await blue.send({type:'leave'});red.ws.close();console.log('OK geração, produção, helicópteros e novos tanques via WebSocket: '+map+' / '+mode);
   }
   for(const mode of ['rts','turns']){
    const {room,blue,red}=await pair('river',mode),g=fixture(room),a=g.add('blue','infantry',10,10),enemy=g.add('red','infantry',13,10),postBase=g.add('neutral','post',14,14),engineer=g.add('blue','engineer',12,13),repair=g.add('blue','lightTank',11,13);repair.hp=70;g.updateVision();
