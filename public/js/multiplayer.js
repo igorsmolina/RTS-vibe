@@ -1,6 +1,6 @@
 'use strict';
 // Optional public address for the static/offline copy. The hosted server uses its own origin.
-window.RTS_MULTIPLAYER_URL=window.RTS_MULTIPLAYER_URL||'';
+window.RTS_MULTIPLAYER_URL='https://rts-vibe-multiplayer.onrender.com';
 const Multiplayer={
  session:null,room:null,socket:null,connected:false,editingArmy:false,seq:0,pending:new Map(),matchId:null,lastEvent:0,retry:0,timer:null,poses:new Map(),receivedAt:0,
  get side(){return this.session?.side||'blue';},
