@@ -8,6 +8,7 @@ const assert=require('node:assert/strict'),path=require('node:path'),{pathToFile
    paused=true;started=false;const checks=[],check=(name,ok,detail)=>checks.push({name,ok:!!ok,detail});
    const fixture=(mode,map='river')=>{const g=new Game(map,'normal',173,mode);g.aiEnabled=false;g.units=[];g.structures=[];g.mines=[];g.terrain.fill('plain');g.add('blue','hq',4,4);g.add('red','hq',110,80);g.rng=()=>.25;return g;};
    const hit=(type,targetType,weapon)=>{const g=fixture('turns'),u=g.add('blue',type,40,40),v=g.add('red',targetType,42,40);if(PLANE(u))u.ammo.jetGun=0;if(PLANE(v))v.ammo.jetGun=0;v.flares=0;g.updateVision();const before=v.hp;g.shoot(u,v,weapon);for(let i=0;i<90&&g.projectiles.length;i++)g.update(STEP);return {damage:before-v.hp,alive:v.hp>0};};
+   check('revisão: preços, posto e limite aéreo',TYPES.helicopter.cost===150&&TYPES.fighterRed.cost===610&&TYPES.post.hp===90&&PLAN.normal.planes===4);
    const recon=hit('recon','infantry');check('batedor preserva função de reconhecimento',recon.damage<=40&&recon.damage>0,recon);
    const missile=hit('missileInfantry','helicopter');check('lançador é defesa aérea acessível',missile.damage>=40&&missile.alive,missile);
    const aa=hit('antiAirVehicle','helicopter');check('antiaérea forte sem abate automático',aa.damage>=70&&aa.alive,aa);check('antiaérea suporta fogo leve',TYPES.antiAirVehicle.hp>=65);
@@ -52,6 +53,7 @@ const assert=require('node:assert/strict'),path=require('node:path'),{pathToFile
    }
    game=fixture('rts');game.credits.blue=5000;started=true;paused=true;setSelection([game.hq('blue').id]);updateUI();
    check('interface mostra preços balanceados',recruitButtons.filter(b=>!b.hidden).every(b=>b.querySelector('strong').textContent===game.recruitCost(b.dataset.recruit,game.hq('blue'))+' créditos'));
+   const airHeli=game.add('blue','helicopterAir',40,40);setSelection([airHeli.id]);updateUI();check('painel canhão ar-ar mostra 25 contra veículos e imunidade dos aviões',$('unitInfo').textContent.includes('25 veículos')&&$('unitInfo').textContent.includes('sem dano contra aviões'));
    const plane=game.add('blue','fighterBlue',40,40);setSelection([plane.id]);updateUI();check('painel ar-ar informa dano sem prometer abate imediato',$('unitInfo').textContent.includes('dano base '+game.planeWeapon(plane,'jetAam').damage)&&!$('unitInfo').textContent.includes('fatal'));
    const topic=label=>[...$('manual').querySelectorAll('details.topic')].find(e=>e.querySelector('summary').textContent===label)?.textContent||'';
    for(const [type,precision]of [['lightTank','75%'],['tank','75% até 3'],['heavyTank','85%']]){const u=game.add('blue',type,50,50);setSelection([u.id]);updateUI();check('painel informa nova precisão '+type,$('unitInfo').textContent.includes(precision)&&$('unitInfo').textContent.includes('Visão base 5'));}

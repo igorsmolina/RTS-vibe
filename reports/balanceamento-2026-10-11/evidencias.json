@@ -1,6 +1,6 @@
 {
   "seed": 173,
-  "sha256": "2475a58883285bf5b6cbc04efe247a2aedf842c3132aa989106a4c7d87dde00c",
+  "sha256": "acb1e44c20c35957a52d35facf802eb26fa04513d4ea66ed7dfd9fa9755567ec",
   "units": [
     {
       "id": "infantry",
@@ -33,7 +33,7 @@
       "expectedDamagePerCredit": 0.2715,
       "expectedAction": 27.150000000000002,
       "dpsUpper": 13.575000000000001,
-      "range": 2,
+      "range": 3,
       "vision": 5,
       "trainTurns": 2,
       "trainSeconds": 20,
@@ -48,12 +48,12 @@
       "hpPerCredit": 1.1333333333333333,
       "reference": "infantry",
       "weapon": "tank",
-      "expectedShot": 43.47,
-      "expectedDamagePerCredit": 0.2898,
-      "expectedAction": 43.47,
-      "dpsUpper": 17.388,
-      "range": 3,
-      "vision": 4,
+      "expectedShot": 46.575,
+      "expectedDamagePerCredit": 0.3105,
+      "expectedAction": 46.575,
+      "dpsUpper": 18.630000000000003,
+      "range": 5,
+      "vision": 5,
       "trainTurns": 3,
       "trainSeconds": 30,
       "trainSecondsPerCredit": 0.2,
@@ -67,12 +67,12 @@
       "hpPerCredit": 1.1666666666666667,
       "reference": "infantry",
       "weapon": "heavyTank",
-      "expectedShot": 57.959999999999994,
-      "expectedDamagePerCredit": 0.24149999999999996,
-      "expectedAction": 57.959999999999994,
-      "dpsUpper": 16.56,
-      "range": 3,
-      "vision": 4,
+      "expectedShot": 70.38,
+      "expectedDamagePerCredit": 0.29324999999999996,
+      "expectedAction": 70.38,
+      "dpsUpper": 20.108571428571427,
+      "range": 7,
+      "vision": 5,
       "trainTurns": 4,
       "trainSeconds": 40,
       "trainSecondsPerCredit": 0.16666666666666666,
@@ -214,20 +214,20 @@
     {
       "id": "helicopter",
       "name": "Helicóptero",
-      "cost": 140,
+      "cost": 150,
       "hp": 120,
-      "hpPerCredit": 0.8571428571428571,
+      "hpPerCredit": 0.8,
       "reference": "infantry",
       "weapon": "gun",
       "expectedShot": 10.54,
-      "expectedDamagePerCredit": 0.07528571428571428,
+      "expectedDamagePerCredit": 0.07026666666666666,
       "expectedAction": 52.699999999999996,
       "dpsUpper": 52.699999999999996,
       "range": 3,
       "vision": 6,
       "trainTurns": 3,
       "trainSeconds": 30,
-      "trainSecondsPerCredit": 0.21428571428571427,
+      "trainSecondsPerCredit": 0.2,
       "ammo": null
     },
     {
@@ -370,20 +370,20 @@
     {
       "id": "fighterRed",
       "name": "Caça inimigo",
-      "cost": 590,
+      "cost": 610,
       "hp": 160,
-      "hpPerCredit": 0.2711864406779661,
+      "hpPerCredit": 0.26229508196721313,
       "reference": "bomberBlue",
       "weapon": "jetAam",
       "expectedShot": 61.85828571428572,
-      "expectedDamagePerCredit": 0.10484455205811138,
+      "expectedDamagePerCredit": 0.10140702576112413,
       "expectedAction": 61.85828571428572,
       "dpsUpper": 103.09714285714287,
       "range": 14,
       "vision": 12,
       "trainTurns": 3,
       "trainSeconds": 30,
-      "trainSecondsPerCredit": 0.05084745762711865,
+      "trainSecondsPerCredit": 0.04918032786885246,
       "ammo": {
         "jetAam": 4,
         "antiRadiation": 2,
@@ -534,7 +534,7 @@
     }
   ],
   "matrixRows": 1014,
-  "weaponRows": 126,
+  "weaponRows": 120,
   "constants": {
     "NATION_DOCTRINES": {
       "balanced": {
@@ -642,7 +642,7 @@
         "wave": 6,
         "queue": 4,
         "army": 48,
-        "planes": 3,
+        "planes": 4,
         "income": 1,
         "reinforce": true,
         "followUp": 1
@@ -960,14 +960,15 @@
   ],
   "scenarios": [
     {
-      "name": "IA normal: três compras de aviões e quarto bloqueado",
+      "name": "IA normal: quatro compras de aviões e quinto bloqueado",
       "out": [
         {
           "mode": "rts",
           "planes": [
             "fighterRed",
             "multiroleRed",
-            "stealthFighterRed"
+            "stealthFighterRed",
+            "bomberRed"
           ],
           "nextQueue": [
             "infantry"
@@ -975,7 +976,8 @@
           "types": [
             "fighterRed",
             "multiroleRed",
-            "stealthFighterRed"
+            "stealthFighterRed",
+            "bomberRed"
           ]
         },
         {
@@ -983,7 +985,8 @@
           "planes": [
             "fighterRed",
             "multiroleRed",
-            "stealthFighterRed"
+            "stealthFighterRed",
+            "bomberRed"
           ],
           "nextQueue": [
             "infantry"
@@ -991,17 +994,18 @@
           "types": [
             "fighterRed",
             "multiroleRed",
-            "stealthFighterRed"
+            "stealthFighterRed",
+            "bomberRed"
           ]
         }
       ]
     },
     {
-      "name": "Formação inicial: caça vermelho cabe, azul não",
+      "name": "Formação inicial: ambos os caças excedem o orçamento",
       "budget": 600,
-      "redCost": 590,
+      "redCost": 610,
       "blueCost": 610,
-      "redFits": true,
+      "redFits": false,
       "blueFits": false
     },
     {
@@ -1058,12 +1062,12 @@
         {
           "doctrine": "balanced",
           "posts": 4,
-          "income": 47
+          "income": 43
         },
         {
           "doctrine": "balanced",
           "posts": 12,
-          "income": 111
+          "income": 99
         },
         {
           "doctrine": "economic",
@@ -1073,12 +1077,12 @@
         {
           "doctrine": "economic",
           "posts": 4,
-          "income": 54
+          "income": 49
         },
         {
           "doctrine": "economic",
           "posts": 12,
-          "income": 128
+          "income": 114
         },
         {
           "doctrine": "offensive",
@@ -1088,12 +1092,12 @@
         {
           "doctrine": "offensive",
           "posts": 4,
-          "income": 47
+          "income": 43
         },
         {
           "doctrine": "offensive",
           "posts": 12,
-          "income": 111
+          "income": 99
         },
         {
           "doctrine": "defensive",
@@ -1103,12 +1107,12 @@
         {
           "doctrine": "defensive",
           "posts": 4,
-          "income": 42
+          "income": 39
         },
         {
           "doctrine": "defensive",
           "posts": 12,
-          "income": 100
+          "income": 89
         }
       ]
     },
@@ -1125,7 +1129,7 @@
       "name": "Doutrina defensiva não aumenta HP das estruturas",
       "infantry": 115,
       "hq": 300,
-      "post": 80,
+      "post": 90,
       "airportDirt": 350
     },
     {
@@ -1164,7 +1168,7 @@
       "suppressed": 3
     },
     {
-      "name": "Canhão ar-ar é o mesmo ar-terra contra blindados",
+      "name": "Canhão ar-ar tem dano antiblindagem reduzido frente ao ar-terra",
       "ground": {
         "weapon": "gun",
         "damage": 30,
@@ -1179,15 +1183,15 @@
       },
       "air": {
         "weapon": "gun",
-        "damage": 30,
+        "damage": 25,
         "accuracy": 0.85,
         "range": 3,
         "distance": 1,
         "cover": 0,
         "power": 20,
         "criticalIgnored": false,
-        "criticalDamage": 41,
-        "expected": 26.435000000000002
+        "criticalDamage": 34,
+        "expected": 22.014999999999997
       }
     },
     {

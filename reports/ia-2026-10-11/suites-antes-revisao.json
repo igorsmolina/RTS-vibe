@@ -1,0 +1,242 @@
+[
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/balance-revision.test.cjs",
+    "code": 1,
+    "stdout": "OK prices, recruitment and initial budget\nOK air helicopter cannon changes only its vehicle damage\nOK air helicopter can issue and resolve AAM attacks on either bomber\nOK post survives peripheral cruise and needs three central rockets\nOK post income applies in both modes and all doctrines\n",
+    "stderr": "FAIL normal AI recruits the fourth aircraft without raising other limits\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- 'multiroleRed'\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\balance-revision.test.cjs:27:255\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\balance-revision.test.cjs:29:46)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\n"
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/flight-path-performance.test.cjs",
+    "code": 0,
+    "stdout": "OK RTS: uma busca por alcance, alvo aéreo fracionário, rio inacessível, ponte e voo diagonal.\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/engine.test.cjs",
+    "code": 1,
+    "stdout": "OK Planejamento sem limite: IA, combate, recursos e produção imóveis\nOK A* contorna água, usa pontes e respeita montanhas\nOK Movimento suave limitado, fracionável e sem gastar ação\n",
+    "stderr": "node:internal/assert/utils:146\r\n  throw error;\r\n  ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n\r\n1.5 !== 0.5\r\n\r\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\engine.test.cjs:16:230\r\n    at check (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\engine.test.cjs:12:38)\r\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\engine.test.cjs:16:1)\r\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\r\n    at require (node:internal/modules/helpers:196:16) {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 1.5,\r\n  expected: 0.5,\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v26.5.0\r\n"
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/missiles.test.cjs",
+    "code": 0,
+    "stdout": "OK Drones: alcance 8 e visão 12 sobre todos os terrenos; sem detecção de minas\nOK Bombardeiros: só bombas e 2 cruzeiros, preços e rearmamento\nOK Cruzeiro: névoa ou área visível, lançamento remoto único nos dois modos\nOK Cruzeiro: aproxima até 40, cancelamento e intervalo 6 s\nOK Cruzeiro: valida modelo, coordenadas e disparo direto fora de alcance\nOK Cruzeiro: dano 160/80, área 3×3, cobertura, aliados, pousados e estrutura uma vez\nOK Cruzeiro: borda do mapa e projétil persiste sem lançador, sem flares/fumaça\nOK Interceptação: limiar 75% vs 15%, prioridade e limite por turno\nOK IA usa coordenadas conhecidas e evita aliados na área\n9 verificações de mísseis passaram.\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/world.test.cjs",
+    "code": 0,
+    "stdout": "OK Mundo determinístico por semente; sementes diferentes geram mundos diferentes\nOK 25 sementes: oceano em volta, 35–70% de terra, ≥ 14 regiões, grafo conexo e simétrico, QGs distantes\nOK Biomas variados e cada um vira uma batalha válida (mapa, opções, semente)\nOK Campanha: começa com um QG por lado; só ataca vizinhas do território azul\nOK Resultado: vitória conquista; derrota permite contra-ataque; o inimigo avança sobre neutras; fim de campanha\nOK Salvar e carregar: ida e volta fiel; texto inválido ou incompatível é recusado\n6 verificações do mapa-múndi concluídas.\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/air-defense.test.cjs",
+    "code": 1,
+    "stdout": "",
+    "stderr": "node:internal/assert/utils:146\r\n  throw error;\r\n  ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n\r\n70 !== 40\r\n\r\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\air-defense.test.cjs:9:327\r\n    at check (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\air-defense.test.cjs:8:38)\r\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\air-defense.test.cjs:9:1)\r\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\r\n    at require (node:internal/modules/helpers:196:16) {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 70,\r\n  expected: 40,\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v26.5.0\r\n"
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/atmosphere.test.cjs",
+    "code": 0,
+    "stdout": "OK altitude 1 s, três classes e grupos nos dois modos; pausa, dano, bônus tardio, segmento e cancelamento suave.\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/radar.test.cjs",
+    "code": 1,
+    "stdout": "OK turns: alcance 30, visão aliada e alvo aéreo exclusivamente\nOK turns: radar por identidade, controle gratuito, múltiplos veículos e morte\nOK turns: altitude anterior até conclusão, radar em movimento e delta zero\n",
+    "stderr": "node:internal/assert/utils:146\r\n  throw error;\r\n  ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n\r\n40 !== 20\r\n\r\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\radar.test.cjs:14:501\r\n    at check (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\radar.test.cjs:6:38)\r\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\radar.test.cjs:14:2)\r\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\r\n    at require (node:internal/modules/helpers:196:16) {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 40,\r\n  expected: 20,\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v26.5.0\r\n"
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/profile.test.cjs",
+    "code": 0,
+    "stdout": "OK Motor: placar por tipo conta perdas de cada lado e abates de quem atirou; estruturas não contam\nOK Registro: matchRecord lê o placar azul; recordMatch soma estatísticas e mantém só as últimas 30 partidas\nOK Conquistas: cada uma desbloqueia no caso certo e só uma vez\nOK Mescla: conquistas em união (data mais antiga), contadores pelo maior, histórico sem duplicar\nOK Validação: pacote inválido é recusado; lixo e __proto__ são descartados\nOK Pacote: campanha e configurações vêm do lado salvo por último; ida e volta pelo JSON\n6 verificações de perfil concluídas.\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/new-troops.test.cjs",
+    "code": 0,
+    "stdout": "OK Artilharia de mísseis: atributos, alcance 3–30 sem bônus de colina e sem tiro direto\nOK Bombardeio fora do reconhecimento: 4 misseis, explosoes publicas sem revelar tropas\nOK Dano: ×2 contra estruturas, metade nas vizinhas, fogo amigo, aeronaves ilesas, sem queda pela distância\nOK Por turnos: aproxima dentro do movimento; fora do alcance a ordem é recusada sem gastar ação\nOK RTS: preparo antes da salva, intervalo de 0,25 s, recarga de 10 s, pausa congela mísseis\nOK Lançadores: subida, pausa, dano, salva e recolhimento nas duas equipes e modos\nOK RTS: cancelar o preparo ou mover durante recolhimento não dispara nem anda com lançadores elevados\nOK Drone: nasce alto, sem armas, flares, altitude, manutenção, captura ou construção\nOK Drone: visão 12 através da floresta, sem revelar minas\nOK Drone: radar inimigo detecta globalmente; antiaérea 99% e lançador 95%, sem flares\nOK IA: bombardeia só posições vistas ou lembradas e evita área com tropa própria\nOK IA: drone acompanha a artilharia de mísseis; sem ela, patrulha; partidas completas sem travar\n12 verificações das novas tropas concluídas.\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/nation.test.cjs",
+    "code": 0,
+    "stdout": "OK Postos: cinco vagas contando a produção, QG com cinco, preço único e filas independentes\nOK Produção serial por estrutura nos dois modos, nascimento local e bloqueio sem cobrar novamente\nOK Captura e destruição eliminam a fila sem reembolso; fila no posto evita derrota prematura\nOK IA usa posto com menor espera, respeita saída livre, filas totais e limite de exército\nOK Doutrinas isoladas: renda, vida inicial/reforços, dano e estruturas; atributos globais preservados\nOK Doutrina preservada na promoção e no reparo; minas não recebem bônus\nOK Captura real por ordem limpa fila em turnos e RTS; posto construído também recruta\nOK Sorteio inimigo é determinístico, cobre doutrinas e não consome RNG de mapa/combate\n8 verificações de postos e doutrinas concluídas.\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/stealth-drone.test.cjs",
+    "code": 0,
+    "stdout": "OK Atributos: sempre alto, sem flares, altitude ou manutenção; 2 mísseis de alcance 8\nOK Radar não detecta; visão de qualquer tropa inimiga descobre, inclusive a antiaérea\nOK Reconhecimento atual: volta a ficar oculto ao sair da visão inimiga\nOK Dois mísseis sem reposição, um por ação; depois só reconhecimento\nOK Blindagem: não fere tanque médio e pesado; atinge alvos leves, estruturas e aeronaves\nOK IA: caça antiaérea ao alcance, persegue lançadores vistos e, sem mísseis, patrulha\n6 verificações do drone furtivo concluídas.\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/air-combat-rules.test.cjs",
+    "code": 0,
+    "stdout": "OK helicopter guns cannot damage planes; AAM can intercept bombers\nOK helicopter missiles fly slower and grant extra plane evasion\nOK stealth detection expires outside recognition, including stale saved flags\nOK bombs increase damage against every ground troop class\nOK anti-radiation interception succeeds less often than before\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/aviation.test.cjs",
+    "code": 1,
+    "stdout": "OK mapa e economia das operações extensas\nOK oito modelos, cargas e preços isolados\nOK pista multicélula, catálogo e fila independente\nOK produção pronta espera vaga, sem cobrança extra\nOK voo contínuo, pausa e cancelamento sem munição\nOK uma investida por turno, seleção de salva e cobrança só ao disparar\nOK segundo disparo não consome munição se o alvo morrer\nOK radar do caça detecta helicóptero baixo, sem detectar furtivo\nOK antirradiação segue emissão e mantém última posição ao desligar\nOK interceptação e fumaça usam orçamento defensivo\nOK contramedidas e veterania sem esquiva duplicada\nOK construção cooperativa cobra uma vez e pausa com um trabalhador\nOK obra em turnos só avança uma etapa por turno\nOK captura perde fila e destrói pousados, preservando aeronaves em voo\nOK manutenção paga somente armas faltantes e respeita doutrina\nOK bombas causam área, fogo amigo e incêndio sem acumular\nOK bombas em voo preservam potência após destruição\n",
+    "stderr": "node:internal/assert/utils:146\r\n  throw error;\r\n  ^\r\n\r\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\r\n\r\n  assert.ok(g.airports('red').length)\r\n\r\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\aviation.test.cjs:28:394\r\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\aviation.test.cjs:42:101)\r\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\r\n    at require (node:internal/modules/helpers:196:16)\r\n    at [eval]:1:215 {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 0,\r\n  expected: true,\r\n  operator: '==',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v26.5.0\r\n"
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/known-map.test.cjs",
+    "code": 0,
+    "stdout": "OK turns: mapa, neutros, limites, postos, cobertura e misseis sem revelar dano ou furtivo\nOK rts: mapa, neutros, limites, postos, cobertura e misseis sem revelar dano ou furtivo\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/batches.test.cjs",
+    "code": 0,
+    "stdout": "OK late purchase inherits progress; mixed types retain batch order and individual prices\nOK all producers accept five; airports spawn four and retain the fifth ready\nOK partial exits close completed batches, block following types, and never recharge\nOK fractional RTS ticks mark a blocked batch fully ready\nOK legacy entries stay individual; capture and destruction discard pending batches\nOK batch queues prevent premature defeat and respect army/order limits\nOK AI estimates each batch once and stops at the first matching unfinished batch\nOK AA flight is 2.5 seconds at 30 cells, minimum .45; other missiles unchanged\n8 batch/missile checks passed\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/deployment.test.cjs",
+    "code": 0,
+    "stdout": "OK restored economy and 600-point preparation\nOK default army has 565 paid points, free HQ/commander and independent battle credits\nOK custom armies: over-budget fighter restores defaults; empty and maximum armies spawn safely\nOK invalid imported armies use defaults; enemy army and map are seed reproducible\nOK airport geometry accepts all land, reserves both ends and rejects conflicts\nOK 30/60-second and 3/6-turn works only level eight end cells on completion\nOK AI searches the whole map incrementally with at most four route candidates\nOK legacy canteiro uses 30 seconds; no airport keeps planes in flight\nOK RTS decision cycle tests at most four airport route candidates\nOK turn-based AI resumes construction with distant replacement engineers\nOK suggested infantry can leave HQ immediately without moving other troops\n11 deployment checks passed\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/operations.test.cjs",
+    "code": 1,
+    "stdout": "OK cinco classes capturam postos nas duas equipes e modos; pistas apenas infantaria\nOK captura distante usa memoria, persiste sem observador e confirma destruicao apenas ao ver\nOK captura continua entre turnos e so gasta acao ao capturar; parar cancela\n",
+    "stderr": "node:internal/assert/utils:146\r\n  throw error;\r\n  ^\r\n\r\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\r\n\r\n  assert.ok(g.order(u,'capture',{targetId:p.id}))\r\n\r\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\operations.test.cjs:11:233\r\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\operations.test.cjs:35:101)\r\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\r\n    at require (node:internal/modules/helpers:196:16)\r\n    at [eval]:1:215 {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: false,\r\n  expected: true,\r\n  operator: '==',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v26.5.0\r\n"
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/artillery-upgrade.test.cjs",
+    "code": 1,
+    "stdout": "OK rocket 30 and radiation 40 use shared limits on both teams and modes\nOK identified emitter query hides private attributes and expires electronic contacts\nOK turn swap waits for interception without charging next action\nOK HUD contacts are symmetric, use active planes and accept actually visible radar-off AA\nOK a defender chasing an outgoing missile persists until meeting or target termination\nOK late interception checks do not start an aircraft reaction during idle turn planning\n",
+    "stderr": "FAIL artillery statistics, recognition, range and damage preserve area and cover\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n100 !== 120\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:7:274\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:26:48)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\nFAIL interception launches visible missile, resolves later and honors success/failure\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:10:605\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:26:48)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\nFAIL interception radius, lost targets, single roll and shared reaction budget\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n70 !== 40\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:11:473\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:26:48)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\nFAIL swept meeting precedes impact and multiple interceptors cannot duplicate damage\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(target.intercepted)\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:12:305\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:26:48)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\nFAIL interceptor speed is 12, sweep handles a full flight in one frame and never hurts units\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(target.intercepted)\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:15:397\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:26:48)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\nFAIL turn defense still intercepts after the attacking flight animation has finished\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(target.intercepted)\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:19:292\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:26:48)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\nFAIL public interceptor effects do not reveal a hidden radar-off launcher\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n0 !== 40\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:23:362\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:26:48)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\n"
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/air-movement.test.cjs",
+    "code": 0,
+    "stdout": "OK diagonal route, exact cost and mixed turn budget for all drones and helicopters\nOK ground paths remain cardinal; aircraft movement budgets and drone speeds\nOK RTS physical speed is uniform on cardinal and diagonal segments; zero time preserves pause\nOK diagonal approach lower bound is admissible within a tight turn budget\nOK crossing diagonal reservations force waiting or another path without overlap\nOK jet gun aerial damage +75% preserves ground damage, modifiers and all permanent models\nOK aircraft AAM applies normal damage and lethal impacts award once\nOK misses, flares, lost guidance, landing and offmap preserve nonfatal behavior\nOK turn aircraft can cancel a pending move without abandoning a reserved segment\nOK borders, occupied destination, groups and a blocked turn route resume when released\nOK gun modifiers keep fractional power until final rounding\nOK cancelled turn altitude restores the previous flight level\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/airport-runway.test.cjs",
+    "code": 1,
+    "stdout": "OK concreto ocupa 8x3 e cobra 80% sem alterar terra ou manutencao\nOK decolagem percorre pista, bloqueia ordens e muda de alvo somente ao levantar\nOK pista serializa decolagens e nao libera vaga antes de subir\nOK pouso reserva vaga, toca o solo e so depois inicia manutencao\nOK perda da base mata taxiando e redireciona quem ainda esta no ar\nOK turnos terminam decolagem e pouso sem acao extra nem movimento no planejamento\nOK IA compra com saldo descontado e prefere concreto quando espera e igual\nOK perda da ultima pista no ar nao bloqueia turnos\nOK chegada reservada ocupa a quarta vaga e morte libera pista\nOK duas decolagens em turnos usam uma acao cada\n",
+    "stderr": "node:internal/assert/utils:146\r\n  throw error;\r\n  ^\r\n\r\nAssertionError [ERR_ASSERTION]: river/1\r\n\r\n'plain' !== 'road'\r\n\r\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\airport-runway.test.cjs:20:323\r\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\airport-runway.test.cjs:23:103)\r\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\r\n    at require (node:internal/modules/helpers:196:16)\r\n    at [eval]:1:215 {\r\n  generatedMessage: false,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 'plain',\r\n  expected: 'road',\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v26.5.0\r\n"
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/battlefield-fx.test.cjs",
+    "code": 1,
+    "stdout": "",
+    "stderr": "evalmachine.<anonymous>:27\r\n unitVisible(u){return u?.hp>0&&(u.owner===localPlayerSide()||game.isVisible(localPlayerSide(),u));}\r\n                                   ^\r\n\r\nReferenceError: localPlayerSide is not defined\r\n    at BattlefieldFX.unitVisible (evalmachine.<anonymous>:27:36)\r\n    at BattlefieldFX.advance (evalmachine.<anonymous>:46:88)\r\n    at move (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\battlefield-fx.test.cjs:20:88)\r\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\battlefield-fx.test.cjs:24:2)\r\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\r\n\r\nNode.js v26.5.0\r\n"
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/plane-flight-performance.test.cjs",
+    "code": 0,
+    "stdout": "Medições reais: {\"rts\":{\"ticks\":702,\"expected\":694,\"meanMs\":0.74,\"p95Ms\":1.447,\"maxMs\":4.89,\"visionMean\":1.25,\"visionMax\":2},\"turns\":{\"ticks\":7500,\"meanMs\":0.195,\"p95Ms\":0.33,\"maxMs\":1.71,\"visionMean\":1,\"visionMax\":1},\"single\":{\"earlyMedianMs\":0.095,\"lateMedianMs\":0.066}}\nOK voos longos: sem busca de rota, visão agrupada, chegada no prazo e custo por tick estável em RTS e turnos.\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/structures-fx.test.cjs",
+    "code": 1,
+    "stdout": "OK estágios de dano nos limites e função pura para reparo.\nOK bandeira e antena: relógio visual, pausa, pose fixa e fases por estrutura.\nOK dano progressivo: estágios, arte pronta, canteiro excluído, cache limitado e brilho só animado.\nOK destroços: só metadados visíveis, limite de 16, 30 s visuais, pausa e câmera.\n",
+    "stderr": "evalmachine.<anonymous>:166\r\n   if(!(s.hp>0)||s.type==='airportSite'||this.damageStage(s)<2||s.owner!==localPlayerSide()&&!game.isVisible(localPlayerSide(),s))continue;\r\n                                                                  ^\r\n\r\nReferenceError: localPlayerSide is not defined\r\n    at BattlefieldFX.emitStructureSmoke (evalmachine.<anonymous>:166:67)\r\n    at BattlefieldFX.advance (evalmachine.<anonymous>:61:8)\r\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\structures-fx.test.cjs:90:27)\r\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\r\n    at require (node:internal/modules/helpers:196:16)\r\n\r\nNode.js v26.5.0\r\n"
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/engine-scaling.test.cjs",
+    "code": 0,
+    "stdout": "  50 unidades                        units 69 · tickMean 0.7 · tickP50 0.5 · tickP95 1.1 · tickP99 2.2 · tickMax 2.9\n  100 unidades                       units 120 · tickMean 1.8 · tickP50 1.4 · tickP95 3.5 · tickP99 4.9 · tickMax 5.5\n  200 unidades                       units 227 · tickMean 4.6 · tickP50 4.5 · tickP95 7.3 · tickP99 10.3 · tickMax 11.4\n  400 unidades                       units 429 · tickMean 13.8 · tickP50 13.5 · tickP95 19.2 · tickP99 22.1 · tickMax 25.6\n  800 unidades                       units 829 · tickMean 49 · tickP50 47.8 · tickP95 59.5 · tickP99 70.5 · tickMax 85\n  curva                              ratio800to100 34.1\nMETAS DE TRAVADA NÃO ATINGIDAS (3):\n - engine-scaling › 800 unidades: tickMax 85 > meta de travada 50\n - engine-scaling › custo cresce mais que linear: tick com 800 = 34.1× o de 100\n - engine-scaling › p99 do tick com 400 unidades: 22.1 ms\nOK escala do motor: custo do tick quase linear de 50 a 800 unidades.\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/pathfinding-worst.test.cjs",
+    "code": 0,
+    "stdout": "  100 ordens no mesmo tick           orders 100 · orderMs 341.8 · firstTick 16.6 · tickMean 3.5 · tickP50 2.1 · tickP95 12.6 · tickP99 17.3 · tickMax 17.3\n  destino inalcançável               findPathMean 9.9 · findPathMax 20.6\n  20 ordens inalcançáveis no mesmo tick orderMs 169.3 · firstTick 0.5 · tickMean 0.1 · tickP50 0.1 · tickP95 0.4 · tickP99 0.5 · tickMax 0.5\n  labirinto de rios                  findPathMean 7.2 · findPathMax 9.2 · routeLength 1736\nOK piores casos de rota medidos.\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/combat-burst.test.cjs",
+    "code": 0,
+    "stdout": "  rajada de 20 s                     tickMean 2.2 · tickP50 1.9 · tickP95 3.4 · tickP99 5.4 · tickMax 15 · peakProjectiles 42 · peakFires 0 · projectilesAfter 0\nOK rajada de combate medida; projéteis voltam a zero.\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/turns-ai.test.cjs",
+    "code": 0,
+    "stdout": "  200 unidades                       endTurnMs 20.7 · turnGameSeconds 100 · turnCpuMs 1146 · tickP95 1.6 · tickP99 3.3 · tickMax 11 · aiDecisions 109\n  400 unidades                       endTurnMs 23.4 · turnGameSeconds 208 · turnCpuMs 3386 · tickP95 2.7 · tickP99 3.9 · tickMax 7.2 · aiDecisions 209\nOK turno da IA com 200 e 400 unidades medido.\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/production-load.test.cjs",
+    "code": 0,
+    "stdout": "  3 min de filas cheias              bases 36 · queued 528 · spawned 353 · tickMean 3.6 · tickP50 1.9 · tickP95 9.8 · tickP99 11.8 · tickMax 48\nOK produção com filas cheias medida.\n",
+    "stderr": ""
+  },
+  {
+    "source": "public/js/engine.js",
+    "sourceHash": "3ddfcb478397ca13dda66705544f26de0876bfd60786109925b8de80ae4ac2de",
+    "file": "tests/vision-load.test.cjs",
+    "code": 0,
+    "stdout": "  300 unidades em movimento          tickMean 9.5 · tickP50 9 · tickP95 14.2 · tickP99 20.7 · tickMax 23.8 · visionPerTickMax 4 · visionPerTickMean 0.88 · visionMs 2.5 · visionP95 5.5\nMETAS DE TRAVADA NÃO ATINGIDAS (1):\n - vision-load › visão: até 4 passadas num tick (meta: 1)\nOK visão agrupada sob carga.\n",
+    "stderr": ""
+  }
+]

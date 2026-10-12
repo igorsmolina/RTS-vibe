@@ -1,0 +1,185 @@
+{
+  "source": "test-output/ai-engine-before.js",
+  "sourceHash": "acb1e44c20c35957a52d35facf802eb26fa04513d4ea66ed7dfd9fa9755567ec",
+  "results": [
+    {
+      "name": "rts: captura sem acesso deve ser rejeitada",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\ntrue !== false\n"
+    },
+    {
+      "name": "rts: ofensiva parada troca objetivo",
+      "ok": false,
+      "error": "Expected \"actual\" to be strictly unequal to: 47"
+    },
+    {
+      "name": "rts: avião com carga parcial útil decola sem serviço eterno",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'service'\n- 'waitRunway'\n"
+    },
+    {
+      "name": "rts: caça sem munição ar-ar retorna mesmo com metralhadora",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'transfer'\n- 'return'\n"
+    },
+    {
+      "name": "turns: captura sem acesso deve ser rejeitada",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\ntrue !== false\n"
+    },
+    {
+      "name": "turns: ofensiva parada troca objetivo",
+      "ok": false,
+      "error": "Expected \"actual\" to be strictly unequal to: 47"
+    },
+    {
+      "name": "turns: avião com carga parcial útil decola sem serviço eterno",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'service'\n- 'waitRunway'\n"
+    },
+    {
+      "name": "turns: caça sem munição ar-ar retorna mesmo com metralhadora",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'transfer'\n- 'return'\n"
+    },
+    {
+      "name": "objetivo oculto não muda por destruição não observada",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n48 !== 47\n"
+    },
+    {
+      "name": "contato móvel esquecido por idade e não por morte oculta",
+      "ok": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert.ok(g.intel.has(e.id))\n"
+    },
+    {
+      "name": "poupança de aviação não gasta o orçamento em tropas a cada ciclo",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n200 !== 250\n"
+    },
+    {
+      "name": "ameaça terrestre escolhe multifunção em vez de caça",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'fighterRed'\n- 'multiroleRed'\n"
+    },
+    {
+      "name": "RTS: ordem pendente em travessia bloqueada volta a decidir",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\ntrue !== false\n"
+    },
+    {
+      "name": "rts: alternativa acessível a outra ponte",
+      "ok": true,
+      "details": {
+        "captured": "red",
+        "x": 56,
+        "y": 42
+      }
+    },
+    {
+      "name": "turns: alternativa acessível a outra ponte",
+      "ok": true,
+      "details": {
+        "captured": "red",
+        "x": 57,
+        "y": 41
+      }
+    },
+    {
+      "name": "avioes produzidos decolam, disparam e gastam munição real",
+      "ok": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert.ok(p)\n"
+    },
+    {
+      "name": "ameaça aérea prioriza interceptador, ocultos não alteram compra",
+      "ok": true
+    },
+    {
+      "name": "estrutura oculta não muda rota nem informa destruição oculta",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ '[{\"x\":79,\"y\":40},{\"x\":78,\"y\":40},{\"x\":77,\"y\":40},{\"x\":76,\"y\":40},{\"x\":75,\"y\":40},{\"x\":74,\"y\":40},{\"x\":73,\"y\":40},{\"x\":72,\"y\":40},{\"x\":71,\"y\":40},{\"x\":70,\"y\":40},{\"x\":69,\"y\":40},{\"x\":68,\"y\":40},{\"x\":67,\"y\":40},{\"x\":66,\"y\":40},{\"x\":65,\"y\":40},{\"x\":64,\"y\":40},{\"x\":63,\"y\":40},{\"x\":62,\"y\":40},{\"x\":61,\"y\":40},{\"x\":60,\"y\":40},{\"x\":59,\"y\":40},{\"x\":58,\"y\":40},{\"x\":57,\"y\":40},{\"x\":56,\"y\":40},{\"x\":55,\"y\":40},{\"x\":54,\"y\":40},{\"x\":53,\"y\":40},{\"x\":52,\"y\":40},{\"x\":51,\"y\":40},{\"x\":50,\"y\":40},{\"x\":49,\"y\":40},{\"x\":48,\"y\":40},{\"x\":47,\"y\":40},{\"x\":46,\"y\":40},{\"x\":45,\"y\":40},{\"x\":44,\"y\":40},{\"x\":43,\"y\":40},{\"x\":42,\"y\":40},{\"x\":41,\"y\":40},{\"x\":40,\"y\":40},{\"x\":39,\"y\":40},{\"x\":38,\"y\":40},{\"x\":37,\"y\":40},{\"x\":36,\"y\":40},{\"x\":35,\"y\":40},{\"x\":34,\"y\":40},{\"x\":33,\"y\":40},{\"x\":32,\"y\":40},{\"x\":31,\"y\":40},{\"x\":30,\"y\":40},{\"x\":29,\"y\":40},{\"x\":28,\"y\":40},{\"x\":27,\"y\":40},{\"x\":26,\"y\":40},{\"x\":25,\"y\":40},{\"x\":24,\"y\":40},{\"x\":23,\"y\":40},{\"x\":22,\"y\":40},{\"x\":21,\"y\":40},{\"x\":20,\"y\":40}]'\n- '[{\"x\":79,\"y\":40},{\"x\":78,\"y\":40},{\"x\":77,\"y\":40},{\"x\":76,\"y\":40},{\"x\":75,\"y\":40},{\"x\":74,\"y\":40},{\"x\":73,\"y\":40},{\"x\":72,\"y\":40},{\"x\":71,\"y\":40},{\"x\":70,\"y\":40},{\"x\":69,\"y\":40},{\"x\":68,\"y\":40},{\"x\":67,\"y\":40},{\"x\":66,\"y\":40},{\"x\":65,\"y\":40},{\"x\":64,\"y\":40},{\"x\":63,\"y\":40},{\"x\":62,\"y\":40},{\"x\":61,\"y\":40},{\"x\":60,\"y\":40},{\"x\":59,\"y\":40},{\"x\":58,\"y\":40},{\"x\":57,\"y\":40},{\"x\":56,\"y\":40},{\"x\":55,\"y\":40},{\"x\":54,\"y\":40},{\"x\":53,\"y\":40},{\"x\":52,\"y\":40},{\"x\":51,\"y\":40},{\"x\":50,\"y\":40},{\"x\":49,\"y\":40},{\"x\":48,\"y\":40},{\"x\":47,\"y\":40},{\"x\":46,\"y\":40},{\"x\":45,\"y\":40},{\"x\":44,\"y\":40},{\"x\":43,\"y\":40},{\"x\":42,\"y\":40},{\"x\":42,\"y\":39},{\"x\":41,\"y\":39},{\"x\":40,\"y\":39},{\"x\":39,\"y\":39},{\"x\":38,\"y\":39},{\"x\":37,\"y\":39},{\"x\":36,\"y\":39},{\"x\":35,\"y\":39},{\"x\":34,\"y\":39},{\"x\":33,\"y\":39},{\"x\":32,\"y\":39},{\"x\":31,\"y\":39},{\"x\":30,\"y\":39},{\"x\":29,\"y\":39},{\"x\":28,\"y\":39},{\"x\":27,\"y\":39},{\"x\":26,\"y\":39},{\"x\":25,\"y\":39},{\"x\":24,\"y\":39},{\"x\":23,\"y\":39},{\"x\":22,\"y\":39},{\"x\":21,\"y\":39},{\"x\":20,\"y\":39},{\"x\":20,\"y\":40}]'\n"
+    },
+    {
+      "name": "objetivo menos defendido supera alvo próximo protegido",
+      "ok": true,
+      "details": {
+        "chosen": 49,
+        "avoided": 48
+      }
+    },
+    {
+      "name": "perda da onda provoca reagrupamento e memória curta",
+      "ok": false,
+      "error": "Cannot read properties of undefined (reading '0')"
+    },
+    {
+      "name": "limites e pátio cheio deixam orçamento disponível para solo",
+      "ok": true
+    },
+    {
+      "name": "serviço pago repõe munição uma vez e aguarda duração da pista",
+      "ok": true,
+      "details": {
+        "paid": 875
+      }
+    },
+    {
+      "name": "turnos: missão de aeroporto persiste entre capturas de postos",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n'neutral' !== 'red'\n"
+    },
+    {
+      "name": "turnos: posto próximo não sobrescreve deslocamento comprometido com pista",
+      "ok": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert.ok(g.aiAirportPlan())\n"
+    },
+    {
+      "name": "obra bloqueada libera engenheiros sem devolver construção ou inventar pista",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n49 !== null\n"
+    },
+    {
+      "name": "preparação tem prazo mesmo sem seis combatentes reunidos",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'prepare'\n- 'attack'\n"
+    },
+    {
+      "name": "reforço aéreo varia entre interceptador furtivo e bombardeiro",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'multiroleRed'\n- 'stealthFighterRed'\n"
+    },
+    {
+      "name": "ofensiva que causa dano observado não é abandonada por falta de deslocamento",
+      "ok": true
+    },
+    {
+      "name": "rts: defesa responde à ameaça vista perto do QG",
+      "ok": true
+    },
+    {
+      "name": "turns: defesa responde à ameaça vista perto do QG",
+      "ok": true
+    },
+    {
+      "name": "alvo inicialmente oculto passa a contar dano após reconhecimento",
+      "ok": true
+    },
+    {
+      "name": "sem travessia acessível escolhe flanco alcançável em sua margem",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- 'flank'\n"
+    },
+    {
+      "name": "rts: avião ferido ou sem contramedidas retorna à pista",
+      "ok": true
+    },
+    {
+      "name": "turns: avião ferido ou sem contramedidas retorna à pista",
+      "ok": true
+    },
+    {
+      "name": "aviação distingue alvo oculto de emissão identificável por antirradiação",
+      "ok": true
+    }
+  ]
+}

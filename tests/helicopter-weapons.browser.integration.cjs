@@ -13,19 +13,19 @@ const assert=require('node:assert/strict'),path=require('node:path'),{pathToFile
     const fresh=()=>{const g=new Game(map,'normal',176,mode);g.aiEnabled=false;g.multiplayer=true;g.turn=owner;g.units=[];g.mines=[];g.projectiles=[];g.events=[];g.terrain.fill('plain');g.rng=()=>.25;return g;};
     const advance=(g,n)=>{for(let i=0;i<n;i++)g.update(STEP);};
     const pair=(g,type,targetType='heavyTank')=>{const u=g.add(owner,type,50,40),t=g.add(foe,targetType,52,40);t.cooldown=100;u.weaponMode='gun';g.updateVision();return{u,t};};
-    for(const [type,values]of [['helicopter',[12,1,1,1,2,4,4,1,1]],['helicopterGround',[12,30,30,30,10,20,20,7,30]],['helicopterAir',[12,30,30,30,10,20,20,7,30]]]){
+    for(const [type,values]of [['helicopter',[12,1,1,1,2,4,4,1,1]],['helicopterGround',[12,30,30,30,10,20,20,7,30]],['helicopterAir',[12,25,25,25,10,20,20,0,0]]]){
      for(const [i,targetType]of ['infantry','recon','tank','heavyTank','post','helicopter','reconDrone','fighterRed','fighterBlue'].entries()){
       const g=fresh(),{u,t}=pair(g,type,targetType);if(PLANE(t)){t.flightState=i===8?'grounded':'patrol';t.flightJob=null;t.runway=null;}g.updateVision();const hp=t.hp;
       if(PLANE(t)){check(type+' cannot fire gun at '+targetType,!g.canFire(u,t)&&g.shoot(u,t,'gun')===false&&g.projectiles.length===0);continue;}
       check(type+' can fire gun at '+targetType+' '+t.flightState,g.canFire(u,t));g.shoot(u,t,'gun');const p=g.projectiles.at(-1);if(!p){check(type+' projectile exists',false);continue;}g.impact(p);
       check(type+' damage '+targetType+' '+t.flightState,hp-t.hp===values[i],{want:values[i],got:hp-t.hp});
      }
-     const g=fresh(),{u,t}=pair(g,type);g.credits[owner]=1000;const price=type==='helicopter'?140:type==='helicopterGround'?230:180;check(type+' purchase and existing attributes',g.enqueue(owner,type,g.hq(owner))&&g.credits[owner]===1000-price&&u.hp===120&&TYPES[type].speed===3.2&&g.trainDuration(type)===(mode==='rts'?(type==='helicopter'?30:40):(type==='helicopter'?3:4)));t.hp=t.maxHp=1000;check(type+' order accepted',g.command([u.id],'attack',{targetId:t.id},owner)===1);const times=[];let shots=0;
+     const g=fresh(),{u,t}=pair(g,type);g.credits[owner]=1000;const price=type==='helicopter'?150:type==='helicopterGround'?230:180;check(type+' purchase and existing attributes',g.enqueue(owner,type,g.hq(owner))&&g.credits[owner]===1000-price&&u.hp===120&&TYPES[type].speed===3.2&&g.trainDuration(type)===(mode==='rts'?(type==='helicopter'?30:40):(type==='helicopter'?3:4)));t.hp=t.maxHp=1000;check(type+' order accepted',g.command([u.id],'attack',{targetId:t.id},owner)===1);const times=[];let shots=0;
      for(let i=0;i<45;i++){g.update(STEP);if(g.shotsFired>shots){times.push(g.time);shots=g.shotsFired;}}
      const interval=type==='helicopter'?.2:1;
      check(type+' cadence',times.length===(mode==='turns'?(type==='helicopter'?5:1):(type==='helicopter'?8:2))&&times.slice(1).every((time,i)=>Math.abs(time-times[i]-interval)<STEP+.00001),times);
      if(mode==='turns')check(type+' one action only',!u.actionLeft&&!u.pending&&!g.busy&&g.command([u.id],'attack',{targetId:t.id},owner)===0);
-     const h=fresh(),p=pair(h,type);h.shoot(p.u,p.t,'gun');const projectile=h.projectiles.at(-1),hp=p.t.hp;h.hurt(p.u,999,null);h.units=h.units.filter(v=>v.hp>0);h.impact(projectile);check(type+' posthumous projectile',hp-p.t.hp===(type==='helicopter'?1:30));
+     const h=fresh(),p=pair(h,type);h.shoot(p.u,p.t,'gun');const projectile=h.projectiles.at(-1),hp=p.t.hp;h.hurt(p.u,999,null);h.units=h.units.filter(v=>v.hp>0);h.impact(projectile);check(type+' posthumous projectile',hp-p.t.hp===(type==='helicopter'?1:type==='helicopterAir'?25:30));
     }
     if(mode==='turns')for(const reason of ['range','hidden','dead']){
      const g=fresh(),{u,t}=pair(g,'helicopter'),other=g.add(foe,'infantry',51,41);g.updateVision();g.command([u.id],'attack',{targetId:t.id},owner);advance(g,3);const shots=g.shotsFired;

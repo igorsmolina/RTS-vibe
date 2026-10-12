@@ -1,0 +1,64 @@
+{
+  "source": "test-output/ai-engine-before.js",
+  "results": [
+    {
+      "name": "rts: captura sem acesso deve ser rejeitada",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\ntrue !== false\n"
+    },
+    {
+      "name": "rts: ofensiva parada troca objetivo",
+      "ok": false,
+      "error": "Expected \"actual\" to be strictly unequal to: 47"
+    },
+    {
+      "name": "rts: avião com carga parcial útil decola sem serviço eterno",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'service'\n- 'waitRunway'\n"
+    },
+    {
+      "name": "rts: caça sem munição ar-ar retorna mesmo com metralhadora",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'transfer'\n- 'return'\n"
+    },
+    {
+      "name": "turns: captura sem acesso deve ser rejeitada",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\ntrue !== false\n"
+    },
+    {
+      "name": "turns: ofensiva parada troca objetivo",
+      "ok": false,
+      "error": "Expected \"actual\" to be strictly unequal to: 47"
+    },
+    {
+      "name": "turns: avião com carga parcial útil decola sem serviço eterno",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'service'\n- 'waitRunway'\n"
+    },
+    {
+      "name": "turns: caça sem munição ar-ar retorna mesmo com metralhadora",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'transfer'\n- 'return'\n"
+    },
+    {
+      "name": "objetivo oculto não muda por captura não observada",
+      "ok": true
+    },
+    {
+      "name": "contato móvel esquecido por idade e não por morte oculta",
+      "ok": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert.ok(g.intel.has(e.id))\n"
+    },
+    {
+      "name": "poupança de aviação não gasta o orçamento em tropas a cada ciclo",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n200 !== 250\n"
+    },
+    {
+      "name": "ameaça terrestre escolhe multifunção em vez de caça",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'fighterRed'\n- 'multiroleRed'\n"
+    }
+  ]
+}

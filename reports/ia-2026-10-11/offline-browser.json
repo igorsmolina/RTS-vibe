@@ -1,0 +1,79 @@
+{
+  "offline": true,
+  "url": "file:///C:/Users/User/Downloads/RTS%20vibe/public/index.html",
+  "errors": [],
+  "results": [
+    {
+      "map": "river",
+      "mode": "rts",
+      "aiDecisions": 8,
+      "credits": 150,
+      "phase": "prepare",
+      "strategy": "expand",
+      "units": 17
+    },
+    {
+      "map": "river",
+      "mode": "turns",
+      "aiDecisions": 9,
+      "credits": 150,
+      "phase": "prepare",
+      "strategy": "expand",
+      "units": 17
+    },
+    {
+      "map": "desert",
+      "mode": "rts",
+      "aiDecisions": 8,
+      "credits": 150,
+      "phase": "prepare",
+      "strategy": "expand",
+      "units": 17
+    },
+    {
+      "map": "desert",
+      "mode": "turns",
+      "aiDecisions": 8,
+      "credits": 150,
+      "phase": "prepare",
+      "strategy": "expand",
+      "units": 17
+    },
+    {
+      "map": "mountain",
+      "mode": "rts",
+      "aiDecisions": 8,
+      "credits": 150,
+      "phase": "prepare",
+      "strategy": "expand",
+      "units": 17
+    },
+    {
+      "map": "mountain",
+      "mode": "turns",
+      "aiDecisions": 9,
+      "credits": 150,
+      "phase": "prepare",
+      "strategy": "expand",
+      "units": 17
+    },
+    {
+      "map": "random",
+      "mode": "rts",
+      "aiDecisions": 8,
+      "credits": 150,
+      "phase": "prepare",
+      "strategy": "expand",
+      "units": 17
+    },
+    {
+      "map": "random",
+      "mode": "turns",
+      "aiDecisions": 8,
+      "credits": 150,
+      "phase": "prepare",
+      "strategy": "expand",
+      "units": 17
+    }
+  ]
+}
