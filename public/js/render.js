@@ -436,8 +436,6 @@ class Renderer{
    if(u.type==='airportSite')this.bar(px+w/2,py+h-20,barWidth,(u.work||0)/game.airportDuration(u),'#efd094');
    if(!memory&&u.queue?.length)this.bar(px+w/2,py+(airport?16:18),barWidth,u.queue[0].progress/game.trainDuration(u.queue[0].type),'#edd098');c.restore();return;
   }
-  // Seu drone furtivo ainda não descoberto pelo inimigo aparece translúcido.
-  else if(u.owner===localPlayerSide()&&u.spotted&&!u.spotted[localPlayerSide()==='blue'?'red':'blue'])c.globalAlpha=.6;
   if(!memory&&(AIR(u)||PLANE(u))){
    c.save();c.globalAlpha=1-pose.level*.4;const shadow=PLANE(u)&&planeShadow(planeImages[u.type]);if(shadow){const size=planeDrawSize(u.type)*.86*(1-pose.level*.15);c.translate(x+pose.level*12,groundY+2+pose.level*12);c.rotate(u.facing||0);c.drawImage(shadow,-size/2,-size/2,size,size);}else c.drawImage(this.airShadow,x-22+pose.level*12,groundY+pose.level*12,58+pose.level*12,32);c.restore();
    if(pose.level>0&&settings.graphics!=='performance'){c.save();c.globalAlpha=.12*pose.level;if(highCloud.complete&&highCloud.naturalWidth)c.drawImage(highCloud,x-38,groundY-31,76,76);else{c.fillStyle='#e7edf1';for(const [dx,dy]of [[-25,12],[25,-5],[-16,-22]]){c.beginPath();c.ellipse(x+dx,groundY+dy,14,7,0,0,7);c.fill();}}c.restore();}

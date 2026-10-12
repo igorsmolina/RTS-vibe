@@ -53,7 +53,7 @@ const TYPES={
  // Equilíbrio provisório das duas classes abaixo (ainda não validado em partidas).
  rocketArtillery:{move:2,vehicle:true,name:'Artilharia de mísseis',hp:90,speed:.85,range:30,min:3,damage:20,accuracy:.8,vision:3,cooldown:10,train:4,cost:240,reward:60,role:'Bombardear área 3×3 · 4 mísseis · ×2 contra estruturas'},
  reconDrone:{air:true,drone:true,unarmed:true,weapons:[],move:7,name:'Drone de reconhecimento',hp:60,speed:2.4,range:0,min:0,damage:0,accuracy:0,vision:12,cooldown:1,train:2,cost:90,reward:30,role:'Reconhecimento · visão 12 através do terreno · sempre em altitude alta · sem armas'},
- // Drone furtivo: equilíbrio provisório. Invisível ao radar; descoberto pela visão inimiga, fica revelado até ser destruído.
+ // Drone furtivo: invisível ao radar; exige reconhecimento atual.
  stealthDrone:{air:true,drone:true,stealth:true,weapons:['stealthMissile'],missiles:2,move:6,name:'Drone furtivo',hp:50,speed:2.2,range:8,min:0,damage:35,accuracy:.85,vision:12,cooldown:3,train:3,cost:160,reward:45,role:'Furtivo ao radar · visão 12 através do terreno · 2 mísseis, alcance 8, só por ordem · sempre em altitude alta'},
  commander:{move:3,name:'Comandante',hp:140,speed:1.35,range:2,min:0,damage:40,accuracy:.9,vision:5,cooldown:1.5,reward:70,role:'Aura de comando · raio 2'},
  hq:{name:'Quartel-general',hp:300,speed:0,range:0,damage:0,vision:5,structure:true,width:3,height:3,reward:100},
@@ -61,7 +61,7 @@ const TYPES={
 };
 // Armas dos helicópteros. Recarga em segundos (RTS); por turnos cada disparo gasta a ação.
 const ARMORED=new Set(['tank','heavyTank']),BREAKERS=new Set(['antitank','lightTank','tank','heavyTank','artillery']);
-const WEAPONS={gun:HELICOPTER_CANNON,agm:{name:'Míssil ar-terra',damage:65,range:5,accuracy:.85,cooldown:3},aam:{name:'Míssil ar-ar',damage:70,range:6,accuracy:.9,cooldown:3},stealthMissile:{name:'Míssil furtivo',damage:35,range:8,accuracy:.85,cooldown:3}};
+const WEAPONS={gun:HELICOPTER_CANNON,agm:{name:'Míssil ar-terra',damage:65,range:5,accuracy:.85,cooldown:3},aam:{name:'Míssil ar-ar',damage:70,range:6,accuracy:.9,cooldown:3,speed:4,evasionBonus:.2},stealthMissile:{name:'Míssil furtivo',damage:35,range:8,accuracy:.85,cooldown:3}};
 
 const PLANE=u=>!!TYPES[u?.type]?.plane;
 const AIRPORT=u=>!!TYPES[u?.type]?.airport;
@@ -90,9 +90,9 @@ Object.assign(WEAPONS,{
  antiRadiation:{name:'Míssil antirradiação',damage:80,range:40,accuracy:.8,cooldown:.6,speed:14},
  jetAgm:{name:'Míssil antiblindados',damage:75,range:10,accuracy:.85,cooldown:.6,speed:10},
  cruiseMissile:{name:'Míssil de cruzeiro',damage:160,range:40,accuracy:1,cooldown:6,speed:8},
- bombCommon:{name:'Bomba comum',damage:80,range:0,accuracy:.8,cooldown:.1},
- bombFragment:{name:'Fragmentação',damage:45,range:0,accuracy:.8,cooldown:.1},
- bombIncendiary:{name:'Incendiária',damage:20,range:0,accuracy:.8,cooldown:.1}
+ bombCommon:{name:'Bomba comum',damage:120,range:0,accuracy:.8,cooldown:.1},
+ bombFragment:{name:'Fragmentação',damage:70,range:0,accuracy:.8,cooldown:.1},
+ bombIncendiary:{name:'Incendiária',damage:40,range:0,accuracy:.8,cooldown:.1}
 });
 
 const AIR=u=>!!TYPES[u?.type]?.air&&(!PLANE(u)||!['grounded','service','offmap','waitRunway','taxiOut','takeoffRoll','landingRoll','taxiIn'].includes(u.flightState));
@@ -320,7 +320,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  emitterContacts(owner){const observers=this.units.filter(u=>u.owner===owner&&u.hp>0&&PLANE(u)&&AIR(u)&&u.ammo.antiRadiation>0);return this.units.filter(u=>u.hp>0&&u.owner!==owner&&u.owner!=='neutral'&&u.type==='antiAirVehicle'&&(this.isVisible(owner,u)||u.radarOn&&observers.some(p=>this.canIdentify(p,u)))).map(u=>({id:u.id,x:u.x,y:u.y,radarOn:u.radarOn}));}
  radarCoverage(owner,u){if(!AIR(u)||TYPES[u.type].stealth||TYPES[u.type].radarStealth)return false;return this.units.some(e=>e.hp>0&&e.owner===owner&&((e.type==='antiAirVehicle'&&e.radarOn&&u.altitude==='high')||(PLANE(e)&&TYPES[e.type].radar&&e.radarOn!==false&&AIR(e)&&DIST(e,u)<=18)));}
  useSmoke(u){if(u.type!=='antiAirVehicle'||u.smokeCharges<=0||(this.mode==='rts'?u.smokeCooldown>0:u.smokeUsed))return false;u.smokeCharges--;u.smokeCooldown=12;u.smokeTime=3;u.smokeUsed=true;this.event('defenseSmoke',u);return true;}
- defendAir(interceptionOnly=false){for(const a of this.units.filter(u=>u.type==='antiAirVehicle'&&u.hp>0)){if(this.mode==='rts'?a.cooldown>0:!a.reactionReady||a.owner===this.turn)continue;const incoming=this.projectiles.filter(p=>['antiRadiation','cruiseMissile'].includes(p.weapon)&&!p.intercepted&&p.owner!==a.owner&&DIST(a,p)<=6).sort((p,q)=>Number(q.weapon==='antiRadiation')-Number(p.weapon==='antiRadiation')||Number(q.targetId===a.id)-Number(p.targetId===a.id)||Number(this.get(q.targetId)?.type==='antiAirVehicle')-Number(this.get(p.targetId)?.type==='antiAirVehicle')||DIST(a,p)-DIST(a,q));if(incoming.length){const p=incoming[0];p.projectileId??=this.nextProjectileId++;a.cooldown=3.5;a.reactionReady=false;this.shotsFired++;this.event('shot',a,{weapon:'antitank'});this.projectiles.push({projectileId:this.nextProjectileId++,targetProjectileId:p.projectileId,interceptor:true,interceptSuccess:this.rng()<(p.weapon==='cruiseMissile'?.75:.3),attackerId:a.id,owner:a.owner,type:a.type,weapon:'antiAirVehicle',air:true,sourceLevel:0,targetLevel:p.visualLevel??p.sourceLevel??0,sx:a.x,sy:a.y,x:a.x,y:a.y,tx:p.x,ty:p.y,elapsed:0,duration:Math.max(.1,p.duration-p.elapsed),heading:Math.atan2(p.y-a.y,p.x-a.x),trail:[]});continue;}if(this.mode==='rts'||interceptionOnly)continue;const target=this.units.filter(u=>u.owner!==a.owner&&PLANE(u)&&AIR(u)&&this.canFire(a,u)).sort((u,v)=>DIST(a,u)-DIST(a,v)||u.id-v.id)[0];if(target){a.reactionReady=false;this.shoot(a,target);}}}
+ defendAir(interceptionOnly=false){for(const a of this.units.filter(u=>u.type==='antiAirVehicle'&&u.hp>0)){if(this.mode==='rts'?a.cooldown>0:!a.reactionReady||a.owner===this.turn)continue;const incoming=this.projectiles.filter(p=>['antiRadiation','cruiseMissile'].includes(p.weapon)&&!p.intercepted&&p.owner!==a.owner&&DIST(a,p)<=6).sort((p,q)=>Number(q.weapon==='antiRadiation')-Number(p.weapon==='antiRadiation')||Number(q.targetId===a.id)-Number(p.targetId===a.id)||Number(this.get(q.targetId)?.type==='antiAirVehicle')-Number(this.get(p.targetId)?.type==='antiAirVehicle')||DIST(a,p)-DIST(a,q));if(incoming.length){const p=incoming[0];p.projectileId??=this.nextProjectileId++;a.cooldown=3.5;a.reactionReady=false;this.shotsFired++;this.event('shot',a,{weapon:'antitank'});this.projectiles.push({projectileId:this.nextProjectileId++,targetProjectileId:p.projectileId,interceptor:true,interceptSuccess:this.rng()<(p.weapon==='cruiseMissile'?.75:.15),attackerId:a.id,owner:a.owner,type:a.type,weapon:'antiAirVehicle',air:true,sourceLevel:0,targetLevel:p.visualLevel??p.sourceLevel??0,sx:a.x,sy:a.y,x:a.x,y:a.y,tx:p.x,ty:p.y,elapsed:0,duration:Math.max(.1,p.duration-p.elapsed),heading:Math.atan2(p.y-a.y,p.x-a.x),trail:[]});continue;}if(this.mode==='rts'||interceptionOnly)continue;const target=this.units.filter(u=>u.owner!==a.owner&&PLANE(u)&&AIR(u)&&this.canFire(a,u)).sort((u,v)=>DIST(a,u)-DIST(a,v)||u.id-v.id)[0];if(target){a.reactionReady=false;this.shoot(a,target);}}}
  advanceInterceptors(dt,starts,hits){
   if(!this.projectiles.some(p=>p.interceptor))return;
   const meetings=[],expired=new Set(),targets=new Map(this.projectiles.filter(p=>!p.interceptor&&p.projectileId).map(p=>[p.projectileId,p]));
@@ -528,7 +528,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  radarContact(owner,u){return !!u&&AIR(u)&&u.hp>0&&u.owner!==owner&&!!this.radarContacts[owner]?.has(u.id);}
  updateRadarContacts(){for(const owner of ['blue','red']){const contacts=this.radarContacts[owner];contacts.clear();for(const u of this.units)if(u.hp>0&&u.owner!==owner&&this.radarCoverage(owner,u))contacts.add(u.id);}}
  setRadar(u,on){if(!u||!(u.type==='antiAirVehicle'||PLANE(u)&&TYPES[u.type].radar)||u.hp<=0||!this.units.includes(u)||typeof on!=='boolean')return false;u.radarOn=on;this.updateVision();return true;}
- isVisible(owner,u){if(PLANE(u)&&u.flightState==='offmap')return false;if(TYPES[u?.type]?.structure||u?.width){for(let y=u.y;y<u.y+(u.height||1);y++)for(let x=u.x;x<u.x+(u.width||1);x++)if(this.visible[owner]?.[KEY(x,y)])return true;return false;}if(!u||!this.visible[owner])return false;if(u.spotted)return u.hp>0&&!!u.spotted[owner];const p=TILE(u);return this.radarContact(owner,u)||!!(AIR(u)?this.sky:this.visible)[owner][KEY(p.x,p.y)];}
+ isVisible(owner,u){if(PLANE(u)&&u.flightState==='offmap')return false;if(TYPES[u?.type]?.structure||u?.width){for(let y=u.y;y<u.y+(u.height||1);y++)for(let x=u.x;x<u.x+(u.width||1);x++)if(this.visible[owner]?.[KEY(x,y)])return true;return false;}if(!u||!this.visible[owner])return false;if(u.spotted){const p=TILE(u);return u.hp>0&&(u.owner===owner||!!this.sky[owner][KEY(p.x,p.y)]);}const p=TILE(u);return this.radarContact(owner,u)||!!(AIR(u)?this.sky:this.visible)[owner][KEY(p.x,p.y)];}
  effectVisible(x,y,air=false,contactId,sourceId){const owner=this.playerSide||'blue',p=TILE({x,y});if(!INSIDE(p.x,p.y))return false;if((air?this.sky:this.visible)[owner][KEY(p.x,p.y)])return true;if(air)for(const id of [contactId,sourceId]){if(id===undefined)continue;const u=this.get(id);if(this.radarContact(owner,u)&&Math.hypot(x-u.x,y-u.y)<=2)return true;}return false;}
  // Alcance contra um alvo; sem alvo, o maior alcance do modo de arma atual.
  weaponStats(u,w){return PLANE(u)?this.planeWeapon(u,w):w==='gun'?TYPES[u.type].gun||WEAPONS[w]:WEAPONS[w];}
@@ -539,10 +539,11 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
     Helicóptero: arma manual se compatível; Auto prefere o míssil contra veículo/estrutura (ar-terra) ou aeronave (ar-ar). */
  // Minigun/canhão dos helicópteros também atingem blindados; armas comuns continuam bloqueadas.
  weapon(a,b){if(a.type==='lightTank'&&b.type==='heavyTank')return null;const w=this.pickWeapon(a,b);return w&&ARMORED.has(b.type)&&!BREAKERS.has(a.type)&&w!=='agm'&&w!=='jetAgm'&&!(w==='gun'&&TYPES[a.type].gun)?null:w;}
+ helicopterWeaponFits(a,w,b){return TYPES[a.type].weapons.includes(w)&&(PLANE(b)?w==='aam'&&AIR(b)&&!TYPES[b.type].weapons.some(w=>BOMB_TYPES.includes(w)):w==='gun'||(w==='agm')!==AIR(b));}
  pickWeapon(a,b){
   const t=TYPES[a.type],air=AIR(b);if(t.plane){const mode=a.weaponMode||'auto';return mode==='auto'?t.weapons.find(w=>this.planeWeaponFits(a,w,b))||null:this.planeWeaponFits(a,mode,b)?mode:null;}if(t.unarmed||a.type==='rocketArtillery')return null;if(t.stealth)return a.missiles>0?'stealthMissile':null;if(a.type==='antiAirVehicle')return air?a.type:null;if(a.type==='missileInfantry')return a.type;if(!t.air)return air&&a.type!=='infantry'&&a.type!=='machinegun'?null:a.type;
-  const fits=w=>w==='gun'||(w==='agm')!==air,mode=a.weaponMode||'auto';if(mode!=='auto')return fits(mode)?mode:null;
-  const missile=t.weapons[1];return missile&&fits(missile)&&(air||TYPES[b.type].vehicle||TYPES[b.type].structure)?missile:'gun';
+  const fits=w=>this.helicopterWeaponFits(a,w,b),mode=a.weaponMode||'auto';if(mode!=='auto')return fits(mode)?mode:null;
+  const missile=t.weapons[1];return missile&&fits(missile)&&(air||TYPES[b.type].vehicle||TYPES[b.type].structure)?missile:fits('gun')?'gun':null;
  }
  setWeapon(u,mode){if(!u||!TYPES[u.type]?.weapons?.length||!['auto',...TYPES[u.type].weapons].includes(mode))return false;u.weaponMode=mode;return true;}
  // Visão agrupada: no RTS vários movimentos por tick apenas marcam a visão como suja e flushVision a refaz uma vez; por turnos segue imediata.
@@ -557,8 +558,8 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
     if(u.owner!==owner||u.hp<=0)continue;const p=u.type==='hq'||u.type==='post'?CENTER(u):u,r=this.sight(u),limit=r+.05,high=AIR(u)&&!TYPES[u.type].drone&&u.altitude==='high',detection=high?1:u.type==='recon'?3:2,x0=Math.max(0,Math.floor(p.x-r)),x1=Math.min(COLS-1,Math.ceil(p.x+r));seers.push([p,limit,this.strikeReach(u)]);
     for(let y=Math.max(0,Math.floor(p.y-r));y<=Math.min(ROWS-1,Math.ceil(p.y+r));y++){const dy=Math.abs(p.y-y);for(let x=x0;x<=x1;x++){const d=Math.abs(p.x-x)+dy;if(d<=limit){const k=KEY(x,y),terrain=this.terrain[k],concealed=!TYPES[u.type].drone&&(CONCEAL.has(terrain)||high&&(terrain==='hill'||terrain==='mountain'));explored[k]=true;sky[k]=true;if(!concealed||d<=detection+.05)visible[k]=true;}}}
    }
-   // Drone furtivo: a primeira vez no céu visto por este lado o descobre de vez.
-   for(const e of this.units)if(e.spotted&&e.owner!==owner&&e.hp>0&&!e.spotted[owner]){const p=TILE(e);if(sky[KEY(p.x,p.y)]){e.spotted[owner]=true;if(this.multiplayer){this.log('Drone furtivo inimigo descoberto.',[owner]);this.log('Seu drone furtivo foi descoberto.',[e.owner]);}else if(owner==='blue')this.log('Drone furtivo inimigo descoberto.');else if(e.owner==='blue')this.log('Seu drone furtivo foi descoberto.');}}
+   // A detecção furtiva acompanha a área de reconhecimento atual.
+   for(const e of this.units)if(e.spotted&&e.owner!==owner&&e.hp>0){const p=TILE(e),wasSpotted=e.spotted[owner];e.spotted[owner]=!!sky[KEY(p.x,p.y)];if(e.spotted[owner]&&!wasSpotted){if(this.multiplayer){this.log('Drone furtivo inimigo descoberto.',[owner]);this.log('Seu drone furtivo foi descoberto.',[e.owner]);}else if(owner==='blue')this.log('Drone furtivo inimigo descoberto.');else if(e.owner==='blue')this.log('Seu drone furtivo foi descoberto.');}}
    // Helicóptero alto: cobertura terrestre até 1 casa; disparos revelam a quem tem alcance de visão, inclusive do alto.
    for(const e of this.units)if(e.owner!==owner&&e.revealed>0){const p=TILE(e),k=KEY(p.x,p.y);if(!visible[k]&&seers.some(([o,limit,reach])=>DIST(o,e)<=(e.type==='antiAirVehicle'?Math.max(limit,reach):limit)))visible[k]=true;}
    for(const [key,s]of this.memory[owner])if(this.isVisible(owner,s))this.memory[owner].delete(key);
@@ -706,12 +707,12 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   if(u.type==='lightTank'&&target?.type==='heavyTank')return false;
   if(u.type==='artillery'&&this.mode!=='rts')u.moveLeft=0;
   // O projétil guarda arma, dano e alvo do disparo; trocar de arma depois não o altera. Helicópteros: recarga única por arma usada.
-  const w=weapon||this.weapon(u,target);if(!w||PLANE(u)&&!this.planeWeaponFits(u,w,target))return false;const missile=MISSILE(w);if(PLANE(u))u.ammo[w]--;if(w==='stealthMissile')u.missiles--;
+  const w=weapon||this.weapon(u,target);if(!w||PLANE(u)&&!this.planeWeaponFits(u,w,target)||TYPES[u.type].gun&&!this.helicopterWeaponFits(u,w,target))return false;const missile=MISSILE(w);if(PLANE(u))u.ammo[w]--;if(w==='stealthMissile')u.missiles--;
   if(!PLANE(u))u.facing=Math.atan2(target.x-u.x,u.y-target.y);if(w==='jetGun')u.gunShotClock=.06;else u.cooldown=u.reload=(TYPES[u.type].air?this.weaponStats(u,w):TYPES[u.type]).cooldown;u.revealed=2;const artillery=u.type==='artillery',aim=artillery?TILE(target):{x:target.x,y:target.y};
-  const accuracyBase=this.accuracy(u,target,w),flareProtected=missile&&this.flareReady(target),evasiveAccuracy=accuracyBase*(missile&&PLANE(target)&&AIR(target)?1-this.planeEvasion(target):1),accuracy=evasiveAccuracy*(flareProtected?.5:1),roll=this.rng();
+  const accuracyBase=this.accuracy(u,target,w),flareProtected=missile&&this.flareReady(target),evasiveAccuracy=accuracyBase*(missile&&PLANE(target)&&AIR(target)?1-Math.min(.8,this.planeEvasion(target)+(this.weaponStats(u,w)?.evasionBonus||0)):1),accuracy=evasiveAccuracy*(flareProtected?.5:1),roll=this.rng();
   const decoy=flareProtected?{x:Math.max(0,Math.min(COLS-1,target.x+(target.id%2?1.3:-1.3))),y:Math.max(0,Math.min(ROWS-1,target.y+1.2))}:null;
   if(flareProtected){target.flares--;target.flareUsed=true;target.flareCooldown=8;this.event('flare',target,{decoy});}
-  this.projectiles.push({attackerId:u.id,owner:u.owner,type:u.type,weapon:w,air:AIR(u)||AIR(target),sourceLevel:AIR(u)?flightLevel(u):0,targetLevel:AIR(target)?flightLevel(target):0,targetId:target.id,sx:u.x,sy:u.y,x:u.x,y:u.y,tx:aim.x,ty:aim.y,heading:Math.atan2(aim.y-u.y,aim.x-u.x),trail:[],elapsed:0,duration:PLANE(u)?Math.max(.1,DIST(u,target)/this.planeWeapon(u,w).speed):missile?Math.max(.45,w==='antiAirVehicle'?DIST(u,target)/12:Math.min(1.2,DIST(u,target)/6)):artillery?.7:u.type==='antitank'?.3:.18,power:this.attackPower(u,w),distance:DIST(u,target),range:PLANE(u)?this.weaponRange(u,w):this.range(u,target),accuracyBase,accuracy,flareProtected,attackerAltitude:u.altitude,targetAltitude:target.altitude,deflected:flareProtected&&roll>=accuracy&&roll<evasiveAccuracy,decoy,hit:roll<accuracy,critical:this.rng()<.1});
+  this.projectiles.push({attackerId:u.id,owner:u.owner,type:u.type,weapon:w,air:AIR(u)||AIR(target),sourceLevel:AIR(u)?flightLevel(u):0,targetLevel:AIR(target)?flightLevel(target):0,targetId:target.id,sx:u.x,sy:u.y,x:u.x,y:u.y,tx:aim.x,ty:aim.y,heading:Math.atan2(aim.y-u.y,aim.x-u.x),trail:[],elapsed:0,duration:PLANE(u)?Math.max(.1,DIST(u,target)/this.planeWeapon(u,w).speed):missile?Math.max(.45,w==='aam'?DIST(u,target)/WEAPONS.aam.speed:w==='antiAirVehicle'?DIST(u,target)/12:Math.min(1.2,DIST(u,target)/6)):artillery?.7:u.type==='antitank'?.3:.18,power:this.attackPower(u,w),distance:DIST(u,target),range:PLANE(u)?this.weaponRange(u,w):this.range(u,target),accuracyBase,accuracy,flareProtected,attackerAltitude:u.altitude,targetAltitude:target.altitude,deflected:flareProtected&&roll>=accuracy&&roll<evasiveAccuracy,decoy,hit:roll<accuracy,critical:this.rng()<.1});
   const shot=this.projectiles.at(-1);if(w==='antiRadiation'){if(!target.smokeTime)this.useSmoke(target);}this.shotsFired++;this.event('shot',u,{weapon:w==='gun'||w==='jetGun'?'machinegun':missile?'antitank':u.type});
  }
   impact(p){
@@ -726,7 +727,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   this.event('blast',center,{heavy:p.type==='artillery',...(p.weapon==='gun'?{weapon:'gun'}:{}),...blastVisibility});
   const targets=p.radiationLost?this.all().filter(t=>{const c=NEAREST(t,center);return !AIR(t)&&t.hp>0&&Math.round(c.x)===Math.round(p.tx)&&Math.round(c.y)===Math.round(p.ty);}):p.type==='artillery'?this.all().filter(u=>{const c=NEAREST(u,center);return !AIR(u)&&Math.abs(c.x-p.tx)<=1.5&&Math.abs(c.y-p.ty)<=1.5;}):target?[target]:[];
   for(const t of targets){
-   if(p.type==='lightTank'&&t.type==='heavyTank')continue;
+   if(p.type==='lightTank'&&t.type==='heavyTank'||TYPES[p.type]?.gun&&!this.helicopterWeaponFits({type:p.type},p.weapon,t))continue;
    let power=p.power;if(p.type==='artillery')power*=Math.max(.8,Math.min(1,1-.2*(DIST({x:p.sx,y:p.sy},t)-2)/Math.max(1,p.range-2)))*(t.id===p.targetId?1:.5);
    if(p.type==='recon')power*=TYPES[t.type].tank?.4:!TYPES[t.type].vehicle&&!TYPES[t.type].structure?1.5:1;
    if(p.type==='antitank')power*=TYPES[t.type].vehicle?2.25:TYPES[t.type].structure?1:.5;

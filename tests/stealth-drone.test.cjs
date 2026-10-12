@@ -19,9 +19,9 @@ check('Radar não detecta; visão de qualquer tropa inimiga descobre, inclusive 
  aa.x=11;aa.y=25;g.updateVision();assert.equal(d.spotted.red,true,'Antiaérea a 6 casas vê o drone');assert.equal(g.isVisible('red',d),true);assert.equal(g.radarContact('red',d),false,'Descoberto, mas não vira contato de radar');
  const h=field(),e=h.add('red','stealthDrone',20,10),heli=h.add('blue','helicopter',24,14);h.updateVision();assert.equal(h.isVisible('blue',e),false,'Fora da visão (8 casas)');heli.x=23;heli.y=12;h.updateVision();assert.equal(h.isVisible('blue',e),true,'Aeronave inimiga também descobre');assert.ok(h.logs.some(l=>/descoberto/.test(l.text)));
 });
-check('Revelação permanente: posição atual visível para toda a equipe até ser destruído',()=>{
+check('Reconhecimento atual: volta a ficar oculto ao sair da visão inimiga',()=>{
  const g=field(),d=g.add('blue','stealthDrone',10,10),seer=g.add('red','infantry',13,10);g.updateVision();assert.equal(d.spotted.red,true);
- g.hurt(seer,999,null);d.x=25;d.y=20;g.updateVision();assert.equal(g.isVisible('red',d),true,'Continua visível longe de qualquer tropa vermelha');
+ g.hurt(seer,999,null);d.x=25;d.y=20;g.updateVision();assert.equal(g.isVisible('red',d),false,'Oculto fora do reconhecimento');assert.equal(d.spotted.red,false);
  const foe=g.add('red','helicopterAir',27,20);g.updateVision();assert.equal(g.weapon(foe,d),'aam');assert.ok(g.canFire(foe,d),'A revelação permite atacar respeitando alcance e arma');
  const intel=[...g.intel.values()].find(e=>e.id===d.id);assert.equal(intel.x+','+intel.y,'25,20','A IA acompanha a posição atual');
  g.hurt(d,999,null);assert.equal(g.isVisible('red',d),false);

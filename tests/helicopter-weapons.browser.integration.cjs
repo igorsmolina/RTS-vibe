@@ -16,6 +16,7 @@ const assert=require('node:assert/strict'),path=require('node:path'),{pathToFile
     for(const [type,values]of [['helicopter',[12,1,1,1,2,4,4,1,1]],['helicopterGround',[12,30,30,30,10,20,20,7,30]],['helicopterAir',[12,30,30,30,10,20,20,7,30]]]){
      for(const [i,targetType]of ['infantry','recon','tank','heavyTank','post','helicopter','reconDrone','fighterRed','fighterBlue'].entries()){
       const g=fresh(),{u,t}=pair(g,type,targetType);if(PLANE(t)){t.flightState=i===8?'grounded':'patrol';t.flightJob=null;t.runway=null;}g.updateVision();const hp=t.hp;
+      if(PLANE(t)){check(type+' cannot fire gun at '+targetType,!g.canFire(u,t)&&g.shoot(u,t,'gun')===false&&g.projectiles.length===0);continue;}
       check(type+' can fire gun at '+targetType+' '+t.flightState,g.canFire(u,t));g.shoot(u,t,'gun');const p=g.projectiles.at(-1);if(!p){check(type+' projectile exists',false);continue;}g.impact(p);
       check(type+' damage '+targetType+' '+t.flightState,hp-t.hp===values[i],{want:values[i],got:hp-t.hp});
      }
