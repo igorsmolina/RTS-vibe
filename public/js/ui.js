@@ -394,7 +394,7 @@ function openTitle(){backTo=null;if(!$('titleScreen').open)openMenu('titleScreen
 function refreshTitle(){paintTitle();drawNationFlag('titleNationFlag',settings.nation);setText('titleNationName',settings.nation.name);$('titleResume').hidden=!started;const info=campaignSummary();const label=$('titleCampaign').querySelector('span');label.textContent=info?'Continuar campanha':'Campanha';$('titleCampaignInfo').textContent=info||'Mapa-múndi gerado por semente';$('titleProfileInfo').textContent=profileSummary();}
 // Prévia exclusiva do início, independente da semente e do estado da operação.
 const titleMapImage=new Image();titleMapImage.src=titleMapData;
-function paintTitle(){if($('titleBg').dataset.ready)return;if(!titleMapImage.complete||!titleMapImage.naturalWidth){titleMapImage.onload=paintTitle;return;}const canvas=$('titleBg');canvas.getContext('2d').drawImage(titleMapImage,0,0,canvas.width,canvas.height);canvas.dataset.ready='true';}
+function paintTitle(){if($('titleBg').dataset.ready)return;if(!titleMapImage.complete||!titleMapImage.naturalWidth){titleMapImage.onload=paintTitle;return;}const canvas=$('titleBg');canvas.getContext('2d',{willReadFrequently:true}).drawImage(titleMapImage,0,0,canvas.width,canvas.height);canvas.dataset.ready='true';}
 function setupDescription(){$('setupDescription').textContent=$('modeSelect').value==='rts'?'Tropas e IA agem ao mesmo tempo. Pressione P ou Pausar para congelar o combate, selecionar tropas e preparar ordens. Continue para executá-las.':'Você joga primeiro. Cada tropa tem movimento limitado e uma ação por turno. A IA só age quando você encerra o turno. Planeje sem limite de tempo.';}
 $('modeSelect').addEventListener('change',setupDescription);
 function setupOptions(){return{water:$('genWater').value/100,forest:$('genForest').value/100,relief:$('genRelief').value/100,farmland:$('genFarmland').value/100,posts:Number($('genPosts').value)};}
@@ -455,6 +455,14 @@ const battlefieldReady=typeof battlefieldData==='undefined'?Promise.resolve(fals
  ...Object.entries(battlefieldImages).map(([name,image])=>loadBattlefieldImage(image,battlefieldData[name])),
  ...battlefieldClouds.map((image,i)=>loadBattlefieldImage(image,battlefieldData.clouds[i]).then(ok=>{if(ok){const s=document.createElement('canvas');s.width=image.width;s.height=image.height;const c=s.getContext('2d');c.drawImage(image,0,0);c.globalCompositeOperation='source-in';c.fillStyle='#071c2c';c.fillRect(0,0,s.width,s.height);battlefieldCloudShadows[i]=s;}return ok;}))
 ]).then(result=>{clearTerrainCaches();renderer.paintGround();renderer.dirty=true;return result.every(Boolean);});
+// Reinício da GPU (driver, suspensão, captura de tela): o navegador devolve os canvas em branco e o jogo refaz os desenhos guardados.
+let canvasRestore=0;
+document.addEventListener('contextrestored',()=>{clearTimeout(canvasRestore);canvasRestore=setTimeout(restoreCanvases,100);},true);
+function restoreCanvases(){
+ clearTerrainCaches();planeShadows=new WeakMap();renderer.lighting.clear();
+ Object.assign(renderer,{glow:{small:glow(2.8),large:glow(4)},contactShadow:softLight('#07130e70'),airShadow:softLight('#071c2c54'),terrainView:null,terrainBack:null,visionMask:null});
+ renderer.rebuild();renderer.drawMini();$('titleBg').dataset.ready='';paintTitle();$('nationHeaderFlag').dataset.identity='';applyNation();
+}
 function loadBattlefieldImage(image,src){return new Promise(resolve=>{image.onload=()=>resolve(true);image.onerror=()=>resolve(false);image.src=src;});}
 // Ao abrir, o menu inicial aparece sobre o campo; ele depende de campaign.js, por isso espera a página carregar.
 updateUI();window.addEventListener('load',()=>openTitle());requestAnimationFrame(frame);

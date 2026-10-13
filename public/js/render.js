@@ -8,7 +8,9 @@ const troopAtlas=new Image(),troopFrames={
 };
 const planeImages=Object.fromEntries(Object.keys(PLANE_MODELS).map(type=>[type,new Image()]));
 function planeDrawSize(type,battle=true){return type.startsWith('bomber')?(battle?120:84):68;}
-const planeShadows=new WeakMap();
+// Desenhos guardados ficam na memória comum: no Firefox, depois de um reset da GPU, canvas acelerados guardados voltavam pretos ou com lixo de outras janelas.
+const CACHED={alpha:false,willReadFrequently:true};
+let planeShadows=new WeakMap();
 function planeShadow(image){if(!image?.complete||!image.naturalWidth)return null;let shadow=planeShadows.get(image);if(!shadow){shadow=document.createElement('canvas');shadow.width=shadow.height=256;const c=shadow.getContext('2d');c.drawImage(image,0,0,256,256);c.globalCompositeOperation='source-in';c.fillStyle='#10231e70';c.fillRect(0,0,256,256);const soft=document.createElement('canvas');soft.width=soft.height=256;const s=soft.getContext('2d');s.filter='blur(3px)';s.drawImage(shadow,0,0);shadow=soft;planeShadows.set(image,shadow);}return shadow;}
 const airportImages={airportDirt:new Image(),airportAsphalt:new Image()};
 const tankAtlas=new Image(),tankFrames={lightTank:0,tank:1,heavyTank:2},tankSizes={lightTank:48,tank:54,heavyTank:60};
@@ -348,7 +350,7 @@ class Renderer{
   // ponytail: 28 px/cell caps all 128x96 blocks at 37 MiB; add eviction if maps grow.
   while(job.index<total&&performance.now()<deadline){
    const chunk=job.indices[job.index],bx=chunk%columns,by=Math.floor(chunk/columns),x0=bx*16,y0=by*16,w=Math.min(16,COLS-x0),h=Math.min(16,ROWS-y0);
-   if(!job.cell){job.image=document.createElement('canvas');job.image.width=w*28;job.image.height=h*28;job.ctx=job.image.getContext('2d',{alpha:false});job.ctx.setTransform(.5,0,0,.5,-x0*28,-y0*28);}
+   if(!job.cell){job.image=document.createElement('canvas');job.image.width=w*28;job.image.height=h*28;job.ctx=job.image.getContext('2d',CACHED);job.ctx.setTransform(.5,0,0,.5,-x0*28,-y0*28);}
    drawTerrainCell(job.ctx,job.game,x0+job.cell%w,y0+Math.floor(job.cell/w),true);job.cell++;
    if(job.cell===w*h){this.groundChunks.set(chunk,job.image);job.index++;job.cell=0;this.terrainViewKey=null;this.dirty=true;}
   }
@@ -356,7 +358,7 @@ class Renderer{
   else{this.groundJob=null;job.resolve(true);}
  }
  groundOverviewImage(){
-  if(!this.groundOverview){const image=this.groundOverview=document.createElement('canvas');image.width=COLS;image.height=ROWS;const c=image.getContext('2d',{alpha:false});for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){c.fillStyle=terrainMinimapColor(game.terrain[KEY(x,y)],game.map);c.fillRect(x,y,1,1);}}
+  if(!this.groundOverview){const image=this.groundOverview=document.createElement('canvas');image.width=COLS;image.height=ROWS;const c=image.getContext('2d',CACHED);for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){c.fillStyle=terrainMinimapColor(game.terrain[KEY(x,y)],game.map);c.fillRect(x,y,1,1);}}
   return this.groundOverview;
  }
  rebuild(){this.paintGround();this.particles=[];this.texts=[];this.shake=0;this.ambientParticles=[];this.ambientTick=-1;this.graphics=null;this.environmentClip=null;this.fx.reset();}
@@ -618,7 +620,7 @@ class Renderer{
  emitterSymbol(c,x,y,scale=1,selected=false){c.save();c.translate(x,y);c.scale(scale,scale);c.lineWidth=2;c.strokeStyle=selected?'#fff2b1':'#f6c27c';c.fillStyle='#17232fec';c.beginPath();c.moveTo(0,-9);c.lineTo(9,0);c.lineTo(0,9);c.lineTo(-9,0);c.closePath();c.fill();c.stroke();c.beginPath();c.moveTo(0,5);c.lineTo(0,-1);c.stroke();for(const r of [3,6]){c.beginPath();c.arc(0,-1,r,Math.PI*1.15,Math.PI*1.85);c.stroke();}if(selected){c.beginPath();c.arc(0,0,13,0,Math.PI*2);c.stroke();}c.restore();}
  drawMini(){
   const c=this.mini,{s,ox,oy}=miniTransform(c.canvas);
-  if(!this.miniTerrain||this.miniTerrain.width!==c.canvas.width||this.miniTerrain.height!==c.canvas.height){const image=this.miniTerrain=document.createElement('canvas');image.width=c.canvas.width;image.height=c.canvas.height;const q=image.getContext('2d',{alpha:false});q.fillStyle='#20333d';q.fillRect(0,0,image.width,image.height);q.translate(ox,oy);for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){q.fillStyle=terrainMinimapColor(game.terrain[KEY(x,y)],game.map);q.fillRect(x*s,y*s,s,s);}}
+  if(!this.miniTerrain||this.miniTerrain.width!==c.canvas.width||this.miniTerrain.height!==c.canvas.height){const image=this.miniTerrain=document.createElement('canvas');image.width=c.canvas.width;image.height=c.canvas.height;const q=image.getContext('2d',CACHED);q.fillStyle='#20333d';q.fillRect(0,0,image.width,image.height);q.translate(ox,oy);for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){q.fillStyle=terrainMinimapColor(game.terrain[KEY(x,y)],game.map);q.fillRect(x*s,y*s,s,s);}}
   c.drawImage(this.miniTerrain,0,0);c.save();c.translate(ox,oy);
   for(const u of game.memory[localPlayerSide()].values())if(!game.isVisible(localPlayerSide(),u)){c.fillStyle=TEAM[u.owner];const n=u.type==='hq'?9:5;if(u.width)c.fillRect(u.x*s,u.y*s,u.width*s,u.height*s);else c.fillRect((u.x+.5)*s-n/2,(u.y+.5)*s-n/2,n,n);}
   c.save();c.imageSmoothingEnabled=false;c.drawImage(this.visionMasks().mini,0,0,COLS*s,ROWS*s);c.restore();
