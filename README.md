@@ -6,6 +6,18 @@ Jogo de estratégia militar com modo solo contra a IA e multiplayer privado por 
 
 ## Menu inicial e configurações
 
+### História: Operação Véu de Cinzas
+
+Em **Campanha**, a opção **História: Véu de Cinzas** acompanha o mapa-múndi com cinco capítulos, quatro personagens ilustrados, documentos e decisões. Se já houver uma campanha salva, escolha o tipo da próxima campanha e use **Nova campanha**; confirme novamente quando solicitado. Campanhas antigas permanecem em **Conquista livre**.
+
+Conquiste 1, 3, 5 e 7 regiões diferentes para liberar os quatro primeiros capítulos, concluindo o anterior antes do próximo. A região inicial e as reconquistas não contam. O marcador numerado indica a missão disponível; selecione a região e use **Iniciar missão**. O QG inimigo fica reservado para o quinto capítulo. As missões incluem cópia de documentos, extração de Ivo, captura de instalações e defesa de uma transmissão. As condições aparecem no preparo, nos marcadores do campo e no painel de objetivos.
+
+O modo pode ser **RTS** ou **Por turnos**. A conversa pausa a simulação. **Pular conversa** preserva a tela de decisão; **Suspender** ou Esc guarda a fala para retomar no mapa. **História e documentos** abre as provas, os diálogos já concluídos e as decisões. Os bônus e custos são apresentados antes de confirmar; repetir uma tentativa não acumula recompensas.
+
+**Salvar batalha**, no menu **Mais**, exporta a operação junto da campanha, inclusive Ivo embarcado, temporizadores e ondas. **Carregar batalha** restaura a ligação com o mapa-múndi. O checkpoint automático permite retomar a operação do início; para guardar uma posição intermediária, exporte a batalha. O progresso narrativo usa o backup e a sincronização de campanha existentes. Tudo funciona offline por `public/index.html`; nenhum serviço de IA é chamado durante o jogo.
+
+Os 12 retratos originais e seus prompts ficam em `assets/Personagens/`; as versões WebP transparentes 512 × 768 ficam em `public/assets/characters/`. `npm.cmd run prepare:characters` verifica a transparência e prepara as versões do jogo. `npm.cmd run test:story` verifica progressão, missões, escolhas, salvamento, layouts e um percurso dos cinco capítulos com combate controlado. Créditos, duração e composição das forças são valores iniciais, ainda sem validação em partidas completas.
+
 [Sprites de mísseis](assets/Misseis/README.md) e [regras de drones/cruzeiros](docs/misseis-drones-bombardeiros.md): seis PNGs transparentes, visão dos drones através do terreno e bombardeiros com bombas e cruzeiros.
 
 Ao abrir o jogo, o **menu inicial** em tela cheia reúne: **Continuar partida** (quando há uma partida em andamento), **Jogar** (batalha rápida), **Campanha** (mapa-múndi; mostra o progresso salvo), **Configurações**, **Perfil e conquistas** e **Como jogar**. O botão **Menu** no topo leva de volta a ele e pausa a partida; **Esc** volta ao jogo. Setas navegam os botões e Enter escolhe.
@@ -138,7 +150,15 @@ A barra de comando aparece na base do campo e mostra apenas as capacidades da se
 
 Por turnos, cada tropa recebe seus pontos de movimento e **uma ação** no início do próprio turno. Uma ação pode atacar, reparar, capturar, construir ou desarmar uma mina, conforme a especialidade. Pode dividir o movimento em várias ordens e usar pontos restantes após atacar, exceto com artilharia.
 
-No RTS não há orçamento de movimento nem ação por turno. A velocidade depende da classe e do terreno; tropas paradas disparam automaticamente contra inimigos visíveis ao alcance, respeitando o intervalo da arma. Ordenar ataque permite perseguir o alvo. A artilharia pode mover e depois disparar parada; o metralhador dispara a cada 0,4 segundo.
+No RTS não há orçamento de movimento nem ação por turno. A velocidade depende da classe e do terreno; tropas paradas disparam automaticamente contra inimigos visíveis ao alcance, respeitando o intervalo da arma. Ordenar ataque permite perseguir o alvo. A artilharia pode mover e depois disparar parada; o metralhador dispara a cada 0,3 segundo.
+
+Balanceamento de 12/10/2026: tanque leve com alcance 4, metralhador com recarga RTS de 0,3 s e posto com renda de 6 créditos por turno/10 s. O QG continua rendendo 15. Os três disparos do metralhador por ação em turnos permanecem iguais. Os números ainda precisam de validação competitiva em partidas completas.
+
+A IA conta passageiros vivos na força da onda e no limite do exército, usando a posição do transporte para medir progresso. Em turnos, embarca mais tropas adjacentes antes de partir, com uma ação por embarque. Entrega tem prioridade sobre salvas do helicóptero vermelho; vazio, ele pode bombardear e buscar manutenção. Perdas de transportes marcam uma área de risco por 90 segundos RTS ou seis rodadas, preservada no save e descartada ao iniciar outra partida. Compras de transporte podem entrar antes da poupança de avião, preservando emergências de defesa. A IA mantém comandante e tropas comprometidas com captura fora do embarque automático.
+
+Transportes procuram reforços também longe da frente, reservam passageiros sem disputar a mesma tropa e podem ser comprados para duas tropas livres. Evitam avançar por rotas cobertas por armas inimigas visíveis; se não houver espaço para desembarcar, procuram outra posição próxima. Passageiros e paraquedistas conservam uma missão de captura/avanço por até 120 segundos ou 12 rodadas após a última atribuição, inclusive no save. O reforço aéreo combina infantaria e reconhecimento com antitanques, lançadores ou metralhadores conforme a ameaça observada.
+
+Comandante e antiaéreas acompanham a linha terrestre durante a ofensiva. Antitanques sem mísseis procuram manutenção e repõem a carga antes de voltar; a artilharia mantém distância e rejeita alvos cuja explosão atingiria aliados. Verificação específica: `node tests/ai-logistics.test.cjs`; regressões da IA: `npm run test:ai`. São comportamentos verificados em cenários automatizados; a dificuldade percebida ainda exige partidas humanas.
 
 | Tropa | Movimento por turno | Créditos | Treinamento por turnos / RTS | Função |
 |---|---:|---:|---:|---|
@@ -147,9 +167,9 @@ No RTS não há orçamento de movimento nem ação por turno. A velocidade depen
 | Engenheiro | 3 | 65 | 2 turnos / 20 s | Reparo de até 24 HP por ação ou por segundo no RTS; remoção de minas |
 | Antitanque | 3 | 110 | 2 turnos / 20 s | Foguete: dano base 90 contra veículos, 20 contra tropas a pé |
 | Metralhador | 2 | 90 | 2 turnos / 20 s | Rajada por ação; fogo contínuo no RTS, eficaz contra tropas a pé |
-| Tanque leve | 5 | 100 | 2 turnos / 20 s | Mobilidade, visão 5 e menor custo |
-| Tanque médio | 4 | 150 | 3 turnos / 30 s | Equilíbrio; conserva os atributos do tanque original |
-| Tanque pesado | 3 | 240 | 4 turnos / 40 s | Mais vida e dano por tiro; menor velocidade e cadência |
+| Tanque leve | 6 | 100 | 2 turnos / 20 s | Mobilidade, alcance 4, visão 5 e menor custo |
+| Tanque médio | 5 | 150 | 3 turnos / 30 s | Equilíbrio; conserva os atributos do tanque original |
+| Tanque pesado | 4 | 240 | 4 turnos / 40 s | Mais vida e dano por tiro; menor velocidade e cadência |
 | Artilharia | 3 | 180 | 4 turnos / 40 s | Move **ou** dispara por turno; explosão 3×3 com fogo amigo |
 | Helicóptero | 8 | 140 | 3 turnos / 30 s | Metralhadora; apoio e reconhecimento aéreo |
 | Helicóptero ar-terra | 8 | 230 | 4 turnos / 40 s | Metralhadora e mísseis contra alvos terrestres |

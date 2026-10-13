@@ -91,6 +91,8 @@ const Multiplayer={
   view.setWeapon=(u,weapon)=>!!u&&this.command('setWeapon',{id:u.id,weapon});view.setRadar=(u,on)=>!!u&&this.command('setRadar',{id:u.id,on});
   view.buildAirport=(ids,cell)=>this.command('buildAirport',{ids,cell});view.assignAirportWorkers=(site,ids)=>!!site&&this.command('assignAirportWorkers',{siteId:site.id,ids});
   view.servicePlane=u=>!!u&&this.command('servicePlane',{id:u.id});
+  view.requestAirdrop=(owner,baseId,cargo,destination)=>this.command('requestAirdrop',{baseId,cargo,destination});
+  view.boardPurchase=(owner,baseId,type)=>this.command('boardPurchase',{baseId,type});
   view.update=()=>{};view.log=()=>{};return view;
  },
  applyState(message){

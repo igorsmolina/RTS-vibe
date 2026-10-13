@@ -1,0 +1,109 @@
+{
+  "date": "2026-10-12",
+  "status": "implemented-locally",
+  "baselineHash": "8f9aecc4d0bc12231707609d331c124db5484da531a483529f2e4b6c6b3f4e57",
+  "sourceHash": "af92efe3b55f9c0abfaef259f9de2a1e1dbef566db50d380969d163e27151d7d",
+  "changes": [
+    {
+      "unit": "machinegun",
+      "field": "cooldown",
+      "before": 0.4,
+      "after": 0.3,
+      "mode": "rts"
+    },
+    {
+      "unit": "lightTank",
+      "field": "range",
+      "before": 3,
+      "after": 4
+    },
+    {
+      "unit": "post",
+      "field": "income",
+      "before": 7,
+      "after": 6
+    }
+  ],
+  "aiChanges": [
+    "Alive passengers count toward attack waves and army limits.",
+    "Transport loss memory expires and is checked on planned and active routes.",
+    "Accessible transport purchases precede aircraft savings.",
+    "Pickup reservations preserve meetings and release on failures; urgent defense stays active.",
+    "Turn-based loading respects actions; commanders, capture and airport workers are excluded.",
+    "Partial unloading keeps the remaining delivery destination.",
+    "Unloaded red helicopters can bombard in range and seek maintenance; cargo and pickup take priority."
+  ],
+  "validation": {
+    "balanceTests": {
+      "passed": 35,
+      "failed": 0,
+      "evidence": "green.json"
+    },
+    "generalSuites": {
+      "passed": 25,
+      "failed": 8,
+      "unchangedFailureNames": true,
+      "failures": [
+        {
+          "file": "tests/balance-revision.test.cjs",
+          "detail": "FAIL normal AI recruits the fourth aircraft without raising other limits\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- 'multiroleRed'\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\balance-revision.test.cjs:27:255\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\balance-revision.test.cjs:29:46)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\n"
+        },
+        {
+          "file": "tests/engine.test.cjs",
+          "detail": "node:internal/assert/utils:146\r\n  throw error;\r\n  ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n\r\n1.5 !== 0.5\r\n\r\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\engine.test.cjs:16:230\r\n    at check (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\engine.test.cjs:12:38)\r\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\engine.test.cjs:16:1)\r\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\r\n    at require (node:internal/modules/helpers:196:16) {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 1.5,\r\n  expected: 0.5,\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v26.5.0\r\n"
+        },
+        {
+          "file": "tests/air-defense.test.cjs",
+          "detail": "node:internal/assert/utils:146\r\n  throw error;\r\n  ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n\r\n70 !== 40\r\n\r\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\air-defense.test.cjs:9:327\r\n    at check (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\air-defense.test.cjs:8:38)\r\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\air-defense.test.cjs:9:1)\r\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\r\n    at require (node:internal/modules/helpers:196:16) {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 70,\r\n  expected: 40,\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v26.5.0\r\n"
+        },
+        {
+          "file": "tests/radar.test.cjs",
+          "detail": "node:internal/assert/utils:146\r\n  throw error;\r\n  ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n\r\n40 !== 20\r\n\r\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\radar.test.cjs:14:501\r\n    at check (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\radar.test.cjs:6:38)\r\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\radar.test.cjs:14:2)\r\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\r\n    at require (node:internal/modules/helpers:196:16) {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 40,\r\n  expected: 20,\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v26.5.0\r\n"
+        },
+        {
+          "file": "tests/aviation.test.cjs",
+          "detail": "node:internal/assert/utils:146\r\n  throw error;\r\n  ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n\r\n9 !== 8\r\n\r\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\aviation.test.cjs:12:59\r\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\aviation.test.cjs:42:101)\r\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\r\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\r\n    at node:internal/main/run_main_module:33:47 {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 9,\r\n  expected: 8,\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v26.5.0\r\n"
+        },
+        {
+          "file": "tests/operations.test.cjs",
+          "detail": "node:internal/assert/utils:146\r\n  throw error;\r\n  ^\r\n\r\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\r\n\r\n  assert.ok(g.order(u,'capture',{targetId:p.id}))\r\n\r\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\operations.test.cjs:11:233\r\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\operations.test.cjs:35:101)\r\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\r\n    at require (node:internal/modules/helpers:196:16)\r\n    at [eval]:1:215 {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: false,\r\n  expected: true,\r\n  operator: '==',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v26.5.0\r\n"
+        },
+        {
+          "file": "tests/artillery-upgrade.test.cjs",
+          "detail": "FAIL artillery statistics, recognition, range and damage preserve area and cover\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n100 !== 120\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:7:274\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:26:48)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\nFAIL interception launches visible missile, resolves later and honors success/failure\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:10:605\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:26:48)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\nFAIL interception radius, lost targets, single roll and shared reaction budget\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n70 !== 40\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:11:473\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:26:48)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\nFAIL swept meeting precedes impact and multiple interceptors cannot duplicate damage\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(target.intercepted)\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:12:305\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:26:48)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\nFAIL interceptor speed is 12, sweep handles a full flight in one frame and never hurts units\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(target.intercepted)\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:15:397\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:26:48)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\nFAIL turn defense still intercepts after the attacking flight animation has finished\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(target.intercepted)\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:19:292\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:26:48)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\nFAIL public interceptor effects do not reveal a hidden radar-off launcher\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n0 !== 40\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:23:362\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\artillery-upgrade.test.cjs:26:48)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\n    at require (node:internal/modules/helpers:196:16)\n    at [eval]:1:215\n"
+        },
+        {
+          "file": "tests/airport-runway.test.cjs",
+          "detail": "node:internal/assert/utils:146\r\n  throw error;\r\n  ^\r\n\r\nAssertionError [ERR_ASSERTION]: river/1\r\n\r\n'plain' !== 'road'\r\n\r\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\airport-runway.test.cjs:20:323\r\n    at Object.<anonymous> (C:\\Users\\User\\Downloads\\RTS vibe\\tests\\airport-runway.test.cjs:23:103)\r\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1679:12)\r\n    at require (node:internal/modules/helpers:196:16)\r\n    at [eval]:1:215 {\r\n  generatedMessage: false,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 'plain',\r\n  expected: 'road',\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v26.5.0\r\n"
+        }
+      ],
+      "evidence": "suites-final.json"
+    },
+    "aiSuites": {
+      "strategyPassed": 35,
+      "airEconomyPassed": 16,
+      "evidence": "npm-test-final.log"
+    },
+    "integrations": {
+      "passed": 8,
+      "failed": 0,
+      "evidence": "browser-final.json"
+    },
+    "naturalObservation": {
+      "matches": 8,
+      "scope": "Normal, semente 44, jogador azul sem ordens; 300 segundos RTS ou 48 ciclos em turnos.",
+      "embarks": 17,
+      "delivered": 14,
+      "airdropPurchases": 12,
+      "evidence": "natural-depois.json"
+    },
+    "review": "Independent reviewer completed; no remaining blockers."
+  },
+  "limits": [
+    "General npm test remains failing on eight preexisting suites listed above.",
+    "Natural 300-second RTS sample did not observe truck boarding; controlled logistics tests pass in both modes.",
+    "Temporary heuristic adaptation, not persistent machine learning.",
+    "Competitive balance requires complete matches against active players.",
+    "No commits, push or publication performed."
+  ]
+}

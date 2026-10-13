@@ -1,0 +1,292 @@
+{
+  "source": "public/js/engine.js",
+  "sourceHash": "0544384f38a9b6e66e192b48f6f28df308ee79139a814ca2799080c22dff43c5",
+  "results": [
+    {
+      "name": "rts: captura sem acesso deve ser rejeitada",
+      "ok": true,
+      "details": {
+        "accepted": false
+      }
+    },
+    {
+      "name": "rts: ofensiva parada troca objetivo",
+      "ok": true,
+      "details": {
+        "phase": "attack",
+        "strategy": "scout",
+        "objective": {
+          "x": 64,
+          "y": 48
+        },
+        "failures": [
+          {
+            "x": 20,
+            "y": 40,
+            "id": 47,
+            "reason": "no-progress",
+            "until": 120
+          },
+          {
+            "x": 85,
+            "y": 40,
+            "id": 48,
+            "reason": "no-progress",
+            "until": 160
+          }
+        ]
+      }
+    },
+    {
+      "name": "rts: avião com carga parcial útil decola sem serviço eterno",
+      "ok": true,
+      "details": {
+        "state": "waitRunway",
+        "credits": 0
+      }
+    },
+    {
+      "name": "rts: caça sem munição ar-ar retorna mesmo com metralhadora",
+      "ok": true,
+      "details": {
+        "job": "return"
+      }
+    },
+    {
+      "name": "turns: captura sem acesso deve ser rejeitada",
+      "ok": true,
+      "details": {
+        "accepted": false
+      }
+    },
+    {
+      "name": "turns: ofensiva parada troca objetivo",
+      "ok": true,
+      "details": {
+        "phase": "attack",
+        "strategy": "scout",
+        "objective": {
+          "x": 64,
+          "y": 48
+        },
+        "failures": [
+          {
+            "x": 20,
+            "y": 40,
+            "id": 47,
+            "reason": "no-progress",
+            "until": 10
+          },
+          {
+            "x": 85,
+            "y": 40,
+            "id": 48,
+            "reason": "no-progress",
+            "until": 14
+          }
+        ]
+      }
+    },
+    {
+      "name": "turns: avião com carga parcial útil decola sem serviço eterno",
+      "ok": true,
+      "details": {
+        "state": "waitRunway",
+        "credits": 0
+      }
+    },
+    {
+      "name": "turns: caça sem munição ar-ar retorna mesmo com metralhadora",
+      "ok": true,
+      "details": {
+        "job": "return"
+      }
+    },
+    {
+      "name": "objetivo oculto não muda por destruição não observada",
+      "ok": true
+    },
+    {
+      "name": "contato móvel esquecido por idade e não por morte oculta",
+      "ok": true
+    },
+    {
+      "name": "poupança de aviação não gasta o orçamento em tropas a cada ciclo",
+      "ok": true
+    },
+    {
+      "name": "ameaça terrestre escolhe multifunção em vez de caça",
+      "ok": true,
+      "details": {
+        "type": "multiroleRed"
+      }
+    },
+    {
+      "name": "RTS: ordem pendente em travessia bloqueada volta a decidir",
+      "ok": true,
+      "details": {
+        "x": 61,
+        "y": 40,
+        "pending": false,
+        "blocked": {
+          "x": 55,
+          "y": 40,
+          "until": 35.99999999999996
+        }
+      }
+    },
+    {
+      "name": "rts: alternativa acessível a outra ponte",
+      "ok": true,
+      "details": {
+        "captured": "red",
+        "x": 56,
+        "y": 42
+      }
+    },
+    {
+      "name": "turns: alternativa acessível a outra ponte",
+      "ok": true,
+      "details": {
+        "captured": "red",
+        "x": 56,
+        "y": 42
+      }
+    },
+    {
+      "name": "avioes produzidos decolam, disparam e gastam munição real",
+      "ok": true,
+      "details": {
+        "paid": 4264,
+        "initial": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 3,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "state": "approach",
+        "shots": 3
+      }
+    },
+    {
+      "name": "ameaça aérea prioriza interceptador, ocultos não alteram compra",
+      "ok": true
+    },
+    {
+      "name": "estrutura oculta não muda rota nem informa destruição oculta",
+      "ok": true
+    },
+    {
+      "name": "objetivo menos defendido supera alvo próximo protegido",
+      "ok": true,
+      "details": {
+        "chosen": 49,
+        "avoided": 48
+      }
+    },
+    {
+      "name": "perda da onda provoca reagrupamento e memória curta",
+      "ok": true
+    },
+    {
+      "name": "limites e pátio cheio deixam orçamento disponível para solo",
+      "ok": true
+    },
+    {
+      "name": "serviço pago repõe munição uma vez e aguarda duração da pista",
+      "ok": true,
+      "details": {
+        "paid": 875
+      }
+    },
+    {
+      "name": "turnos: missão de aeroporto persiste entre capturas de postos",
+      "ok": true,
+      "details": {
+        "owner": "red",
+        "round": 7
+      }
+    },
+    {
+      "name": "turnos: posto próximo não sobrescreve deslocamento comprometido com pista",
+      "ok": true
+    },
+    {
+      "name": "obra bloqueada libera engenheiros sem devolver construção ou inventar pista",
+      "ok": true,
+      "details": {
+        "work": 0,
+        "credits": 215,
+        "blocked": [
+          {
+            "x": 50,
+            "y": 40,
+            "until": 35.99999999999996
+          },
+          {
+            "x": 50,
+            "y": 40,
+            "until": 35.99999999999996
+          }
+        ]
+      }
+    },
+    {
+      "name": "preparação tem prazo mesmo sem seis combatentes reunidos",
+      "ok": true
+    },
+    {
+      "name": "reforço aéreo varia entre interceptador furtivo e bombardeiro",
+      "ok": true,
+      "details": {
+        "interception": "stealthFighterRed",
+        "bombardment": "bomberRed"
+      }
+    },
+    {
+      "name": "ofensiva que causa dano observado não é abandonada por falta de deslocamento",
+      "ok": true
+    },
+    {
+      "name": "rts: defesa responde à ameaça vista perto do QG",
+      "ok": true
+    },
+    {
+      "name": "turns: defesa responde à ameaça vista perto do QG",
+      "ok": true
+    },
+    {
+      "name": "alvo inicialmente oculto passa a contar dano após reconhecimento",
+      "ok": true
+    },
+    {
+      "name": "sem travessia acessível escolhe flanco alcançável em sua margem",
+      "ok": true,
+      "details": {
+        "strategy": "flank",
+        "goal": {
+          "x": 71,
+          "y": 23
+        }
+      }
+    },
+    {
+      "name": "rts: avião ferido ou sem contramedidas retorna à pista",
+      "ok": true
+    },
+    {
+      "name": "turns: avião ferido ou sem contramedidas retorna à pista",
+      "ok": true
+    },
+    {
+      "name": "aviação distingue alvo oculto de emissão identificável por antirradiação",
+      "ok": true
+    }
+  ]
+}

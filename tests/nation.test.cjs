@@ -37,7 +37,7 @@ check('IA usa posto com menor espera, respeita saída livre, filas totais e limi
 });
 check('Doutrinas isoladas: renda, vida inicial/reforços, dano e estruturas; atributos globais preservados',()=>{
  const original=JSON.stringify(TYPES),g=field('turns',{blue:'economic',red:'defensive'});g.difficulty='hard';g.add('blue','post',10,10);g.add('red','post',20,20);
- assert.equal(g.income('blue'),Math.round(22*1.15));assert.equal(g.income('red'),Math.round(22*1.2*.9));assert.equal(g.attackPower(g.units[0]),35*.9);assert.equal(g.units[1].maxHp,115);assert.equal(g.hq('red').maxHp,300);
+ assert.equal(g.income('blue'),Math.round(21*1.15));assert.equal(g.income('red'),Math.round(21*1.2*.9));assert.equal(g.attackPower(g.units[0]),35*.9);assert.equal(g.units[1].maxHp,115);assert.equal(g.hq('red').maxHp,300);
  const h=field('turns',{blue:'offensive'});assert.equal(h.units[0].maxHp,90);assert.equal(h.attackPower(h.units[0]),35*1.1);const p=h.add('blue','post',10,10);h.enqueue('blue','infantry',p);h.production('blue');assert.ok(h.units.some(u=>u.x===10&&u.y===9&&u.maxHp===90));
  const a=h.add('blue','rocketArtillery',5,5);assert.equal(h.attackPower(a),20*1.1);const heli=h.add('blue','helicopterGround',6,5);assert.equal(h.attackPower(heli,'agm'),65*1.1);
  const defaults=new Game();assert.equal(defaults.units.find(u=>u.type==='infantry').maxHp,100);assert.equal(JSON.stringify(TYPES),original);

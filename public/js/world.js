@@ -44,12 +44,13 @@ function generateWorld(seed){
  const red=regions.slice().sort((p,q)=>hops[q.id]-hops[p.id]||q.x-p.x)[0].id;
  return{seed,w,h,regions,cells,lanes,homes:{blue,red},land,regionAt,elevation:(x,y)=>(elevation(x,y)-sea)/Math.max(1e-9,1-sea)};
 }
-function newCampaign(seed,difficulty='normal',mode='turns'){
+function newCampaign(seed,difficulty='normal',mode='turns',kind='free'){
  const world=generateWorld(seed);
- return{version:1,seed:world.seed,difficulty:HARDER[difficulty]?difficulty:'normal',mode:mode==='rts'?'rts':'turns',battles:0,current:null,events:[],world,owners:world.regions.map(r=>r.id===world.homes.blue?'blue':r.id===world.homes.red?'red':'neutral')};
+ if(kind==='story'&&typeof Story!=='undefined')Story.prepareWorld(world);
+ return{version:1,kind:kind==='story'?'story':'free',...(kind==='story'?{story:Story.create(seed)}:{}),seed:world.seed,difficulty:HARDER[difficulty]?difficulty:'normal',mode:mode==='rts'?'rts':'turns',battles:0,current:null,events:[],world,owners:world.regions.map(r=>r.id===world.homes.blue?'blue':r.id===world.homes.red?'red':'neutral')};
 }
 function campaignOver(c){return c.owners[c.world.homes.red]==='blue'?'blue':c.owners[c.world.homes.blue]==='red'?'red':null;}
-function canAttack(c,id){const r=c.world.regions[id];return !!r&&!campaignOver(c)&&c.owners[id]!=='blue'&&r.neighbors.some(n=>c.owners[n]==='blue');}
+function canAttack(c,id){const r=c.world.regions[id];return !!r&&!campaignOver(c)&&c.owners[id]!=='blue'&&(!c.story||id!==c.world.homes.red||c.story.completed.includes(4))&&r.neighbors.some(n=>c.owners[n]==='blue');}
 // Batalha da região: mapa e opções pelo bioma, semente derivada (muda a cada tentativa); território vermelho é um nível mais difícil.
 function battleFor(c,id){
  const r=c.world.regions[id],b=BIOMES[r.biome];
@@ -58,17 +59,18 @@ function battleFor(c,id){
 // Resultado: vitória conquista a região; derrota abre um contra-ataque vermelho. Depois de cada batalha o vermelho ocupa uma região neutra vizinha.
 function applyResult(c,id,won){
  const name=i=>c.world.regions[i].name,events=[];c.battles++;c.current=null;
- if(won){c.owners[id]='blue';events.push(`${name(id)} conquistada.`);}
+ if(won){c.owners[id]='blue';if(c.story&&id!==c.world.homes.blue&&!c.story.seen.includes(id))c.story.seen.push(id);events.push(`${name(id)} conquistada.`);}
  else{const targets=c.world.regions.filter(r=>c.owners[r.id]==='blue'&&r.neighbors.some(n=>c.owners[n]==='red')),pick=targets.find(r=>r.id!==c.world.homes.blue)||targets[0];
   events.push(`Ataque a ${name(id)} repelido.`);if(pick){c.owners[pick.id]='red';events.push(`Contra-ataque inimigo tomou ${name(pick.id)}.`);}}
  if(!campaignOver(c)){const neutral=c.world.regions.filter(r=>c.owners[r.id]==='neutral'&&r.neighbors.some(n=>c.owners[n]==='red'));if(neutral.length){const r=neutral[(c.seed+c.battles*7)%neutral.length];c.owners[r.id]='red';events.push(`O inimigo ocupou ${name(r.id)}.`);}}
  const over=campaignOver(c);if(over)events.push(over==='blue'?'Campanha vencida: o QG inimigo caiu.':'Campanha perdida: seu QG caiu.');
  c.events=events;return events;
 }
-function serializeCampaign(c){return JSON.stringify({version:1,seed:c.seed,difficulty:c.difficulty,mode:c.mode,battles:c.battles,current:c.current,events:c.events,owners:c.owners});}
+function serializeCampaign(c){return JSON.stringify({version:1,kind:c.kind||'free',...(c.story?{story:c.story}:{}),seed:c.seed,difficulty:c.difficulty,mode:c.mode,battles:c.battles,current:c.current,events:c.events,owners:c.owners});}
 function deserializeCampaign(text){
- try{const d=JSON.parse(text);if(d?.version!==1||!Number.isInteger(d.seed))return null;const c=newCampaign(d.seed,d.difficulty,d.mode);
+ try{const d=JSON.parse(text);if(d?.version!==1||!Number.isInteger(d.seed)||d.kind!==undefined&&!['free','story'].includes(d.kind))return null;const c=newCampaign(d.seed,d.difficulty,d.mode,d.kind||'free');
   if(!Array.isArray(d.owners)||d.owners.length!==c.owners.length||!d.owners.every(o=>['blue','red','neutral'].includes(o)))return null;
+  if(d.kind==='story'){if(typeof Story==='undefined'||!Story.validate(d.story,c))return null;c.story=d.story;}
   return Object.assign(c,{battles:Number(d.battles)||0,current:Number.isInteger(d.current)&&d.current>=0&&d.current<c.owners.length?d.current:null,events:Array.isArray(d.events)?d.events.map(String):[],owners:d.owners});
  }catch{return null;}
 }

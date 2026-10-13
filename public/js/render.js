@@ -14,6 +14,8 @@ const airportImages={airportDirt:new Image(),airportAsphalt:new Image()};
 const tankAtlas=new Image(),tankFrames={lightTank:0,tank:1,heavyTank:2},tankSizes={lightTank:48,tank:54,heavyTank:60};
 // Helicópteros: atlas 3 × 2 (padrão, ar-terra, ar-ar; aliados, inimigos), quadros de 128 px apontados para o norte, rotor estático.
 const heliAtlas=new Image(),heliFrames={helicopter:0,helicopterGround:1,helicopterAir:2};
+const transportImages=Object.fromEntries(['transportTruck','transportHelicopter','transportPlane'].map(type=>[type,[new Image(),new Image()]]));
+const transportSizes={transportTruck:56,transportHelicopter:76,transportPlane:96};
 const antiAirAtlas=new Image(),highCloud=new Image(),antiAirFrames={antiAirVehicle:0,missileInfantry:1};
 // Artilharia de mísseis e drone: um PNG 128 × 128 por equipe [aliado, inimigo], frente para cima.
 const newTroopImages={rocketArtillery:[new Image(),new Image()],reconDrone:[new Image(),new Image()],stealthDrone:[new Image(),new Image()]},newTroopSizes={rocketArtillery:56,reconDrone:66,stealthDrone:60};
@@ -46,6 +48,7 @@ function unitIcon(ctx,type,x,y,color,scale=1,facing=0,stride=0,firing=false,laun
   if(type==='post'){box(-20,8,12,9,dark);box(8,8,12,9,dark);}ctx.restore();return;
  }
  ctx.rotate(facing);
+ if(type in transportImages){const size=type==='transportPlane'&&!battle?64:transportSizes[type],im=transportImages[type][color===TEAM.red?1:0];if(im.complete&&im.naturalWidth)ctx.drawImage(im,-size/2,-size/2,size,size);else if(type==='transportTruck'){for(const xx of [-17,12])for(const yy of [-18,-3,12])box(xx,yy,5,9,dark);box(-12,-23,24,45,color,dark);box(-10,-17,20,7,steel);box(-10,-3,20,23,'#53614c',dark);}else if(type==='transportHelicopter'){oval(0,0,12,28,color,dark);line([[-32,-14],[32,-14]],steel,3);line([[-32,14],[32,14]],steel,3);}else{polygon(ctx,[[0,-40],[8,-15],[44,-4],[44,5],[8,3],[5,28],[20,32],[20,37],[-20,37],[-20,32],[-5,28],[-8,3],[-44,5],[-44,-4],[-8,-15]],color,dark);}ctx.restore();return;}
  if(TYPES[type].plane){const im=planeImages[type],size=planeDrawSize(type,battle);if(im.complete&&im.naturalWidth)ctx.drawImage(im,-size/2,-size/2,size,size);else{if(battle)ctx.scale(size/68,size/68);polygon(ctx,[[0,-28],[25,16],[0,8],[-25,16]],color,dark);}ctx.restore();return;}
  if(type in newTroopImages){
   const size=newTroopSizes[type],team=color===TEAM.red?1:0;let image=newTroopImages[type][team];
@@ -416,6 +419,17 @@ class Renderer{
  outline(x,y,color,width=2){const c=this.ctx;c.strokeStyle=color;c.lineWidth=width;c.strokeRect(x*CELL+2,y*CELL+2,CELL-4,CELL-4);}
  area(x,y,alpha=.2){const c=this.ctx;c.save();for(let yy=y-1;yy<=y+1;yy++)for(let xx=x-1;xx<=x+1;xx++)if(INSIDE(xx,yy)){c.fillStyle=`rgba(242,174,94,${alpha})`;c.fillRect(xx*CELL+1,yy*CELL+1,CELL-2,CELL-2);this.outline(xx,yy,'#ffdc92',1.6);}c.restore();}
  bar(x,y,width,ratio,color){const c=this.ctx;c.fillStyle='#0b2028';c.fillRect(x-width/2-1,y-1,width+2,6);c.fillStyle=color;c.fillRect(x-width/2,y,width*Math.max(0,Math.min(1,ratio)),4);}
+ transportAnimation(c,u,x,y,scale){
+  if(u.type!=='transportHelicopter'&&u.type!=='transportPlane')return;c.save();c.translate(x,y+2);c.rotate(u.facing||0);c.scale(scale*.86,scale*.86);c.strokeStyle='#b4c0b6';c.lineWidth=1.8;
+  const angle=reducedMotion?0:game.time*18,rotors=u.type==='transportHelicopter'?(u.owner==='blue'?[[0,-15,29],[0,15,29]]:[[0,-2,31]]):[[-29,-6,7],[-15,-6,7],[15,-6,7],[29,-6,7]];
+  c.globalAlpha=reducedMotion?.55:.4;for(const [dx,dy,r]of rotors){c.save();c.translate(dx,dy);c.rotate(angle);for(let i=0;i<3;i++){c.rotate(Math.PI*2/3);c.beginPath();c.moveTo(0,0);c.lineTo(r,0);c.stroke();}c.restore();}c.restore();
+ }
+ drawDrops(c){
+  for(const d of game.drops||[]){if(d.owner!==localPlayerSide()&&!game.visible[localPlayerSide()][KEY(d.x,d.y)])continue;const height=(1-Math.min(1,d.elapsed/2))*48,x=(d.x+.5)*CELL,y=(d.y+.5)*CELL-height;
+   c.save();c.translate(x,y);const vehicle=TYPES[d.passenger.type].vehicle;if(vehicle){c.fillStyle='#6a5943';c.strokeStyle='#c6bda2';c.fillRect(-23,3,46,31);c.strokeRect(-23,3,46,31);}unitIcon(c,d.passenger.type,0,12,TEAM[d.owner],vehicle?.7:.6);
+   c.strokeStyle='#e1d8bb';c.lineWidth=1;for(const dx of [-22,-11,11,22]){c.beginPath();c.moveTo(dx,-24);c.lineTo(0,12);c.stroke();}c.fillStyle=d.owner==='blue'?'#d5dcc6':'#dcb5ab';c.strokeStyle='#394a40';c.lineWidth=1.5;c.beginPath();c.arc(0,-24,24,Math.PI,Math.PI*2);c.closePath();c.fill();c.stroke();for(const dx of [-12,0,12]){c.beginPath();c.moveTo(dx,-24);c.quadraticCurveTo(dx*.7,-46,0,-48);c.stroke();}c.restore();
+  }
+ }
  entity(u,memory=false){
   if(!memory)u=visualUnit(u);
   const c=this.ctx,x=(u.x+.5)*CELL,groundY=(u.y+.5)*CELL,pose=flightPose(u),y=(pose.y+.5)*CELL,chosen=selection.has(u.id);c.save();
@@ -447,10 +461,16 @@ class Renderer{
   if(!memory&&!reducedMotion&&u.runway&&['takeoffRoll','landingRoll'].includes(u.flightState)&&game.get(u.runway.baseId)?.type==='airportDirt'){c.save();c.fillStyle='#bba278';c.globalAlpha=.17;for(let i=1;i<=3;i++){c.beginPath();c.ellipse(x-i*12,groundY+4+Math.sin(game.time*6+i)*4,7+i*3,4+i,0,0,Math.PI*2);c.fill();}c.restore();}
   const stride=u.segment&&!reducedMotion?Math.sign(Math.sin(game.time*13+u.id))*2:0,firing=!memory&&u.cooldown>(u.reload??TYPES[u.type].cooldown)-.12;
   const launcherFrame=!memory&&u.type==='rocketArtillery'?(reducedMotion?((u.launcherLevel||0)>0?2:0):Math.round((u.launcherLevel||0)*2)):0;
-  if(!memory&&PLANE(u))this.fx.exhaust(c,u);
+  if(!memory&&PLANE(u)&&!TYPES[u.type].airdropPlane)this.fx.exhaust(c,u);
   const image=battlefieldImages[u.type],recoil=this.fx.recoil(u);c.save();c.translate(x+recoil.x,y+2+recoil.y);c.scale(pose.scale,pose.scale);
   if(image?.complete&&image.naturalWidth){const size=u.type==='hq'?56:48;c.drawImage(image,-size/2,-size/2,size,size);c.fillStyle=TEAM[u.owner];c.fillRect(-size/2+2,-size/2+1,13,4);c.fillStyle='#152720';c.fillRect(-size/2+1,-size/2,1,10);}
   else{const s=sprite(u.type,TEAM[u.owner],TYPES[u.type].structure?.83:.86,stride,firing,launcherFrame,true);if(!TYPES[u.type].structure)c.rotate(u.facing||0);c.drawImage(s,-s.ox,-s.oy);}c.restore();
+  if(!memory)this.transportAnimation(c,u,x,y,pose.scale);
+  if(u.type==='transportHelicopter'&&(u.cargo||[]).some(p=>!FOOT(p))){
+   const sway=reducedMotion?0:Math.sin(game.time*2.2+u.id)*1.5,hx=x+sway,hy=y+42*pose.scale,s=sprite((u.cargo||[]).find(p=>!FOOT(p)).type,TEAM[u.owner],.85*pose.scale,0,false,0,true);
+   c.save();c.strokeStyle='#2a3430';c.lineWidth=1.4;for(const dx of [-9,9]){c.beginPath();c.moveTo(x+dx*.6*pose.scale,y+6);c.lineTo(hx+dx*.8*pose.scale,hy-8);c.stroke();}
+   c.translate(hx,hy);c.rotate(u.facing||0);c.drawImage(s,-s.ox,-s.oy);c.restore();
+  }
   if(!memory&&game.radarContact(localPlayerSide(),u)){const r=32*pose.scale;c.strokeStyle='#102a1c';c.lineWidth=4;c.strokeRect(x-r,y-r,r*2,r*2);c.strokeStyle='#68ef8d';c.lineWidth=1.8;c.strokeRect(x-r,y-r,r*2,r*2);}
   if(!memory&&(chosen||u.hp<u.maxHp))this.bar(x,y+24,36,u.hp/u.maxHp,u.hp/u.maxHp>.45?'#b8dba5':'#f69d87');
   if(!memory&&!TYPES[u.type].structure){
@@ -519,8 +539,9 @@ class Renderer{
   for(const s of game.memory[localPlayerSide()].values())if(!game.isVisible(localPlayerSide(),s))this.entity(s,true);
   this.environment(dt);for(const f of game.fires)if(game.visible[localPlayerSide()][KEY(f.x,f.y)]){c.fillStyle='#ec813d88';c.beginPath();c.ellipse((f.x+.5)*CELL,(f.y+.5)*CELL,15,9,0,0,7);c.fill();}
   c.save();c.imageSmoothingEnabled=false;c.drawImage(this.frameVision.field,0,0,COLS*CELL,ROWS*CELL);c.restore();
-  this.fx.draw(c);
+  this.fx.draw(c);this.drawDrops(c);
   for(const s of game.structures)if(game.isVisible(localPlayerSide(),s))this.entity(s);
+  if(game.mission)Missions.draw(c,game);
   if(showGrid)drawTerrainGrid(c,game,z);
   for(const id of selection){const u=game.get(id);if(!u||u.owner!==localPlayerSide()||TYPES[u.type].structure)continue;
    c.strokeStyle='#a6e1e477';c.lineWidth=1.3;c.setLineDash([5,5]);c.beginPath();c.moveTo((u.x+.5)*CELL,(u.y+.5)*CELL);if(u.segment)c.lineTo((u.segment.to.x+.5)*CELL,(u.segment.to.y+.5)*CELL);for(const p of u.path)c.lineTo((p.x+.5)*CELL,(p.y+.5)*CELL);c.stroke();c.setLineDash([]);
@@ -534,6 +555,8 @@ class Renderer{
   if(hover){const target=entityAt(hover),art=selectedUnits().find(u=>u.type==='artillery');if(art&&target&&game.canFire(art,target)){const p=TILE(target);this.area(p.x,p.y,.12);}}
   // Bombardear área: prévia 3×3 em qualquer casa, inclusive sob névoa; contorno vermelho fora do alcance 3–30 de todas as selecionadas.
   if(hover&&mode==='buildAirport'){const p=TILE(hover),info=game.airportBuildInfo(p);c.save();c.strokeStyle=info.valid?'#a8e4b7':'#f26d5b';c.lineWidth=3;c.strokeRect(p.x*CELL,p.y*CELL,6*CELL,2*CELL);c.setLineDash([6,5]);c.strokeRect((p.x-2)*CELL,p.y*CELL,2*CELL,2*CELL);c.strokeRect((p.x+6)*CELL,p.y*CELL,2*CELL,2*CELL);c.font='bold 14px Segoe UI';c.fillStyle=c.strokeStyle;c.textAlign='left';c.fillText('Construção: '+(game.mode==='rts'?info.duration+' s':info.duration/10+' turnos'),p.x*CELL,p.y*CELL-8);c.restore();}
+  if(hover&&mode==='airdropLine'&&bombLineStart){const end=TILE(hover),len=DIST(bombLineStart,end),valid=game.bombLine(localPlayerSide(),bombLineStart,end);c.save();c.strokeStyle=valid?'#9fe0a5':'#f26d5b';c.lineWidth=3;c.setLineDash([10,8]);c.beginPath();c.moveTo((bombLineStart.x+.5)*CELL,(bombLineStart.y+.5)*CELL);c.lineTo((end.x+.5)*CELL,(end.y+.5)*CELL);c.stroke();c.setLineDash([]);for(let i=0;i<=Math.min(128,len);i++){const t=i/Math.max(1,len);this.outline(Math.round(bombLineStart.x+(end.x-bombLineStart.x)*t),Math.round(bombLineStart.y+(end.y-bombLineStart.y)*t),valid?'#9fe0a5':'#f26d5b',1.6);}c.restore();}
+  for(const plane of game.units)if(TYPES[plane.type].airdropPlane&&plane.owner===localPlayerSide()&&plane.airdrop?.phase==='run'&&plane.airdrop.line){const L=plane.airdrop.line;c.save();c.strokeStyle='#9fe0a5aa';c.lineWidth=2.5;c.setLineDash([8,8]);c.beginPath();c.moveTo((L.start.x+.5)*CELL,(L.start.y+.5)*CELL);c.lineTo((L.end.x+.5)*CELL,(L.end.y+.5)*CELL);c.stroke();c.restore();}
   if(hover&&mode==='planeBomb'&&bombLineStart){const end=TILE(hover),len=DIST(bombLineStart,end),valid=game.bombLine(localPlayerSide(),bombLineStart,end);c.strokeStyle=valid?'#ffdc92':'#f26d5b';c.lineWidth=3;c.beginPath();c.moveTo((bombLineStart.x+.5)*CELL,(bombLineStart.y+.5)*CELL);c.lineTo((end.x+.5)*CELL,(end.y+.5)*CELL);c.stroke();for(let i=0;i<=Math.min(128,len);i++){const t=i/Math.max(1,len);this.area(Math.round(bombLineStart.x+(end.x-bombLineStart.x)*t),Math.round(bombLineStart.y+(end.y-bombLineStart.y)*t),.08);}}
   // Marca de aposta: Investida sobre uma casa na névoa (âmbar com munição de solo, vermelha sem ela).
   this.betMark=null;if(hover&&mode==='attack'){const p=TILE(hover);if(INSIDE(p.x,p.y)&&!game.visible[localPlayerSide()][KEY(p.x,p.y)]){const planes=selectedUnits().filter(u=>supportsOrder(u,'strikeCell'));if(planes.length){this.betMark={x:p.x,y:p.y};this.outline(p.x,p.y,planes.some(u=>u.ammo.jetAgm>0||u.ammo.jetGun>0)?'#ffdc92':'#f26d5b',3);}}}
@@ -549,7 +572,7 @@ class Renderer{
    const missile=MISSILE(p.weapon),gx=missile||p.networkVisual?p.x:p.sx+(tx-p.sx)*t,gy=missile||p.networkVisual?p.y:p.sy+(ty-p.sy)*t;if(!missile&&p.owner!==localPlayerSide()&&!game.isVisible(localPlayerSide(),{x:gx,y:gy}))continue;
    const level=p.visualLevel??p.sourceLevel??0,x=(gx+.5)*CELL,y=(gy+.5)*CELL-18*level-(p.type==='artillery'?Math.sin(Math.PI*t)*85:0),g=p.type==='artillery'?this.glow.large:this.glow.small;c.drawImage(g,x-g.width/2,y-g.height/2);
    if(missile){const previous=p.trail.at(-1),heading=previous?Math.atan2((gy-previous.y)*CELL-18*(level-(previous.level||0)),(gx-previous.x)*CELL):p.heading,art=missileArt[p.weapon],img=art&&missileImages[art[0]],ready=img?.complete&&img.naturalWidth>0;c.save();c.translate(x,y);c.rotate(heading);if(ready){c.save();c.rotate(Math.PI/2);c.drawImage(img,-art[1]/2,-art[1]/2,art[1],art[1]);c.restore();}else{polygon(c,[[-9,-2.5],[6,-2.5],[12,0],[6,2.5],[-9,2.5]],'#e8ece6','#24353b');polygon(c,[[-8,-2],[-12,-5],[-10,0],[-12,5],[-8,2]],'#adb8b8');}const tail=ready?-art[1]*.45:-10;polygon(c,[[tail,-2],[tail-9,0],[tail,2]],'#ffac58');polygon(c,[[tail,-1],[tail-5,0],[tail,1]],'#fff3ba');c.restore();continue;}
-   const look=p.weapon==='gun'?'machinegun':p.weapon==='agm'||p.weapon==='aam'?'antitank':p.type;
+   const look=p.weapon==='gun'?'machinegun':p.weapon==='agm'||p.weapon==='aam'||p.weapon==='atMissile'?'antitank':p.weapon==='rifle'?'infantry':p.type;
    if(look==='antitank'||look==='machinegun'){c.save();c.translate(x,y);c.rotate(Math.atan2((ty-p.sy)*CELL-18*((p.targetLevel||0)-(p.sourceLevel||0)),(tx-p.sx)*CELL));if(look==='antitank'){c.strokeStyle='#edb87388';c.lineWidth=3;c.beginPath();c.moveTo(-19,0);c.lineTo(-5,0);c.stroke();polygon(c,[[-5,-2],[4,-2],[8,0],[4,2],[-5,2]],'#e9ebe0');}else{const mini=p.weapon==='gun'&&p.type==='helicopter',cannon=p.weapon==='gun'&&!mini;c.fillStyle=cannon?'#ffe2a0':'#fff0b1';c.fillRect(mini?-5:-9,cannon?-1.5:-1,mini?7:cannon?15:12,cannon?3:2);}c.restore();}
   }
   let n=0;for(const p of this.particles){p.t+=dt;if(p.t>=p.life)continue;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy-=dt*12;this.particles[n++]=p;if(!p.publicMissile&&(p.smoke||p.flare||p.contactId||p.sourceId)&&!game.effectVisible(p.x/CELL-.5,(p.y+(p.lift||0))/CELL-.5,p.air,p.contactId,p.sourceId))continue;c.globalAlpha=(1-p.t/p.life)*(p.smoke?.45:1);c.fillStyle=p.color;c.beginPath();c.arc(p.x,p.y,p.size*(1+p.t),0,7);c.fill();}this.particles.length=n;

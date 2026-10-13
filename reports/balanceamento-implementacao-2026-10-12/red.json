@@ -1,0 +1,116 @@
+{
+  "source": "public/js/engine.js",
+  "results": [
+    {
+      "name": "metralhador dispara três vezes em 0,7 s no RTS",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n2 !== 3\n"
+    },
+    {
+      "name": "rts: leve dispara a quatro casas, sem perfurar pesado",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "name": "rts: renda de posto é recebida com doutrinas e sem QG",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n22 !== 21\n"
+    },
+    {
+      "name": "rts: onda conserva passageiros vivos e progresso do veículo",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'prepare'\n- 'attack'\n"
+    },
+    {
+      "name": "rts: transportes mortos e carga perdida reagrupam a onda",
+      "ok": true
+    },
+    {
+      "name": "rts: helicóptero vermelho bombardeia alvo observado sem carga",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n'stop' !== 'bombard'\n"
+    },
+    {
+      "name": "rts: carga tem prioridade sobre salvas do helicóptero",
+      "ok": true
+    },
+    {
+      "name": "rts: helicóptero vazio sem salvas procura manutenção",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n'stop' !== 'service'\n"
+    },
+    {
+      "name": "rts: perdas de transportes evitam área e rota até a memória expirar",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "name": "rts: transporte acessível entra antes da poupança de avião",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- 'transportTruck'\n"
+    },
+    {
+      "name": "rts: tropas embarcadas ainda contam no limite de exército",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n1 !== 0\n"
+    },
+    {
+      "name": "turns: leve dispara a quatro casas, sem perfurar pesado",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "name": "turns: renda de posto é recebida com doutrinas e sem QG",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n22 !== 21\n"
+    },
+    {
+      "name": "turns: onda conserva passageiros vivos e progresso do veículo",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'prepare'\n- 'attack'\n"
+    },
+    {
+      "name": "turns: transportes mortos e carga perdida reagrupam a onda",
+      "ok": true
+    },
+    {
+      "name": "turns: helicóptero vermelho bombardeia alvo observado sem carga",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n'stop' !== 'bombard'\n"
+    },
+    {
+      "name": "turns: carga tem prioridade sobre salvas do helicóptero",
+      "ok": true
+    },
+    {
+      "name": "turns: helicóptero vazio sem salvas procura manutenção",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n'stop' !== 'service'\n"
+    },
+    {
+      "name": "turns: perdas de transportes evitam área e rota até a memória expirar",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "name": "turns: transporte acessível entra antes da poupança de avião",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- 'transportTruck'\n"
+    },
+    {
+      "name": "turns: tropas embarcadas ainda contam no limite de exército",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n1 !== 0\n"
+    },
+    {
+      "name": "turnos: caminhão embarca até quatro tropas com uma ação por turno",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n1 !== 2\n"
+    },
+    {
+      "name": "RTS: IA não embarca comandante nem tropas comprometidas com captura",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n3 !== 1\n"
+    }
+  ]
+}

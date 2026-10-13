@@ -1,0 +1,56 @@
+[
+  {
+    "file": "tests/match-economy.browser.integration.cjs",
+    "code": 0,
+    "stdout": "OK 456 functional economy checks: four maps, RTS/turns, purchase rejections, paid batches, blocked exits, ownership, HQ/commander loss, repair and airport capacity.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/match-combat.browser.integration.cjs",
+    "code": 0,
+    "stdout": "580 functional combat checks; 0 failures.\nOK combat, blocked terrain/structures, armor, air restrictions/ranges, capture/repair perimeter and ownership, airport order rejection, HQ/post victory: four maps, RTS/turns, offline Chrome.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/unit-balance.browser.test.cjs",
+    "code": 0,
+    "stdout": "OK funções de combate, produção de todas as classes, preços/UI, desconto integral e bombardeiro no aeroporto.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/helicopter-weapons.browser.integration.cjs",
+    "code": 0,
+    "stdout": "OK 1114 helicopter integration checks: four maps, RTS/turns, both sides, damage, cadence, bursts, missiles, posthumous hits, UI, three FX profiles, visibility and pause; offline Chrome.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/aviation.browser.test.cjs",
+    "code": 0,
+    "stdout": "OK oito sprites, aeroporto, comandos, salva, emissões, bombardeiro, mobile, minimapa e file:// offline.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/nation.test.cjs",
+    "code": 0,
+    "stdout": "OK Postos: cinco vagas contando a produção, QG com cinco, preço único e filas independentes\nOK Produção serial por estrutura nos dois modos, nascimento local e bloqueio sem cobrar novamente\nOK Captura e destruição eliminam a fila sem reembolso; fila no posto evita derrota prematura\nOK IA usa posto com menor espera, respeita saída livre, filas totais e limite de exército\nOK Doutrinas isoladas: renda, vida inicial/reforços, dano e estruturas; atributos globais preservados\nOK Doutrina preservada na promoção e no reparo; minas não recebem bônus\nOK Captura real por ordem limpa fila em turnos e RTS; posto construído também recruta\nOK Sorteio inimigo é determinístico, cobre doutrinas e não consome RNG de mapa/combate\n8 verificações de postos e doutrinas concluídas.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/batches.test.cjs",
+    "code": 0,
+    "stdout": "OK late purchase inherits progress; mixed types retain batch order and individual prices\nOK all producers accept five; airports spawn four and retain the fifth ready\nOK partial exits close completed batches, block following types, and never recharge\nOK fractional RTS ticks mark a blocked batch fully ready\nOK legacy entries stay individual; capture and destruction discard pending batches\nOK batch queues prevent premature defeat and respect army/order limits\nOK AI estimates each batch once and stops at the first matching unfinished batch\nOK AA flight is 2.5 seconds at 30 cells, minimum .45; other missiles unchanged\n8 batch/missile checks passed\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/missiles.test.cjs",
+    "code": 0,
+    "stdout": "OK Drones: alcance 8 e visão 12 sobre todos os terrenos; sem detecção de minas\nOK Bombardeiros: só bombas e 2 cruzeiros, preços e rearmamento\nOK Cruzeiro: névoa ou área visível, lançamento remoto único nos dois modos\nOK Cruzeiro: aproxima até 40, cancelamento e intervalo 6 s\nOK Cruzeiro: valida modelo, coordenadas e disparo direto fora de alcance\nOK Cruzeiro: dano 160/80, área 3×3, cobertura, aliados, pousados e estrutura uma vez\nOK Cruzeiro: borda do mapa e projétil persiste sem lançador, sem flares/fumaça\nOK Interceptação: limiar 75% vs 15%, prioridade e limite por turno\nOK IA usa coordenadas conhecidas e evita aliados na área\n9 verificações de mísseis passaram.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/transports.test.cjs",
+    "code": 0,
+    "stdout": "OK Carga preserva identidade e remove ocupação, visão, aura e ordens\nOK Capacidade, proprietário, distância, terreno e altitude validam antes de alterar\nOK Desembarque bloqueado mantém a carga; morte conta cada passageiro uma vez\nOK Turnos: ação do transporte e tropas indisponíveis até o próximo turno\nOK Reforço: compra válida, rejeições sem cobrança, missão única e descida em linha\nOK Abate perde carga a bordo mas não interrompe paraquedas; sem área de pouso a carga volta a bordo\nOK Save restaura passageiros, missão, paraquedas e RNG; save antigo aceita carga ausente e missão antiga\nOK Carga sem pouso continua a bordo e conta como perda se o avião cair no retorno\nOK Pausa congela voo e descida; voo por turnos termina e aguarda turno seguinte\nOK Avião desarmado é detectado e atingido pela defesa antiaérea existente\nOK IA embarca tropas, entrega antes do combate e escolhe transporte aéreo sem rota terrestre\nOK Lançamento misto reserva primeiro o terreno necessário ao veículo\nOK Helicóptero leva 6 tropas e 1 veículo pendurado por equipe; avião aceita 12 vagas e tanque médio\nOK Avião pousa na pista, embarca tropas próximas e lança em linha, depois volta a pousar\n14 verificações de transportes concluídas.\n",
+    "stderr": ""
+  }
+]

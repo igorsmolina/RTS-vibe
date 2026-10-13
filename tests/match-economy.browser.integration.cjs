@@ -75,7 +75,7 @@ const assert=require('node:assert/strict'),path=require('node:path'),{pathToFile
      g.production('red',g.trainDuration('tank')*.1);g.turn='blue';station(g,inf,p);const blueIncome=g.income('blue'),redIncome=g.income('red');
      check('capture order accepted',g.command([inf.id],'capture',{targetId:p.id})===1);advance(g,90);
      check('capture replaces owner and discards paid queue',p.owner==='blue'&&p.queue.length===0&&g.credits.red===redPaid&&g.credits.blue===blueMoney&&g.units.filter(u=>u.owner==='red').length===redCount,{owner:p.owner,queue:p.queue.length});
-     check('income transfers with captured post',g.income('blue')===blueIncome+7&&g.income('red')===redIncome-7);
+     check('income transfers with captured post',g.income('blue')===blueIncome+6&&g.income('red')===redIncome-6);
      const denied=g.credits.red;check('former owner cannot enqueue',!g.enqueue('red','infantry',p)&&g.credits.red===denied);
      g.credits.blue=1000;const before=g.credits.blue,count=g.units.filter(u=>u.owner==='blue'&&u.type==='infantry').length;
      check('new owner starts fresh paid queue',g.enqueue('blue','infantry',p)&&p.queue[0].progress===0&&g.credits.blue===before-g.recruitCost('infantry',p));
@@ -91,9 +91,9 @@ const assert=require('node:assert/strict'),path=require('node:path'),{pathToFile
      const g=fresh(),p=post(g),hq=g.hq('blue');if(!p)throw Error('no post');g.captureStructure(p,g.units.find(u=>u.owner==='blue'&&u.type==='infantry'));g.credits.blue=1000;
      check('queues before HQ loss',g.enqueue('blue','infantry',p)&&g.enqueue('blue','tank',hq));
      const paid=g.credits.blue,count=g.units.filter(u=>u.owner==='blue'&&u.type==='infantry').length;g.hurt(hq,hq.hp,null);g.update(STEP);
-     check('HQ loss preserves post faction and its income',!g.winner&&!g.hq('blue')&&g.income('blue')===7&&hq.queue.length===0&&p.queue.length===1&&g.credits.blue===paid);
+     check('HQ loss preserves post faction and its income',!g.winner&&!g.hq('blue')&&g.income('blue')===6&&hq.queue.length===0&&p.queue.length===1&&g.credits.blue===paid);
      if(mode==='rts')advance(g,299);else nextBlue(g);
-     check('surviving post still produces and pays income',!g.winner&&p.queue.length===0&&g.credits.blue===paid+7&&g.units.filter(u=>u.owner==='blue'&&u.type==='infantry').length===count+1);
+     check('surviving post still produces and pays income',!g.winner&&p.queue.length===0&&g.credits.blue===paid+6&&g.units.filter(u=>u.owner==='blue'&&u.type==='infantry').length===count+1);
      const location=freeAirportSite(g,'airportDirt'),airport=g.add('blue','airportDirt',location.x,location.y);g.credits.blue=2000;g.enqueue('blue','fighterBlue',airport);g.enqueue('blue','tank',p);
      g.hurt(p,p.hp,null);g.update(STEP);const frozen=JSON.stringify({credits:g.credits,time:g.time,queue:airport.queue,units:g.units.length});advance(g,300);
      check('last post loss ends despite airport and queue',g.winner==='red'&&g.income('blue')===0&&g.producer('blue',airport)&&JSON.stringify({credits:g.credits,time:g.time,queue:airport.queue,units:g.units.length})===frozen);

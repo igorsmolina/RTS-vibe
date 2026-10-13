@@ -1,0 +1,143 @@
+{
+  "source": "public/js/engine.js",
+  "sourceHash": "af92efe3b55f9c0abfaef259f9de2a1e1dbef566db50d380969d163e27151d7d",
+  "limit": "Normal, semente 44, jogador azul sem ordens; 300 segundos RTS ou 48 ciclos em turnos.",
+  "matches": [
+    {
+      "map": "river",
+      "mode": "rts",
+      "seed": 44,
+      "time": 300.000000000023,
+      "round": 1,
+      "embarks": 0,
+      "delivered": 0,
+      "airdropPurchases": 0,
+      "carrierPurchases": 1,
+      "redHeliSalvos": 0,
+      "credits": 176,
+      "posts": 15,
+      "losses": {
+        "recon": 1
+      },
+      "winner": null
+    },
+    {
+      "map": "river",
+      "mode": "turns",
+      "seed": 44,
+      "time": 589.9333333334541,
+      "round": 49,
+      "embarks": 5,
+      "delivered": 4,
+      "airdropPurchases": 0,
+      "carrierPurchases": 1,
+      "redHeliSalvos": 0,
+      "credits": 19,
+      "posts": 11,
+      "losses": {
+        "missileInfantry": 1
+      },
+      "winner": null
+    },
+    {
+      "map": "desert",
+      "mode": "rts",
+      "seed": 44,
+      "time": 300.000000000023,
+      "round": 1,
+      "embarks": 0,
+      "delivered": 0,
+      "airdropPurchases": 0,
+      "carrierPurchases": 1,
+      "redHeliSalvos": 0,
+      "credits": 142,
+      "posts": 18,
+      "losses": {},
+      "winner": null
+    },
+    {
+      "map": "desert",
+      "mode": "turns",
+      "seed": 44,
+      "time": 983.1333333330965,
+      "round": 49,
+      "embarks": 6,
+      "delivered": 5,
+      "airdropPurchases": 5,
+      "carrierPurchases": 1,
+      "redHeliSalvos": 0,
+      "credits": 84,
+      "posts": 17,
+      "losses": {},
+      "winner": null
+    },
+    {
+      "map": "mountain",
+      "mode": "rts",
+      "seed": 44,
+      "time": 300.000000000023,
+      "round": 1,
+      "embarks": 0,
+      "delivered": 0,
+      "airdropPurchases": 2,
+      "carrierPurchases": 1,
+      "redHeliSalvos": 0,
+      "credits": 268,
+      "posts": 18,
+      "losses": {
+        "recon": 2
+      },
+      "winner": null
+    },
+    {
+      "map": "mountain",
+      "mode": "turns",
+      "seed": 44,
+      "time": 833.9666666665655,
+      "round": 49,
+      "embarks": 0,
+      "delivered": 0,
+      "airdropPurchases": 2,
+      "carrierPurchases": 1,
+      "redHeliSalvos": 0,
+      "credits": 53,
+      "posts": 16,
+      "losses": {
+        "recon": 2
+      },
+      "winner": null
+    },
+    {
+      "map": "random",
+      "mode": "rts",
+      "seed": 44,
+      "time": 300.000000000023,
+      "round": 1,
+      "embarks": 0,
+      "delivered": 0,
+      "airdropPurchases": 0,
+      "carrierPurchases": 0,
+      "redHeliSalvos": 0,
+      "credits": 240,
+      "posts": 15,
+      "losses": {},
+      "winner": null
+    },
+    {
+      "map": "random",
+      "mode": "turns",
+      "seed": 44,
+      "time": 851.5999999998828,
+      "round": 49,
+      "embarks": 6,
+      "delivered": 5,
+      "airdropPurchases": 3,
+      "carrierPurchases": 1,
+      "redHeliSalvos": 0,
+      "credits": 166,
+      "posts": 8,
+      "losses": {},
+      "winner": null
+    }
+  ]
+}

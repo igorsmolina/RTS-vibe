@@ -5,6 +5,7 @@ function saveProfile(){try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profi
 function touchProfile(kind){if(kind)profile[kind+'At']=Date.now();saveProfile();scheduleSync();}
 function bundle(){let text=null;try{text=localStorage.getItem(CAMPAIGN_KEY);}catch{}return {version:1,profile,campaign:text,settings};}
 function applyBundle(b){
+ if(b.campaign&&typeof deserializeCampaign==='function'&&!deserializeCampaign(b.campaign))throw Error('Campanha inválida no backup. O progresso atual foi preservado.');
  profile=b.profile;saveProfile();
  let current=null;try{current=localStorage.getItem(CAMPAIGN_KEY);}catch{}
  // Batalha de campanha em andamento mantém a campanha local; o resultado sobe depois.
@@ -14,7 +15,7 @@ function applyBundle(b){
 }
 function announce(fresh){if(!fresh.length)return '';say(`Conquista desbloqueada: ${fresh.map(a=>a.name).join(', ')}.`);return `\nConquista desbloqueada: ${fresh.map(a=>a.name).join(', ')}.`;}
 // Chamado ao mostrar o resultado da partida; devolve o texto das conquistas novas.
-function recordResult(){const fresh=recordMatch(profile,matchRecord(game,campaignBattle?.region,Date.now()));touchProfile();return announce(fresh);}
+function recordResult(){if(game.resultRecorded)return '';game.resultRecorded=true;const fresh=recordMatch(profile,matchRecord(game,campaignBattle?.region,Date.now()));touchProfile();return announce(fresh);}
 function recordCampaignResult(won){const fresh=recordCampaign(profile,won,campaignOver(campaign)==='blue',Date.now());touchProfile();announce(fresh);}
 function profileSummary(){const n=Object.keys(profile.achievements).length;return `${n}/${ACHIEVEMENTS.length} conquistas · ${profile.stats.wins} vitória(s)`+(cloud.user?' · na nuvem':'');}
 

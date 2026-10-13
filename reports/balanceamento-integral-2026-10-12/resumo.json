@@ -1,0 +1,204 @@
+{
+  "sourceHash": "8f9aecc4d0bc12231707609d331c124db5484da531a483529f2e4b6c6b3f4e57",
+  "coverage": {
+    "units": 29,
+    "structures": 5,
+    "attackerTargetOptions": 1750,
+    "compatible": 1074,
+    "manualWeaponOptions": 1400,
+    "compatibleManualWeapons": 748,
+    "mechanicChecks": 17,
+    "baselineDuels": 416,
+    "distanceDuels": 32,
+    "candidateDuels": 64
+  },
+  "directedSuites": [
+    {
+      "file": "tests/match-economy.browser.integration.cjs",
+      "code": 0
+    },
+    {
+      "file": "tests/match-combat.browser.integration.cjs",
+      "code": 0
+    },
+    {
+      "file": "tests/unit-balance.browser.test.cjs",
+      "code": 0
+    },
+    {
+      "file": "tests/helicopter-weapons.browser.integration.cjs",
+      "code": 0
+    },
+    {
+      "file": "tests/aviation.browser.test.cjs",
+      "code": 0
+    },
+    {
+      "file": "tests/nation.test.cjs",
+      "code": 0
+    },
+    {
+      "file": "tests/batches.test.cjs",
+      "code": 0
+    },
+    {
+      "file": "tests/missiles.test.cjs",
+      "code": 0
+    },
+    {
+      "file": "tests/transports.test.cjs",
+      "code": 0
+    }
+  ],
+  "generalSuitesSameEngine": {
+    "passed": 24,
+    "failed": [
+      "tests/balance-revision.test.cjs",
+      "tests/engine.test.cjs",
+      "tests/air-defense.test.cjs",
+      "tests/radar.test.cjs",
+      "tests/aviation.test.cjs",
+      "tests/operations.test.cjs",
+      "tests/artillery-upgrade.test.cjs",
+      "tests/airport-runway.test.cjs"
+    ]
+  },
+  "candidate": {
+    "change": {
+      "unit": "machinegun",
+      "field": "cooldown",
+      "current": 0.4,
+      "candidate": 0.3,
+      "scope": "Somente cópia do motor em memória; arquivo de produção preservado."
+    },
+    "baseline": [
+      {
+        "mode": "rts",
+        "a": "infantry",
+        "b": "machinegun",
+        "na": 1,
+        "nb": 1,
+        "samples": 16,
+        "aOnly": 8,
+        "bOnly": 8,
+        "both": 0,
+        "neither": 0
+      },
+      {
+        "mode": "rts",
+        "a": "infantry",
+        "b": "machinegun",
+        "na": 2,
+        "nb": 1,
+        "samples": 16,
+        "aOnly": 16,
+        "bOnly": 0,
+        "both": 0,
+        "neither": 0
+      },
+      {
+        "mode": "turns",
+        "a": "infantry",
+        "b": "machinegun",
+        "na": 1,
+        "nb": 1,
+        "samples": 16,
+        "aOnly": 4,
+        "bOnly": 12,
+        "both": 0,
+        "neither": 0
+      },
+      {
+        "mode": "turns",
+        "a": "infantry",
+        "b": "machinegun",
+        "na": 2,
+        "nb": 1,
+        "samples": 16,
+        "aOnly": 14,
+        "bOnly": 2,
+        "both": 0,
+        "neither": 0
+      }
+    ],
+    "candidate": [
+      {
+        "mode": "rts",
+        "a": "infantry",
+        "b": "machinegun",
+        "na": 1,
+        "nb": 1,
+        "samples": 16,
+        "aOnly": 3,
+        "bOnly": 10,
+        "both": 0,
+        "neither": 3
+      },
+      {
+        "mode": "rts",
+        "a": "infantry",
+        "b": "machinegun",
+        "na": 2,
+        "nb": 1,
+        "samples": 16,
+        "aOnly": 12,
+        "bOnly": 4,
+        "both": 0,
+        "neither": 0
+      },
+      {
+        "mode": "turns",
+        "a": "infantry",
+        "b": "machinegun",
+        "na": 1,
+        "nb": 1,
+        "samples": 16,
+        "aOnly": 4,
+        "bOnly": 12,
+        "both": 0,
+        "neither": 0
+      },
+      {
+        "mode": "turns",
+        "a": "infantry",
+        "b": "machinegun",
+        "na": 2,
+        "nb": 1,
+        "samples": 16,
+        "aOnly": 14,
+        "bOnly": 2,
+        "both": 0,
+        "neither": 0
+      }
+    ]
+  },
+  "proposals": [
+    {
+      "unit": "machinegun",
+      "field": "cooldown",
+      "current": 0.4,
+      "proposed": 0.3,
+      "confidence": "Experimento controlado executado; não validado em partidas completas."
+    },
+    {
+      "unit": "lightTank",
+      "field": "range",
+      "current": 3,
+      "proposed": 4,
+      "confidence": "Hipótese para testar mobilidade e alcance; não simulada nem aplicada."
+    },
+    {
+      "unit": "post",
+      "field": "income",
+      "current": 7,
+      "proposed": 6,
+      "confidence": "Hipótese para conter vantagem acumulada; não simulada nem aplicada."
+    }
+  ],
+  "limits": [
+    "Matriz mede impactos isolados; reconhecimento completo, sem evasão por movimento, sem interceptação.",
+    "DPS é teto sem movimento e supressão; munição finita e trajetórias limitam o dano real.",
+    "Duelos usam campo aberto, distância inicial de duas casas, doutrina equilibrada, oito sementes e duas orientações; não medem equilíbrio competitivo completo."
+  ],
+  "sourceChanged": false
+}

@@ -1,0 +1,1265 @@
+{
+  "sourceHash": "8f9aecc4d0bc12231707609d331c124db5484da531a483529f2e4b6c6b3f4e57",
+  "checks": [],
+  "natural": [],
+  "weaponSamples": [
+    {
+      "type": "infantry",
+      "targetType": "infantry",
+      "weapon": "infantry",
+      "damagePerHit": 35,
+      "accuracy": 0.9,
+      "cooldown": 0.8,
+      "rtsExpectedDpsNoCrit": 39.375,
+      "turnExpectedDamageNoCrit": 31.5
+    },
+    {
+      "type": "machinegun",
+      "targetType": "infantry",
+      "weapon": "machinegun",
+      "damagePerHit": 23,
+      "accuracy": 0.75,
+      "cooldown": 0.4,
+      "rtsExpectedDpsNoCrit": 43.125,
+      "turnExpectedDamageNoCrit": 51.75
+    },
+    {
+      "type": "antitank",
+      "targetType": "tank",
+      "weapon": "atMissile",
+      "damagePerHit": 90,
+      "accuracy": 0.85,
+      "cooldown": 3,
+      "rtsExpectedDpsNoCrit": 25.5,
+      "turnExpectedDamageNoCrit": 76.5
+    },
+    {
+      "type": "lightTank",
+      "targetType": "heavyTank",
+      "compatible": false
+    },
+    {
+      "type": "tank",
+      "targetType": "heavyTank",
+      "weapon": "tank",
+      "damagePerHit": 60,
+      "accuracy": 0.75,
+      "cooldown": 2.5,
+      "rtsExpectedDpsNoCrit": 18,
+      "turnExpectedDamageNoCrit": 45
+    },
+    {
+      "type": "heavyTank",
+      "targetType": "tank",
+      "weapon": "heavyTank",
+      "damagePerHit": 80,
+      "accuracy": 0.85,
+      "cooldown": 3.5,
+      "rtsExpectedDpsNoCrit": 19.428571428571427,
+      "turnExpectedDamageNoCrit": 68
+    },
+    {
+      "type": "helicopter",
+      "targetType": "infantry",
+      "weapon": "gun",
+      "damagePerHit": 12,
+      "accuracy": 0.85,
+      "cooldown": 0.2,
+      "rtsExpectedDpsNoCrit": 50.99999999999999,
+      "turnExpectedDamageNoCrit": 51
+    },
+    {
+      "type": "antiAirVehicle",
+      "targetType": "helicopter",
+      "weapon": "antiAirVehicle",
+      "damagePerHit": 80,
+      "accuracy": 0.8,
+      "cooldown": 3.5,
+      "rtsExpectedDpsNoCrit": 18.285714285714285,
+      "turnExpectedDamageNoCrit": 64
+    }
+  ],
+  "duels": [
+    {
+      "seed": 1,
+      "blue": [
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "machinegun"
+      ],
+      "blueCost": 100,
+      "redCost": 90,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 77
+        },
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 110
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "machinegun": 1
+          },
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {
+            "machinegun": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 1,
+      "blue": [
+        "antitank",
+        "antitank"
+      ],
+      "red": [
+        "heavyTank"
+      ],
+      "blueCost": 220,
+      "redCost": 240,
+      "survivors": [
+        {
+          "type": "antitank",
+          "owner": "blue",
+          "hp": 99
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "heavyTank": 1
+          },
+          "losses": {
+            "antitank": 1
+          }
+        },
+        "red": {
+          "kills": {
+            "antitank": 1
+          },
+          "losses": {
+            "heavyTank": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 1,
+      "blue": [
+        "tank"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "tank",
+          "owner": "blue",
+          "hp": 86
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 120
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {}
+        }
+      }
+    },
+    {
+      "seed": 1,
+      "blue": [
+        "infantry",
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 100
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 84
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {
+            "infantry": 2
+          }
+        },
+        "red": {
+          "kills": {
+            "infantry": 2
+          },
+          "losses": {}
+        }
+      }
+    },
+    {
+      "seed": 2,
+      "blue": [
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "machinegun"
+      ],
+      "blueCost": 100,
+      "redCost": 90,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 54
+        },
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 110
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "machinegun": 1
+          },
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {
+            "machinegun": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 2,
+      "blue": [
+        "antitank",
+        "antitank"
+      ],
+      "red": [
+        "heavyTank"
+      ],
+      "blueCost": 220,
+      "redCost": 240,
+      "survivors": [
+        {
+          "type": "antitank",
+          "owner": "blue",
+          "hp": 10
+        },
+        {
+          "type": "antitank",
+          "owner": "blue",
+          "hp": 99
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "heavyTank": 1
+          },
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {
+            "heavyTank": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 2,
+      "blue": [
+        "tank"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "tank",
+          "owner": "blue",
+          "hp": 82
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 120
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {}
+        }
+      }
+    },
+    {
+      "seed": 2,
+      "blue": [
+        "infantry",
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 100
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 72
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {
+            "infantry": 2
+          }
+        },
+        "red": {
+          "kills": {
+            "infantry": 2
+          },
+          "losses": {}
+        }
+      }
+    },
+    {
+      "seed": 3,
+      "blue": [
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "machinegun"
+      ],
+      "blueCost": 100,
+      "redCost": 90,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 77
+        },
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 110
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "machinegun": 1
+          },
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {
+            "machinegun": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 3,
+      "blue": [
+        "antitank",
+        "antitank"
+      ],
+      "red": [
+        "heavyTank"
+      ],
+      "blueCost": 220,
+      "redCost": 240,
+      "survivors": [
+        {
+          "type": "antitank",
+          "owner": "blue",
+          "hp": 99
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "heavyTank": 1
+          },
+          "losses": {
+            "antitank": 1
+          }
+        },
+        "red": {
+          "kills": {
+            "antitank": 1
+          },
+          "losses": {
+            "heavyTank": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 3,
+      "blue": [
+        "tank"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "tank",
+          "owner": "blue",
+          "hp": 86
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 120
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {}
+        }
+      }
+    },
+    {
+      "seed": 3,
+      "blue": [
+        "infantry",
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 100
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 90
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {
+            "infantry": 2
+          }
+        },
+        "red": {
+          "kills": {
+            "infantry": 2
+          },
+          "losses": {}
+        }
+      }
+    },
+    {
+      "seed": 4,
+      "blue": [
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "machinegun"
+      ],
+      "blueCost": 100,
+      "redCost": 90,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 54
+        },
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 110
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "machinegun": 1
+          },
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {
+            "machinegun": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 4,
+      "blue": [
+        "antitank",
+        "antitank"
+      ],
+      "red": [
+        "heavyTank"
+      ],
+      "blueCost": 220,
+      "redCost": 240,
+      "survivors": [
+        {
+          "type": "antitank",
+          "owner": "blue",
+          "hp": 10
+        },
+        {
+          "type": "antitank",
+          "owner": "blue",
+          "hp": 99
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "heavyTank": 1
+          },
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {
+            "heavyTank": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 4,
+      "blue": [
+        "tank"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "tank",
+          "owner": "blue",
+          "hp": 83
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 120
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {}
+        }
+      }
+    },
+    {
+      "seed": 4,
+      "blue": [
+        "infantry",
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 100
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 96
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {
+            "infantry": 2
+          }
+        },
+        "red": {
+          "kills": {
+            "infantry": 2
+          },
+          "losses": {}
+        }
+      }
+    },
+    {
+      "seed": 5,
+      "blue": [
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "machinegun"
+      ],
+      "blueCost": 100,
+      "redCost": 90,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 31
+        },
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 110
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "machinegun": 1
+          },
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {
+            "machinegun": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 5,
+      "blue": [
+        "antitank",
+        "antitank"
+      ],
+      "red": [
+        "heavyTank"
+      ],
+      "blueCost": 220,
+      "redCost": 240,
+      "survivors": [
+        {
+          "type": "antitank",
+          "owner": "blue",
+          "hp": 10
+        },
+        {
+          "type": "antitank",
+          "owner": "blue",
+          "hp": 99
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "heavyTank": 1
+          },
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {
+            "heavyTank": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 5,
+      "blue": [
+        "tank"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "tank",
+          "owner": "blue",
+          "hp": 90
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 120
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {}
+        }
+      }
+    },
+    {
+      "seed": 5,
+      "blue": [
+        "infantry",
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 100
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 98
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {
+            "infantry": 2
+          }
+        },
+        "red": {
+          "kills": {
+            "infantry": 2
+          },
+          "losses": {}
+        }
+      }
+    },
+    {
+      "seed": 9,
+      "blue": [
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "machinegun"
+      ],
+      "blueCost": 100,
+      "redCost": 90,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 31
+        },
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 110
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "machinegun": 1
+          },
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {
+            "machinegun": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 9,
+      "blue": [
+        "antitank",
+        "antitank"
+      ],
+      "red": [
+        "heavyTank"
+      ],
+      "blueCost": 220,
+      "redCost": 240,
+      "survivors": [
+        {
+          "type": "antitank",
+          "owner": "blue",
+          "hp": 10
+        },
+        {
+          "type": "antitank",
+          "owner": "blue",
+          "hp": 99
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "heavyTank": 1
+          },
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {
+            "heavyTank": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 9,
+      "blue": [
+        "tank"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "tank",
+          "owner": "blue",
+          "hp": 85
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 120
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {}
+        }
+      }
+    },
+    {
+      "seed": 9,
+      "blue": [
+        "infantry",
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 100
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 96
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {
+            "infantry": 2
+          }
+        },
+        "red": {
+          "kills": {
+            "infantry": 2
+          },
+          "losses": {}
+        }
+      }
+    },
+    {
+      "seed": 17,
+      "blue": [
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "machinegun"
+      ],
+      "blueCost": 100,
+      "redCost": 90,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 45
+        },
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 110
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "machinegun": 1
+          },
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {
+            "machinegun": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 17,
+      "blue": [
+        "antitank",
+        "antitank"
+      ],
+      "red": [
+        "heavyTank"
+      ],
+      "blueCost": 220,
+      "redCost": 240,
+      "survivors": [
+        {
+          "type": "antitank",
+          "owner": "blue",
+          "hp": 99
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "heavyTank": 1
+          },
+          "losses": {
+            "antitank": 1
+          }
+        },
+        "red": {
+          "kills": {
+            "antitank": 1
+          },
+          "losses": {
+            "heavyTank": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 17,
+      "blue": [
+        "tank"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "tank",
+          "owner": "blue",
+          "hp": 84
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 120
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {}
+        }
+      }
+    },
+    {
+      "seed": 17,
+      "blue": [
+        "infantry",
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 100
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 76
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {
+            "infantry": 2
+          }
+        },
+        "red": {
+          "kills": {
+            "infantry": 2
+          },
+          "losses": {}
+        }
+      }
+    },
+    {
+      "seed": 44,
+      "blue": [
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "machinegun"
+      ],
+      "blueCost": 100,
+      "redCost": 90,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 22
+        },
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 110
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "machinegun": 1
+          },
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {
+            "machinegun": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 44,
+      "blue": [
+        "antitank",
+        "antitank"
+      ],
+      "red": [
+        "heavyTank"
+      ],
+      "blueCost": 220,
+      "redCost": 240,
+      "survivors": [
+        {
+          "type": "antitank",
+          "owner": "blue",
+          "hp": 10
+        },
+        {
+          "type": "antitank",
+          "owner": "blue",
+          "hp": 99
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {
+            "heavyTank": 1
+          },
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {
+            "heavyTank": 1
+          }
+        }
+      }
+    },
+    {
+      "seed": 44,
+      "blue": [
+        "tank"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "tank",
+          "owner": "blue",
+          "hp": 90
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 120
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {}
+        },
+        "red": {
+          "kills": {},
+          "losses": {}
+        }
+      }
+    },
+    {
+      "seed": 44,
+      "blue": [
+        "infantry",
+        "infantry",
+        "infantry"
+      ],
+      "red": [
+        "helicopter"
+      ],
+      "blueCost": 150,
+      "redCost": 150,
+      "survivors": [
+        {
+          "type": "infantry",
+          "owner": "blue",
+          "hp": 100
+        },
+        {
+          "type": "helicopter",
+          "owner": "red",
+          "hp": 78
+        }
+      ],
+      "losses": {
+        "blue": {
+          "kills": {},
+          "losses": {
+            "infantry": 2
+          }
+        },
+        "red": {
+          "kills": {
+            "infantry": 2
+          },
+          "losses": {}
+        }
+      }
+    }
+  ]
+}

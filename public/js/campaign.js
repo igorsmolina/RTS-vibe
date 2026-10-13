@@ -42,14 +42,17 @@ function drawWorld(){
   if(r.id===w.homes.blue||r.id===w.homes.red){c.fillStyle=r.id===w.homes.blue?TEAM.blue:TEAM.red;c.beginPath();c.arc(x,y-13,6,0,Math.PI*2);c.fill();c.lineWidth=2;c.stroke();c.lineWidth=3;}
   c.strokeText(r.name,x,y+5);c.fillStyle=owner==='blue'?'#d4f1fb':owner==='red'?'#ffd6cc':'#f3efdf';c.fillText(r.name,x,y+5);
  }
+ if(campaign.story){const mark=Story.marker(campaign);if(mark){const r=w.regions[mark.region];c.fillStyle='#ffe3a1';c.fillRect(r.x*sx-9,r.y*sy-30,18,16);c.fillStyle='#142219';c.fillText(String(mark.chapter),r.x*sx,r.y*sy-18);}}
 }
 function renderCampaignStats(){
  const n=o=>campaign.owners.filter(v=>v===o).length,over=campaignOver(campaign);$('campaignNationName').textContent=settings.nation.name;drawNationFlag('campaignNationFlag',settings.nation);
- $('campaignStats').textContent=`${n('blue')} suas · ${n('red')} inimigas · ${n('neutral')} neutras · ${campaign.battles} batalha(s)`+(over?(over==='blue'?' · Campanha vencida':' · Campanha perdida'):'');
+ {const chips=[[`${n('blue')} suas`,'friendly'],[`${n('red')} inimigas`,'hostile'],[`${n('neutral')} neutras`,'neutral'],[`${campaign.battles} batalha(s)`,'battles']];if(over)chips.push([over==='blue'?'Campanha vencida':'Campanha perdida',over==='blue'?'win':'loss']);
+ const nodes=[];chips.forEach(([text,kind],i)=>{if(i)nodes.push(document.createTextNode(' · '));const chip=document.createElement('span');chip.className='stat-chip '+kind;chip.textContent=text;nodes.push(chip);});$('campaignStats').replaceChildren(...nodes);}
  $('campaignEvents').replaceChildren(...campaign.events.map(t=>{const li=document.createElement('li');li.textContent=t;return li;}));
  const order=campaign.world.regions.slice().sort((a,b)=>Number(canAttack(campaign,b.id))-Number(canAttack(campaign,a.id))||a.name.localeCompare(b.name));
  $('regionSelect').replaceChildren(new Option('Escolha uma região…',''),...order.map(r=>new Option(`${r.name} — ${BIOMES[r.biome].name} (${OWNER_LABEL[campaign.owners[r.id]]})${canAttack(campaign,r.id)?' · atacável':''}`,r.id)));
  $('regionSelect').value=selectedRegion>=0?String(selectedRegion):'';
+ if(typeof refreshCampaignStory==='function')refreshCampaignStory();
 }
 function showRegion(id){
  selectedRegion=Number.isInteger(id)&&campaign.world.regions[id]?id:-1;const w=campaign.world,r=w.regions[selectedRegion],over=campaignOver(campaign);
@@ -63,12 +66,14 @@ function showRegion(id){
  }
  if($('regionSelect').value!==String(selectedRegion>=0?selectedRegion:''))$('regionSelect').value=selectedRegion>=0?String(selectedRegion):'';
  showDoctrines('campaignDoctrine','campaignDoctrineInfo','campaignEnemyDoctrineInfo',r&&canAttack(campaign,r.id)?battleFor(campaign,r.id).seed:null);$('campaignDoctrine').disabled=!r||!canAttack(campaign,r.id);drawWorld();
+ if(typeof refreshCampaignStory==='function')refreshCampaignStory();
 }
 function openCampaign(){
- if(!campaign){campaign=loadCampaign()||newCampaign(randomSeed(),$('difficulty').value,$('modeSelect').value);
-  if(campaign.current!==null&&!campaignBattle){campaign.events=[`Batalha por ${campaign.world.regions[campaign.current].name} interrompida.`];campaign.current=null;saveCampaign();}}
+ if(!campaign){campaign=loadCampaign()||newCampaign(randomSeed(),$('difficulty').value,$('modeSelect').value,$('campaignKind').value);
+  if(campaign.current!==null&&!campaignBattle&&!campaign.story){campaign.events=[`Batalha por ${campaign.world.regions[campaign.current].name} interrompida.`];campaign.current=null;saveCampaign();}}
  if($('setup').open)$('setup').close();if($('result').open)$('result').close();
  $('campaignMode').value=campaign.mode;openMenu('campaign');hoverRegion=-1;renderCampaignStats();showRegion(selectedRegion);
+ if(typeof onCampaignStoryOpen==='function')onCampaignStoryOpen();
 }
 function closeCampaign(){closeChild('campaign');}
 // Resumo para o menu inicial: regiões dominadas e batalhas, ou vazio sem campanha salva.
@@ -83,15 +88,16 @@ $('worldMap').addEventListener('pointerleave',()=>{if(hoverRegion>=0){hoverRegio
 $('worldMap').addEventListener('click',e=>{if(worldView)showRegion(worldPixel(e));});
 // Atacar: batalha com mapa, opções e dificuldade da região; a vitória conquista a região.
 $('attackRegion').addEventListener('click',()=>{
+ if(campaign.story&&Story.marker(campaign)?.region===selectedRegion){startStoryMission();return;}
  if(selectedRegion<0||!canAttack(campaign,selectedRegion))return;campaign.mode=$('campaignMode').value;changeSetting('doctrine',cleanDoctrine($('campaignDoctrine').value));const battle=battleFor(campaign,selectedRegion),region=selectedRegion;
  campaign.current=region;saveCampaign();$('campaign').close();audio.unlock();if(!document.fullscreenElement)toggleFullscreen();
  newOperation(battle.map,battle.difficulty,battle.seed,battle.mode,battle.options);game.title=battle.title;campaignBattle={region};updateUI();
  say(`Campanha: batalha por ${campaign.world.regions[region].name}. Vença para conquistar a região.`);
 });
-$('backToWorld').addEventListener('click',()=>{if(!campaignBattle||!game.winner)return;const won=game.winner==='blue';applyResult(campaign,campaignBattle.region,won);campaignBattle=null;saveCampaign();recordCampaignResult(won);openCampaign();});
+$('backToWorld').addEventListener('click',()=>{if(!campaignBattle||!game.winner)return;finishCampaignResult();campaignBattle=null;openCampaign();});
 // Uma batalha rápida abandona a batalha de campanha em andamento (sem resultado).
-$('setupForm').addEventListener('submit',()=>{if(campaignBattle){campaignBattle=null;campaign.current=null;saveCampaign();}},true);
+$('setupForm').addEventListener('submit',()=>{if(campaignBattle){campaignBattle=null;campaign.current=null;if(campaign.story){campaign.story.active=null;campaign.story.scene=null;}saveCampaign();}},true);
 $('newCampaign').addEventListener('click',()=>{
  if(campaign?.battles>0&&Date.now()-confirmNew>4000){confirmNew=Date.now();$('newCampaign').textContent='Confirmar nova campanha?';return;}
- confirmNew=0;$('newCampaign').textContent='Nova campanha';campaign=newCampaign(randomSeed(),campaign?.difficulty||$('difficulty').value,$('campaignMode').value);campaignBattle=null;worldView=null;selectedRegion=-1;saveCampaign();renderCampaignStats();showRegion(-1);
+ confirmNew=0;$('newCampaign').textContent='Nova campanha';campaign=newCampaign(randomSeed(),campaign?.difficulty||$('difficulty').value,$('campaignMode').value,$('campaignKind').value);campaignBattle=null;worldView=null;selectedRegion=-1;saveCampaign();renderCampaignStats();showRegion(-1);onCampaignStoryOpen();
 });

@@ -25,7 +25,7 @@ const assert=require('node:assert/strict'),path=require('node:path'),{pathToFile
     check(label+' ordem de movimento',goal&&g.command([recruit.id],'move',goal)===1);advance(g,180);check(label+' movimento concluído',goal&&DIST(recruit,goal)===0&&!recruit.pending);
     const post=g.structures.find(s=>s.type==='post'&&s.owner==='neutral'),cell=perimeter(g,post)[0];Object.assign(recruit,cell);recruit.moveLeft=TYPES.infantry.move;recruit.actionLeft=true;g.updateVision();
     const oldIncome=g.income('blue');check(label+' ordem de captura',g.command([recruit.id],'capture',{targetId:post.id})===1);advance(g,90);
-    check(label+' captura e renda',post.owner==='blue'&&post.queue.length===0&&g.income('blue')===oldIncome+7);
+    check(label+' captura e renda',post.owner==='blue'&&post.queue.length===0&&g.income('blue')===oldIncome+6);
     const engineer=g.units.find(u=>u.owner==='blue'&&u.type==='engineer');Object.assign(engineer,perimeter(g,post)[0]);engineer.actionLeft=true;engineer.moveLeft=TYPES.engineer.move;post.hp-=30;const damaged=post.hp;g.updateVision();
     check(label+' ordem de reparo',g.command([engineer.id],'repair',{targetId:post.id})===1);advance(g,90);check(label+' reparo',post.hp>damaged&&post.hp<=post.maxHp);
     const x=60,y=46;for(let yy=y-2;yy<=y+2;yy++)for(let xx=x-2;xx<=x+4;xx++)g.terrain[KEY(xx,yy)]='plain';

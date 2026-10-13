@@ -1,0 +1,44 @@
+[
+  {
+    "file": "tests/match-economy.browser.integration.cjs",
+    "code": 0,
+    "stdout": "OK 456 functional economy checks: four maps, RTS/turns, purchase rejections, paid batches, blocked exits, ownership, HQ/commander loss, repair and airport capacity.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/match-combat.browser.integration.cjs",
+    "code": 0,
+    "stdout": "580 functional combat checks; 0 failures.\nOK combat, blocked terrain/structures, armor, air restrictions/ranges, capture/repair perimeter and ownership, airport order rejection, HQ/post victory: four maps, RTS/turns, offline Chrome.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/unit-balance.browser.test.cjs",
+    "code": 1,
+    "stdout": "",
+    "stderr": "{\"name\":\"river rts blue alcance e visão base\",\"ok\":false}\n{\"name\":\"river rts red alcance e visão base\",\"ok\":false}\n{\"name\":\"river turns blue alcance e visão base\",\"ok\":false}\n{\"name\":\"river turns red alcance e visão base\",\"ok\":false}\n{\"name\":\"desert rts blue alcance e visão base\",\"ok\":false}\n{\"name\":\"desert rts red alcance e visão base\",\"ok\":false}\n{\"name\":\"desert turns blue alcance e visão base\",\"ok\":false}\n{\"name\":\"desert turns red alcance e visão base\",\"ok\":false}\n{\"name\":\"mountain rts blue alcance e visão base\",\"ok\":false}\n{\"name\":\"mountain rts red alcance e visão base\",\"ok\":false}\n{\"name\":\"mountain turns blue alcance e visão base\",\"ok\":false}\n{\"name\":\"mountain turns red alcance e visão base\",\"ok\":false}\n{\"name\":\"random rts blue alcance e visão base\",\"ok\":false}\n{\"name\":\"random rts red alcance e visão base\",\"ok\":false}\n{\"name\":\"random turns blue alcance e visão base\",\"ok\":false}\n{\"name\":\"random turns red alcance e visão base\",\"ok\":false}\nAssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ [\n+   {\n+     detail: undefined,\n+     name: 'river rts blue alcance e visão base',\n+     ok: false\n+   },\n+   {\n+     detail: undefined,\n+     name: 'river rts red alcance e visão base',\n+     ok: false\n+   },\n+   {\n+     detail: undefined,\n+     name: 'river turns blue alcance e visão base',\n+     ok: false\n+   },\n+   {\n+     detail: undefined,\n+     name: 'river turns red alcance e visão base',\n+     ok: false\n+   },\n+   {\n+     detail: undefined,\n+     name: 'desert rts blue alcance e visão base',\n+     ok: false\n+   },\n+   {\n+     detail: undefined,\n+     name: 'desert rts red alcance e visão base',\n+     ok: false\n+   },\n+   {\n+     detail: undefined,\n+     name: 'desert turns blue alcance e visão base',\n+     ok: false\n+   },\n+   {\n+     detail: undefined,\n+     name: 'desert turns red alcance e visão base',\n+     ok: false\n+   },\n+   {\n+     detail: undefined,\n+     name: 'mountain rts blue alcance e visão base',\n+     ok: false\n+   },\n+   {\n+     detail: undefined,\n+     name: 'mountain rts red alcance e visão base',\n+     ok: false\n+   },\n+   {\n+     detail: undefined,\n+     name: 'mountain turns blue alcance e visão base',\n+     ok: false\n+   },\n+   {\n+     detail: undefined,\n+     name: 'mountain turns red alcance e visão base',\n+     ok: false\n+   },\n+   {\n+     detail: undefined,\n+     name: 'random rts blue alcance e visão base',\n+     ok: false\n+   },\n+   {\n+     detail: undefined,\n+     name: 'random rts red alcance e visão base',\n+     ok: false\n+   },\n+   {\n+     detail: undefined,\n+     name: 'random turns blue alcance e visão base',\n+     ok: false\n+   },\n+   {\n+     detail: undefined,\n+     name: 'random turns red alcance e visão base',\n+     ok: false\n+   }\n+ ]\n- []\n\n    at C:\\Users\\User\\Downloads\\RTS vibe\\tests\\unit-balance.browser.test.cjs:69:107 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: [Array],\n  expected: [],\n  operator: 'deepStrictEqual',\n  diff: 'simple'\n}\n"
+  },
+  {
+    "file": "tests/helicopter-weapons.browser.integration.cjs",
+    "code": 0,
+    "stdout": "OK 1114 helicopter integration checks: four maps, RTS/turns, both sides, damage, cadence, bursts, missiles, posthumous hits, UI, three FX profiles, visibility and pause; offline Chrome.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/transports.browser.test.cjs",
+    "code": 0,
+    "stdout": "OK sprites offline, comandos, compra confirmada, paraquedas, save, manual e tela móvel sem erros JS.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/transports-multiplayer.integration.cjs",
+    "code": 0,
+    "stdout": "OK transporte multiplayer rts: proprietário, carga privada, sequência duplicada e voo.\nOK transporte multiplayer turns: proprietário, carga privada, sequência duplicada e voo.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/aviation.browser.test.cjs",
+    "code": 0,
+    "stdout": "OK oito sprites, aeroporto, comandos, salva, emissões, bombardeiro, mobile, minimapa e file:// offline.\n",
+    "stderr": ""
+  }
+]

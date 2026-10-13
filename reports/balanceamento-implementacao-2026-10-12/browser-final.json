@@ -1,0 +1,50 @@
+[
+  {
+    "file": "tests/match-economy.browser.integration.cjs",
+    "code": 0,
+    "stdout": "OK 456 functional economy checks: four maps, RTS/turns, purchase rejections, paid batches, blocked exits, ownership, HQ/commander loss, repair and airport capacity.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/match-combat.browser.integration.cjs",
+    "code": 0,
+    "stdout": "580 functional combat checks; 0 failures.\nOK combat, blocked terrain/structures, armor, air restrictions/ranges, capture/repair perimeter and ownership, airport order rejection, HQ/post victory: four maps, RTS/turns, offline Chrome.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/unit-balance.browser.test.cjs",
+    "code": 0,
+    "stdout": "OK funções de combate, produção de todas as classes, preços/UI, desconto integral e bombardeiro no aeroporto.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/helicopter-weapons.browser.integration.cjs",
+    "code": 0,
+    "stdout": "OK 1114 helicopter integration checks: four maps, RTS/turns, both sides, damage, cadence, bursts, missiles, posthumous hits, UI, three FX profiles, visibility and pause; offline Chrome.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/transports.browser.test.cjs",
+    "code": 0,
+    "stdout": "OK sprites offline, comandos, compra confirmada, paraquedas, save, manual e tela móvel sem erros JS.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/transports-multiplayer.integration.cjs",
+    "code": 0,
+    "stdout": "OK transporte multiplayer rts: proprietário, carga privada, sequência duplicada e voo.\nOK transporte multiplayer turns: proprietário, carga privada, sequência duplicada e voo.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/aviation.browser.test.cjs",
+    "code": 0,
+    "stdout": "OK oito sprites, aeroporto, comandos, salva, emissões, bombardeiro, mobile, minimapa e file:// offline.\n",
+    "stderr": ""
+  },
+  {
+    "file": "tests/match-cycle.browser.test.cjs",
+    "code": 0,
+    "stdout": "OK ciclo completo nos quatro mapas, RTS/turnos, IA após perda do QG, economia, produção, movimento, combate, captura, reparo e resultados.\n",
+    "stderr": ""
+  }
+]

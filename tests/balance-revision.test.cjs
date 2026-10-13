@@ -20,7 +20,7 @@ test('post survives peripheral cruise and needs three central rockets',()=>{
  for(const mode of ['rts','turns']){const g=field(mode),a=g.add('blue','bomberBlue',30,40),p=g.add('red','post',40,40);assert.equal(p.hp,90);g.rocketImpact({weapon:'cruiseMissile',attackerId:a.id,owner:'blue',tx:39,ty:40,power:160,hit:true});assert.equal(p.hp,10);p.hp=90;for(const hp of [50,10,0]){g.rocketImpact({weapon:'rocket',attackerId:a.id,owner:'blue',tx:40,ty:40,power:20,hit:true});assert.equal(p.hp,hp);}}
 });
 test('post income applies in both modes and all doctrines',()=>{
- for(const mode of ['rts','turns']){const g=field(mode);g.add('blue','post',30,40);assert.equal(g.income('blue'),22);for(const [doctrine,income]of [['economic',25],['offensive',22],['defensive',20]]){g.doctrines={blue:doctrine,red:'balanced'};assert.equal(g.income('blue'),income);}g.doctrines={blue:'balanced',red:'balanced'};if(mode==='rts'){for(let i=0;i<300;i++)g.update(1/30);}else{g.round=2;g.beginTurn('blue');}assert.equal(g.credits.blue,172);}
+ for(const mode of ['rts','turns']){const g=field(mode);g.add('blue','post',30,40);assert.equal(g.income('blue'),21);for(const [doctrine,income]of [['economic',24],['offensive',21],['defensive',19]]){g.doctrines={blue:doctrine,red:'balanced'};assert.equal(g.income('blue'),income);}g.doctrines={blue:'balanced',red:'balanced'};if(mode==='rts'){for(let i=0;i<300;i++)g.update(1/30);}else{g.round=2;g.beginTurn('blue');}assert.equal(g.credits.blue,171);}
 });
 test('normal AI recruits the fourth aircraft without raising other limits',()=>{
  assert.equal(PLAN.normal.planes,4);

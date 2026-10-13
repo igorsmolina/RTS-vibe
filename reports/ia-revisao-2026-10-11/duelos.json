@@ -1,0 +1,3503 @@
+{
+  "source": "public/js/engine.js",
+  "sourceHash": "34363f8ad2399b6df4d528fe925ea5a1b597c91c8c6c7db04b8d7344824b5b15",
+  "battles": [
+    {
+      "mode": "rts",
+      "seed": 1,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 120,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 1
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 7.799999999999982,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":89,\"y\":53}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 8.39999999999998,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 8.999999999999979,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":86,\"y\":56}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 9.599999999999977,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.199999999999974,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":83,\"y\":59}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 10.799999999999972,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 11.39999999999997,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":81,\"y\":61}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 12.599999999999966,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":79,\"y\":63}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 14.39999999999996,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 15.599999999999955,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":76,\"y\":66}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 17.400000000000023,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 18.600000000000083,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":73,\"y\":69}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 20.400000000000173,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 21.600000000000232,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":71,\"y\":71}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.00000000000035,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.20000000000041,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":73}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 27.60000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 28.80000000000059,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":75}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 31.20000000000071,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 32.40000000000072,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":65,\"y\":77}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 34.80000000000059,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 36.00000000000052,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 38.40000000000038,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 40.20000000000028,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":60,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 42.60000000000014,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":62,\"y\":80}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 2,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 120,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 1
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 7.799999999999982,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":89,\"y\":53}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 8.39999999999998,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 8.999999999999979,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":86,\"y\":56}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 9.599999999999977,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.199999999999974,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":83,\"y\":59}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 10.799999999999972,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 11.39999999999997,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":81,\"y\":61}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 12.599999999999966,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":79,\"y\":63}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 14.39999999999996,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 15.599999999999955,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":76,\"y\":66}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 17.400000000000023,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 18.600000000000083,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":73,\"y\":69}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 20.400000000000173,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 21.600000000000232,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":71,\"y\":71}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.00000000000035,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.20000000000041,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":73}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 27.60000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 28.80000000000059,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":75}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 31.20000000000071,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 32.40000000000072,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":65,\"y\":77}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 34.80000000000059,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 36.00000000000052,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 38.40000000000038,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 40.20000000000028,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":60,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 42.60000000000014,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":62,\"y\":80}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 3,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 1
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 7.799999999999982,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":89,\"y\":53}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 8.39999999999998,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 8.999999999999979,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":86,\"y\":56}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 9.599999999999977,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.199999999999974,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":83,\"y\":59}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 10.799999999999972,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 11.39999999999997,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":81,\"y\":61}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 12.599999999999966,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":79,\"y\":63}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 14.39999999999996,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 15.599999999999955,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":76,\"y\":66}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 17.400000000000023,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 18.600000000000083,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":73,\"y\":69}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 20.400000000000173,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 21.600000000000232,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":71,\"y\":71}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.00000000000035,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.20000000000041,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":73}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 27.60000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 28.80000000000059,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":75}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 31.20000000000071,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 32.40000000000072,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":65,\"y\":77}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 34.80000000000059,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 36.00000000000052,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 38.40000000000038,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 40.20000000000028,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":60,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 42.60000000000014,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":62,\"y\":80}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 4,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 120,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 1
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 7.799999999999982,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":89,\"y\":53}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 8.39999999999998,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 8.999999999999979,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":86,\"y\":56}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 9.599999999999977,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.199999999999974,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":83,\"y\":59}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 10.799999999999972,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 11.39999999999997,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":81,\"y\":61}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 12.599999999999966,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":79,\"y\":63}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 14.39999999999996,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 15.599999999999955,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":76,\"y\":66}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 17.400000000000023,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 18.600000000000083,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":73,\"y\":69}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 20.400000000000173,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 21.600000000000232,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":71,\"y\":71}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.00000000000035,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.20000000000041,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":73}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 27.60000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 28.80000000000059,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":75}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 31.20000000000071,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 32.40000000000072,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":65,\"y\":77}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 34.80000000000059,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 36.00000000000052,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 38.40000000000038,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 40.20000000000028,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":60,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 42.60000000000014,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":62,\"y\":80}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 5,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 1
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 7.799999999999982,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":89,\"y\":53}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 8.39999999999998,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 8.999999999999979,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":86,\"y\":56}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 9.599999999999977,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.199999999999974,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":83,\"y\":59}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 10.799999999999972,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 11.39999999999997,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":81,\"y\":61}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 12.599999999999966,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":79,\"y\":63}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 14.39999999999996,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 15.599999999999955,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":76,\"y\":66}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 17.400000000000023,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 18.600000000000083,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":73,\"y\":69}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 20.400000000000173,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 21.600000000000232,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":71,\"y\":71}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.00000000000035,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.20000000000041,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":73}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 27.60000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 28.80000000000059,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":75}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 31.20000000000071,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 32.40000000000072,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":65,\"y\":77}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 34.80000000000059,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 36.00000000000052,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 38.40000000000038,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 40.20000000000028,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":60,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 42.60000000000014,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":62,\"y\":80}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 9,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 120,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 1
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 7.799999999999982,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":89,\"y\":53}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 8.39999999999998,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 8.999999999999979,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":86,\"y\":56}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 9.599999999999977,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.199999999999974,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":83,\"y\":59}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 10.799999999999972,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 11.39999999999997,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":81,\"y\":61}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 12.599999999999966,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":79,\"y\":63}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 14.39999999999996,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 15.599999999999955,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":76,\"y\":66}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 17.400000000000023,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 18.600000000000083,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":73,\"y\":69}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 20.400000000000173,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 21.600000000000232,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":71,\"y\":71}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.00000000000035,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.20000000000041,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":73}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 27.60000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 28.80000000000059,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":75}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 31.20000000000071,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 32.40000000000072,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":65,\"y\":77}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 34.80000000000059,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 36.00000000000052,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 38.40000000000038,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 40.20000000000028,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":60,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 42.60000000000014,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":62,\"y\":80}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 17,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 1
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 7.799999999999982,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":89,\"y\":53}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 8.39999999999998,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 8.999999999999979,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":86,\"y\":56}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 9.599999999999977,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.199999999999974,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":83,\"y\":59}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 10.799999999999972,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 11.39999999999997,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":81,\"y\":61}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 12.599999999999966,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":79,\"y\":63}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 14.39999999999996,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 15.599999999999955,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":76,\"y\":66}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 17.400000000000023,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 18.600000000000083,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":73,\"y\":69}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 20.400000000000173,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 21.600000000000232,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":71,\"y\":71}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.00000000000035,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.20000000000041,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":73}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 27.60000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 28.80000000000059,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":75}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 31.20000000000071,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 32.40000000000072,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":65,\"y\":77}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 34.80000000000059,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 36.00000000000052,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 38.40000000000038,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 40.20000000000028,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":60,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 42.60000000000014,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":62,\"y\":80}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 44,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 1
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 7.799999999999982,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":89,\"y\":53}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 8.39999999999998,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 8.999999999999979,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":86,\"y\":56}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 9.599999999999977,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.199999999999974,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":83,\"y\":59}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 10.799999999999972,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 11.39999999999997,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":81,\"y\":61}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 12.599999999999966,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":79,\"y\":63}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 14.39999999999996,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 15.599999999999955,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":76,\"y\":66}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 17.400000000000023,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 18.600000000000083,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":73,\"y\":69}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 20.400000000000173,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 21.600000000000232,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":71,\"y\":71}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.00000000000035,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.20000000000041,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":73}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 27.60000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 28.80000000000059,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":75}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 31.20000000000071,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 32.40000000000072,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":65,\"y\":77}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 34.80000000000059,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 36.00000000000052,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 38.40000000000038,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 40.20000000000028,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":60,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 42.60000000000014,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":62,\"y\":80}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 1,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 120,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 1074,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 6.999999999999985,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 29.40000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 2,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 12,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 1074,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 6.999999999999985,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 29.40000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 3,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 1074,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 6.999999999999985,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 29.40000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 4,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 120,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 1074,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 6.999999999999985,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 29.40000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 5,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 120,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 1074,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 6.999999999999985,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 29.40000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 9,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 40,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 1074,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 6.999999999999985,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 29.40000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 17,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 1074,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 6.999999999999985,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 29.40000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 44,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 1074,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":92,\"y\":50}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 6.999999999999985,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 29.40000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 1,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 2,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 0,
+          "jetGun": 80
+        },
+        "shots": 3
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 0.6,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        },
+        {
+          "at": 1.2000000000000004,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 1.8000000000000023,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        },
+        {
+          "at": 2.4000000000000012,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":88,\"y\":54}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 4.799999999999993,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 5.399999999999991,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":85,\"y\":57}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 5.9999999999999885,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 6.599999999999986,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":83,\"y\":59}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.799999999999982,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 8.39999999999998,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":80,\"y\":62}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 8.999999999999979,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.199999999999974,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":77,\"y\":65}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 11.39999999999997,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 11.999999999999968,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":75,\"y\":67}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 14.39999999999996,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":73,\"y\":69}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 16.199999999999964,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 17.400000000000023,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":70,\"y\":72}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 19.200000000000113,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 20.400000000000173,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":75}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 22.200000000000262,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":73}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.00000000000035,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.20000000000041,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":66,\"y\":76}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 27.60000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 28.80000000000059,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 30.60000000000068,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":66,\"y\":76}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 33.00000000000069,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 34.20000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 36.600000000000485,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 37.800000000000416,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":60,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 40.20000000000028,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 41.40000000000021,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":57,\"y\":85}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 43.800000000000075,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 1,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 2,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 1,
+          "jetGun": 80
+        },
+        "shots": 3
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 0.6,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        },
+        {
+          "at": 1.2000000000000004,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 1.8000000000000023,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        },
+        {
+          "at": 2.999999999999999,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":85,\"y\":57}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 5.9999999999999885,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":84,\"y\":61}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 10.199999999999974,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.799999999999972,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":81,\"y\":64}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 11.39999999999997,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 11.999999999999968,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":79,\"y\":66}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 13.799999999999962,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":77,\"y\":68}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 14.999999999999957,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 16.199999999999964,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":74,\"y\":71}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 18.000000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 19.200000000000113,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":71,\"y\":74}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 21.000000000000203,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 22.200000000000262,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":76}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.60000000000038,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.80000000000044,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":78}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 28.20000000000056,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 29.40000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":65,\"y\":80}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 31.80000000000074,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 33.00000000000069,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 35.40000000000055,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 36.600000000000485,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":61,\"y\":84}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 39.00000000000035,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 40.800000000000246,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":57,\"y\":85}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 42.60000000000014,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 43.800000000000075,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":55,\"y\":90}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 2,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 176,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 0,
+          "jetGun": 80
+        },
+        "shots": 3
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 0.6,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"egress\"}"
+        },
+        {
+          "at": 1.2000000000000004,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 1.8000000000000023,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"egress\"}"
+        },
+        {
+          "at": 2.4000000000000012,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":88,\"y\":54}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 4.799999999999993,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 5.399999999999991,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":85,\"y\":57}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 5.9999999999999885,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 6.599999999999986,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":83,\"y\":59}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.799999999999982,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 8.39999999999998,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":80,\"y\":62}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 8.999999999999979,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.199999999999974,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":77,\"y\":65}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 11.39999999999997,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 11.999999999999968,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":75,\"y\":67}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 14.39999999999996,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":73,\"y\":69}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 16.199999999999964,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 17.400000000000023,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":70,\"y\":72}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 19.200000000000113,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 20.400000000000173,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":75}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 22.200000000000262,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":73}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.00000000000035,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.20000000000041,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":66,\"y\":76}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 27.60000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 28.80000000000059,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 30.60000000000068,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":66,\"y\":76}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 33.00000000000069,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 34.20000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 36.600000000000485,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 37.800000000000416,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":60,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 40.20000000000028,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 41.40000000000021,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":57,\"y\":85}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 43.800000000000075,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 2,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 220,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 1,
+          "jetGun": 80
+        },
+        "shots": 3
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 0.6,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"egress\"}"
+        },
+        {
+          "at": 1.2000000000000004,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 1.8000000000000023,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"egress\"}"
+        },
+        {
+          "at": 2.999999999999999,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":85,\"y\":57}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 5.9999999999999885,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":84,\"y\":61}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 10.199999999999974,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.799999999999972,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":81,\"y\":64}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 11.39999999999997,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 11.999999999999968,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":79,\"y\":66}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 13.799999999999962,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":77,\"y\":68}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 14.999999999999957,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 16.199999999999964,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":74,\"y\":71}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 18.000000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 19.200000000000113,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":71,\"y\":74}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 21.000000000000203,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 22.200000000000262,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":76}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.60000000000038,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.80000000000044,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":78}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 28.20000000000056,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 29.40000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":65,\"y\":80}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 31.80000000000074,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 33.00000000000069,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 35.40000000000055,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 36.600000000000485,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":61,\"y\":84}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 39.00000000000035,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 40.800000000000246,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":57,\"y\":85}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 42.60000000000014,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 43.800000000000075,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":55,\"y\":90}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 9,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 176,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 0,
+          "jetGun": 80
+        },
+        "shots": 3
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 0.6,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        },
+        {
+          "at": 1.2000000000000004,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 1.8000000000000023,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        },
+        {
+          "at": 2.4000000000000012,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":88,\"y\":54}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 4.799999999999993,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 5.399999999999991,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":85,\"y\":57}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 5.9999999999999885,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 6.599999999999986,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":83,\"y\":59}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.799999999999982,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 8.39999999999998,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":80,\"y\":62}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 8.999999999999979,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.199999999999974,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":77,\"y\":65}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 11.39999999999997,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 11.999999999999968,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":75,\"y\":67}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 14.39999999999996,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":73,\"y\":69}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 16.199999999999964,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 17.400000000000023,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":70,\"y\":72}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 19.200000000000113,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 20.400000000000173,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":75}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 22.200000000000262,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":73}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.00000000000035,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.20000000000041,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":66,\"y\":76}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 27.60000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 28.80000000000059,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 30.60000000000068,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":66,\"y\":76}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 33.00000000000069,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 34.20000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 36.600000000000485,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 37.800000000000416,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":60,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 40.20000000000028,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 41.40000000000021,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":57,\"y\":85}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 43.800000000000075,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 9,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 220,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 1,
+          "jetGun": 80
+        },
+        "shots": 3
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 0.6,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        },
+        {
+          "at": 1.2000000000000004,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 1.8000000000000023,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        },
+        {
+          "at": 2.999999999999999,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":85,\"y\":57}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 5.9999999999999885,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 6.599999999999986,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":84,\"y\":61}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.799999999999982,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 8.999999999999979,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":81,\"y\":64}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 9.599999999999977,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.799999999999972,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":78,\"y\":67}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 11.999999999999968,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":75,\"y\":70}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 14.999999999999957,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 16.199999999999964,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":72,\"y\":73}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 18.000000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 19.200000000000113,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":76}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 21.000000000000203,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 22.200000000000262,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":78}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.60000000000038,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.80000000000044,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":65,\"y\":80}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 28.20000000000056,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 29.40000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 31.80000000000074,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 33.00000000000069,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":61,\"y\":84}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 35.40000000000055,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 37.20000000000045,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":58,\"y\":87}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 39.600000000000314,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":60,\"y\":85}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 42.60000000000014,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 43.800000000000075,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":58,\"y\":87}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 17,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 176,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 0,
+          "jetGun": 80
+        },
+        "shots": 3
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 0.6,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        },
+        {
+          "at": 1.2000000000000004,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 1.8000000000000023,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        },
+        {
+          "at": 2.4000000000000012,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":88,\"y\":54}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 4.799999999999993,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 5.399999999999991,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":85,\"y\":57}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 5.9999999999999885,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 6.599999999999986,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":83,\"y\":59}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.799999999999982,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 8.39999999999998,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":80,\"y\":62}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 8.999999999999979,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.199999999999974,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":77,\"y\":65}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 11.39999999999997,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 11.999999999999968,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":75,\"y\":67}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 14.39999999999996,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":73,\"y\":69}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 16.199999999999964,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 17.400000000000023,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":70,\"y\":72}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 19.200000000000113,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 20.400000000000173,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":75}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 22.200000000000262,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":73}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.00000000000035,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.20000000000041,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":66,\"y\":76}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 27.60000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 28.80000000000059,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 30.60000000000068,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":66,\"y\":76}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 33.00000000000069,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 34.20000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":79}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 36.600000000000485,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 37.800000000000416,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":60,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 40.20000000000028,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 41.40000000000021,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":57,\"y\":85}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 43.800000000000075,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 17,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 220,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 1,
+          "jetGun": 80
+        },
+        "shots": 3
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 0.6,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        },
+        {
+          "at": 1.2000000000000004,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 1.8000000000000023,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        },
+        {
+          "at": 2.999999999999999,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":85,\"y\":57}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 5.9999999999999885,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 6.599999999999986,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":84,\"y\":61}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.799999999999982,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 8.999999999999979,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":81,\"y\":64}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 9.599999999999977,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 10.799999999999972,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":78,\"y\":67}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 11.999999999999968,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":75,\"y\":70}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 14.999999999999957,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 16.199999999999964,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":72,\"y\":73}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 18.000000000000053,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 19.200000000000113,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":69,\"y\":76}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 21.000000000000203,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 22.200000000000262,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":67,\"y\":78}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 24.60000000000038,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 25.80000000000044,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":65,\"y\":80}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 28.20000000000056,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 29.40000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":63,\"y\":82}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 31.80000000000074,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 33.00000000000069,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":61,\"y\":84}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 35.40000000000055,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 37.20000000000045,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":58,\"y\":87}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 39.600000000000314,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":60,\"y\":85}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 42.60000000000014,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 43.800000000000075,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":58,\"y\":87}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 1,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 96,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 1,
+          "jetGun": 80
+        },
+        "shots": 3
+      },
+      "ticks": 796,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 2.533333333333334,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":88,\"y\":46}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 4.633333333333327,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 19.633333333333468,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 1,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 140,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 2,
+          "jetGun": 80
+        },
+        "shots": 3
+      },
+      "ticks": 879,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 2.533333333333334,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":88,\"y\":46}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 5.133333333333325,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        },
+        {
+          "at": 21.933333333333582,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 2,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 176,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 0,
+          "jetGun": 80
+        },
+        "shots": 4
+      },
+      "ticks": 727,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 6.299999999999987,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":87,\"y\":45}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 9.233333333333311,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 2,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 220,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 1,
+          "jetGun": 80
+        },
+        "shots": 4
+      },
+      "ticks": 749,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 6.133333333333321,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":82,\"y\":40}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 8.166666666666648,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 9,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 2,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 0,
+          "jetGun": 80
+        },
+        "shots": 4
+      },
+      "ticks": 721,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 6.099999999999988,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":87,\"y\":45}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 9.033333333333312,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 9,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 2,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 0,
+          "jetGun": 80
+        },
+        "shots": 6
+      },
+      "ticks": 720,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 9.833333333333309,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":79,\"y\":37}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 12.799999999999965,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 17,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 2,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 0,
+          "jetGun": 80
+        },
+        "shots": 4
+      },
+      "ticks": 721,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 6.099999999999988,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":87,\"y\":45}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 9.033333333333312,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 17,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": true,
+        "aaRemaining": 2,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 0,
+        "planeHp": 200,
+        "aaHp": 2,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 0,
+          "jetGun": 80
+        },
+        "shots": 6
+      },
+      "ticks": 727,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 10.066666666666642,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":79,\"y\":37}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 13.033333333333298,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "name": "rts: míssil de longo alcance antes de expor multifunção à AA",
+      "ok": true,
+      "details": {
+        "weapon": "antiRadiation"
+      }
+    },
+    {
+      "name": "rts: arma curta não justifica trocar avião por AA barata",
+      "ok": true,
+      "details": {
+        "order": {
+          "type": "return"
+        },
+        "response": {
+          "id": 49,
+          "type": "antiAirVehicle",
+          "owner": "blue",
+          "x": 50,
+          "y": 50,
+          "hp": 70,
+          "maxHp": 70,
+          "seenAt": 0,
+          "until": 30
+        }
+      }
+    },
+    {
+      "name": "rts: perda aérea muda missão do próximo avião na mesma área",
+      "ok": true,
+      "details": {
+        "memory": [
+          {
+            "x": 50,
+            "y": 50,
+            "at": 0,
+            "count": 1,
+            "lostCost": 736,
+            "until": 120
+          }
+        ],
+        "order": {
+          "type": "transfer",
+          "goal": {
+            "x": 92,
+            "y": 50
+          }
+        }
+      }
+    },
+    {
+      "name": "turns: míssil de longo alcance antes de expor multifunção à AA",
+      "ok": true,
+      "details": {
+        "weapon": "antiRadiation"
+      }
+    },
+    {
+      "name": "turns: arma curta não justifica trocar avião por AA barata",
+      "ok": true,
+      "details": {
+        "order": {
+          "type": "return"
+        },
+        "response": {
+          "id": 49,
+          "type": "antiAirVehicle",
+          "owner": "blue",
+          "x": 50,
+          "y": 50,
+          "hp": 70,
+          "maxHp": 70,
+          "seenAt": 1,
+          "until": 3
+        }
+      }
+    },
+    {
+      "name": "turns: perda aérea muda missão do próximo avião na mesma área",
+      "ok": true,
+      "details": {
+        "memory": [
+          {
+            "x": 50,
+            "y": 50,
+            "at": 1,
+            "count": 1,
+            "lostCost": 736,
+            "until": 7
+          }
+        ],
+        "order": {
+          "type": "transfer",
+          "goal": {
+            "x": 92,
+            "y": 50
+          }
+        }
+      }
+    },
+    {
+      "name": "depois de cobertura observada, poupa por resposta terrestre",
+      "ok": true
+    },
+    {
+      "name": "duelos conhecidos não repetem troca avião perdido / AA destruída",
+      "ok": true,
+      "details": {
+        "scenarios": 32,
+        "trades": 0
+      }
+    },
+    {
+      "name": "sobrevivência também melhora; só deixar de abater a AA não basta",
+      "ok": true,
+      "details": {
+        "planesLost": 0,
+        "targetsDestroyed": 10
+      }
+    },
+    {
+      "name": "RTS reconsidera ataque em andamento quando aparece cobertura antiaérea",
+      "ok": true
+    },
+    {
+      "name": "bombardeiro sem cruzeiro não mergulha nas antiaéreas lembradas",
+      "ok": true
+    },
+    {
+      "name": "resposta terrestre é comprada, produzida e remove a AA com o avião preservado",
+      "ok": true,
+      "details": {
+        "time": 167.66666666665972,
+        "rocketCost": 240,
+        "planeAlive": true,
+        "aaHp": 0,
+        "credits": 970
+      }
+    },
+    {
+      "name": "sem pista, ataque inseguro usa retirada aérea em vez de conservar ofensiva",
+      "ok": true
+    },
+    {
+      "name": "morte distante depois de voo concluído não condena uma missão antiga",
+      "ok": true
+    },
+    {
+      "name": "turnos: aproximação avalia AA no meio do caminho, não só nas pontas",
+      "ok": true
+    },
+    {
+      "name": "emissão revela posição, mas HP oculto e AA silenciosa não mudam decisão",
+      "ok": true,
+      "details": {
+        "target": 49,
+        "weapon": "antiRadiation",
+        "salvo": 2,
+        "contacts": [
+          {
+            "x": 50,
+            "y": 50,
+            "hp": 70
+          }
+        ]
+      }
+    }
+  ]
+}

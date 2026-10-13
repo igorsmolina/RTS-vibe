@@ -11,6 +11,8 @@ const CELL=56;
 let game,settings={graphics:'balanced'},reducedMotion=false;
 const GRAPHICS={performance:{clouds:0,particles:80,interval:.22,alpha:0},balanced:{clouds:32,visibleClouds:6,particles:200,interval:.12,alpha:.13},cinematic:{clouds:64,visibleClouds:12,particles:400,interval:.08,alpha:.2}};
 const cam={x:0,y:0,zoom:1},renderer={canvas:{clientWidth:1000,clientHeight:800}};
+function localPlayerSide(){return 'blue';}
+function visualUnit(u){return u;}
 function flightPose(u){const level=AIR(u)?flightLevel(u):0;return{x:u.x,y:u.y-18*level/CELL,scale:1+.12*level,level};}
 Object.assign(this,{Game,TYPES,AIR,PLANE,cam,renderer});
 this.fixture=()=>{game=new Game('river','normal',13,'rts',{posts:2});game.units=[];game.structures=[];game.projectiles=[];game.actions=[];game.animation=null;game.terrain.fill('plain');game.visible.blue.fill(true);game.sky.blue.fill(true);game.aiEnabled=false;settings.graphics='balanced';reducedMotion=false;return game;};
@@ -52,7 +54,7 @@ console.log('OK bandeira e antena: relógio visual, pausa, pose fixa e fases por
 {
  const {g,fx}=setup(),c=context(),hq=structure(g,'hq',.2,5,5),post=structure(g,'post',.6,10,5),site=g.add('blue','airportSite',20,5);site.hp=1;
  fx.drawDamage(c,structure(g,'post',1,30,5),false,art);assert.equal(c.ops.length,0,'estrutura inteira não tem sobreposição');
- fx.drawDamage(c,post,false,{complete:false,naturalWidth:0});assert.equal(c.ops.length,0,'sem arte pronta, nada é desenhado nem guardado');assert.equal(Object.keys(fx.art).length,0);
+ const preparedArt=Object.keys(fx.art).length;fx.drawDamage(c,post,false,{complete:false,naturalWidth:0});assert.equal(c.ops.length,0,'sem arte pronta, nada é desenhado nem guardado');assert.equal(Object.keys(fx.art).length,preparedArt);
  fx.drawDamage(c,site,false,art);assert.equal(c.ops.length,0,'canteiro de obra não mostra dano');
  const before=canvases;fx.drawDamage(c,hq,false,art);fx.drawDamage(c,hq,false,art);fx.drawDamage(c,hq,true,art);
  assert.equal(canvases-before,1,'a sobreposição de (hq, estágio 3) é criada uma vez');
@@ -72,8 +74,8 @@ console.log('OK dano progressivo: estágios, arte pronta, canteiro excluído, ca
  fx.consume(wreckEvent(5,5));assert.equal(fx.wrecks.length,1);
  const frozen=JSON.stringify(fx.wrecks);fx.advance(0);fx.advance(NaN);assert.equal(JSON.stringify(fx.wrecks),frozen,'pausa preserva os destroços');
  fx.ground(c);assert.ok(c.ops.some(o=>o[0]==='image'&&o[1]>0),'destroço é desenhado em ground()');
- const full=c.ops.filter(o=>o[0]==='image').at(-1)[1];assert.ok(Math.abs(full-.92)<1e-9,'opacidade plena enquanto novo');
- fx.advance(25);c.ops=[];fx.ground(c);const fading=c.ops.filter(o=>o[0]==='image').at(-1)[1];assert.ok(fading<full&&fading>0,'desvanece nos últimos segundos');
+ const rubble=fx.rubble(fx.wrecks[0]),full=c.ops.filter(o=>o[0]==='image'&&o[3]===rubble).at(-1)[1];assert.ok(Math.abs(full-.92)<1e-9,'opacidade plena enquanto novo');
+ fx.advance(25);c.ops=[];fx.ground(c);const fading=c.ops.filter(o=>o[0]==='image'&&o[3]===rubble).at(-1)[1];assert.ok(fading<full&&fading>0,'desvanece nos últimos segundos');
  fx.advance(6);assert.equal(fx.wrecks.length,0,'expira após 30 s visuais');
  for(let i=0;i<20;i++)fx.consume(wreckEvent(i*3%40,i%20));assert.equal(fx.wrecks.length,16,'no máximo 16 destroços');
  fx.reset();assert.equal(fx.wrecks.length,0,'reconstrução limpa os destroços');

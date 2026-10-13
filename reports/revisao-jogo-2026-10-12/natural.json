@@ -1,0 +1,192 @@
+{
+  "sourceHash": "8f9aecc4d0bc12231707609d331c124db5484da531a483529f2e4b6c6b3f4e57",
+  "checks": [],
+  "natural": [
+    {
+      "map": "river",
+      "mode": "rts",
+      "seed": 44,
+      "blue": "sem ordens",
+      "duration": 300.000000000023,
+      "initialTransports": [],
+      "embarks": 0,
+      "disembarked": 0,
+      "airdropPurchases": 0,
+      "airdropSpawns": 0,
+      "purchasedCarriers": 0,
+      "groundFailures": 0,
+      "airFailures": 0,
+      "finalTransports": [],
+      "losses": {
+        "recon": 1
+      },
+      "redPosts": 16,
+      "credits": 158,
+      "winner": null
+    },
+    {
+      "map": "river",
+      "mode": "turns",
+      "seed": 44,
+      "blue": "sem ordens",
+      "duration": 49,
+      "initialTransports": [],
+      "embarks": 2,
+      "disembarked": 2,
+      "airdropPurchases": 0,
+      "airdropSpawns": 0,
+      "purchasedCarriers": 1,
+      "groundFailures": 0,
+      "airFailures": 0,
+      "finalTransports": [
+        {
+          "type": "transportTruck",
+          "cargo": 0
+        }
+      ],
+      "losses": {},
+      "redPosts": 10,
+      "credits": 39,
+      "winner": null
+    },
+    {
+      "map": "desert",
+      "mode": "rts",
+      "seed": 44,
+      "blue": "sem ordens",
+      "duration": 300.000000000023,
+      "initialTransports": [],
+      "embarks": 0,
+      "disembarked": 0,
+      "airdropPurchases": 0,
+      "airdropSpawns": 0,
+      "purchasedCarriers": 0,
+      "groundFailures": 0,
+      "airFailures": 0,
+      "finalTransports": [],
+      "losses": {},
+      "redPosts": 18,
+      "credits": 293,
+      "winner": null
+    },
+    {
+      "map": "desert",
+      "mode": "turns",
+      "seed": 44,
+      "blue": "sem ordens",
+      "duration": 49,
+      "initialTransports": [],
+      "embarks": 5,
+      "disembarked": 4,
+      "airdropPurchases": 0,
+      "airdropSpawns": 0,
+      "purchasedCarriers": 1,
+      "groundFailures": 0,
+      "airFailures": 0,
+      "finalTransports": [
+        {
+          "type": "transportTruck",
+          "cargo": 1
+        }
+      ],
+      "losses": {},
+      "redPosts": 12,
+      "credits": 107,
+      "winner": null
+    },
+    {
+      "map": "mountain",
+      "mode": "rts",
+      "seed": 44,
+      "blue": "sem ordens",
+      "duration": 300.000000000023,
+      "initialTransports": [],
+      "embarks": 0,
+      "disembarked": 0,
+      "airdropPurchases": 0,
+      "airdropSpawns": 0,
+      "purchasedCarriers": 0,
+      "groundFailures": 0,
+      "airFailures": 0,
+      "finalTransports": [],
+      "losses": {
+        "recon": 1
+      },
+      "redPosts": 16,
+      "credits": 165,
+      "winner": null
+    },
+    {
+      "map": "mountain",
+      "mode": "turns",
+      "seed": 44,
+      "blue": "sem ordens",
+      "duration": 49,
+      "initialTransports": [],
+      "embarks": 0,
+      "disembarked": 0,
+      "airdropPurchases": 0,
+      "airdropSpawns": 0,
+      "purchasedCarriers": 1,
+      "groundFailures": 0,
+      "airFailures": 0,
+      "finalTransports": [
+        {
+          "type": "transportTruck",
+          "cargo": 0
+        }
+      ],
+      "losses": {
+        "recon": 1
+      },
+      "redPosts": 12,
+      "credits": 143,
+      "winner": null
+    },
+    {
+      "map": "random",
+      "mode": "rts",
+      "seed": 44,
+      "blue": "sem ordens",
+      "duration": 300.000000000023,
+      "initialTransports": [],
+      "embarks": 0,
+      "disembarked": 0,
+      "airdropPurchases": 0,
+      "airdropSpawns": 0,
+      "purchasedCarriers": 0,
+      "groundFailures": 0,
+      "airFailures": 0,
+      "finalTransports": [],
+      "losses": {},
+      "redPosts": 16,
+      "credits": 253,
+      "winner": null
+    },
+    {
+      "map": "random",
+      "mode": "turns",
+      "seed": 44,
+      "blue": "sem ordens",
+      "duration": 49,
+      "initialTransports": [],
+      "embarks": 3,
+      "disembarked": 3,
+      "airdropPurchases": 0,
+      "airdropSpawns": 0,
+      "purchasedCarriers": 1,
+      "groundFailures": 0,
+      "airFailures": 0,
+      "finalTransports": [
+        {
+          "type": "transportTruck",
+          "cargo": 0
+        }
+      ],
+      "losses": {},
+      "redPosts": 10,
+      "credits": 112,
+      "winner": null
+    }
+  ]
+}

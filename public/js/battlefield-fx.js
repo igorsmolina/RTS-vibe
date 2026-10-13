@@ -12,6 +12,7 @@ class BattlefieldFX{
   const debris=this.cache.debris=document.createElement('canvas');debris.width=debris.height=12;const d=debris.getContext('2d');d.fillStyle='#5d5948';d.fillRect(2,3,7,5);d.fillStyle='#b9a784';d.fillRect(2,3,6,1);
   const ring=this.cache.ring=document.createElement('canvas');ring.width=ring.height=64;const r=ring.getContext('2d');r.strokeStyle='#d9eff0aa';r.lineWidth=2;r.beginPath();r.arc(32,32,28,0,Math.PI*2);r.stroke();r.strokeStyle='#8ab8c466';r.lineWidth=3;r.beginPath();r.arc(32,32,25,0,Math.PI*2);r.stroke();
   const flame=this.cache.flame=document.createElement('canvas');flame.width=32;flame.height=96;const c=flame.getContext('2d'),g=c.createLinearGradient(0,0,0,96);g.addColorStop(0,'#effcffff');g.addColorStop(.15,'#7ed1ffff');g.addColorStop(.42,'#689feece');g.addColorStop(.7,'#faad6660');g.addColorStop(1,'#faad6600');c.fillStyle=g;c.beginPath();c.moveTo(12,0);c.lineTo(20,0);c.lineTo(25,17);c.lineTo(17,74);c.lineTo(16,96);c.lineTo(15,74);c.lineTo(7,17);c.fill();
+  for(const kind of ['tread','tyre','foot','scorch','pressure'])this.groundArt(kind);
   this.reset();
  }
  reset(){this.particles.length=0;this.trails.clear();this.marks.length=0;this.positions.clear();this.shots.clear();this.wrecks.length=0;this.structureState.clear();this.time=0;this.sequence=0;this.tier=0;this.slow=0;this.stable=0;this.graphics=settings.graphics;this.motion=!!reducedMotion;this.currentProfile=null;}
@@ -19,7 +20,7 @@ class BattlefieldFX{
   const graphics=Object.hasOwn(GRAPHICS,settings.graphics)?settings.graphics:'balanced',key=graphics+':'+this.tier;
   if(this.currentProfile?.key===key)return this.currentProfile;
   const i=graphics==='performance'?0:graphics==='cinematic'?2:1,base=GRAPHICS[graphics],factor=[1,.7,.45][this.tier];
-  return this.currentProfile={key,graphics,tier:this.tier,factor,particles:Math.floor([80,200,400][i]*factor),clouds:Math.ceil([0,6,12][i]*factor),interval:base.interval||[.22,.14,.09][i],alpha:base.alpha||0,trailPoints:Math.floor([0,10,18][i]*factor),trailLife:[0,.45,.75][i],marks:Math.floor([0,64,128][i]*factor)};
+  return this.currentProfile={key,graphics,tier:this.tier,factor,particles:Math.floor([80,200,400][i]*factor),clouds:Math.ceil([0,6,12][i]*factor),interval:base.interval||[.22,.14,.09][i],alpha:base.alpha||0,trailPoints:Math.floor([0,10,18][i]*factor),trailLife:[0,.45,.75][i],marks:Math.floor([0,96,512][i]*factor),markLife:[0,12,35][i]};
  }
  hash(n){let h=Math.imul((game.seed>>>0)^n,0x85ebca6b);h=Math.imul(h^(h>>>13),0xc2b2ae35);return(h^(h>>>16))>>>0;}
  screen(x,y,pad=80){return x>=cam.x-pad&&y>=cam.y-pad&&x<=cam.x+this.renderer.canvas.clientWidth/cam.zoom+pad&&y<=cam.y+this.renderer.canvas.clientHeight/cam.zoom+pad;}
@@ -36,7 +37,7 @@ class BattlefieldFX{
   this.trim();if(!Number.isFinite(dt)||dt<=0||game.mode==='turns'&&!game.busy)return;
   this.time+=dt;
   let n=0;for(const p of this.particles){p.t+=dt;if(p.t>=p.life||p.continuous&&p.air&&!this.unitVisible(game.get(p.contactId)))continue;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=(p.gravity||0)*dt;if(!this.visible(p))continue;this.particles[n++]=p;}this.particles.length=n;
-  n=0;for(const m of this.marks)if(this.time-m.time<10)this.marks[n++]=m;this.marks.length=n;
+  n=0;for(const m of this.marks)if(this.time-m.time<m.life)this.marks[n++]=m;this.marks.length=n;
   n=0;for(const w of this.wrecks)if(this.time-w.time<WRECK_SECONDS)this.wrecks[n++]=w;this.wrecks.length=n;
   for(const [id,s]of this.shots)if(this.time-s.time>=.24)this.shots.delete(id);
   for(const [id,points]of this.trails){let n=0;for(const p of points)if(this.time-p.time<=profile.trailLife)points[n++]=p;points.length=n;if(!n)this.trails.delete(id);}
@@ -44,7 +45,7 @@ class BattlefieldFX{
   for(const u of game.units){
    const t=TYPES[u.type],plane=PLANE(u),vehicle=!!t.vehicle;
    if(t.structure||!plane&&(AIR(u)||!vehicle&&profile.graphics==='performance')||!this.unitVisible(u))continue;const pose=flightPose(u),x=(pose.x+.5)*CELL,y=(pose.y+.5)*CELL,lift=18*pose.level,air=AIR(u),at={x,y,lift,air,contactId:air?u.id:undefined};if(!this.screen(x,y)||!this.visible(at))continue;
-   let state=this.positions.get(u.id);if(!state){state={x:u.x,y:u.y,trail:-1,dust:-1,mark:-1};this.positions.set(u.id,state);}const moved=Math.hypot(u.x-state.x,u.y-state.y)>.001;state.x=u.x;state.y=u.y;state.seen=this.time;
+   let state=this.positions.get(u.id);if(!state){state={x:pose.x,y:pose.y,trail:-1,dust:-1,damage:-1,markX:x,markY:y,step:0};this.positions.set(u.id,state);}const moved=Math.hypot(pose.x-state.x,pose.y-state.y)>.001;state.x=pose.x;state.y=pose.y;state.seen=this.time;
    const facing=u.facing||0,sin=Math.sin(facing),cos=Math.cos(facing);
    if(PLANE(u)){
     if(!this.powered(u))continue;
@@ -55,7 +56,16 @@ class BattlefieldFX{
    }
    const terrain=game.terrainAt(u),dry=['plain','hill','field','road'].includes(terrain),dusty=dry&&(vehicle||terrain==='road'||game.map==='desert'),interval=vehicle?profile.interval:Math.max(.3,profile.interval*2),rear=vehicle?17:11;
    if(moved&&dusty&&this.time-state.dust>=interval){state.dust=this.time;const h=this.hash(u.id+Math.floor(this.time/interval)*257);this.push({kind:'dust',x:x-sin*rear,y:y+cos*rear,contactId:u.id,continuous:true,vx:-sin*(vehicle?9:4)+(h%9)-4,vy:cos*(vehicle?9:4)-4,life:vehicle?(profile.graphics==='performance'?.35:.85):1.1,size:vehicle?(profile.graphics==='performance'?5:9+(h%4)):3,alpha:vehicle?(game.map==='desert'?.24:.15):.07});}
-   if(profile.marks&&TYPES[u.type].tank&&terrain!=='river'&&moved&&this.time-state.mark>=.12){state.mark=this.time;this.marks.push({x,y,air:false,facing,time:this.time,road:terrain==='road'||terrain==='bridge'});if(this.marks.length>profile.marks)this.marks.shift();}
+   if(profile.marks&&(vehicle||profile.graphics==='cinematic')&&moved&&terrain!=='river'&&terrain!=='bridge'){
+    const dx=x-state.markX,dy=y-state.markY,distance=Math.hypot(dx,dy),spacing=vehicle?7:15,kind=t.tank?'tread':vehicle?'tyre':'foot',angle=Math.atan2(dx,-dy);
+    // ponytail: amostra apenas o trecho visto; saltos de rede/teleporte não desenham uma trilha atravessando o mapa.
+    if(distance>2*CELL){state.markX=x;state.markY=y;}
+    else for(let n=0;n<8&&Math.hypot(x-state.markX,y-state.markY)>=spacing;n++){
+     state.markX+=dx/distance*spacing;state.markY+=dy/distance*spacing;const side=kind==='foot'?(++state.step%2?1:-1):0;
+     this.addMark({kind,x:state.markX+Math.cos(angle)*side*4,y:state.markY+Math.sin(angle)*side*4,facing:angle,side,road:terrain==='road',scale:kind==='tyre'?.9:1});
+    }
+   }else if(!moved||terrain==='river'||terrain==='bridge'){state.markX=x;state.markY=y;}
+   if(vehicle&&profile.graphics!=='performance'&&u.hp/u.maxHp<.45&&this.time-state.damage>=profile.interval*4){state.damage=this.time;this.push({kind:'smoke',x:x-sin*12,y:y+cos*12-4,air:false,continuous:true,vx:3,vy:-9,life:1.6,size:5,growth:2.4,alpha:.3});}
   }
   for(const [id,state]of this.positions)if(state.seen!==this.time)this.positions.delete(id);
   this.emitStructureSmoke(profile);
@@ -69,11 +79,17 @@ class BattlefieldFX{
   if(e.kind==='shot'){
    const heliGun=!!TYPES[type]?.gun&&e.weapon==='machinegun',minigun=heliGun&&type==='helicopter';if(TYPES[type]?.plane||e.air&&!heliGun)return;const heavy=TYPES[type]?.tank||type==='artillery',rocket=type==='rocketArtillery',facing=Number.isFinite(e.facing)?e.facing:game.get(e.id)?.facing||0,sin=Math.sin(facing),cos=Math.cos(facing),distance=heliGun?19:heavy?(type==='artillery'?31:27):rocket?14:22,mx=x+sin*distance,my=y-cos*distance;
    this.push({...at,kind:'glow',signal:true,x:mx,y:my,vx:0,vy:0,size:heliGun?(minigun?5:11):heavy?16:9,aspect:heavy?1.35:1.15,rotation:facing,life:heliGun?(minigun?.05:.1):heavy?.11:.08,alpha:.88});
-   if(!heavy&&!rocket)return;if(e.id!==undefined)this.shots.set(e.id,{time:this.time,facing,amount:type==='artillery'?4:2.8});
+   if(!heavy&&!rocket)return;if(e.id!==undefined)this.shots.set(e.id,{time:this.time,facing,amount:intensity===2?(type==='heavyTank'?5.5:heavy?4:2.8):type==='artillery'?4:2.8});
    for(let i=0;i<1+intensity*2;i++){const h=this.hash(count*61+i),v=18+h%16,side=(h%11)-5;this.push({...at,kind:'smoke',x:mx,y:my,vx:sin*v+cos*side+2,vy:-cos*v+sin*side-3,life:.8+intensity*.18,size:5+i,growth:2.5,alpha:.28});}
-   if(!water)radial('dust',2+intensity*4,25,7,.65,.2);return;
+   if(!water)radial('dust',2+intensity*4,25,7,.65,.2);
+   if(intensity===2&&TYPES[type]?.tank&&!water){
+    const hard=['road','bridge'].includes(game.terrainAt(e)),alpha=hard?.24:game.map==='desert'?.8:.55;
+    this.push({...at,kind:'pressure',vx:0,vy:0,size:22,growth:2.4,aspect:.72,life:.42,alpha:hard?.35:.7});
+    for(let i=0;i<12;i++){const angle=i*Math.PI/6+(this.hash(count*97+i)%100)/500,v=40+this.hash(count*43+i)%24,px=x+Math.cos(angle)*27,py=y+Math.sin(angle)*20;this.push({...at,kind:'dust',x:px,y:py,vx:Math.cos(angle)*v+3,vy:Math.sin(angle)*v*.72-3,size:11+i%3,growth:3.2,aspect:.72,life:1.35,alpha});if(!hard&&i%2===0)this.push({...at,kind:'debris',x:px,y:py,vx:Math.cos(angle)*v,vy:Math.sin(angle)*v*.6-14,gravity:60,size:1.8,rotation:angle,life:.55,alpha:.65});}
+   }return;
   }
   if(e.weapon==='gun'){this.push({...at,kind:'glow',signal:true,vx:0,vy:0,size:6,life:.06,alpha:.5});radial(water?'splash':'spark',1+intensity,water?30:45,water?3:1.5,.2,.5);return;}
+  if(intensity===2&&level<.05&&!water&&!e.dud&&!e.lostGuidance)this.addMark({kind:'scorch',x,y,facing:(this.hash(count)%628)/100,scale:e.heavy?1.25:.8,alpha:.6});
   const heavy=e.heavy?1.35:1,dud=e.dud||e.lostGuidance?.5:1;
   this.push({...at,kind:'glow',signal:true,vx:0,vy:0,size:(24+intensity*8)*heavy*dud,life:.17,alpha:.65});
   if(!water){radial('spark',2+intensity*3,90*heavy,2.4,.4,.8);radial('debris',2+intensity*3,55*heavy,4,.6,.7);}
@@ -82,8 +98,18 @@ class BattlefieldFX{
  }
  ground(c){
   this.drawWrecks(c);
-  c.save();for(const m of this.marks){if(!this.screen(m.x,m.y)||!this.visible(m))continue;c.save();c.translate(m.x,m.y);c.rotate(m.facing);c.globalAlpha=.19*(1-(this.time-m.time)/10);c.fillStyle=m.road?'#746959':'#514b36';for(const x of [-16,11])for(const y of [-5,-1,3])c.fillRect(x,y,5,3);c.restore();}c.restore();
+  c.save();for(const m of this.marks){if(!this.screen(m.x,m.y)||!this.visible(m))continue;const art=this.art['ground:'+m.kind],age=(this.time-m.time)/m.life;c.save();c.translate(m.x,m.y);c.rotate(m.facing);c.globalAlpha=(m.alpha??(m.kind==='foot'?.38:m.road?.28:.4))*Math.min(1,(1-age)*3);const scale=m.scale||1;c.drawImage(art,-art.width/2*scale,-art.height/2*scale,art.width*scale,art.height*scale);c.restore();}c.restore();
  }
+ addMark(m){const profile=this.profile();if(!profile.marks||!this.screen(m.x,m.y)||!this.visible(m))return;this.marks.push({air:false,time:this.time,life:profile.markLife,...m});if(this.marks.length>profile.marks)this.marks.shift();}
+ groundArt(kind){return this.structureArt('ground:'+kind,()=>{
+  const s=document.createElement('canvas');s.width=kind==='foot'?16:64;s.height=kind==='foot'?24:64;const c=s.getContext('2d'),x=s.width/2,y=s.height/2;c.translate(x,y);c.fillStyle='#3c392b';
+  if(kind==='tread'){for(const px of [-18,12]){c.fillRect(px,-12,6,24);c.fillStyle='#bca67c';for(let py=-11;py<12;py+=4)c.fillRect(px+.5,py,5,1);c.fillStyle='#3c392b';}}
+  else if(kind==='tyre'){for(const px of [-14,11]){c.fillRect(px,-12,3,24);c.fillStyle='#ac9b77';for(let py=-10;py<12;py+=4)c.fillRect(px+1,py,1,2);c.fillStyle='#3c392b';}}
+  else if(kind==='foot'){c.beginPath();c.ellipse(0,-3,3.3,6.5,0,0,Math.PI*2);c.fill();c.fillRect(-2.7,5,5.4,4);c.fillStyle='#a99470';for(let py=-6;py<2;py+=3)c.fillRect(-2,py,4,1);}
+  else if(kind==='pressure'){for(let n=0;n<3;n++){c.strokeStyle=['#d0b18a55','#e1c59e88','#9d825c33'][n];c.lineWidth=5-n;c.beginPath();c.arc(0,0,24+n*2,0,Math.PI*2);c.stroke();}}
+  else{const g=c.createRadialGradient(0,0,3,0,0,30);g.addColorStop(0,'#211d17d9');g.addColorStop(.45,'#403326a0');g.addColorStop(1,'#473a2800');c.fillStyle=g;c.fillRect(-32,-32,64,64);c.strokeStyle='#29251f88';c.lineWidth=1.3;for(let i=0;i<7;i++){const a=i*.9;c.beginPath();c.moveTo(Math.cos(a)*5,Math.sin(a)*5);c.lineTo(Math.cos(a)*16,Math.sin(a)*13);c.lineTo(Math.cos(a+.12)*23,Math.sin(a+.12)*21);c.stroke();}}
+  return s;
+ });}
  drawTrails(c){
   c.save();c.lineCap='round';
   for(const [id,points]of this.trails){if(!this.unitVisible(game.get(id)))continue;for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i];if(!this.screen(b.x,b.y)||!this.visible(a)||!this.visible(b))continue;const fade=Math.max(0,1-(this.time-a.time)/this.profile().trailLife);c.strokeStyle='#cbd9de';c.globalAlpha=.07*fade;c.lineWidth=3+2*fade;c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.stroke();c.globalAlpha=.18*fade;c.lineWidth=.8+fade;c.stroke();}}
@@ -99,7 +125,7 @@ class BattlefieldFX{
  }
  draw(c){
   this.drawTrails(c);
-  c.save();for(const p of this.particles){const age=p.t/p.life,fade=1-age,growth=p.growth??(p.kind==='smoke'||p.kind==='dust'?p.life*1.3:0),size=p.size*(reducedMotion?1:1+growth*age),height=size*(p.aspect||1);if(!this.screen(p.x,p.y,Math.max(size,height))||!this.visible(p))continue;c.globalAlpha=(p.alpha??.5)*fade;c.globalCompositeOperation=p.kind==='glow'||p.kind==='spark'?'lighter':'source-over';if(p.rotation!==undefined){c.save();c.translate(p.x,p.y);c.rotate(p.rotation);c.drawImage(this.cache[p.kind]||this.cache.dust,-size,-height,size*2,height*2);c.restore();}else c.drawImage(this.cache[p.kind]||this.cache.dust,p.x-size,p.y-height,size*2,height*2);}c.restore();
+  c.save();for(const p of this.particles){const age=p.t/p.life,fade=1-age,growth=p.growth??(p.kind==='smoke'||p.kind==='dust'?p.life*1.3:0),size=p.size*(reducedMotion?1:1+growth*age),height=size*(p.aspect||1);if(!this.screen(p.x,p.y,Math.max(size,height))||!this.visible(p))continue;c.globalAlpha=(p.alpha??.5)*fade;c.globalCompositeOperation=p.kind==='glow'||p.kind==='spark'?'lighter':'source-over';const art=this.cache[p.kind]||this.art['ground:'+p.kind]||this.cache.dust;if(p.rotation!==undefined){c.save();c.translate(p.x,p.y);c.rotate(p.rotation);c.drawImage(art,-size,-height,size*2,height*2);c.restore();}else c.drawImage(art,p.x-size,p.y-height,size*2,height*2);}c.restore();
  }
  // ---- Estruturas: bandeira, antena giratória, dano progressivo e destroços. Só visual: usa o relógio dos efeitos, nunca o RNG do jogo.
  damageStage(s){const r=s.hp/s.maxHp;return r<.25?3:r<.5?2:r<.75?1:0;}

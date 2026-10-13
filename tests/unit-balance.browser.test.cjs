@@ -22,7 +22,7 @@ const assert=require('node:assert/strict'),path=require('node:path'),{pathToFile
     const light=g.add(owner,'lightTank',40,30),medium=g.add(owner,'tank',40,40),heavy=g.add(owner,'heavyTank',40,50),target=g.add(enemy,'heavyTank',42,30);target.cooldown=1000;
     const near=(a,b)=>Math.abs(a-b)<1e-8;
     check(label+' escala de velocidade e movimento',TYPES.lightTank.speed>TYPES.tank.speed&&TYPES.tank.speed>TYPES.heavyTank.speed&&['infantry','engineer','antitank','machinegun','missileInfantry','commander'].every(t=>TYPES.heavyTank.speed>TYPES[t].speed&&TYPES.heavyTank.move>TYPES[t].move));
-    check(label+' alcance e visão base',g.range(light)===3&&g.range(medium)===5&&g.range(heavy)===7&&[light,medium,heavy].every(u=>g.sight(u)===5));
+    check(label+' alcance e visão base',g.range(light)===4&&g.range(medium)===5&&g.range(heavy)===7&&[light,medium,heavy].every(u=>g.sight(u)===5));
     g.updateVision();const before=JSON.stringify([light.order,light.actionLeft,light.moveLeft,g.shotsFired]);
     check(label+' leve recusa pesado sem gastar ação',g.weapon(light,target)===null&&!g.canFire(light,target)&&g.command([light.id],'attack',{targetId:target.id},owner)===0&&JSON.stringify([light.order,light.actionLeft,light.moveLeft,g.shotsFired])===before);
     check(label+' disparo explícito também recusa pesado',g.shoot(light,target,'lightTank')===false&&g.projectiles.length===0);

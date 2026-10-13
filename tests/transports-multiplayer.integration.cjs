@@ -1,0 +1,31 @@
+'use strict';
+const assert=require('node:assert/strict'),{once}=require('node:events'),{WebSocket}=require('ws');
+const {createMultiplayerServer}=require('../scripts/multiplayer-server.cjs');
+async function peer(url,session){const ws=new WebSocket(url.replace('http:','ws:')+'/multiplayer');await once(ws,'open');let seq=0;
+ const send=(message,predicate)=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>{ws.off('message',read);reject(Error('Timeout multiplayer'));},5000);function read(raw){const value=JSON.parse(raw);if(predicate(value)){clearTimeout(timer);ws.off('message',read);resolve(value);}}ws.on('message',read);ws.send(JSON.stringify(message));});
+ await send({type:'auth',version:1,code:session.code,token:session.token},m=>m.type==='authenticated');
+ return {ws,send,command(action,args,n){const next=n??++seq;seq=Math.max(seq,next);return send({type:'command',seq:next,action,args},m=>m.type==='ack'&&m.seq===next);}};
+}
+(async()=>{const service=createMultiplayerServer({autoTick:false});await new Promise(resolve=>service.server.listen(0,'127.0.0.1',resolve));const url='http://127.0.0.1:'+service.server.address().port,clients=[];
+ const post=async(route,body)=>(await fetch(url+route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})).json();
+ try{for(const mode of ['rts','turns']){const a=await post('/api/rooms',{nickname:'A',config:{map:'river',mode,seed:71}}),b=await post('/api/rooms/'+a.code+'/join',{nickname:'B'}),blue=await peer(url,a),red=await peer(url,b);clients.push(blue.ws,red.ws);
+  await blue.send({type:'ready',ready:true},m=>m.type==='room'&&m.room.players[0].ready);await red.send({type:'ready',ready:true},m=>m.type==='room'&&m.room.players.every(p=>p.ready));await blue.send({type:'start'},m=>m.type==='state');
+  const room=service.rooms.get(a.code),g=room.game;g.units=[];g.structures=[];g.actions=[];g.animation=null;g.projectiles=[];g.drops=[];g.terrain.fill('plain');g.add('blue','hq',0,93);g.add('red','hq',125,0);g.credits={blue:5000,red:5000};
+  const truck=g.add('blue','transportTruck',40,40),foot=g.add('blue','infantry',41,40),enemy=g.add('red','infantry',40,41);g.updateVision();
+  assert.equal((await red.command('order',{ids:[truck.id],type:'embark',args:{targetId:foot.id}})).ok,false);
+  assert.equal((await blue.command('order',{ids:[truck.id],type:'embark',args:{targetId:enemy.id}})).ok,false);
+  const args={ids:[truck.id],type:'embark',args:{targetId:foot.id}},ack=await blue.command('order',args);assert.ok(ack.ok);assert.ok((await blue.command('order',args,ack.seq)).ok);assert.equal(truck.cargo.length,1);
+  const own=service.viewState(room,'blue');assert.equal(own.units.find(u=>u.id===truck.id).cargo[0].id,foot.id);assert.equal(own.units.some(u=>u.id===foot.id),false);
+  const remote=service.viewState(room,'red').units.find(u=>u.id===truck.id);assert.ok(remote);assert.equal(remote.cargo,undefined);
+  if(mode==='turns')g.beginTurn('blue');assert.ok((await blue.command('order',{ids:[truck.id],type:'disembark',args:{}})).ok);assert.equal(g.get(foot.id),foot);
+  const airport=g.add('blue','airportDirt',20,20);g.add('blue','recon',30,30);g.updateVision();
+  const before=g.credits.blue;assert.equal((await blue.command('requestAirdrop',{baseId:airport.id,cargo:{infantry:13},destination:{x:30,y:30}})).ok,false);assert.equal(g.credits.blue,before);
+  const mission={baseId:airport.id,cargo:{infantry:2},destination:{x:30,y:30}},first=await blue.command('requestAirdrop',mission);assert.ok(first.ok);assert.ok((await blue.command('requestAirdrop',mission,first.seq)).ok);assert.equal(g.credits.blue,before-250);assert.equal(g.units.filter(u=>u.type==='transportPlane').length,1);
+  for(let i=0;i<2400;i++)service.tick();const plane=g.units.find(u=>u.type==='transportPlane');assert.equal(plane.airdrop.phase,'parked');assert.equal(g.units.filter(u=>u.type==='infantry'&&u.owner==='blue').length,3);
+  if(mode==='turns')g.beginTurn('blue');assert.ok((await blue.command('requestAirdrop',{baseId:airport.id,cargo:{infantry:2}})).ok);assert.equal(plane.cargo.length,2);
+  assert.equal((await red.command('order',{ids:[plane.id],type:'airdropLaunch',args:{start:{x:27,y:30},end:{x:33,y:30}}})).ok,false);
+  assert.ok((await blue.command('order',{ids:[plane.id],type:'airdropLaunch',args:{start:{x:27,y:30},end:{x:33,y:30}}})).ok);for(let i=0;i<2400;i++)service.tick();assert.equal(plane.airdrop.phase,'parked');assert.equal(g.units.filter(u=>u.type==='infantry'&&u.owner==='blue').length,5);
+  assert.equal((await red.command('boardPurchase',{baseId:airport.id,type:'infantry'})).ok,false);const slots=g.cargoSlots(plane);assert.ok((await blue.command('boardPurchase',{baseId:airport.id,type:'infantry'})).ok);assert.equal(g.cargoSlots(plane),slots+1);
+  console.log('OK transporte multiplayer '+mode+': proprietário, carga privada, sequência duplicada e voo.');
+ }}finally{for(const ws of clients)ws.terminate();await service.close();}
+})().catch(error=>{console.error(error);process.exitCode=1;});

@@ -1,0 +1,1699 @@
+{
+  "source": "test-output/ai-air-before.js",
+  "sourceHash": "d1d370d7c3bcf96d571f226830cf823957de887ddcb90e48c1d55f8c23ea0e77",
+  "battles": [
+    {
+      "mode": "rts",
+      "seed": 1,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": false,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 736,
+        "planeHp": 0,
+        "aaHp": 66,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 70
+        },
+        "shots": 17
+      },
+      "ticks": 540,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 4.199999999999995,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        },
+        {
+          "at": 4.799999999999993,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 2,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 140,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 2.999999999999999,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 6.599999999999986,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 3,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 220,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 2.999999999999999,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 6.599999999999986,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 4,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 140,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 2.999999999999999,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 6.599999999999986,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 5,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 220,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 2.999999999999999,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 6.599999999999986,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 9,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 140,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 2.999999999999999,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 6.599999999999986,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 17,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": false,
+        "aaAlive": true,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 736,
+        "planeHp": 0,
+        "aaHp": 62,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 70
+        },
+        "shots": 19
+      },
+      "ticks": 793,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 4.199999999999995,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        },
+        {
+          "at": 4.799999999999993,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 21.000000000000203,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        },
+        {
+          "at": 21.600000000000232,
+          "state": "{\"order\":{\"type\":\"return\"},\"job\":\"return\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 44,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 220,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 2.999999999999999,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 6.599999999999986,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 1,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 140,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 3,
+          "antiRadiation": 3,
+          "jetGun": 65
+        },
+        "shots": 19
+      },
+      "ticks": 872,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 7.933333333333315,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 12.266666666666634,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 2,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 140,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 888,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 2.8999999999999995,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 3,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 220,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 888,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 2.8999999999999995,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 4,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 140,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 888,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 2.8999999999999995,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 5,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 220,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 888,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 2.8999999999999995,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 9,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 140,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 888,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 2.8999999999999995,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 17,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 220,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 31
+      },
+      "ticks": 1041,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 12.2333333333333,
+          "state": "{\"order\":{\"type\":\"return\"},\"job\":\"return\"}"
+        },
+        {
+          "at": 28.93333333333393,
+          "state": "{\"order\":{\"type\":\"planeService\"}}"
+        },
+        {
+          "at": 29.26666666666728,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":105,\"y\":65}},\"job\":\"transfer\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 44,
+      "type": "multiroleRed",
+      "distance": 20,
+      "defenses": 1,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 220,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 2
+      },
+      "ticks": 888,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 2.8999999999999995,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 7.199999999999984,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 1,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": false,
+        "aaAlive": true,
+        "aaRemaining": 2,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 488,
+        "planeHp": 0,
+        "aaHp": 77,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 1,
+          "jetGun": 80
+        },
+        "shots": 4
+      },
+      "ticks": 161,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 1,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": false,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 736,
+        "planeHp": 0,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 5
+      },
+      "ticks": 214,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 5.9999999999999885,
+          "state": "{\"order\":{\"type\":\"return\"},\"job\":\"return\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 2,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": false,
+        "aaAlive": true,
+        "aaRemaining": 2,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 488,
+        "planeHp": 0,
+        "aaHp": 58,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 1,
+          "jetGun": 70
+        },
+        "shots": 15
+      },
+      "ticks": 200,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 6.599999999999986,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 2,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": false,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 736,
+        "planeHp": 0,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 4
+      },
+      "ticks": 179,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 9,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 176,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 1,
+          "jetGun": 80
+        },
+        "shots": 8
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 2.999999999999999,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 3.599999999999997,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 6.599999999999986,
+          "state": "{\"order\":{\"type\":\"return\"},\"job\":\"return\"}"
+        },
+        {
+          "at": 18.600000000000083,
+          "state": "{\"order\":{\"type\":\"planeService\"}}"
+        },
+        {
+          "at": 28.80000000000059,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":105,\"y\":65}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 34.20000000000062,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 43.20000000000011,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 9,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": false,
+        "aaAlive": true,
+        "aaRemaining": 2,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 736,
+        "planeHp": 0,
+        "aaHp": 77,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 4
+      },
+      "ticks": 179,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 17,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": false,
+        "aaAlive": true,
+        "aaRemaining": 2,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 488,
+        "planeHp": 0,
+        "aaHp": 52,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 1,
+          "jetGun": 70
+        },
+        "shots": 15
+      },
+      "ticks": 200,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 6.599999999999986,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"egress\"}"
+        }
+      ]
+    },
+    {
+      "mode": "rts",
+      "seed": 17,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 320,
+        "planeLostValue": 0,
+        "planeHp": 220,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 3,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 6
+      },
+      "ticks": 1350,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 5.9999999999999885,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 7.799999999999982,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 13.199999999999964,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 1,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": false,
+        "aaAlive": true,
+        "aaRemaining": 2,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 488,
+        "planeHp": 0,
+        "aaHp": 37,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 0,
+          "jetGun": 60
+        },
+        "shots": 28
+      },
+      "ticks": 336,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 10.699999999999973,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"jetGun\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 1,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 320,
+        "planeLostValue": 0,
+        "planeHp": 140,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 3,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 5
+      },
+      "ticks": 901,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 5.9999999999999885,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 7.766666666666649,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 13.233333333333297,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 2,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": false,
+        "aaAlive": true,
+        "aaRemaining": 2,
+        "aaDestroyedValue": 0,
+        "planeLostValue": 488,
+        "planeHp": 0,
+        "aaHp": 64,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 1,
+          "jetGun": 70
+        },
+        "shots": 15
+      },
+      "ticks": 231,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 7.0999999999999845,
+          "state": "{\"order\":{\"type\":\"return\"},\"job\":\"return\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 2,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": false,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 736,
+        "planeHp": 0,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 4,
+          "antiRadiation": 3,
+          "jetGun": 70
+        },
+        "shots": 18
+      },
+      "ticks": 1323,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 5.9999999999999885,
+          "state": "{\"order\":{\"type\":\"return\"},\"job\":\"return\"}"
+        },
+        {
+          "at": 21.666666666666902,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":105,\"y\":65}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 27.100000000000506,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 38.03333333333374,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 43.60000000000009,
+          "state": "{\"order\":{\"type\":\"return\"},\"job\":\"return\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 9,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 0,
+        "planeHp": 96,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 0,
+          "jetGun": 61
+        },
+        "shots": 28
+      },
+      "ticks": 1218,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 4.699999999999993,
+          "state": "{\"order\":{\"type\":\"return\"},\"job\":\"return\"}"
+        },
+        {
+          "at": 16.63333333333332,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":105,\"y\":65}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 21.933333333333582,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 31.966666666667415,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 9,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 320,
+        "planeLostValue": 0,
+        "planeHp": 112,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 3,
+          "antiRadiation": 3,
+          "jetGun": 65
+        },
+        "shots": 24
+      },
+      "ticks": 1397,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 5.9999999999999885,
+          "state": "{\"order\":{\"type\":\"return\"},\"job\":\"return\"}"
+        },
+        {
+          "at": 21.666666666666902,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":105,\"y\":65}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 27.100000000000506,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 38.03333333333374,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 17,
+      "type": "fighterRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 488,
+        "aaCost": 160,
+        "planeHp": 160,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 2,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": false,
+        "aaAlive": false,
+        "aaRemaining": 1,
+        "aaDestroyedValue": 160,
+        "planeLostValue": 488,
+        "planeHp": 0,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 4,
+          "antiRadiation": 0,
+          "jetGun": 64
+        },
+        "shots": 24
+      },
+      "ticks": 455,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"antiRadiation\"}"
+        },
+        {
+          "at": 9.566666666666643,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"jetGun\"}"
+        },
+        {
+          "at": 14.666666666666625,
+          "state": "{\"order\":{\"type\":\"return\"},\"job\":\"return\"}"
+        }
+      ]
+    },
+    {
+      "mode": "turns",
+      "seed": 17,
+      "type": "multiroleRed",
+      "distance": 35,
+      "defenses": 2,
+      "initial": {
+        "planeCost": 736,
+        "aaCost": 160,
+        "planeHp": 200,
+        "aaHp": 70,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 5,
+          "antiRadiation": 3,
+          "jetGun": 80
+        }
+      },
+      "final": {
+        "planeAlive": true,
+        "aaAlive": false,
+        "aaRemaining": 0,
+        "aaDestroyedValue": 320,
+        "planeLostValue": 0,
+        "planeHp": 140,
+        "aaHp": 0,
+        "ammo": {
+          "jetAam": 2,
+          "jetAgm": 3,
+          "antiRadiation": 3,
+          "jetGun": 80
+        },
+        "shots": 5
+      },
+      "ticks": 901,
+      "orders": [
+        {
+          "at": 0,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":48},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 5.9999999999999885,
+          "state": "{\"order\":{\"type\":\"strike\",\"targetId\":49},\"job\":\"strike\",\"weapon\":\"jetAgm\"}"
+        },
+        {
+          "at": 7.766666666666649,
+          "state": "{\"order\":{\"type\":\"transfer\",\"goal\":{\"x\":64,\"y\":48}},\"job\":\"transfer\"}"
+        },
+        {
+          "at": 13.233333333333297,
+          "state": "{\"order\":{\"type\":\"patrol\"}}"
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "name": "rts: míssil de longo alcance antes de expor multifunção à AA",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'jetAgm'\n- 'antiRadiation'\n"
+    },
+    {
+      "name": "rts: arma curta não justifica trocar avião por AA barata",
+      "ok": false,
+      "error": "Expected \"actual\" to be strictly unequal to: 49"
+    },
+    {
+      "name": "rts: perda aérea muda missão do próximo avião na mesma área",
+      "ok": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert.ok(g.plan.airFailures?.length)\n"
+    },
+    {
+      "name": "turns: míssil de longo alcance antes de expor multifunção à AA",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'jetAgm'\n- 'antiRadiation'\n"
+    },
+    {
+      "name": "turns: arma curta não justifica trocar avião por AA barata",
+      "ok": false,
+      "error": "Expected \"actual\" to be strictly unequal to: 49"
+    },
+    {
+      "name": "turns: perda aérea muda missão do próximo avião na mesma área",
+      "ok": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert.ok(g.plan.airFailures?.length)\n"
+    },
+    {
+      "name": "depois de cobertura observada, poupa por resposta terrestre",
+      "ok": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert.ok(g.hq('red').queue.some(q=>q.type==='rocketArtillery'))\n"
+    },
+    {
+      "name": "duelos conhecidos não repetem troca avião perdido / AA destruída",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n4 !== 0\n"
+    },
+    {
+      "name": "sobrevivência também melhora; só deixar de abater a AA não basta",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n12 !== 0\n"
+    },
+    {
+      "name": "RTS reconsidera ataque em andamento quando aparece cobertura antiaérea",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n'strike' !== 'return'\n"
+    },
+    {
+      "name": "bombardeiro sem cruzeiro não mergulha nas antiaéreas lembradas",
+      "ok": false,
+      "error": "Expected \"actual\" to be strictly unequal to:\n\n'bombRun'"
+    },
+    {
+      "name": "resposta terrestre é comprada, produzida e remove a AA com o avião preservado",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n\n264 !== 760\n"
+    },
+    {
+      "name": "sem pista, ataque inseguro usa retirada aérea em vez de conservar ofensiva",
+      "ok": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'strike'\n- 'transfer'\n"
+    },
+    {
+      "name": "morte distante depois de voo concluído não condena uma missão antiga",
+      "ok": true
+    },
+    {
+      "name": "turnos: aproximação avalia AA no meio do caminho, não só nas pontas",
+      "ok": false,
+      "error": "Expected \"actual\" to be strictly unequal to: 49"
+    },
+    {
+      "name": "emissão revela posição, mas HP oculto e AA silenciosa não mudam decisão",
+      "ok": false,
+      "error": "g.aiAirDefenses is not a function"
+    }
+  ]
+}

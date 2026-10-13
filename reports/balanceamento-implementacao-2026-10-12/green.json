@@ -1,0 +1,145 @@
+{
+  "source": "public/js/engine.js",
+  "results": [
+    {
+      "name": "metralhador dispara três vezes em 0,7 s no RTS",
+      "ok": true
+    },
+    {
+      "name": "rts: leve dispara a quatro casas, sem perfurar pesado",
+      "ok": true
+    },
+    {
+      "name": "rts: renda de posto é recebida com doutrinas e sem QG",
+      "ok": true
+    },
+    {
+      "name": "rts: onda conserva passageiros vivos e progresso do veículo",
+      "ok": true
+    },
+    {
+      "name": "rts: transportes mortos e carga perdida reagrupam a onda",
+      "ok": true
+    },
+    {
+      "name": "rts: helicóptero vermelho bombardeia alvo observado sem carga",
+      "ok": true
+    },
+    {
+      "name": "rts: carga tem prioridade sobre salvas do helicóptero",
+      "ok": true
+    },
+    {
+      "name": "rts: helicóptero vazio sem salvas procura manutenção",
+      "ok": true
+    },
+    {
+      "name": "rts: perdas de transportes evitam área e rota até a memória expirar",
+      "ok": true
+    },
+    {
+      "name": "rts: transporte acessível entra antes da poupança de avião",
+      "ok": true
+    },
+    {
+      "name": "rts: tropas embarcadas ainda contam no limite de exército",
+      "ok": true
+    },
+    {
+      "name": "turns: leve dispara a quatro casas, sem perfurar pesado",
+      "ok": true
+    },
+    {
+      "name": "turns: renda de posto é recebida com doutrinas e sem QG",
+      "ok": true
+    },
+    {
+      "name": "turns: onda conserva passageiros vivos e progresso do veículo",
+      "ok": true
+    },
+    {
+      "name": "turns: transportes mortos e carga perdida reagrupam a onda",
+      "ok": true
+    },
+    {
+      "name": "turns: helicóptero vermelho bombardeia alvo observado sem carga",
+      "ok": true
+    },
+    {
+      "name": "turns: carga tem prioridade sobre salvas do helicóptero",
+      "ok": true
+    },
+    {
+      "name": "turns: helicóptero vazio sem salvas procura manutenção",
+      "ok": true
+    },
+    {
+      "name": "turns: perdas de transportes evitam área e rota até a memória expirar",
+      "ok": true
+    },
+    {
+      "name": "turns: transporte acessível entra antes da poupança de avião",
+      "ok": true
+    },
+    {
+      "name": "turns: tropas embarcadas ainda contam no limite de exército",
+      "ok": true
+    },
+    {
+      "name": "turnos: caminhão embarca até quatro tropas com uma ação por turno",
+      "ok": true
+    },
+    {
+      "name": "RTS: IA não embarca comandante nem tropas comprometidas com captura",
+      "ok": true
+    },
+    {
+      "name": "IA não compra paraquedistas além do limite do exército",
+      "ok": true
+    },
+    {
+      "name": "drone inimigo desarmado não obriga desembarque prematuro",
+      "ok": true
+    },
+    {
+      "name": "RTS: transporte em movimento reavalia uma nova perda na rota",
+      "ok": true
+    },
+    {
+      "name": "helicóptero não abandona coleta designada para bombardear longe",
+      "ok": true
+    },
+    {
+      "name": "passageiro reservado não recebe ordem que desfaça o encontro",
+      "ok": true
+    },
+    {
+      "name": "reserva de passageiro não impede defesa urgente da base",
+      "ok": true
+    },
+    {
+      "name": "rts: passageiro reservado pode se defender longe da base",
+      "ok": true
+    },
+    {
+      "name": "turns: passageiro reservado pode se defender longe da base",
+      "ok": true
+    },
+    {
+      "name": "coleta sem rota libera passageiro para sua própria missão",
+      "ok": true
+    },
+    {
+      "name": "embarque impossível libera a reserva do passageiro",
+      "ok": true
+    },
+    {
+      "name": "desembarque parcial preserva destino da carga restante",
+      "ok": true
+    },
+    {
+      "name": "IA não compra caminhão para tropas comprometidas com captura",
+      "ok": true
+    }
+  ]
+}

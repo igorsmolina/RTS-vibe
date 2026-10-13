@@ -1,0 +1,186 @@
+{
+  "date": "2026-10-12",
+  "node": "v26.5.0",
+  "baselineCommit": "d3d24cbf44ce0693fe9995b5ea4a116c0b794ffc",
+  "baselineHash": "d1d370d7c3bcf96d571f226830cf823957de887ddcb90e48c1d55f8c23ea0e77",
+  "sourceHash": "0544384f38a9b6e66e192b48f6f28df308ee79139a814ca2799080c22dff43c5",
+  "before": {
+    "scenarios": 32,
+    "checks": 16,
+    "passed": 1,
+    "planesLost": 12,
+    "aaDestroyed": 28,
+    "losingTrades": 4,
+    "planeReplacementValueLost": 7344,
+    "aaNominalValueDestroyed": 4480
+  },
+  "after": {
+    "scenarios": 32,
+    "checks": 16,
+    "passed": 16,
+    "planesLost": 0,
+    "aaDestroyed": 10,
+    "losingTrades": 0,
+    "planeReplacementValueLost": 0,
+    "aaNominalValueDestroyed": 1600
+  },
+  "legacyChecks": 35,
+  "naturalMatrix": 32,
+  "controlledAirOpportunities": 32,
+  "offlineBrowserCases": 8,
+  "groundCounter": {
+    "time": 167.66666666665972,
+    "rocketCost": 240,
+    "planeAlive": true,
+    "aaHp": 0,
+    "credits": 970
+  },
+  "general": [
+    {
+      "source": "test-output/ai-air-before.js",
+      "passed": 17,
+      "failed": [
+        {
+          "file": "tests/balance-revision.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- 'multiroleRed'"
+        },
+        {
+          "file": "tests/engine.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n\r\n1.5 !== 0.5"
+        },
+        {
+          "file": "tests/air-defense.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n\r\n70 !== 40"
+        },
+        {
+          "file": "tests/radar.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n\r\n40 !== 20"
+        },
+        {
+          "file": "tests/aviation.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\r\n\r\n  assert.ok(g.airports('red').length)"
+        },
+        {
+          "file": "tests/operations.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\r\n\r\n  assert.ok(g.order(u,'capture',{targetId:p.id}))"
+        },
+        {
+          "file": "tests/artillery-upgrade.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n100 !== 120"
+        },
+        {
+          "file": "tests/airport-runway.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: river/1\r\n\r\n'plain' !== 'road'"
+        },
+        {
+          "file": "tests/battlefield-fx.test.cjs",
+          "code": 1,
+          "message": "ReferenceError: localPlayerSide is not defined"
+        },
+        {
+          "file": "tests/structures-fx.test.cjs",
+          "code": 1,
+          "message": "ReferenceError: localPlayerSide is not defined"
+        },
+        {
+          "file": "tests/engine-scaling.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: engine-scaling › 400 unidades: tickP95 28.2 piorou mais de 20% sobre a linha de base 14.8"
+        },
+        {
+          "file": "tests/pathfinding-worst.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: pathfinding-worst › 100 ordens no mesmo tick: tickP95 20.5 piorou mais de 20% sobre a linha de base 12"
+        },
+        {
+          "file": "tests/vision-load.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: vision-load › 300 unidades em movimento: tickP95 17 piorou mais de 20% sobre a linha de base 12"
+        }
+      ]
+    },
+    {
+      "source": "public/js/engine.js",
+      "passed": 18,
+      "failed": [
+        {
+          "file": "tests/balance-revision.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- 'multiroleRed'"
+        },
+        {
+          "file": "tests/engine.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n\r\n1.5 !== 0.5"
+        },
+        {
+          "file": "tests/air-defense.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n\r\n70 !== 40"
+        },
+        {
+          "file": "tests/radar.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n\r\n40 !== 20"
+        },
+        {
+          "file": "tests/aviation.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\r\n\r\n  assert.ok(g.airports('red').length)"
+        },
+        {
+          "file": "tests/operations.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\r\n\r\n  assert.ok(g.order(u,'capture',{targetId:p.id}))"
+        },
+        {
+          "file": "tests/artillery-upgrade.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n100 !== 120"
+        },
+        {
+          "file": "tests/airport-runway.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: river/1\r\n\r\n'plain' !== 'road'"
+        },
+        {
+          "file": "tests/battlefield-fx.test.cjs",
+          "code": 1,
+          "message": "ReferenceError: localPlayerSide is not defined"
+        },
+        {
+          "file": "tests/structures-fx.test.cjs",
+          "code": 1,
+          "message": "ReferenceError: localPlayerSide is not defined"
+        },
+        {
+          "file": "tests/engine-scaling.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: engine-scaling › 400 unidades: tickP95 20 piorou mais de 20% sobre a linha de base 14.8"
+        },
+        {
+          "file": "tests/pathfinding-worst.test.cjs",
+          "code": 1,
+          "message": "AssertionError [ERR_ASSERTION]: pathfinding-worst › 100 ordens no mesmo tick: tickP99 25.5 piorou mais de 20% sobre a linha de base 16.8"
+        }
+      ]
+    }
+  ],
+  "newlyFailingSuites": [],
+  "artifacts": {
+    "baseline.json": "847640a1519a4f2512b4ef4c75129c6ceb9788b093f4f355bcbcc74fd9fb0e7e",
+    "duelos.json": "c4ce443beb279514824a1dd1a4f707860adbb014f2eaf95d03afb7fe29928425",
+    "legado.json": "f026d3b60ff1271fc8f943ef3415683e092214bc5b0b3c0a5dd2ed52482c7f3d",
+    "matriz.json": "13440ffda9ce7ba7514448a6829fa8f96775507cce1c281ddec8f49a4f4757d4",
+    "offline-browser.json": "538776e6658ec6f9706e000a8ed3bf45e47f383d6da747324aca2d21ebf0a89b",
+    "suites.json": "043a2bfab93d42c02c8c04813c2c85bde37e8cabcf3eeaf35b6f7263574ba1c8"
+  }
+}

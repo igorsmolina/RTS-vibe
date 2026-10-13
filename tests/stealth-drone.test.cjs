@@ -32,7 +32,7 @@ check('Dois mísseis sem reposição, um por ação; depois só reconhecimento',
  g.endTurn();for(let n=0;g.turn==='red'&&n<20000;n++)g.update(1/30);assert.ok(g.order(d,'attack',{targetId:foe.id}));settle(g);assert.equal(d.missiles,0);
  g.endTurn();for(let n=0;g.turn==='red'&&n<20000;n++)g.update(1/30);assert.equal(g.weapon(d,foe),null);assert.equal(g.canFire(d,foe),false);assert.equal(g.acquire(d),undefined);assert.equal(g.order(d,'attack',{targetId:foe.id}),false);
  assert.ok(g.order(d,'move',{x:14,y:14}),'Continua voando como olheiro');
- const r=field('rts'),e=r.add('blue','stealthDrone',10,10),t=r.add('red','infantry',12,10);t.hp=t.maxHp=1000;r.updateVision();
+ const r=field('rts'),e=r.add('blue','stealthDrone',10,10),t=r.add('red','infantry',15,10);t.hp=t.maxHp=1000;r.updateVision();
  advance(r,5);assert.equal(r.shotsFired,0,'Parado, não dispara sozinho');assert.ok(r.order(e,'attack',{targetId:t.id}));
  advance(r,.1);assert.equal(r.shotsFired,1);advance(r,2.8);assert.equal(r.shotsFired,1,'Intervalo de 3 s');advance(r,.3);assert.equal(r.shotsFired,2,'A ordem do jogador continua até acabar o estoque');advance(r,10);assert.equal(r.shotsFired,2);assert.equal(e.missiles,0);assert.equal(e.order.type,'stop','Sem mísseis, a ordem termina');assert.equal(e.x+','+e.y,'10,10','Não persegue o alvo');
 });

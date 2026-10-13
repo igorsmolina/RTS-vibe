@@ -1,0 +1,23 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto');
+const dir=__dirname,read=name=>JSON.parse(fs.readFileSync(path.join(dir,name+'.json'),'utf8'));
+const hash=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+const before=read('baseline'),after=read('duelos'),legacy=read('legado'),matrix=read('matriz'),browser=read('offline-browser'),suites=read('suites');
+const sourceHash=hash('public/js/engine.js');
+for(const result of [after,legacy,matrix])assert.equal(result.sourceHash,sourceHash,'Resultado de outro motor');
+assert.equal(before.sourceHash,hash('test-output/ai-air-before.js'));
+assert.equal(before.battles.length,32);assert.equal(after.battles.length,32);
+assert.equal(after.results.length,16);assert.ok(after.results.every(r=>r.ok));
+assert.equal(legacy.results.length,35);assert.ok(legacy.results.every(r=>r.ok));
+assert.equal(matrix.results.length,32);assert.equal(browser.results.length,8);assert.equal(browser.offline,true);assert.deepEqual(browser.errors,[]);
+const files=JSON.parse(fs.readFileSync('package.json','utf8')).scripts.test.match(/tests\/[\w.-]+\.cjs/g).filter(f=>!['tests/ai-strategy.test.cjs','tests/ai-air-economy.test.cjs'].includes(f));
+assert.equal(files.length,30);assert.equal(suites.length,60);
+const summaries=[before.source,after.source].map(source=>{
+ const rows=suites.filter(r=>r.source===source);assert.equal(rows.length,30);assert.equal(new Set(rows.map(r=>r.file)).size,30);assert.ok(rows.every(r=>r.sourceHash===(source===before.source?before.sourceHash:sourceHash)));
+ return {source,passed:rows.filter(r=>r.code===0).length,failed:rows.filter(r=>r.code!==0).map(r=>({file:r.file,code:r.code,error:r.error,message:(r.stderr.match(/(?:AssertionError|ReferenceError)[\s\S]*?(?=\s+at |$)/)||[r.stderr.slice(-500)])[0]}))};
+});
+const counts=r=>({scenarios:r.battles.length,checks:r.results.length,passed:r.results.filter(v=>v.ok).length,planesLost:r.battles.filter(b=>!b.final.planeAlive).length,aaDestroyed:r.battles.reduce((n,b)=>n+b.defenses-b.final.aaRemaining,0),losingTrades:r.battles.filter(b=>!b.final.planeAlive&&!b.final.aaAlive).length,planeReplacementValueLost:r.battles.reduce((n,b)=>n+b.final.planeLostValue,0),aaNominalValueDestroyed:r.battles.reduce((n,b)=>n+b.final.aaDestroyedValue,0)});
+const newFailures=summaries[1].failed.filter(r=>!summaries[0].failed.some(b=>b.file===r.file));
+const manifest={date:'2026-10-12',node:process.version,baselineCommit:'d3d24cbf44ce0693fe9995b5ea4a116c0b794ffc',baselineHash:before.sourceHash,sourceHash,before:counts(before),after:counts(after),legacyChecks:legacy.results.length,naturalMatrix:matrix.results.length,controlledAirOpportunities:matrix.results.filter(r=>r.aviation.finalAmmo.jetAgm<r.aviation.initialAmmo.jetAgm).length,offlineBrowserCases:browser.results.length,groundCounter:after.results.find(r=>r.name.startsWith('resposta terrestre é comprada')).details,general:summaries,newlyFailingSuites:newFailures,artifacts:Object.fromEntries(['baseline','duelos','legado','matriz','offline-browser','suites'].map(f=>[f+'.json',hash(path.join(dir,f+'.json'))]))};
+fs.writeFileSync(path.join(dir,'manifesto.json'),JSON.stringify(manifest,null,2)+'\n');
+console.log(JSON.stringify({before:manifest.before,after:manifest.after,checks:51,matrix:manifest.naturalMatrix,airOpportunities:manifest.controlledAirOpportunities,offline:manifest.offlineBrowserCases,general:summaries.map(s=>({source:s.source,passed:s.passed,failed:s.failed.length})),newlyFailing:newFailures.map(r=>r.file),sourceHash},null,2));

@@ -47,6 +47,7 @@ function viewState(room,player){
  const logs=game.logs.filter(l=>l.audiences?.includes(side)).map(l=>pick(l,['time','text']));
  const state={...copy(pick(game,['map','mode','difficulty','seed','options','doctrines','time','round','turn','winner','nationName','turnEnding'])),multiplayer:true,playerSide:side,networkBusy:game.busy,paused:room.paused,terrainRevision:room.terrainRevision,units,structures,projectiles,events,logs,
   visible:{[side]:mask(game.visible[side])},sky:{[side]:mask(game.sky[side])},explored:{[side]:mask(game.explored[side])},memory:{[side]:copy([...game.memory[side]])},radarContacts:{[side]:[...game.radarContacts[side]].filter(n=>known.has(n))},intel:[],claims:[],credits:{[side]:game.credits[side],[other(side)]:0},stats:{[side]:copy(game.stats[side]),[other(side)]:{kills:{},losses:{}}},initialArmies:{[side]:copy(game.initialArmies[side])},
+  drops:(game.drops||[]).filter(d=>d.owner===side||visiblePoint(d)).map(d=>({...pick(d,['x','y','owner','elapsed']),passenger:pick(d.passenger,['id','type','owner','hp','maxHp']),destination:pick(d.destination,['x','y'])})),
   mines:game.mines.filter(m=>m.known[side]).map(m=>({x:m.x,y:m.y,known:{[side]:true}})),fires:game.fires.filter(f=>visiblePoint(f)).map(f=>pick(f,['x','y','left'])),actions:[],animation:null,aiEnabled:false,aiQueue:[],nextId:0};
  if(!player.knownTerrain){player.knownTerrain=game.terrain.slice();player.knownTerrainRevision=0;}
  let terrainChanged=false;for(let i=0;i<SIZE;i++)if(game.visible[side][i]&&player.knownTerrain[i]!==game.terrain[i]){player.knownTerrain[i]=game.terrain[i];terrainChanged=true;}if(terrainChanged)player.knownTerrainRevision++;
@@ -100,16 +101,20 @@ function createMultiplayerServer({graceMs=120000,now=Date.now,autoTick=true,maxR
   const point=p=>{if(!plain(p)||!Number.isInteger(p.x)||!Number.isInteger(p.y)||p.x<0||p.x>=128||p.y<0||p.y>=96)throw failure('Posição inválida.');return {x:p.x,y:p.y};};
   switch(msg.action){
    case 'order':{
-    const ids=ownIds(a.ids),allowed=['move','attack','capture','repair','stop','altitude','service','demine','build','bombard','takeoff','patrol','strike','return','land','bombRun','strikeCell'];if(!allowed.includes(a.type)||!plain(a.args||{}))throw failure('Ordem inválida.');const input=a.args||{},args={};
+    const ids=ownIds(a.ids),allowed=['move','attack','capture','repair','stop','altitude','service','demine','build','bombard','takeoff','patrol','strike','return','land','bombRun','strikeCell','embark','disembark','airdropLaunch'];if(!allowed.includes(a.type)||!plain(a.args||{}))throw failure('Ordem inválida.');const input=a.args||{},args={};
+    if(a.type==='embark'){owned(input.targetId);args.targetId=input.targetId;}
     if(['move','patrol','demine','bombard','strikeCell'].includes(a.type))Object.assign(args,point(input));
     if(['attack','strike','capture','repair','service'].includes(a.type)){if(!id(input.targetId))throw failure('Alvo inválido.');args.targetId=input.targetId;}
     if(['return','land'].includes(a.type)&&input.targetId!==undefined){owned(input.targetId);args.targetId=input.targetId;}
     if(a.type==='capture'){const remembered=[...g.memory[side].values()].find(s=>s.id===input.targetId),live=g.get(input.targetId);if(!remembered&&(!live||!g.isVisible(side,live)))throw failure('Objetivo não identificado.');if(remembered)args.position=pick(remembered,['x','y','width','height']);}
     if(a.type==='altitude'){if(!['low','high'].includes(input.altitude))throw failure('Altitude inválida.');args.altitude=input.altitude;}
     if(['attack','strike','strikeCell'].includes(a.type)){if(input.weapon!==undefined){if(typeof input.weapon!=='string'||input.weapon.length>32)throw failure('Arma inválida.');args.weapon=input.weapon;}if(input.salvo!==undefined){if(![1,2].includes(input.salvo))throw failure('Salva inválida.');args.salvo=input.salvo;}}
+    if(a.type==='airdropLaunch'){args.start=point(input.start);args.end=point(input.end);}
     if(a.type==='bombRun'){args.start=point(input.start);args.end=point(input.end);if(input.bombCount!==undefined){if(![6,12,24,48].includes(input.bombCount))throw failure('Quantidade de bombas inválida.');args.bombCount=input.bombCount;}}if(g.mode==='turns'&&g.busy&&stop)return ids.map(n=>g.order(g.get(n),'stop')).some(Boolean);return g.command(ids,a.type,args,side)>0;
    }
    case 'enqueue':{const base=owned(a.baseId);if(typeof a.type!=='string'||!Object.hasOwn(TYPES,a.type))throw failure('Tropa inválida.');return g.enqueue(side,a.type,base);}
+   case 'requestAirdrop':{const base=owned(a.baseId);if(!plain(a.cargo))throw failure('Carga inválida.');return g.requestAirdrop(side,base.id,a.cargo,a.destination===undefined||a.destination===null?undefined:point(a.destination));}
+   case 'boardPurchase':{const base=owned(a.baseId);if(typeof a.type!=='string'||!Object.hasOwn(TYPES,a.type))throw failure('Tropa inválida.');return g.boardPurchase(side,base.id,a.type);}
    case 'endTurn':return g.endTurn(side);
    case 'setWeapon':{const ids=ownIds(a.ids||[a.id]);if(typeof a.weapon!=='string')throw failure('Arma inválida.');return ids.map(n=>g.setWeapon(owned(n),a.weapon)).some(Boolean);}
    case 'setRadar':if(typeof a.on!=='boolean')throw failure('Radar inválido.');return g.setRadar(owned(a.id),a.on);

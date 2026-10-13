@@ -5,6 +5,9 @@ const {Game,TYPES,KEY,DIST,AIR,PLAN,COLS,ROWS}=ctx.api,results=[];
 const position=g=>g.units.filter(u=>u.owner==='red').map(u=>({id:u.id,type:u.type,x:u.x,y:u.y,flightState:u.flightState}));
 for(const map of ['river','desert','mountain','random'])for(const mode of ['rts','turns'])for(const difficulty of ['easy','normal','hard','veteran']){
  const g=new Game(map,difficulty,44,mode),initial={credits:{...g.credits},units:position(g),income:g.income('red'),airports:g.airports('red').length,bridges:g.terrain.filter(t=>t==='bridge').length},decisions=[],before=JSON.stringify(initial.units);let maxQueue=0,steps=0,maxTickMs=0;
+ const logistics={embarked:0,delivered:0,airdropMissions:0},transport=g.transportOrder.bind(g),airdrop=g.requestAirdrop.bind(g);
+ g.transportOrder=(u,type,args)=>{const n=u.cargo?.length||0,ok=transport(u,type,args);if(ok&&u.owner==='red'){if(type==='embark')logistics.embarked+=u.cargo.length-n;else logistics.delivered+=n-u.cargo.length;}return ok;};
+ g.requestAirdrop=(...args)=>{const ok=airdrop(...args);if(ok&&args[0]==='red')logistics.airdropMissions++;return ok;};
  const observe=()=>{const decision=JSON.stringify({phase:g.plan.phase,strategy:g.plan.strategy,route:g.plan.routeKind,goal:g.plan.objective,failures:g.plan.failures});if(decisions.at(-1)?.state!==decision)decisions.push({at:mode==='rts'?g.time:g.round,state:decision});maxQueue=Math.max(maxQueue,g.structures.filter(s=>s.owner==='red').reduce((n,s)=>n+s.queue.length,0));assert.ok(g.credits.red>=0);for(const u of g.units){assert.ok(u.hp>0&&u.hp<=u.maxHp);if(u.ammo)assert.ok(Object.values(u.ammo).every(n=>n>=0));}};
  const tick=()=>{const t=performance.now();g.update(1/30);maxTickMs=Math.max(maxTickMs,performance.now()-t);steps++;if(steps%30===0)observe();g.events=[];};
  if(mode==='rts'){for(let i=0;i<180*30&&!g.winner;i++)tick();}
@@ -17,7 +20,7 @@ for(const map of ['river','desert','mountain','random'])for(const mode of ['rts'
  if(mode==='rts')for(let i=0;i<60*30;i++){if(i%18===0)air.aiPlaneAct(plane,air.all().filter(e=>e.owner==='blue'&&air.isVisible('red',e)));air.update(1/30);airSteps++;}
  else for(let r=0;r<8;r++){if(air.turn==='blue')assert.ok(air.endTurn('blue'));air.aiPlaneAct(plane,air.all().filter(e=>e.owner==='blue'&&air.isVisible('red',e)));let n=0;while((air.busy||air.turn==='red')&&n++<6000){air.update(1/30);airSteps++;}assert.ok(n<6000);}
  assert.ok(plane.ammo.jetAgm<ammo.jetAgm,'Avião deve disparar '+map+'/'+mode+'/'+difficulty);assert.ok(air.shotsFired>0);assert.ok(air.credits.red>=0);assert.ok(Object.values(plane.ammo).every(n=>n>=0));const aviation={fixture:'pista própria e alvo visível, preço exato; demais unidades sem ordens estratégicas',initial:airInitial,initialAmmo:ammo,finalAmmo:{...plane.ammo},state:plane.flightState,shots:air.shotsFired,steps:airSteps};
- results.push({map,mode,difficulty,seed:44,initial,final,aviation,aiDecisions:g.aiDecisions,maxQueue,maxTickMs,steps,decisions});console.log(map,mode,difficulty,'decisions',g.aiDecisions,'posts',final.posts,'airports',final.airports,'planes',final.planes,'maxTickMs',Math.round(maxTickMs),'airAmmo',plane.ammo.jetAgm);
+ results.push({map,mode,difficulty,seed:44,initial,final,aviation,logistics,aiDecisions:g.aiDecisions,maxQueue,maxTickMs,steps,decisions});console.log(map,mode,difficulty,'decisions',g.aiDecisions,'posts',final.posts,'airports',final.airports,'planes',final.planes,'maxTickMs',Math.round(maxTickMs),'airAmmo',plane.ammo.jetAgm,'logistics',JSON.stringify(logistics));
  fs.writeFileSync(process.env.RTS_AI_MATRIX_RESULT||'reports/ia-2026-10-11/matriz.json',JSON.stringify({source,sourceHash,results},null,2));
 }
 assert.equal(results.length,32);

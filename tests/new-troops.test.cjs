@@ -67,10 +67,10 @@ check('Drone: visão 12 através da floresta, sem revelar minas',()=>{
  const g=field(),d=g.add('blue','reconDrone',10,10);g.mines.push({x:12,y:10,known:{blue:false,red:false}});g.terrain[KEY(10,15)]='forest';g.terrain[KEY(10,12)]='forest';g.updateVision();
  assert.equal(g.visible.blue[KEY(22,10)],true);assert.equal(g.visible.blue[KEY(23,10)],false);assert.equal(g.visible.blue[KEY(10,15)],true);assert.equal(g.visible.blue[KEY(10,12)],true);assert.equal(g.mines[0].known.blue,false);
 });
-check('Drone: radar inimigo detecta globalmente; antiaérea 99% e lançador 95%, sem flares',()=>{
+check('Drone: radar inimigo detecta globalmente; antiaérea 99% e lançador 90%, sem flares',()=>{
  const g=field(),d=g.add('blue','reconDrone',3,25),aa=g.add('red','antiAirVehicle',18,10),s=g.add('red','missileInfantry',4,25),heli=g.add('blue','helicopter',4,24);heli.altitude='high';g.updateVision();
  assert.equal(g.radarContact('red',d),true);assert.equal(g.isVisible('red',d),true);assert.ok(g.canFire(aa,d));
- assert.equal(g.accuracy(aa,d),.99);assert.equal(Math.round(g.accuracy(s,d)*100),95);assert.equal(Math.round(g.accuracy(aa,heli)*100),90,'Helicóptero alto continua 90%');
+ assert.equal(g.accuracy(aa,d),.99);assert.equal(Math.round(g.accuracy(s,d)*100),90);assert.equal(Math.round(g.accuracy(aa,heli)*100),90,'Helicóptero alto continua 90%');
  g.setRadar(aa,false);assert.equal(g.radarContact('red',d),false);
 });
 check('IA: bombardeia só posições vistas ou lembradas e evita área com tropa própria',()=>{

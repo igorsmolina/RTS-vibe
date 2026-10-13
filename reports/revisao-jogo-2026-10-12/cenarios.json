@@ -1,0 +1,507 @@
+{
+  "sourceHash": "8f9aecc4d0bc12231707609d331c124db5484da531a483529f2e4b6c6b3f4e57",
+  "checks": [
+    {
+      "name": "rts: memória terrestre expira e não passa para partida nova",
+      "ok": true,
+      "details": {
+        "duration": "90 segundos",
+        "preservedInSave": true,
+        "newMatchMemory": false
+      }
+    },
+    {
+      "name": "rts: perda aérea repetida aumenta cautela até três vezes",
+      "ok": true,
+      "details": {
+        "cooldowns": [
+          120,
+          240,
+          360,
+          360
+        ],
+        "lostCost": 3680
+      }
+    },
+    {
+      "name": "rts: embarque da onda é confundido com perda de combate",
+      "ok": true,
+      "details": {
+        "finding": true,
+        "cargo": 4,
+        "actualLosses": 0,
+        "recordedFailure": "losses",
+        "phase": "prepare"
+      }
+    },
+    {
+      "name": "rts: helicóptero vermelho não usa salvas pelo fluxo da IA",
+      "ok": true,
+      "details": {
+        "finding": true,
+        "canBombard": true,
+        "order": "stop",
+        "unusedSalvos": 2
+      }
+    },
+    {
+      "name": "rts: compra terrestre/aérea e transporte efetivo pelo aiAct",
+      "ok": true,
+      "details": {
+        "purchases": [
+          "transportTruck",
+          "transportHelicopter"
+        ],
+        "embarkAndDelivery": true
+      }
+    },
+    {
+      "name": "rts: compra e entrega automática de paraquedistas pela IA",
+      "ok": true,
+      "details": {
+        "charged": 425,
+        "deliveredInfantry": 4,
+        "deliveredRecon": 1,
+        "phase": "parked"
+      }
+    },
+    {
+      "name": "turns: memória terrestre expira e não passa para partida nova",
+      "ok": true,
+      "details": {
+        "duration": "6 rodadas",
+        "preservedInSave": true,
+        "newMatchMemory": false
+      }
+    },
+    {
+      "name": "turns: perda aérea repetida aumenta cautela até três vezes",
+      "ok": true,
+      "details": {
+        "cooldowns": [
+          6,
+          12,
+          18,
+          18
+        ],
+        "lostCost": 3680
+      }
+    },
+    {
+      "name": "turns: embarque da onda é confundido com perda de combate",
+      "ok": true,
+      "details": {
+        "finding": true,
+        "cargo": 4,
+        "actualLosses": 0,
+        "recordedFailure": "losses",
+        "phase": "prepare"
+      }
+    },
+    {
+      "name": "turns: helicóptero vermelho não usa salvas pelo fluxo da IA",
+      "ok": true,
+      "details": {
+        "finding": true,
+        "canBombard": true,
+        "order": "stop",
+        "unusedSalvos": 2
+      }
+    },
+    {
+      "name": "turns: compra terrestre/aérea e transporte efetivo pelo aiAct",
+      "ok": true,
+      "details": {
+        "purchases": [
+          "transportTruck",
+          "transportHelicopter"
+        ],
+        "embarkAndDelivery": true
+      }
+    },
+    {
+      "name": "turns: compra e entrega automática de paraquedistas pela IA",
+      "ok": true,
+      "details": {
+        "charged": 425,
+        "deliveredInfantry": 4,
+        "deliveredRecon": 1,
+        "phase": "parked"
+      }
+    },
+    {
+      "name": "turnos: parte após uma tropa, mesmo com quatro vagas e passageiros adjacentes",
+      "ok": true,
+      "details": {
+        "finding": true,
+        "capacity": 4,
+        "used": 1,
+        "order": "move"
+      }
+    },
+    {
+      "name": "perda de transporte e carga não alimenta memória específica de logística",
+      "ok": true,
+      "details": {
+        "finding": true,
+        "countedLosses": {
+          "infantry": 1,
+          "transportHelicopter": 1
+        },
+        "airFailures": 0,
+        "groundFailures": 0
+      }
+    },
+    {
+      "name": "poupança de avião bloqueia transporte acessível no mesmo ciclo de compra",
+      "ok": true,
+      "details": {
+        "finding": true,
+        "creditsAvailable": 320,
+        "aiBuySavedForAircraft": true,
+        "transportAffordable": true
+      }
+    }
+  ],
+  "natural": [],
+  "balance": {
+    "units": {
+      "transportTruck": {
+        "cost": 100,
+        "hp": 90,
+        "range": 0,
+        "speed": 2.4,
+        "move": 7,
+        "capacity": 4,
+        "damage": 0,
+        "cooldown": 1,
+        "train": 2
+      },
+      "transportHelicopter": {
+        "cost": 220,
+        "hp": 150,
+        "range": 0,
+        "speed": 2.8,
+        "move": 8,
+        "capacity": 6,
+        "damage": 0,
+        "cooldown": 1,
+        "train": 4
+      },
+      "transportPlane": {
+        "cost": 0,
+        "hp": 240,
+        "range": 0,
+        "speed": 4.5,
+        "move": 0,
+        "capacity": 12,
+        "damage": 0,
+        "cooldown": 1
+      },
+      "infantry": {
+        "cost": 50,
+        "hp": 100,
+        "range": 3,
+        "speed": 1.35,
+        "move": 3,
+        "damage": 35,
+        "cooldown": 0.8,
+        "train": 1
+      },
+      "lightTank": {
+        "cost": 100,
+        "hp": 110,
+        "range": 3,
+        "speed": 2,
+        "move": 6,
+        "damage": 35,
+        "cooldown": 2,
+        "train": 2
+      },
+      "tank": {
+        "cost": 150,
+        "hp": 170,
+        "range": 5,
+        "speed": 1.7,
+        "move": 5,
+        "damage": 60,
+        "cooldown": 2.5,
+        "train": 3
+      },
+      "heavyTank": {
+        "cost": 240,
+        "hp": 280,
+        "range": 7,
+        "speed": 1.5,
+        "move": 4,
+        "damage": 80,
+        "cooldown": 3.5,
+        "train": 4
+      },
+      "artillery": {
+        "cost": 180,
+        "hp": 100,
+        "range": 16,
+        "speed": 1.2,
+        "move": 3,
+        "damage": 85,
+        "cooldown": 5,
+        "train": 4
+      },
+      "recon": {
+        "cost": 75,
+        "hp": 75,
+        "range": 2,
+        "speed": 2.25,
+        "move": 5,
+        "damage": 24,
+        "cooldown": 1.1,
+        "train": 1
+      },
+      "engineer": {
+        "cost": 65,
+        "hp": 85,
+        "range": 1.15,
+        "speed": 1.25,
+        "move": 3,
+        "damage": 20,
+        "cooldown": 1.2,
+        "train": 2
+      },
+      "antitank": {
+        "cost": 110,
+        "hp": 90,
+        "range": 7,
+        "speed": 1.05,
+        "move": 3,
+        "damage": 40,
+        "cooldown": 3,
+        "train": 2
+      },
+      "machinegun": {
+        "cost": 90,
+        "hp": 110,
+        "range": 3,
+        "speed": 1.05,
+        "move": 2,
+        "damage": 18,
+        "cooldown": 0.4,
+        "train": 2
+      },
+      "antiAirVehicle": {
+        "cost": 160,
+        "hp": 70,
+        "range": 30,
+        "speed": 2.25,
+        "move": 5,
+        "damage": 80,
+        "cooldown": 3.5,
+        "train": 3
+      },
+      "missileInfantry": {
+        "cost": 90,
+        "hp": 80,
+        "range": 10,
+        "speed": 1.25,
+        "move": 3,
+        "damage": 40,
+        "cooldown": 3,
+        "train": 2
+      },
+      "helicopter": {
+        "cost": 150,
+        "hp": 120,
+        "range": 3,
+        "speed": 3.2,
+        "move": 8,
+        "damage": 4,
+        "cooldown": 0.2,
+        "train": 3
+      },
+      "helicopterGround": {
+        "cost": 230,
+        "hp": 120,
+        "range": 3,
+        "speed": 3.2,
+        "move": 8,
+        "damage": 20,
+        "cooldown": 1,
+        "train": 4
+      },
+      "helicopterAir": {
+        "cost": 180,
+        "hp": 120,
+        "range": 3,
+        "speed": 3.2,
+        "move": 8,
+        "damage": 20,
+        "cooldown": 1,
+        "train": 4
+      },
+      "rocketArtillery": {
+        "cost": 240,
+        "hp": 90,
+        "range": 30,
+        "speed": 0.85,
+        "move": 2,
+        "damage": 20,
+        "cooldown": 10,
+        "train": 4
+      },
+      "reconDrone": {
+        "cost": 90,
+        "hp": 60,
+        "range": 0,
+        "speed": 2.4,
+        "move": 7,
+        "damage": 0,
+        "cooldown": 1,
+        "train": 2
+      },
+      "stealthDrone": {
+        "cost": 160,
+        "hp": 50,
+        "range": 8,
+        "speed": 2.2,
+        "move": 6,
+        "damage": 35,
+        "cooldown": 3,
+        "train": 3
+      },
+      "commander": {
+        "hp": 140,
+        "range": 2,
+        "speed": 1.35,
+        "move": 3,
+        "damage": 40,
+        "cooldown": 1.5
+      },
+      "fighterBlue": {
+        "cost": 610,
+        "hp": 150,
+        "range": 14,
+        "speed": 6,
+        "move": 0,
+        "damage": 80,
+        "cooldown": 0.6,
+        "train": 3
+      },
+      "fighterRed": {
+        "cost": 610,
+        "hp": 160,
+        "range": 14,
+        "speed": 5.4,
+        "move": 0,
+        "damage": 80,
+        "cooldown": 0.6,
+        "train": 3
+      },
+      "multiroleBlue": {
+        "cost": 750,
+        "hp": 180,
+        "range": 14,
+        "speed": 5.6,
+        "move": 0,
+        "damage": 80,
+        "cooldown": 0.6,
+        "train": 4
+      },
+      "multiroleRed": {
+        "cost": 920,
+        "hp": 200,
+        "range": 14,
+        "speed": 4.8,
+        "move": 0,
+        "damage": 80,
+        "cooldown": 0.6,
+        "train": 4
+      },
+      "stealthFighterBlue": {
+        "cost": 1000,
+        "hp": 180,
+        "range": 14,
+        "speed": 6.2,
+        "move": 0,
+        "damage": 80,
+        "cooldown": 0.6,
+        "train": 5
+      },
+      "stealthFighterRed": {
+        "cost": 1030,
+        "hp": 190,
+        "range": 14,
+        "speed": 5.8,
+        "move": 0,
+        "damage": 80,
+        "cooldown": 0.6,
+        "train": 5
+      },
+      "bomberBlue": {
+        "cost": 1296,
+        "hp": 240,
+        "range": 40,
+        "speed": 3.5,
+        "move": 0,
+        "damage": 80,
+        "cooldown": 0.6,
+        "train": 6
+      },
+      "bomberRed": {
+        "cost": 2224,
+        "hp": 340,
+        "range": 40,
+        "speed": 3.8,
+        "move": 0,
+        "damage": 80,
+        "cooldown": 0.6,
+        "train": 8
+      }
+    },
+    "difficulty": {
+      "easy": {
+        "prep": 5,
+        "margin": 1.6,
+        "wave": 6,
+        "queue": 4,
+        "army": 40,
+        "planes": 2,
+        "income": 0.8,
+        "reinforce": false,
+        "followUp": 1
+      },
+      "normal": {
+        "prep": 3,
+        "margin": 1.15,
+        "wave": 6,
+        "queue": 4,
+        "army": 48,
+        "planes": 4,
+        "income": 1,
+        "reinforce": true,
+        "followUp": 1
+      },
+      "hard": {
+        "prep": 2,
+        "margin": 1.05,
+        "wave": 6,
+        "queue": 6,
+        "army": 56,
+        "planes": 4,
+        "income": 1.2,
+        "reinforce": true,
+        "followUp": 1
+      },
+      "veteran": {
+        "prep": 2,
+        "margin": 1,
+        "wave": 5,
+        "queue": 6,
+        "army": 64,
+        "planes": 5,
+        "income": 1.35,
+        "reinforce": true,
+        "followUp": 0.5
+      }
+    }
+  }
+}

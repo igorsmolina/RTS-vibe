@@ -8,6 +8,9 @@ const CELL=56;
 let game,settings={graphics:'balanced'},reducedMotion=false;
 const GRAPHICS={performance:{clouds:0,particles:80,interval:.22,alpha:0},balanced:{clouds:32,visibleClouds:6,particles:200,interval:.12,alpha:.13},cinematic:{clouds:64,visibleClouds:12,particles:400,interval:.08,alpha:.2}};
 const cam={x:0,y:0,zoom:1},renderer={canvas:{clientWidth:1000,clientHeight:800}};
+function localPlayerSide(){return 'blue';}
+function visualUnit(u){return u;}
+function planeDrawSize(type){return type.startsWith('bomber')?120:68;}
 function flightPose(u){const level=AIR(u)?flightLevel(u):0;return{x:u.x,y:u.y-18*level/CELL,scale:1+.12*level,level};}
 function viewCells(){return{x0:0,y0:0,x1:18,y1:15};}
 Object.assign(this,{Game,TYPES,AIR,PLANE,cam,renderer});
@@ -18,7 +21,7 @@ vm.runInContext(fs.readFileSync('public/js/battlefield-fx.js','utf8')+'\nthis.Ba
 const {BattlefieldFX,fixture,graphics,reduce,renderer,AIR}=ctx;
 function setup(profile='balanced'){const g=fixture();graphics(profile);return{g,fx:new BattlefieldFX(renderer),c:context()};}
 function move(fx,u,seconds,dx=.12){for(let n=0;n<Math.ceil(seconds*30);n++){u.x+=dx;fx.advance(1/30);}}
-for(const [name,particles,clouds,points,life,marks]of [['performance',80,0,0,0,0],['balanced',200,6,10,.45,64],['cinematic',400,12,18,.75,128]]){
+for(const [name,particles,clouds,points,life,marks]of [['performance',80,0,0,0,0],['balanced',200,6,10,.45,96],['cinematic',400,12,18,.75,512]]){
  const {g,fx}=setup(name),p=g.add('blue','fighterBlue',5,5);p.flightState='patrol';
  const profile=fx.profile();assert.equal(profile.particles,particles);assert.equal(profile.clouds,clouds);assert.equal(profile.trailPoints,points);assert.equal(profile.trailLife,life);assert.equal(profile.marks,marks);
  move(fx,p,1);const trail=fx.trails.get(p.id);assert.ok((trail?.length||0)<=points);if(points){assert.ok(trail.length>0);assert.ok(trail.every(t=>fx.time-t.time<=life+1e-8));}
@@ -58,8 +61,8 @@ console.log('OK sinal de tiro/impacto tem prioridade sobre decoração no limite
 }
 console.log('OK metadados preservados, recuo visual, fumaça direcional e respingos.');
 {
- const {g,fx}=setup('cinematic'),tank=g.add('blue','tank',5,5);tank.segment={to:{x:15,y:5}};for(let n=0;n<360;n++){tank.x=5+(n%240)/60;fx.advance(1/30);}assert.ok(fx.marks.length>0&&fx.marks.length<=128);assert.ok(fx.particles.length<=400);
- tank.segment=null;fx.advance(11);assert.equal(fx.marks.length,0);assert.equal(fx.particles.length,0);g.units=[];fx.advance(.1);assert.equal(fx.positions.size,0,'Estado por unidade é removido após destruição');
+ const {g,fx}=setup('cinematic'),tank=g.add('blue','tank',5,5);tank.segment={to:{x:15,y:5}};for(let n=0;n<360;n++){tank.x=5+(n%240)/60;fx.advance(1/30);}assert.ok(fx.marks.length>0&&fx.marks.length<=512);assert.ok(fx.particles.length<=400);
+ tank.segment=null;fx.advance(fx.profile().markLife+1);assert.equal(fx.marks.length,0);assert.equal(fx.particles.length,0);g.units=[];fx.advance(.1);assert.equal(fx.positions.size,0,'Estado por unidade é removido após destruição');
  const p=g.add('blue','fighterBlue',5,5);p.flightState='patrol';move(fx,p,.2);reduce(true);fx.advance(0);assert.equal(fx.particles.length,0);assert.equal(fx.trails.size,0);const c=context(),count=gradients;fx.exhaust(c,p);fx.exhaust(c,p);assert.equal(gradients,count,'Escape reutiliza sprites sem criar gradientes por quadro');assert.equal(fx.recoil(tank).x,0);assert.equal(fx.recoil(tank).y,0);
 }
 console.log('OK esteiras limitadas e temporárias, limpeza de unidades e movimento reduzido.');
@@ -93,3 +96,21 @@ console.log('OK histerese conta segundos reais a 5/2 FPS e ignora intervalo de a
  a.fx.consume({kind:'blast',x:5,y:5,visible:true,heavy:true});a.fx.advance(.1);assert.equal(JSON.stringify(a.fx.particles),JSON.stringify(b.fx.particles),'Mesma sequência decorativa é determinística');
 }
 console.log('OK efeitos independentes do motor/RNG e caches preparados uma vez.');
+{
+ const {g,fx}=setup('cinematic'),tank=g.add('blue','heavyTank',5,5);
+ fx.consume({kind:'shot',id:tank.id,x:5,y:5,sourceType:tank.type,facing:Math.PI/2,visible:true});
+ assert.ok(fx.particles.some(p=>p.kind==='pressure'),'Canhão cinematográfico deve levantar onda de pressão ao redor do casco');
+ const dust=fx.particles.filter(p=>p.kind==='dust');assert.ok(dust.some(p=>p.x<(tank.x+.5)*56-12)&&dust.some(p=>p.x>(tank.x+.5)*56+12),'Poeira deve cercar o tanque, não surgir só no centro');
+ fx.reset();for(const [type,y]of [['tank',5],['recon',7],['infantry',9]]){const u=g.add('blue',type,4,y);fx.advance(.01);move(fx,u,1.2,.025);}
+ assert.ok(['tread','tyre','foot'].every(kind=>fx.marks.some(m=>m.kind===kind)),'Esteiras, pneus e botas deixam marcas distintas');
+ const foot=fx.marks.filter(m=>m.kind==='foot');assert.ok(foot.some(m=>m.side===-1)&&foot.some(m=>m.side===1),'Passos alternam as botas');
+ console.log('OK onda de pressão, poeira ao redor do casco e três tipos de rastro.');
+}
+{
+ const counts=[];for(const fps of [30,60]){const {g,fx}=setup('cinematic'),u=g.add('blue','tank',5,5);fx.advance(.01);for(let i=0;i<fps;i++){u.x+=1/fps;fx.advance(1/fps);}counts.push(fx.marks.length);}
+ assert.equal(counts[0],counts[1],'Densidade das marcas depende da distância, não do FPS');
+ const {g,fx,c}=setup('cinematic'),u=g.add('blue','infantry',5,5);fx.advance(.01);u.x=14;fx.advance(.1);assert.equal(fx.marks.length,0,'Teleporte não fabrica trilha');
+ g.visible.blue.fill(false);g.sky.blue.fill(false);u.owner='red';move(fx,u,.4,.05);assert.equal(fx.marks.length,0,'Movimento oculto não deixa pistas gráficas');
+ g.visible.blue.fill(true);fx.advance(.1);move(fx,u,.4,.05);assert.ok(fx.marks.length>0);g.visible.blue.fill(false);fx.ground(c);assert.ok(!c.ops.some(o=>o[0]==='image'),'Marcas sob neblina não são desenhadas');
+ console.log('OK distância, teleporte, contato perdido e marcas sob neblina.');
+}

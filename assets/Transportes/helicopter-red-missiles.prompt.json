@@ -1,0 +1,5 @@
+{
+  "tool": "image_gen.imagegen (integrado)",
+  "transparent_background": true,
+  "prompt": "Use case: precise-object-edit. Asset: transparent RTS game helicopter sprite variant. Edit this existing muted burgundy red Mi-8 transport helicopter viewed directly from above, nose pointing up. Add short dark metal weapon pylons on BOTH left and right sides of the fuselage, behind the cockpit and beneath the main rotor, and TWO clearly visible slender gray missiles with pointed noses and small tail fins mounted on each side, FOUR missiles total. All four missiles point forward UP parallel to the helicopter centerline; their silhouettes extend outside the fuselage and must read clearly as missiles at small game sprite size. Keep the existing burgundy fuselage, cockpit, dark mechanical details, main rotor, tail boom, tail rotor, landing gear, proportions, orientation, painted semi-realistic RTS style and centered square composition. Preserve complete silhouette with clear margins. True alpha transparent background, no floor, no shadow, no text, logos or watermark. This is only a visual armament edit."
+}

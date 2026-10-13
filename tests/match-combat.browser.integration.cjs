@@ -53,8 +53,8 @@ const assert=require('node:assert/strict'),path=require('node:path'),{pathToFile
 
     scenario('air compatibility and range',()=>{
      const g=fresh(),{x,y}=patch(g),air=g.add('red','reconDrone',x+5,y+3),launcher=g.add('blue','missileInfantry',x+2,y+3),ground=g.add('red','recon',x+5,y+5),aa=g.add('blue','antiAirVehicle',x+2,y+5);g.updateVision();
-     check('missile launcher uses air 3 and ground 1',g.range(launcher,air)===3&&g.range(launcher,ground)===1&&g.canFire(launcher,air)&&!g.canFire(launcher,ground));
-     air.x=x+6;g.updateVision();check('missile launcher cannot fire at air beyond 3',g.isVisible('blue',air)&&!g.canFire(launcher,air));air.x=x+5;
+     check('missile launcher uses air 10 and has no ground target',g.range(launcher,air)===10&&g.range(launcher,ground)===0&&g.canFire(launcher,air)&&!g.canFire(launcher,ground));
+     air.x=x+13;g.updateVision();check('missile launcher cannot fire at air beyond 10',g.isVisible('blue',air)&&!g.canFire(launcher,air));air.x=x+5;
      for(const [type,dx,dy]of [['tank',3,2],['antitank',3,4],['engineer',4,4],['recon',4,2]]){const u=g.add('blue',type,x+dx,y+dy);g.updateVision();check(type+' rejects airborne attack',g.weapon(u,air)===null&&g.command([u.id],'attack',{targetId:air.id})===0);}
      const inf=g.add('blue','infantry',x+4,y+3),gun=g.add('blue','machinegun',x+5,y+1);g.updateVision();
      check('infantry and machinegun can engage air',g.canFire(inf,air)&&g.canFire(gun,air));
