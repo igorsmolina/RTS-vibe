@@ -15,7 +15,7 @@ const Multiplayer={
  },
  openRemote(){
   let url;try{url=new URL(window.RTS_MULTIPLAYER_URL);if(url.protocol!=='https:'&&!(url.protocol==='http:'&&['localhost','127.0.0.1'].includes(url.hostname)))throw Error();}catch{}
-  if(url){location.assign(url.href);return;}
+  if(url&&url.origin!==location.origin){const room=new URLSearchParams(location.search).get('room');url.searchParams.set('multiplayer','1');if(room)url.searchParams.set('room',room);location.assign(url.href);return;}
   this.show();$('mpCreate').disabled=$('mpJoin').disabled=true;this.status('Abra a versão online para jogar pela internet. O endereço do servidor ainda não foi configurado nesta cópia.');
  },
  show(){
@@ -120,6 +120,6 @@ window.addEventListener('load',()=>{
  for(const id of ['mpMap','mpMode','mpSeed','mpWater','mpForest','mpRelief','mpFarmland','mpPosts'])$(id).addEventListener('change',()=>{Multiplayer.configure();$('mpTerrain').hidden=$('mpMap').value!=='random';});
  $('mpDoctrine').replaceChildren(...Object.entries(NATION_DOCTRINES).map(([id,d])=>new Option(d.name,id)));
  $('mpPosts').replaceChildren(...Array.from({length:16},(_,i)=>new Option(String(i*2+2),String(i*2+2))));$('mpPosts').value='24';
- const invitation=new URLSearchParams(location.search).get('room');if(invitation){$('mpCode').value=invitation;Multiplayer.open();}
+ const params=new URLSearchParams(location.search),invitation=params.get('room');if(invitation)$('mpCode').value=invitation;if(invitation||params.has('multiplayer'))Multiplayer.open();
  try{const session=JSON.parse(sessionStorage.getItem('rtsvibe.multiplayer')||'null');if(session?.code&&session.token&&location.protocol!=='file:'){Multiplayer.session=session;Multiplayer.seq=session.seq||0;$('mpNickname').value=session.nickname||'Jogador';Multiplayer.show();Multiplayer.connect();}}catch{}
 });
