@@ -85,7 +85,7 @@ const PLANE_MODELS={
  stealthFighterBlue:{name:'Caça furtivo aliado',team:'blue',hp:180,speed:6.2,evasion:.3,flares:6,hull:750,train:5,ammo:{jetAam:6,antiRadiation:2},radar:true,radarStealth:true,weaponModel:'fighterBlue',reward:140,role:'Furtivo ao radar · interceptação · radar 18'},
  stealthFighterRed:{name:'Caça furtivo inimigo',team:'red',hp:190,speed:5.8,evasion:.35,flares:6,hull:780,train:5,ammo:{jetAam:6,antiRadiation:2},radar:true,radarStealth:true,weaponModel:'fighterRed',reward:140,role:'Furtivo ao radar · interceptação · radar 18'},
  bomberBlue:{name:'Bombardeiro furtivo aliado',team:'blue',hp:240,speed:3.5,evasion:.1,flares:10,hull:1000,train:6,ammo:{bombCommon:4,bombFragment:4,bombIncendiary:4,cruiseMissile:2},radarStealth:true,role:'Furtivo ao radar · 12 bombas · 2 cruzeiros, alcance 40 · sem metralhadora'},
- bomberRed:{name:'Bombardeiro pesado inimigo',team:'red',hp:340,speed:3.8,evasion:.1,flares:12,hull:1400,train:8,ammo:{bombCommon:16,bombFragment:16,bombIncendiary:16,cruiseMissile:2},reward:180,role:'48 bombas · 2 cruzeiros, alcance 40 · sem metralhadora · detectável por radar'}
+ bomberRed:{name:'Bombardeiro pesado inimigo',team:'red',hp:340,speed:3.8,evasion:.1,flares:12,hull:100,train:8,ammo:{bombCommon:16,bombFragment:16,bombIncendiary:16,cruiseMissile:6},reward:180,role:'48 bombas · 6 cruzeiros, alcance 40 · sem metralhadora · detectável por radar'}
 };
 for(const [type,m]of Object.entries(PLANE_MODELS)){if(!m.ammo.cruiseMissile)m.ammo={...m.ammo,jetGun:80};TYPES[type]={...m,plane:true,air:true,vehicle:true,vision:12,move:0,min:0,range:m.ammo.cruiseMissile?40:m.ammo.jetAam?14:4,damage:80,accuracy:.8,cooldown:.6,reward:m.reward??120,weapons:Object.keys(m.ammo),cost:m.hull+Object.entries(m.ammo).reduce((n,[w,q])=>n+AMMO_PRICE[w]*q,0)};}
 Object.assign(TYPES,{
@@ -657,11 +657,11 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   const blocker=units[k],known=blocker&&(blocker.owner===u.owner||this.isVisible(u.owner,blocker));return !(known&&(avoidUnits||blocker.owner!==u.owner));
  }
  /* Casas que findPath(u, casa) alcança: o A* é completo, então equivale a uma inundação com as mesmas regras. */
- reachable(u,units=this.unitGrid(u),structures=this.structureGrid(u)){
+ reachable(u,units=this.unitGrid(u),structures=this.structureGrid(u),avoidUnits=false){
   const start=TILE(u),seen=new Uint8Array(SIZE),queue=new Int16Array(SIZE),crossings=this.crossings(u);let head=0,tail=0;seen[queue[tail++]=KEY(start.x,start.y)]=1;
   while(head<tail){const k=queue[head++],px=k%COLS,py=(k-px)/COLS;for(const [dx,dy]of this.moveDirections(u)){
    const x=px+dx,y=py+dy;if(x<0||y<0||x>=COLS||y>=ROWS)continue;const key=KEY(x,y);
-   if(seen[key]||px!==x&&py!==y&&crossings.has((px+x)*512+py+y)||!this.passable(u,x,y,false,units,structures)||!Number.isFinite(this.cost(u,x,y)))continue;seen[key]=1;queue[tail++]=key;
+   if(seen[key]||px!==x&&py!==y&&crossings.has((px+x)*512+py+y)||!this.passable(u,x,y,avoidUnits,units,structures)||!Number.isFinite(this.cost(u,x,y)))continue;seen[key]=1;queue[tail++]=key;
   }}return seen;
  }
  /* A* ponderado: heurística admissível (menor custo = 0,5), vizinhos conforme a camada. Heap ordenado por (f, g, inserção) = mesma ordem da antiga lista ordenada estável. */
@@ -711,13 +711,14 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  touchVision(){this.visionDirty=true;if(this.mode==='turns')this.flushVision();}
  flushVision(){if(this.visionDirty)this.updateVision();}
  updateVision(){
-  this.visionDirty=false;this.updateRadarContacts();
+  this.visionDirty=false;this.updateRadarContacts();const terrain=this.terrain;
   for(const owner of ['blue','red']){
    const visible=this.visible[owner],sky=this.sky[owner],explored=this.explored[owner];visible.fill(false);sky.fill(false);
    const seers=[];
    for(const list of [this.units,this.structures])for(const u of list){
-    if(u.owner!==owner||u.hp<=0)continue;const p=u.type==='hq'||u.type==='post'?CENTER(u):u,r=this.sight(u),limit=r+.05,high=AIR(u)&&!TYPES[u.type].drone&&u.altitude==='high',detection=high?1:u.type==='recon'?3:2,x0=Math.max(0,Math.floor(p.x-r)),x1=Math.min(COLS-1,Math.ceil(p.x+r));seers.push([p,limit,this.strikeReach(u)]);
-    for(let y=Math.max(0,Math.floor(p.y-r));y<=Math.min(ROWS-1,Math.ceil(p.y+r));y++){const dy=Math.abs(p.y-y);for(let x=x0;x<=x1;x++){const d=Math.abs(p.x-x)+dy;if(d<=limit){const k=KEY(x,y),terrain=this.terrain[k],concealed=!TYPES[u.type].drone&&!heliHigh(u)&&(CONCEAL.has(terrain)||high&&(terrain==='hill'||terrain==='mountain'));explored[k]=true;sky[k]=true;if(!concealed||d<=detection+.05)visible[k]=true;}}}
+    if(u.owner!==owner||u.hp<=0)continue;const p=u.type==='hq'||u.type==='post'?CENTER(u):u,r=this.sight(u),limit=r+.05,high=AIR(u)&&!TYPES[u.type].drone&&u.altitude==='high',reach=(high?1:u.type==='recon'?3:2)+.05,open=!!TYPES[u.type].drone||heliHigh(u),x0=Math.max(0,Math.floor(p.x-r)),x1=Math.min(COLS-1,Math.ceil(p.x+r)),y1=Math.min(ROWS-1,Math.ceil(p.y+r));seers.push([p,limit,this.strikeReach(u)]);
+    // Invariantes da tropa ficam fora do laço das casas; casa já visível por outra tropa só marca explorada/céu.
+    for(let y=Math.max(0,Math.floor(p.y-r));y<=y1;y++){const dy=Math.abs(p.y-y),row=y*COLS;for(let x=x0;x<=x1;x++){const d=Math.abs(p.x-x)+dy;if(d>limit)continue;const k=row+x;explored[k]=true;sky[k]=true;if(visible[k])continue;if(open||d<=reach){visible[k]=true;continue;}const t=terrain[k];if(!(CONCEAL.has(t)||high&&(t==='hill'||t==='mountain')))visible[k]=true;}}
    }
    if(this._reveal===owner){visible.fill(true);sky.fill(true);explored.fill(true);} // fim de partida: mapa inteiro
    // A detecção furtiva acompanha a área de reconhecimento atual.
@@ -857,12 +858,25 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   u.entrenched=false;u.pending=true;u.path=route.slice();job.route=route;u.order={type,targetId:job.targetId,altitude:job.altitude,cell:job.cell,goal:route.length?route[route.length-1]:job.goal};if(!rts)this.actions.push(job);return true;
  }
  command(ids,type,args={},owner='blue'){
-  if(this.winner||!['blue','red'].includes(owner)||this.mode!=='rts'&&(this.turn!==owner||this.busy))return 0;let count=0;const assigned=new Set(),army=[...new Set(ids)].map(id=>this.get(id)).filter(u=>u?.owner===owner&&!TYPES[u.type].structure);
+  if(this.winner||!['blue','red'].includes(owner)||this.mode!=='rts'&&(this.turn!==owner||this.busy))return 0;let count=0;const rts=this.mode==='rts',assigned=new Set(),army=[...new Set(ids)].map(id=>this.get(id)).filter(u=>u?.owner===owner&&!TYPES[u.type].structure);
+  // Agrupamento em volta do destino: raio 4; no RTS cresce com a raiz do grupo para toda tropa achar casa.
+  const radius=rts?Math.max(4,Math.ceil(Math.sqrt(army.length))):4;
   for(const u of army){
    if(type==='move'&&army.length>1&&!FLYER(u)){
-    const candidates=[];for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)if(DIST({x,y},args)<=4&&!this.occupied(x,y,u)&&(AIR(u)||this.structureAt(x,y)?.type!=='hq')&&Number.isFinite(this.cost(u,x,y)))candidates.push({x,y});
+    if(!rts&&u.moveLeft<=0)continue;
+    // Grades e casa inicial valem para todas as candidatas; o A* só roda para casas livres e ainda não escolhidas.
+    const air=AIR(u),slot=p=>(air?'a':'g')+KEY(p.x,p.y),units=this.unitGrid(u),structures=this.structureGrid(u),start=rts&&u.segment?{...u,...u.segment.to}:u,here=TILE(start),candidates=[];
+    for(let y=Math.max(0,Math.floor(args.y-radius));y<=Math.min(ROWS-1,Math.ceil(args.y+radius));y++)for(let x=Math.max(0,Math.floor(args.x-radius));x<=Math.min(COLS-1,Math.ceil(args.x+radius));x++)if(DIST({x,y},args)<=radius&&!units[KEY(x,y)]&&(x!==here.x||y!==here.y)&&(!rts||!assigned.has(slot({x,y})))&&(air||this.structureAt(x,y)?.type!=='hq')&&Number.isFinite(this.cost(u,x,y)))candidates.push({x,y});
     candidates.sort((a,b)=>DIST(a,args)-DIST(b,args)||DIST(a,u)-DIST(b,u));
-    for(const goal of candidates){const start=this.mode==='rts'&&u.segment?{...u,...u.segment.to}:u,path=this.findPath(start,goal,true,this.unitGrid(u));if(!path)continue;const route=this.trimPath(u,path),last=route[route.length-1],slot=(AIR(u)?'a':'g')+KEY(last?.x,last?.y);if(!last||assigned.has(slot))continue;if(this.order(u,type,goal,true)){assigned.add(slot);count++;break;}}
+    // ponytail: um A* por tropa; destino inalcançável custa um A* completo, então a primeira falha gera a inundação que descarta as demais.
+    // Se grupos de 100+ ainda travarem no plano gratuito, rotular os componentes conexos uma vez por classe de movimento.
+    let reach=null;
+    for(const goal of candidates){
+     if(reach&&!reach[KEY(goal.x,goal.y)])continue;
+     if(rts){if(this.order(u,type,goal,true)){assigned.add(slot(goal));count++;break;}}
+     else{const path=this.findPath(start,goal,true,units,structures),route=path&&this.trimPath(u,path),last=route?.[route.length-1];if(last&&!assigned.has(slot(last))){if(this.order(u,type,goal,true)){assigned.add(slot(last));count++;}break;}if(path)continue;}
+     reach||=this.reachable(start,units,structures,true);
+    }
    }else if(this.order(u,type,args,true))count++;
   }return count;
  }

@@ -118,6 +118,21 @@ const { createMultiplayerServer } = require('../scripts/multiplayer-server.cjs')
           if(mode==='rts'||g.turn===side&&!g.busy){await page.locator('#weaponGun').click();await page.waitForFunction(id=>game.get(id).weaponMode==='gun',heli.id);assert.equal(heli.weaponMode,'gun');}
         }
       }
+      // Helicóptero de transporte: só o vermelho tem a rajada 3×3; Bombardear aparece para ele e continua oculto para o azul.
+      for (const [page, side] of [[blue, 'blue'], [red, 'red']]) {
+        const base = g.hq(side), carrier = g.add(side, 'transportHelicopter', Math.min(127, base.x + 5), Math.min(95, base.y + 5));
+        g.updateVision(); service.broadcast(room);
+        await page.waitForFunction(id => !!game.get(id), carrier.id);await page.evaluate(id => { setSelection([id]); updateUI(); }, carrier.id);
+        assert.equal(await page.locator('#bombard').isVisible(), side === 'red', side + ': botão Bombardear do helicóptero de transporte');
+        if (side === 'red' && mode === 'rts') {
+          assert.equal(await page.locator('#bombard').isDisabled(), false);
+          await page.evaluate(() => issueAt({ x: 64, y: 48 }, 'bombard'));
+          await page.waitForFunction(id => game.get(id).order.type === 'bombard', carrier.id);
+          assert.equal(carrier.job?.type, 'bombard');
+        }
+        g.units = g.units.filter(u => u.id !== carrier.id); g.updateVision(); service.broadcast(room);
+        await page.waitForFunction(id => !game.get(id), carrier.id);
+      }
       if (map === 'river' && mode === 'rts') {
         for (let y = 54; y < 69; y++) for (let x = 74; x < 94; x++) g.terrain[y * 128 + x] = 'plain';
         const airport = g.add('red', 'airportAsphalt', 80, 60);

@@ -1,7 +1,8 @@
 'use strict';
-// Piores casos de rota: 100 ordens no mesmo tick, destino inalcançável (A* completo) e labirinto de rios com uma ponte por faixa.
+// Piores casos de rota: 100 ordens no mesmo tick, destino inalcançável (A* completo), labirinto de rios com uma ponte por faixa
+// e ordem de grupo com 100 tropas (cada uma precisa de uma casa livre própria em volta do destino).
 const {engine,battle,ticks,tickStats,quantiles,suite}=require('./perf-kit.cjs');
-const {Game,KEY,COLS,ROWS}=engine(),S=suite('pathfinding-worst');
+const {Game,TYPES,KEY,COLS,ROWS}=engine(),S=suite('pathfinding-worst');
 const time=f=>{const t=performance.now(),r=f();return[performance.now()-t,r];};
 const empty=()=>{const g=new Game('river','normal',3,'rts');g.units=[];g.structures=[];g.mines=[];g.terrain.fill('plain');g.aiEnabled=false;g.add('blue','hq',0,0);g.add('red','hq',125,93);g.updateVision();return g;};
 
@@ -24,5 +25,12 @@ const empty=()=>{const g=new Game('river','normal',3,'rts');g.units=[];g.structu
  const each=units.map(u=>time(()=>g.findPath(u,{x:60,y:ROWS-2},false))),q=quantiles(each.map(e=>e[0]));
  S.expect(each.every(e=>e[1]&&e[1].length>COLS),'o labirinto deve ter rota longa: '+each.map(e=>e[1]?.length).join(','));
  S.budget('labirinto de rios',{findPathMean:q.mean,findPathMax:q.max,routeLength:each[0][1]?.length||0});}
+
+// 4. Ordem de grupo: 100 tropas terrestres recebem casas distintas em volta do destino (antes: um A* por casa candidata, O(N²)).
+{const g=battle({blue:130,red:0,attack:false}),ground=g.units.filter(u=>u.owner==='blue'&&!TYPES[u.type].air&&!TYPES[u.type].structure&&u.type!=='commander').slice(0,100);
+ const [ms,ordered]=time(()=>g.command(ground.map(u=>u.id),'move',{x:100,y:48},'blue')),goals=new Set(ground.filter(u=>u.order.type==='move').map(u=>KEY(u.order.goal.x,u.order.goal.y)));
+ const t=ticks(g,60);S.budget('ordem de grupo, 100 tropas',{units:ground.length,ordered,commandMs:Math.round(ms),distinctGoals:goals.size,...tickStats(t)});
+ S.expect(ordered===ground.length,`só ${ordered} de ${ground.length} tropas receberam ordem`);S.expect(goals.size===ordered,'destinos repetidos no grupo');
+ S.expect(ms<2500,`ordem de grupo levou ${Math.round(ms)} ms (um A* por casa candidata levava ~5 s)`);}
 
 S.finish('piores casos de rota medidos.');

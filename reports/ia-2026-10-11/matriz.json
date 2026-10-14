@@ -1,6 +1,6 @@
 {
   "source": "public/js/engine.js",
-  "sourceHash": "d140a02a5fde7bbd0b86d0530bd447a65ad67122b521f7fff9cec54235b1a169",
+  "sourceHash": "a30481ba067782498b1b5337aab9b7eb85fac7c6bedf0259e241fb64d6e6b413",
   "results": [
     {
       "map": "river",
@@ -77,44 +77,38 @@
         "time": 179.99999999999235,
         "credits": {
           "blue": 420,
-          "red": 333
+          "red": 474
         },
         "units": [
           {
             "id": 28,
             "type": "commander",
-            "x": 67,
-            "y": 39.07000000000008
+            "x": 86,
+            "y": 30
           },
           {
             "id": 38,
             "type": "infantry",
-            "x": 98,
-            "y": 57.02500000000008
-          },
-          {
-            "id": 39,
-            "type": "infantry",
-            "x": 103.77000000000018,
-            "y": 87
+            "x": 99,
+            "y": 80.41000000000017
           },
           {
             "id": 40,
             "type": "recon",
-            "x": 37.324999999999974,
-            "y": 39
+            "x": 73,
+            "y": 40.249999999999986
           },
           {
             "id": 41,
             "type": "engineer",
-            "x": 53,
-            "y": 46
+            "x": 67,
+            "y": 21
           },
           {
             "id": 42,
             "type": "engineer",
-            "x": 53,
-            "y": 47
+            "x": 37.41666666666686,
+            "y": 10
           },
           {
             "id": 43,
@@ -125,8 +119,8 @@
           {
             "id": 44,
             "type": "machinegun",
-            "x": 50,
-            "y": 30.79500000000002
+            "x": 84,
+            "y": 28
           },
           {
             "id": 45,
@@ -137,54 +131,30 @@
           {
             "id": 46,
             "type": "reconDrone",
-            "x": 25.613315950392643,
-            "y": 5.609643132366021,
+            "x": 62.79655870580832,
+            "y": 45.173361263372705,
             "flightState": "approach"
-          },
-          {
-            "id": 47,
-            "type": "infantry",
-            "x": 66,
-            "y": 25.165000000000134
           },
           {
             "id": 48,
             "type": "infantry",
-            "x": 68,
-            "y": 23.30500000000005
+            "x": 85,
+            "y": 29
           },
           {
             "id": 49,
             "type": "machinegun",
-            "x": 66,
-            "y": 29.114999999999913
+            "x": 87,
+            "y": 31
           },
           {
             "id": 50,
-            "type": "infantry",
-            "x": 58,
-            "y": 24.665000000000063
-          },
-          {
-            "id": 51,
-            "type": "machinegun",
-            "x": 67,
-            "y": 35.259999999999934
-          },
-          {
-            "id": 52,
-            "type": "infantry",
-            "x": 59,
-            "y": 23.635000000000176
-          },
-          {
-            "id": 53,
-            "type": "machinegun",
-            "x": 89,
-            "y": 29
+            "type": "transportTruck",
+            "x": 90.8799999999999,
+            "y": 32
           }
         ],
-        "posts": 13,
+        "posts": 9,
         "airports": 1,
         "planes": 0,
         "queuedPlanes": 0,
@@ -214,13 +184,13 @@
         "steps": 1800
       },
       "logistics": {
-        "embarked": 0,
+        "embarked": 2,
         "delivered": 0,
         "airdropMissions": 0
       },
-      "aiDecisions": 911,
+      "aiDecisions": 1173,
       "maxQueue": 2,
-      "maxTickMs": 127.34639999999854,
+      "maxTickMs": 123.86809999999969,
       "steps": 5400,
       "decisions": [
         {
@@ -238,26 +208,6 @@
         {
           "at": 82.99999999999785,
           "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":5,\"x\":60,\"y\":44,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 90.9999999999974,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":11,\"x\":49,\"y\":24,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 123.99999999999552,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":17,\"x\":49,\"y\":43,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 148.99999999999412,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":11,\"x\":49,\"y\":24,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 152.9999999999939,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":11,\"x\":49,\"y\":24,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 175.99999999999258,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":22,\"x\":61,\"y\":61,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
         }
       ]
     },
@@ -336,38 +286,44 @@
         "time": 179.99999999999235,
         "credits": {
           "blue": 420,
-          "red": 102
+          "red": 108
         },
         "units": [
           {
             "id": 28,
             "type": "commander",
-            "x": 86,
-            "y": 30
+            "x": 65,
+            "y": 27.045
+          },
+          {
+            "id": 38,
+            "type": "infantry",
+            "x": 109.35000000000005,
+            "y": 87
           },
           {
             "id": 39,
             "type": "infantry",
-            "x": 112.77000000000018,
-            "y": 88
+            "x": 68.39999999999986,
+            "y": 24
           },
           {
             "id": 40,
             "type": "recon",
-            "x": 35.049999999999926,
-            "y": 37
+            "x": 87,
+            "y": 30
           },
           {
             "id": 41,
             "type": "engineer",
-            "x": 77,
-            "y": 61.99999999999842
+            "x": 76,
+            "y": 71.0833333333323
           },
           {
             "id": 42,
             "type": "engineer",
-            "x": 53,
-            "y": 46
+            "x": 60,
+            "y": 54.833333333332476
           },
           {
             "id": 43,
@@ -378,8 +334,8 @@
           {
             "id": 44,
             "type": "machinegun",
-            "x": 50,
-            "y": 30.79500000000002
+            "x": 65.13999999999999,
+            "y": 29
           },
           {
             "id": 45,
@@ -390,48 +346,48 @@
           {
             "id": 46,
             "type": "reconDrone",
-            "x": 25.613315950392643,
-            "y": 5.609643132366021,
+            "x": 61.360347555765635,
+            "y": 37.821486176559496,
             "flightState": "approach"
           },
           {
             "id": 47,
             "type": "infantry",
-            "x": 84,
-            "y": 28
+            "x": 67,
+            "y": 26.64
           },
           {
             "id": 48,
             "type": "machinegun",
-            "x": 87,
-            "y": 31
+            "x": 64,
+            "y": 27.86499999999999
           },
           {
             "id": 49,
             "type": "machinegun",
-            "x": 88,
-            "y": 30
+            "x": 67,
+            "y": 24.72
           },
           {
             "id": 50,
             "type": "infantry",
-            "x": 85,
-            "y": 29
+            "x": 63.89000000000007,
+            "y": 19
           },
           {
             "id": 51,
-            "type": "transportTruck",
-            "x": 67,
-            "y": 28.760000000002787
+            "type": "infantry",
+            "x": 66,
+            "y": 25.03500000000004
           },
           {
             "id": 52,
-            "type": "infantry",
-            "x": 81,
-            "y": 52.10500000000012
+            "type": "transportTruck",
+            "x": 80.06000000000155,
+            "y": 18
           }
         ],
-        "posts": 13,
+        "posts": 11,
         "airports": 1,
         "planes": 0,
         "queuedPlanes": 1,
@@ -461,13 +417,13 @@
         "steps": 1800
       },
       "logistics": {
-        "embarked": 1,
+        "embarked": 0,
         "delivered": 0,
         "airdropMissions": 0
       },
-      "aiDecisions": 1044,
+      "aiDecisions": 742,
       "maxQueue": 3,
-      "maxTickMs": 125.14089999999851,
+      "maxTickMs": 113.82710000000225,
       "steps": 5400,
       "decisions": [
         {
@@ -491,12 +447,12 @@
           "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":11,\"x\":49,\"y\":24,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
         },
         {
-          "at": 115.99999999999598,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":17,\"x\":49,\"y\":43,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
+          "at": 119.99999999999575,
+          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":11,\"x\":49,\"y\":24,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
         },
         {
-          "at": 148.99999999999412,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":11,\"x\":49,\"y\":24,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
+          "at": 149.99999999999406,
+          "state": "{\"phase\":\"attack\",\"strategy\":\"scout\",\"route\":\"open\",\"goal\":{\"x\":64,\"y\":24}}"
         }
       ]
     },
@@ -575,50 +531,50 @@
         "time": 179.99999999999235,
         "credits": {
           "blue": 420,
-          "red": 158
+          "red": 179
         },
         "units": [
           {
             "id": 28,
             "type": "commander",
-            "x": 67,
-            "y": 40.360000000000014
+            "x": 60,
+            "y": 50.78000000000014
           },
           {
             "id": 38,
             "type": "infantry",
-            "x": 54.75999999999988,
-            "y": 48
+            "x": 77,
+            "y": 67.84500000000007
           },
           {
             "id": 39,
             "type": "infantry",
-            "x": 118.44000000000005,
+            "x": 121,
             "y": 93
           },
           {
             "id": 40,
             "type": "recon",
-            "x": 29,
-            "y": 31.075000000000042
+            "x": 33,
+            "y": 33.350000000000016
           },
           {
             "id": 41,
             "type": "engineer",
-            "x": 76,
-            "y": 54.62500000000019
+            "x": 67,
+            "y": 41.75000000000005
           },
           {
             "id": 42,
             "type": "engineer",
-            "x": 67,
-            "y": 22.333333333333456
+            "x": 52.33333333333388,
+            "y": 47
           },
           {
             "id": 44,
             "type": "machinegun",
-            "x": 35,
-            "y": 48
+            "x": 60,
+            "y": 75.19999999999759
           },
           {
             "id": 45,
@@ -636,32 +592,32 @@
           {
             "id": 47,
             "type": "infantry",
-            "x": 56,
-            "y": 46.27999999999997
+            "x": 72.4000000000002,
+            "y": 74
           },
           {
             "id": 48,
             "type": "antiAirVehicle",
-            "x": 59,
-            "y": 48
+            "x": 57.28333333333338,
+            "y": 68
           },
           {
             "id": 49,
             "type": "infantry",
-            "x": 51.48999999999987,
-            "y": 47
+            "x": 77,
+            "y": 72
           },
           {
             "id": 50,
             "type": "machinegun",
-            "x": 50.63000000000051,
-            "y": 46
+            "x": 76,
+            "y": 52.08999999999912
           },
           {
             "id": 51,
             "type": "machinegun",
-            "x": 41.189999999999976,
-            "y": 49
+            "x": 75,
+            "y": 52.349999999999966
           },
           {
             "id": 52,
@@ -676,7 +632,7 @@
             "y": 49.65000000000029
           }
         ],
-        "posts": 15,
+        "posts": 14,
         "airports": 1,
         "planes": 0,
         "queuedPlanes": 1,
@@ -710,9 +666,9 @@
         "delivered": 0,
         "airdropMissions": 0
       },
-      "aiDecisions": 718,
+      "aiDecisions": 747,
       "maxQueue": 3,
-      "maxTickMs": 98.68009999999776,
+      "maxTickMs": 105.40819999999803,
       "steps": 5400,
       "decisions": [
         {
@@ -736,10 +692,6 @@
           "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":11,\"x\":49,\"y\":24,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
         },
         {
-          "at": 115.99999999999598,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":17,\"x\":49,\"y\":43,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
           "at": 120.9999999999957,
           "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":17,\"x\":49,\"y\":43,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
         },
@@ -748,8 +700,8 @@
           "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":22,\"x\":61,\"y\":61,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
         },
         {
-          "at": 167.99999999999304,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":8,\"x\":33,\"y\":47,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
+          "at": 164.9999999999932,
+          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":12,\"x\":77,\"y\":70,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
         }
       ]
     },
@@ -932,14 +884,14 @@
           {
             "id": 54,
             "type": "machinegun",
-            "x": 81,
-            "y": 50.079999999999224
+            "x": 87,
+            "y": 37.420000000000684
           },
           {
             "id": 55,
             "type": "machinegun",
-            "x": 87,
-            "y": 38.92000000000073
+            "x": 88,
+            "y": 37.940000000000396
           }
         ],
         "posts": 14,
@@ -978,7 +930,7 @@
       },
       "aiDecisions": 747,
       "maxQueue": 3,
-      "maxTickMs": 99.05430000000342,
+      "maxTickMs": 103.72299999999814,
       "steps": 5400,
       "decisions": [
         {
@@ -1095,10 +1047,10 @@
       },
       "final": {
         "round": 49,
-        "time": 466.4333333334888,
+        "time": 450.86666666680975,
         "credits": {
           "blue": 870,
-          "red": 159
+          "red": 144
         },
         "units": [
           {
@@ -1146,15 +1098,15 @@
           {
             "id": 46,
             "type": "reconDrone",
-            "x": 112,
-            "y": 71.99999999999991,
+            "x": 107,
+            "y": 48,
             "flightState": "patrol"
           },
           {
             "id": 50,
             "type": "infantry",
-            "x": 92,
-            "y": 56
+            "x": 84,
+            "y": 28
           },
           {
             "id": 51,
@@ -1200,7 +1152,7 @@
             "y": 28
           }
         ],
-        "posts": 7,
+        "posts": 6,
         "airports": 1,
         "planes": 0,
         "queuedPlanes": 0,
@@ -1236,8 +1188,8 @@
       },
       "aiDecisions": 567,
       "maxQueue": 2,
-      "maxTickMs": 21.90240000000631,
-      "steps": 13993,
+      "maxTickMs": 22.597600000008242,
+      "steps": 13526,
       "decisions": [
         {
           "at": 1,
@@ -1266,2060 +1218,6 @@
         {
           "at": 29,
           "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":11,\"x\":49,\"y\":24,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":60,\"y\":44,\"id\":5,\"reason\":\"no-progress\",\"until\":31}]}"
-        }
-      ]
-    },
-    {
-      "map": "river",
-      "mode": "turns",
-      "difficulty": "normal",
-      "seed": 44,
-      "initial": {
-        "credits": {
-          "blue": 150,
-          "red": 150
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 123,
-            "y": 2
-          },
-          {
-            "id": 38,
-            "type": "infantry",
-            "x": 126,
-            "y": 4
-          },
-          {
-            "id": 39,
-            "type": "infantry",
-            "x": 127,
-            "y": 4
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 125,
-            "y": 4
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 124,
-            "y": 4
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 123,
-            "y": 4
-          },
-          {
-            "id": 43,
-            "type": "antitank",
-            "x": 122,
-            "y": 4
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 127,
-            "y": 2
-          },
-          {
-            "id": 45,
-            "type": "missileInfantry",
-            "x": 122,
-            "y": 2
-          }
-        ],
-        "income": 15,
-        "airports": 0,
-        "bridges": 12
-      },
-      "final": {
-        "round": 49,
-        "time": 564.1666666668109,
-        "credits": {
-          "blue": 870,
-          "red": 15
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 84,
-            "y": 49
-          },
-          {
-            "id": 38,
-            "type": "infantry",
-            "x": 60,
-            "y": 47
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 87,
-            "y": 30
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 87,
-            "y": 44
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 88,
-            "y": 41
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 119,
-            "y": 7
-          },
-          {
-            "id": 45,
-            "type": "missileInfantry",
-            "x": 89,
-            "y": 49
-          },
-          {
-            "id": 46,
-            "type": "reconDrone",
-            "x": 78,
-            "y": 24,
-            "flightState": "patrol"
-          },
-          {
-            "id": 49,
-            "type": "infantry",
-            "x": 94,
-            "y": 64
-          },
-          {
-            "id": 51,
-            "type": "stealthDrone",
-            "x": 121,
-            "y": 77,
-            "flightState": "patrol"
-          },
-          {
-            "id": 52,
-            "type": "machinegun",
-            "x": 92,
-            "y": 46
-          },
-          {
-            "id": 53,
-            "type": "infantry",
-            "x": 69,
-            "y": 50
-          },
-          {
-            "id": 54,
-            "type": "heavyTank",
-            "x": 81,
-            "y": 48
-          },
-          {
-            "id": 55,
-            "type": "antiAirVehicle",
-            "x": 84,
-            "y": 47
-          },
-          {
-            "id": 56,
-            "type": "helicopter",
-            "x": 75,
-            "y": 43
-          },
-          {
-            "id": 57,
-            "type": "infantry",
-            "x": 91,
-            "y": 76
-          },
-          {
-            "id": 58,
-            "type": "heavyTank",
-            "x": 88,
-            "y": 33
-          },
-          {
-            "id": 59,
-            "type": "helicopterGround",
-            "x": 80,
-            "y": 32
-          },
-          {
-            "id": 60,
-            "type": "infantry",
-            "x": 83,
-            "y": 48
-          },
-          {
-            "id": 61,
-            "type": "machinegun",
-            "x": 67,
-            "y": 38
-          },
-          {
-            "id": 62,
-            "type": "helicopterAir",
-            "x": 88,
-            "y": 41
-          }
-        ],
-        "posts": 9,
-        "airports": 1,
-        "planes": 0,
-        "queuedPlanes": 0,
-        "shots": 0,
-        "winner": null
-      },
-      "aviation": {
-        "fixture": "pista própria e alvo visível, preço exato; demais unidades sem ordens estratégicas",
-        "initial": {
-          "credits": 736,
-          "enemyVisible": true
-        },
-        "initialAmmo": {
-          "jetAam": 2,
-          "jetAgm": 5,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "finalAmmo": {
-          "jetAam": 2,
-          "jetAgm": 0,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "state": "patrol",
-        "shots": 5,
-        "steps": 1433
-      },
-      "logistics": {
-        "embarked": 0,
-        "delivered": 0,
-        "airdropMissions": 0
-      },
-      "aiDecisions": 641,
-      "maxQueue": 3,
-      "maxTickMs": 48.10500000001048,
-      "steps": 16925,
-      "decisions": [
-        {
-          "at": 1,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":7,\"x\":93,\"y\":47,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 7,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":7,\"x\":93,\"y\":47,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 14,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":18,\"x\":77,\"y\":51,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 18,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":6,\"x\":66,\"y\":50,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 21,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":16,\"x\":95,\"y\":64,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 26,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":5,\"x\":60,\"y\":44,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":95,\"y\":64,\"id\":16,\"reason\":\"no-progress\",\"until\":32}]}"
-        },
-        {
-          "at": 30,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":21,\"x\":65,\"y\":33,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":95,\"y\":64,\"id\":16,\"reason\":\"no-progress\",\"until\":32},{\"x\":60,\"y\":44,\"id\":5,\"reason\":\"no-progress\",\"until\":36}]}"
-        },
-        {
-          "at": 33,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":13,\"x\":66,\"y\":13,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":95,\"y\":64,\"id\":16,\"reason\":\"no-progress\",\"until\":32},{\"x\":60,\"y\":44,\"id\":5,\"reason\":\"no-progress\",\"until\":36}]}"
-        },
-        {
-          "at": 37,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":5,\"x\":60,\"y\":44,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":95,\"y\":64,\"id\":16,\"reason\":\"no-progress\",\"until\":32},{\"x\":60,\"y\":44,\"id\":5,\"reason\":\"no-progress\",\"until\":36}]}"
-        },
-        {
-          "at": 45,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":17,\"x\":49,\"y\":43,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":95,\"y\":64,\"id\":16,\"reason\":\"no-progress\",\"until\":32},{\"x\":60,\"y\":44,\"id\":5,\"reason\":\"no-progress\",\"until\":36}]}"
-        }
-      ]
-    },
-    {
-      "map": "river",
-      "mode": "turns",
-      "difficulty": "hard",
-      "seed": 44,
-      "initial": {
-        "credits": {
-          "blue": 150,
-          "red": 150
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 123,
-            "y": 2
-          },
-          {
-            "id": 38,
-            "type": "infantry",
-            "x": 126,
-            "y": 4
-          },
-          {
-            "id": 39,
-            "type": "infantry",
-            "x": 127,
-            "y": 4
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 125,
-            "y": 4
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 124,
-            "y": 4
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 123,
-            "y": 4
-          },
-          {
-            "id": 43,
-            "type": "antitank",
-            "x": 122,
-            "y": 4
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 127,
-            "y": 2
-          },
-          {
-            "id": 45,
-            "type": "missileInfantry",
-            "x": 122,
-            "y": 2
-          }
-        ],
-        "income": 18,
-        "airports": 0,
-        "bridges": 12
-      },
-      "final": {
-        "round": 49,
-        "time": 590.5666666667869,
-        "credits": {
-          "blue": 870,
-          "red": 158
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 83,
-            "y": 58
-          },
-          {
-            "id": 38,
-            "type": "infantry",
-            "x": 76,
-            "y": 73
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 101,
-            "y": 87
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 90,
-            "y": 44
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 86,
-            "y": 46
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 77,
-            "y": 59
-          },
-          {
-            "id": 45,
-            "type": "missileInfantry",
-            "x": 84,
-            "y": 59
-          },
-          {
-            "id": 46,
-            "type": "reconDrone",
-            "x": 121,
-            "y": 81,
-            "flightState": "patrol"
-          },
-          {
-            "id": 49,
-            "type": "infantry",
-            "x": 117,
-            "y": 5
-          },
-          {
-            "id": 51,
-            "type": "stealthDrone",
-            "x": 102,
-            "y": 35,
-            "flightState": "patrol"
-          },
-          {
-            "id": 52,
-            "type": "machinegun",
-            "x": 93,
-            "y": 46
-          },
-          {
-            "id": 53,
-            "type": "infantry",
-            "x": 77,
-            "y": 50
-          },
-          {
-            "id": 55,
-            "type": "heavyTank",
-            "x": 82,
-            "y": 61
-          },
-          {
-            "id": 56,
-            "type": "antiAirVehicle",
-            "x": 92,
-            "y": 50
-          },
-          {
-            "id": 57,
-            "type": "helicopter",
-            "x": 70,
-            "y": 60
-          },
-          {
-            "id": 59,
-            "type": "heavyTank",
-            "x": 84,
-            "y": 47
-          },
-          {
-            "id": 60,
-            "type": "helicopterGround",
-            "x": 78,
-            "y": 48
-          },
-          {
-            "id": 61,
-            "type": "helicopterAir",
-            "x": 79,
-            "y": 43
-          },
-          {
-            "id": 62,
-            "type": "machinegun",
-            "x": 65,
-            "y": 32
-          },
-          {
-            "id": 64,
-            "type": "antiAirVehicle",
-            "x": 87,
-            "y": 49
-          },
-          {
-            "id": 66,
-            "type": "infantry",
-            "x": 92,
-            "y": 49
-          },
-          {
-            "id": 67,
-            "type": "helicopter",
-            "x": 79,
-            "y": 28
-          }
-        ],
-        "posts": 11,
-        "airports": 1,
-        "planes": 0,
-        "queuedPlanes": 0,
-        "shots": 0,
-        "winner": null
-      },
-      "aviation": {
-        "fixture": "pista própria e alvo visível, preço exato; demais unidades sem ordens estratégicas",
-        "initial": {
-          "credits": 736,
-          "enemyVisible": true
-        },
-        "initialAmmo": {
-          "jetAam": 2,
-          "jetAgm": 5,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "finalAmmo": {
-          "jetAam": 2,
-          "jetAgm": 0,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "state": "patrol",
-        "shots": 5,
-        "steps": 1433
-      },
-      "logistics": {
-        "embarked": 0,
-        "delivered": 0,
-        "airdropMissions": 0
-      },
-      "aiDecisions": 664,
-      "maxQueue": 3,
-      "maxTickMs": 44.60610000000452,
-      "steps": 17717,
-      "decisions": [
-        {
-          "at": 1,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":7,\"x\":93,\"y\":47,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 5,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":7,\"x\":93,\"y\":47,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 14,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":18,\"x\":77,\"y\":51,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 18,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":6,\"x\":66,\"y\":50,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 21,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":21,\"x\":65,\"y\":33,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 24,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":5,\"x\":60,\"y\":44,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 30,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":16,\"x\":95,\"y\":64,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":60,\"y\":44,\"id\":5,\"reason\":\"no-progress\",\"until\":36}]}"
-        },
-        {
-          "at": 40,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":12,\"x\":77,\"y\":70,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":60,\"y\":44,\"id\":5,\"reason\":\"no-progress\",\"until\":36}]}"
-        },
-        {
-          "at": 48,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":5,\"x\":60,\"y\":44,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":60,\"y\":44,\"id\":5,\"reason\":\"no-progress\",\"until\":36}]}"
-        }
-      ]
-    },
-    {
-      "map": "river",
-      "mode": "turns",
-      "difficulty": "veteran",
-      "seed": 44,
-      "initial": {
-        "credits": {
-          "blue": 150,
-          "red": 150
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 123,
-            "y": 2
-          },
-          {
-            "id": 38,
-            "type": "infantry",
-            "x": 126,
-            "y": 4
-          },
-          {
-            "id": 39,
-            "type": "infantry",
-            "x": 127,
-            "y": 4
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 125,
-            "y": 4
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 124,
-            "y": 4
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 123,
-            "y": 4
-          },
-          {
-            "id": 43,
-            "type": "antitank",
-            "x": 122,
-            "y": 4
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 127,
-            "y": 2
-          },
-          {
-            "id": 45,
-            "type": "missileInfantry",
-            "x": 122,
-            "y": 2
-          }
-        ],
-        "income": 20,
-        "airports": 0,
-        "bridges": 12
-      },
-      "final": {
-        "round": 49,
-        "time": 624.466666666756,
-        "credits": {
-          "blue": 870,
-          "red": 221
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 85,
-            "y": 53
-          },
-          {
-            "id": 38,
-            "type": "infantry",
-            "x": 76,
-            "y": 74
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 84,
-            "y": 83
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 90,
-            "y": 44
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 86,
-            "y": 46
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 81,
-            "y": 53
-          },
-          {
-            "id": 45,
-            "type": "missileInfantry",
-            "x": 83,
-            "y": 53
-          },
-          {
-            "id": 46,
-            "type": "reconDrone",
-            "x": 121,
-            "y": 81,
-            "flightState": "patrol"
-          },
-          {
-            "id": 49,
-            "type": "infantry",
-            "x": 117,
-            "y": 5
-          },
-          {
-            "id": 51,
-            "type": "infantry",
-            "x": 114,
-            "y": 4
-          },
-          {
-            "id": 52,
-            "type": "stealthDrone",
-            "x": 105,
-            "y": 37,
-            "flightState": "patrol"
-          },
-          {
-            "id": 53,
-            "type": "antiAirVehicle",
-            "x": 67,
-            "y": 48
-          },
-          {
-            "id": 54,
-            "type": "heavyTank",
-            "x": 80,
-            "y": 52
-          },
-          {
-            "id": 55,
-            "type": "infantry",
-            "x": 92,
-            "y": 46
-          },
-          {
-            "id": 56,
-            "type": "machinegun",
-            "x": 80,
-            "y": 35
-          },
-          {
-            "id": 57,
-            "type": "helicopter",
-            "x": 83,
-            "y": 59
-          },
-          {
-            "id": 58,
-            "type": "heavyTank",
-            "x": 76,
-            "y": 48
-          },
-          {
-            "id": 59,
-            "type": "helicopterGround",
-            "x": 74,
-            "y": 52
-          },
-          {
-            "id": 60,
-            "type": "helicopterAir",
-            "x": 75,
-            "y": 51
-          },
-          {
-            "id": 61,
-            "type": "antitank",
-            "x": 67,
-            "y": 16
-          },
-          {
-            "id": 62,
-            "type": "antiAirVehicle",
-            "x": 82,
-            "y": 52
-          },
-          {
-            "id": 63,
-            "type": "helicopter",
-            "x": 83,
-            "y": 32
-          },
-          {
-            "id": 64,
-            "type": "tank",
-            "x": 89,
-            "y": 33
-          }
-        ],
-        "posts": 9,
-        "airports": 1,
-        "planes": 0,
-        "queuedPlanes": 0,
-        "shots": 0,
-        "winner": null
-      },
-      "aviation": {
-        "fixture": "pista própria e alvo visível, preço exato; demais unidades sem ordens estratégicas",
-        "initial": {
-          "credits": 736,
-          "enemyVisible": true
-        },
-        "initialAmmo": {
-          "jetAam": 2,
-          "jetAgm": 5,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "finalAmmo": {
-          "jetAam": 2,
-          "jetAgm": 0,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "state": "patrol",
-        "shots": 5,
-        "steps": 1433
-      },
-      "logistics": {
-        "embarked": 0,
-        "delivered": 0,
-        "airdropMissions": 0
-      },
-      "aiDecisions": 708,
-      "maxQueue": 3,
-      "maxTickMs": 22.018000000010943,
-      "steps": 18734,
-      "decisions": [
-        {
-          "at": 1,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":7,\"x\":93,\"y\":47,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 5,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":7,\"x\":93,\"y\":47,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 14,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":18,\"x\":77,\"y\":51,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 18,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":6,\"x\":66,\"y\":50,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 21,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":21,\"x\":65,\"y\":33,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 24,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":5,\"x\":60,\"y\":44,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 30,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":13,\"x\":66,\"y\":13,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":60,\"y\":44,\"id\":5,\"reason\":\"no-progress\",\"until\":36}]}"
-        },
-        {
-          "at": 32,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":16,\"x\":95,\"y\":64,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":60,\"y\":44,\"id\":5,\"reason\":\"no-progress\",\"until\":36}]}"
-        },
-        {
-          "at": 40,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":12,\"x\":77,\"y\":70,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":60,\"y\":44,\"id\":5,\"reason\":\"no-progress\",\"until\":36}]}"
-        },
-        {
-          "at": 48,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"crossing\",\"goal\":{\"id\":11,\"x\":49,\"y\":24,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":60,\"y\":44,\"id\":5,\"reason\":\"no-progress\",\"until\":36}]}"
-        }
-      ]
-    },
-    {
-      "map": "desert",
-      "mode": "rts",
-      "difficulty": "easy",
-      "seed": 44,
-      "initial": {
-        "credits": {
-          "blue": 150,
-          "red": 150
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 123,
-            "y": 2
-          },
-          {
-            "id": 38,
-            "type": "infantry",
-            "x": 126,
-            "y": 4
-          },
-          {
-            "id": 39,
-            "type": "infantry",
-            "x": 127,
-            "y": 4
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 125,
-            "y": 4
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 124,
-            "y": 4
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 123,
-            "y": 4
-          },
-          {
-            "id": 43,
-            "type": "antitank",
-            "x": 122,
-            "y": 4
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 127,
-            "y": 2
-          },
-          {
-            "id": 45,
-            "type": "missileInfantry",
-            "x": 122,
-            "y": 2
-          }
-        ],
-        "income": 12,
-        "airports": 0,
-        "bridges": 0
-      },
-      "final": {
-        "round": 1,
-        "time": 179.99999999999235,
-        "credits": {
-          "blue": 420,
-          "red": 487
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 85,
-            "y": 27
-          },
-          {
-            "id": 38,
-            "type": "infantry",
-            "x": 90.56000000000063,
-            "y": 48
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 102.5249999999999,
-            "y": 89
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 87,
-            "y": 25
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 90,
-            "y": 28
-          },
-          {
-            "id": 43,
-            "type": "antitank",
-            "x": 64.35499999999847,
-            "y": 27
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 87,
-            "y": 31
-          },
-          {
-            "id": 45,
-            "type": "missileInfantry",
-            "x": 104,
-            "y": 50
-          },
-          {
-            "id": 46,
-            "type": "reconDrone",
-            "x": 33.04872593145933,
-            "y": 16.811729362412247,
-            "flightState": "approach"
-          },
-          {
-            "id": 48,
-            "type": "infantry",
-            "x": 107,
-            "y": 92
-          },
-          {
-            "id": 49,
-            "type": "infantry",
-            "x": 80,
-            "y": 62.37500000000013
-          },
-          {
-            "id": 50,
-            "type": "machinegun",
-            "x": 55.41499999999842,
-            "y": 26
-          },
-          {
-            "id": 51,
-            "type": "machinegun",
-            "x": 84,
-            "y": 28
-          },
-          {
-            "id": 52,
-            "type": "infantry",
-            "x": 86,
-            "y": 31
-          }
-        ],
-        "posts": 19,
-        "airports": 1,
-        "planes": 0,
-        "queuedPlanes": 0,
-        "shots": 0,
-        "winner": null
-      },
-      "aviation": {
-        "fixture": "pista própria e alvo visível, preço exato; demais unidades sem ordens estratégicas",
-        "initial": {
-          "credits": 736,
-          "enemyVisible": true
-        },
-        "initialAmmo": {
-          "jetAam": 2,
-          "jetAgm": 5,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "finalAmmo": {
-          "jetAam": 2,
-          "jetAgm": 1,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "state": "approach",
-        "shots": 16,
-        "steps": 1800
-      },
-      "logistics": {
-        "embarked": 0,
-        "delivered": 0,
-        "airdropMissions": 0
-      },
-      "aiDecisions": 960,
-      "maxQueue": 3,
-      "maxTickMs": 137.95629999999073,
-      "steps": 5400,
-      "decisions": [
-        {
-          "at": 0.9999999999999999,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":12,\"x\":104,\"y\":51,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 42.00000000000018,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":14,\"x\":78,\"y\":52,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 90.9999999999974,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":15,\"x\":55,\"y\":37,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 98.99999999999694,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":5,\"x\":46,\"y\":24,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 107.99999999999643,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":16,\"x\":71,\"y\":57,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        }
-      ]
-    },
-    {
-      "map": "desert",
-      "mode": "rts",
-      "difficulty": "normal",
-      "seed": 44,
-      "initial": {
-        "credits": {
-          "blue": 150,
-          "red": 150
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 123,
-            "y": 2
-          },
-          {
-            "id": 38,
-            "type": "infantry",
-            "x": 126,
-            "y": 4
-          },
-          {
-            "id": 39,
-            "type": "infantry",
-            "x": 127,
-            "y": 4
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 125,
-            "y": 4
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 124,
-            "y": 4
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 123,
-            "y": 4
-          },
-          {
-            "id": 43,
-            "type": "antitank",
-            "x": 122,
-            "y": 4
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 127,
-            "y": 2
-          },
-          {
-            "id": 45,
-            "type": "missileInfantry",
-            "x": 122,
-            "y": 2
-          }
-        ],
-        "income": 15,
-        "airports": 0,
-        "bridges": 0
-      },
-      "final": {
-        "round": 1,
-        "time": 179.99999999999235,
-        "credits": {
-          "blue": 420,
-          "red": 144
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 80.46000000000032,
-            "y": 48
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 101.09999999999997,
-            "y": 89
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 87,
-            "y": 25
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 90,
-            "y": 28
-          },
-          {
-            "id": 43,
-            "type": "antitank",
-            "x": 67.38999999999818,
-            "y": 27
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 87,
-            "y": 31
-          },
-          {
-            "id": 45,
-            "type": "missileInfantry",
-            "x": 104,
-            "y": 50
-          },
-          {
-            "id": 46,
-            "type": "reconDrone",
-            "x": 68.18685980524614,
-            "y": 48.80909808529062,
-            "flightState": "approach"
-          },
-          {
-            "id": 48,
-            "type": "infantry",
-            "x": 107,
-            "y": 92
-          },
-          {
-            "id": 50,
-            "type": "infantry",
-            "x": 76.54500000000017,
-            "y": 27
-          },
-          {
-            "id": 51,
-            "type": "infantry",
-            "x": 82,
-            "y": 71
-          },
-          {
-            "id": 52,
-            "type": "machinegun",
-            "x": 47,
-            "y": 27
-          },
-          {
-            "id": 53,
-            "type": "transportTruck",
-            "x": 109.88000000000024,
-            "y": 21
-          }
-        ],
-        "posts": 19,
-        "airports": 1,
-        "planes": 0,
-        "queuedPlanes": 1,
-        "shots": 0,
-        "winner": null
-      },
-      "aviation": {
-        "fixture": "pista própria e alvo visível, preço exato; demais unidades sem ordens estratégicas",
-        "initial": {
-          "credits": 736,
-          "enemyVisible": true
-        },
-        "initialAmmo": {
-          "jetAam": 2,
-          "jetAgm": 5,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "finalAmmo": {
-          "jetAam": 2,
-          "jetAgm": 1,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "state": "approach",
-        "shots": 16,
-        "steps": 1800
-      },
-      "logistics": {
-        "embarked": 0,
-        "delivered": 0,
-        "airdropMissions": 0
-      },
-      "aiDecisions": 879,
-      "maxQueue": 2,
-      "maxTickMs": 87.45389999999315,
-      "steps": 5400,
-      "decisions": [
-        {
-          "at": 0.9999999999999999,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":12,\"x\":104,\"y\":51,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 42.00000000000018,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":14,\"x\":78,\"y\":52,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 90.9999999999974,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":15,\"x\":55,\"y\":37,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 98.99999999999694,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":5,\"x\":46,\"y\":24,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 107.99999999999643,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":15,\"x\":55,\"y\":37,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 115.99999999999598,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":16,\"x\":71,\"y\":57,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        }
-      ]
-    },
-    {
-      "map": "desert",
-      "mode": "rts",
-      "difficulty": "hard",
-      "seed": 44,
-      "initial": {
-        "credits": {
-          "blue": 150,
-          "red": 150
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 123,
-            "y": 2
-          },
-          {
-            "id": 38,
-            "type": "infantry",
-            "x": 126,
-            "y": 4
-          },
-          {
-            "id": 39,
-            "type": "infantry",
-            "x": 127,
-            "y": 4
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 125,
-            "y": 4
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 124,
-            "y": 4
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 123,
-            "y": 4
-          },
-          {
-            "id": 43,
-            "type": "antitank",
-            "x": 122,
-            "y": 4
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 127,
-            "y": 2
-          },
-          {
-            "id": 45,
-            "type": "missileInfantry",
-            "x": 122,
-            "y": 2
-          }
-        ],
-        "income": 18,
-        "airports": 0,
-        "bridges": 0
-      },
-      "final": {
-        "round": 1,
-        "time": 179.99999999999235,
-        "credits": {
-          "blue": 420,
-          "red": 161
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 61,
-            "y": 27
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 106,
-            "y": 85.5249999999999
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 76.50000000000006,
-            "y": 34
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 84.83333333333331,
-            "y": 29
-          },
-          {
-            "id": 43,
-            "type": "antitank",
-            "x": 61.46999999999986,
-            "y": 22
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 100,
-            "y": 80
-          },
-          {
-            "id": 45,
-            "type": "missileInfantry",
-            "x": 104,
-            "y": 50
-          },
-          {
-            "id": 46,
-            "type": "reconDrone",
-            "x": 33.04872593145933,
-            "y": 16.811729362412247,
-            "flightState": "approach"
-          },
-          {
-            "id": 48,
-            "type": "infantry",
-            "x": 107,
-            "y": 92
-          },
-          {
-            "id": 50,
-            "type": "infantry",
-            "x": 61.81999999999999,
-            "y": 24
-          },
-          {
-            "id": 51,
-            "type": "machinegun",
-            "x": 62.915000000000006,
-            "y": 23
-          },
-          {
-            "id": 52,
-            "type": "infantry",
-            "x": 61.03500000000004,
-            "y": 26
-          },
-          {
-            "id": 53,
-            "type": "transportTruck",
-            "x": 109.52000000000064,
-            "y": 48
-          }
-        ],
-        "posts": 14,
-        "airports": 1,
-        "planes": 0,
-        "queuedPlanes": 1,
-        "shots": 0,
-        "winner": null
-      },
-      "aviation": {
-        "fixture": "pista própria e alvo visível, preço exato; demais unidades sem ordens estratégicas",
-        "initial": {
-          "credits": 736,
-          "enemyVisible": true
-        },
-        "initialAmmo": {
-          "jetAam": 2,
-          "jetAgm": 5,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "finalAmmo": {
-          "jetAam": 2,
-          "jetAgm": 1,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "state": "approach",
-        "shots": 16,
-        "steps": 1800
-      },
-      "logistics": {
-        "embarked": 0,
-        "delivered": 0,
-        "airdropMissions": 0
-      },
-      "aiDecisions": 669,
-      "maxQueue": 3,
-      "maxTickMs": 115.54219999999623,
-      "steps": 5400,
-      "decisions": [
-        {
-          "at": 0.9999999999999999,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":12,\"x\":104,\"y\":51,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 42.00000000000018,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":14,\"x\":78,\"y\":52,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 90.9999999999974,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":15,\"x\":55,\"y\":37,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 98.99999999999694,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":5,\"x\":46,\"y\":24,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 107.99999999999643,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":16,\"x\":71,\"y\":57,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 120.9999999999957,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"scout\",\"route\":\"open\",\"goal\":{\"x\":64,\"y\":24}}"
-        }
-      ]
-    },
-    {
-      "map": "desert",
-      "mode": "rts",
-      "difficulty": "veteran",
-      "seed": 44,
-      "initial": {
-        "credits": {
-          "blue": 150,
-          "red": 150
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 123,
-            "y": 2
-          },
-          {
-            "id": 38,
-            "type": "infantry",
-            "x": 126,
-            "y": 4
-          },
-          {
-            "id": 39,
-            "type": "infantry",
-            "x": 127,
-            "y": 4
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 125,
-            "y": 4
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 124,
-            "y": 4
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 123,
-            "y": 4
-          },
-          {
-            "id": 43,
-            "type": "antitank",
-            "x": 122,
-            "y": 4
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 127,
-            "y": 2
-          },
-          {
-            "id": 45,
-            "type": "missileInfantry",
-            "x": 122,
-            "y": 2
-          }
-        ],
-        "income": 20,
-        "airports": 0,
-        "bridges": 0
-      },
-      "final": {
-        "round": 1,
-        "time": 179.99999999999235,
-        "credits": {
-          "blue": 420,
-          "red": 271
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 73,
-            "y": 63.360000000000014
-          },
-          {
-            "id": 39,
-            "type": "infantry",
-            "x": 64.18,
-            "y": 65
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 101,
-            "y": 90.2999999999999
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 67.75000000000009,
-            "y": 63
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 67.04166666666656,
-            "y": 64
-          },
-          {
-            "id": 43,
-            "type": "antitank",
-            "x": 64,
-            "y": 59.53000000000014
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 69.78499999999983,
-            "y": 65
-          },
-          {
-            "id": 46,
-            "type": "reconDrone",
-            "x": 33.04872593145933,
-            "y": 16.811729362412247,
-            "flightState": "approach"
-          },
-          {
-            "id": 47,
-            "type": "antiAirVehicle",
-            "x": 116,
-            "y": 80
-          },
-          {
-            "id": 49,
-            "type": "infantry",
-            "x": 64,
-            "y": 62.399999999999864
-          },
-          {
-            "id": 50,
-            "type": "machinegun",
-            "x": 45,
-            "y": 24.270000000000003
-          },
-          {
-            "id": 51,
-            "type": "machinegun",
-            "x": 45.76499999999994,
-            "y": 26
-          },
-          {
-            "id": 52,
-            "type": "infantry",
-            "x": 100,
-            "y": 80
-          },
-          {
-            "id": 53,
-            "type": "transportTruck",
-            "x": 92.20000000000027,
-            "y": 48
-          },
-          {
-            "id": 54,
-            "type": "infantry",
-            "x": 72.15000000000012,
-            "y": 27
-          }
-        ],
-        "posts": 21,
-        "airports": 1,
-        "planes": 0,
-        "queuedPlanes": 1,
-        "shots": 0,
-        "winner": null
-      },
-      "aviation": {
-        "fixture": "pista própria e alvo visível, preço exato; demais unidades sem ordens estratégicas",
-        "initial": {
-          "credits": 736,
-          "enemyVisible": true
-        },
-        "initialAmmo": {
-          "jetAam": 2,
-          "jetAgm": 5,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "finalAmmo": {
-          "jetAam": 2,
-          "jetAgm": 1,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "state": "approach",
-        "shots": 16,
-        "steps": 1800
-      },
-      "logistics": {
-        "embarked": 1,
-        "delivered": 0,
-        "airdropMissions": 0
-      },
-      "aiDecisions": 700,
-      "maxQueue": 3,
-      "maxTickMs": 103.69129999997676,
-      "steps": 5400,
-      "decisions": [
-        {
-          "at": 0.9999999999999999,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":12,\"x\":104,\"y\":51,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 42.00000000000018,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":14,\"x\":78,\"y\":52,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 90.9999999999974,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":15,\"x\":55,\"y\":37,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 98.99999999999694,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":5,\"x\":46,\"y\":24,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 107.99999999999643,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":16,\"x\":71,\"y\":57,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 115.99999999999598,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":15,\"x\":55,\"y\":37,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 120.9999999999957,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":16,\"x\":71,\"y\":57,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 150.999999999994,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":6,\"x\":80,\"y\":70,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 162.99999999999332,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":20,\"x\":66,\"y\":66,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 173.9999999999927,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"scout\",\"route\":\"open\",\"goal\":{\"x\":64,\"y\":24}}"
-        }
-      ]
-    },
-    {
-      "map": "desert",
-      "mode": "turns",
-      "difficulty": "easy",
-      "seed": 44,
-      "initial": {
-        "credits": {
-          "blue": 150,
-          "red": 150
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 123,
-            "y": 2
-          },
-          {
-            "id": 38,
-            "type": "infantry",
-            "x": 126,
-            "y": 4
-          },
-          {
-            "id": 39,
-            "type": "infantry",
-            "x": 127,
-            "y": 4
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 125,
-            "y": 4
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 124,
-            "y": 4
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 123,
-            "y": 4
-          },
-          {
-            "id": 43,
-            "type": "antitank",
-            "x": 122,
-            "y": 4
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 127,
-            "y": 2
-          },
-          {
-            "id": 45,
-            "type": "missileInfantry",
-            "x": 122,
-            "y": 2
-          }
-        ],
-        "income": 12,
-        "airports": 0,
-        "bridges": 0
-      },
-      "final": {
-        "round": 49,
-        "time": 583.5000000001266,
-        "credits": {
-          "blue": 870,
-          "red": 185
-        },
-        "units": [
-          {
-            "id": 28,
-            "type": "commander",
-            "x": 64,
-            "y": 50
-          },
-          {
-            "id": 38,
-            "type": "infantry",
-            "x": 64,
-            "y": 57
-          },
-          {
-            "id": 39,
-            "type": "infantry",
-            "x": 66,
-            "y": 61
-          },
-          {
-            "id": 40,
-            "type": "recon",
-            "x": 38,
-            "y": 20
-          },
-          {
-            "id": 41,
-            "type": "engineer",
-            "x": 78,
-            "y": 41
-          },
-          {
-            "id": 42,
-            "type": "engineer",
-            "x": 76,
-            "y": 43
-          },
-          {
-            "id": 43,
-            "type": "antitank",
-            "x": 65,
-            "y": 59
-          },
-          {
-            "id": 44,
-            "type": "machinegun",
-            "x": 119,
-            "y": 5
-          },
-          {
-            "id": 45,
-            "type": "missileInfantry",
-            "x": 63,
-            "y": 51
-          },
-          {
-            "id": 46,
-            "type": "reconDrone",
-            "x": 74,
-            "y": 37,
-            "flightState": "patrol"
-          },
-          {
-            "id": 51,
-            "type": "stealthDrone",
-            "x": 124,
-            "y": 79,
-            "flightState": "patrol"
-          },
-          {
-            "id": 52,
-            "type": "antiAirVehicle",
-            "x": 71,
-            "y": 56
-          },
-          {
-            "id": 53,
-            "type": "helicopter",
-            "x": 87,
-            "y": 31
-          },
-          {
-            "id": 54,
-            "type": "machinegun",
-            "x": 91,
-            "y": 48
-          },
-          {
-            "id": 55,
-            "type": "heavyTank",
-            "x": 82,
-            "y": 36
-          },
-          {
-            "id": 56,
-            "type": "infantry",
-            "x": 65,
-            "y": 48
-          }
-        ],
-        "posts": 7,
-        "airports": 1,
-        "planes": 0,
-        "queuedPlanes": 0,
-        "shots": 0,
-        "winner": null
-      },
-      "aviation": {
-        "fixture": "pista própria e alvo visível, preço exato; demais unidades sem ordens estratégicas",
-        "initial": {
-          "credits": 736,
-          "enemyVisible": true
-        },
-        "initialAmmo": {
-          "jetAam": 2,
-          "jetAgm": 5,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "finalAmmo": {
-          "jetAam": 2,
-          "jetAgm": 0,
-          "antiRadiation": 3,
-          "jetGun": 80
-        },
-        "state": "patrol",
-        "shots": 5,
-        "steps": 1433
-      },
-      "logistics": {
-        "embarked": 0,
-        "delivered": 0,
-        "airdropMissions": 0
-      },
-      "aiDecisions": 554,
-      "maxQueue": 3,
-      "maxTickMs": 19.762999999977183,
-      "steps": 17505,
-      "decisions": [
-        {
-          "at": 1,
-          "state": "{\"phase\":\"prepare\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":12,\"x\":104,\"y\":51,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 11,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":12,\"x\":104,\"y\":51,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2}}"
-        },
-        {
-          "at": 17,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":14,\"x\":78,\"y\":52,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":104,\"y\":51,\"id\":12,\"reason\":\"no-progress\",\"until\":23}]}"
-        },
-        {
-          "at": 21,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":16,\"x\":71,\"y\":57,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":104,\"y\":51,\"id\":12,\"reason\":\"no-progress\",\"until\":23},{\"x\":78,\"y\":52,\"id\":14,\"reason\":\"no-progress\",\"until\":27}]}"
-        },
-        {
-          "at": 25,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":12,\"x\":104,\"y\":51,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":104,\"y\":51,\"id\":12,\"reason\":\"no-progress\",\"until\":23},{\"x\":78,\"y\":52,\"id\":14,\"reason\":\"no-progress\",\"until\":27}]}"
-        },
-        {
-          "at": 33,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":14,\"x\":78,\"y\":52,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":104,\"y\":51,\"id\":12,\"reason\":\"no-progress\",\"until\":23},{\"x\":78,\"y\":52,\"id\":14,\"reason\":\"no-progress\",\"until\":27}]}"
-        },
-        {
-          "at": 38,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":8,\"x\":62,\"y\":53,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":104,\"y\":51,\"id\":12,\"reason\":\"no-progress\",\"until\":23},{\"x\":78,\"y\":52,\"id\":14,\"reason\":\"no-progress\",\"until\":27}]}"
-        },
-        {
-          "at": 43,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":7,\"x\":64,\"y\":41,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":104,\"y\":51,\"id\":12,\"reason\":\"no-progress\",\"until\":23},{\"x\":78,\"y\":52,\"id\":14,\"reason\":\"no-progress\",\"until\":27}]}"
-        },
-        {
-          "at": 45,
-          "state": "{\"phase\":\"attack\",\"strategy\":\"expand\",\"route\":\"open\",\"goal\":{\"id\":20,\"x\":66,\"y\":66,\"type\":\"post\",\"owner\":\"neutral\",\"width\":2,\"height\":2},\"failures\":[{\"x\":104,\"y\":51,\"id\":12,\"reason\":\"no-progress\",\"until\":23},{\"x\":78,\"y\":52,\"id\":14,\"reason\":\"no-progress\",\"until\":27}]}"
         }
       ]
     }

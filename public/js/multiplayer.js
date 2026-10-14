@@ -5,7 +5,7 @@ const Multiplayer={
  session:null,room:null,socket:null,connected:false,editingArmy:false,seq:0,pending:new Map(),matchId:null,lastEvent:0,retry:0,timer:null,poses:new Map(),receivedAt:0,
  get side(){return this.session?.side||'blue';},
  canAct(){return this.connected&&this.room?.status==='playing'&&!game.paused&&!game.winner;},
- status(text){$('mpStatus').textContent=text;$('networkStatus').textContent=text;},
+ status(text){if(this.statusText===text)return;this.statusText=text;$('mpStatus').textContent=text;$('networkStatus').textContent=text;},
  async open(){
   if(this.session){this.show();return;}
   if(location.protocol==='file:'){this.openRemote();return;}
@@ -95,18 +95,30 @@ const Multiplayer={
   view.boardPurchase=(owner,baseId,type)=>this.command('boardPurchase',{baseId,type});
   view.update=()=>{};view.log=()=>{};return view;
  },
+ // Máscara de casas (bits em base64) para vetor de booleanos; o vetor anterior é reaproveitado enquanto o texto não muda.
+ mask(key,side,bits){
+  const slot=(this.masks||={})[key+side]||=({bits:undefined,cells:null});
+  if(slot.cells&&slot.bits===bits)return slot.cells;
+  slot.bits=bits;if(typeof bits!=='string')return slot.cells=bits||Array(SIZE).fill(false);
+  const packed=atob(bits),cells=Array(SIZE).fill(false);
+  for(let i=0;i<packed.length;i++){const byte=packed.charCodeAt(i);if(byte)for(let b=0;b<8;b++)if(byte&(1<<b))cells[i*8+b]=true;}
+  return slot.cells=cells;
+ },
  applyState(message){
-  const fresh=!game.multiplayer||this.matchId!==message.matchId,previous=game.multiplayer?new Map(game.units.map(u=>[u.id,visualUnit(u)])):new Map(),state=message.state;
+  // Só a pose visual anterior (x, y, direção, altitude) importa para interpolar; não copiar as unidades inteiras.
+  const snap=u=>{const r=u._renderPose;return r?{x:r.x,y:r.y,facing:r.facing||0,_flightLevel:r._flightLevel}:{x:u.x,y:u.y,facing:u.facing||0,_flightLevel:flightLevel(u)};};
+  const fresh=!game.multiplayer||this.matchId!==message.matchId,previous=game.multiplayer?new Map(game.units.map(u=>[u.id,snap(u)])):new Map(),state=message.state;
   if(fresh){if(this.session.matchId!==message.matchId){this.seq=0;this.pending.clear();}this.session.matchId=message.matchId;this.persist();game=this.replica();this.lastEvent=0;this.poses.clear();this.matchId=message.matchId;selection.clear();groups=Array.from({length:5},()=>[]);mode=null;drag=null;hover=null;bombLineStart=null;marker=null;resultShown=false;lastLog=null;radarCollapsed=null;productionBaseId=null;productionCollapsed=false;if(typeof endTutorial==='function')endTutorial(false);if(typeof campaignBattle!=='undefined')campaignBattle=null;}
   const events=(state.events||[]).filter(e=>(e.seq||0)>this.lastEvent);for(const e of state.events||[])this.lastEvent=Math.max(this.lastEvent,e.seq||0);
   const terrainChanged=!fresh&&state.terrain&&state.terrainRevision!==game.terrainRevision;
   Object.assign(game,state,{playerSide:message.side,multiplayer:true,networkClient:true,events});
-  for(const key of ['visible','sky','explored']){const source=state[key]||{};game[key]={};for(const side of ['blue','red']){const bits=source[side];if(typeof bits==='string'){const packed=atob(bits);game[key][side]=Array.from({length:SIZE},(_,k)=>!!(packed.charCodeAt(k>>3)&(1<<(k&7))));}else game[key][side]=bits||Array(SIZE).fill(false);}}
+  for(const key of ['visible','sky','explored']){const source=state[key]||{};game[key]={};for(const side of ['blue','red'])game[key][side]=this.mask(key,side,source[side]);}
   for(const key of ['memory']){game[key]={};for(const side of ['blue','red'])game[key][side]=new Map(state[key]?.[side]||[]);}game.radarContacts={};for(const side of ['blue','red'])game.radarContacts[side]=new Set(state.radarContacts?.[side]||[]);game.intel=new Map();game.claims=new Set();game.actions||=[];game.projectiles||=[];game.fires||=[];game.mines||=[];game.logs||=[];
-  this.receivedAt=performance.now();this.poses.clear();for(const u of game.units){const prev=previous.get(u.id);if(prev&&Math.hypot(u.x-prev.x,u.y-prev.y)<8)this.poses.set(u.id,{from:{x:prev.x,y:prev.y,facing:prev.facing||0,_flightLevel:prev._flightLevel??flightLevel(prev)},to:{x:u.x,y:u.y,facing:u.facing||0,_flightLevel:flightLevel(u)}});}
+  this.receivedAt=performance.now();this.poses.clear();for(const u of game.units){const prev=previous.get(u.id);if(prev&&Math.hypot(u.x-prev.x,u.y-prev.y)<8)this.poses.set(u.id,{from:prev,to:{x:u.x,y:u.y,facing:u.facing||0,_flightLevel:flightLevel(u)}});}
   started=true;paused=!!game.paused||!!game.winner;speed=1;overlaid=false;backTo=null;
   if(fresh){for(const dialog of document.querySelectorAll('dialog[open]'))dialog.close();renderer.rebuild();const base=game.hq(this.side);if(base){const p=CENTER(base);centerCamera(p.x,p.y);}for(const button of recruitButtons){const c=button.querySelector('canvas').getContext('2d');c.clearRect(0,0,60,60);unitIcon(c,button.dataset.recruit,30,33,TEAM[this.side]);}}else if(terrainChanged)renderer.paintGround();
-  $('networkStatus').hidden=false;this.status(game.paused?'Partida suspensa · aguardando reconexão.':'Sala '+this.session.code+' · '+(this.side==='blue'?'Azul':'Vermelho'));renderer.dirty=true;updateUI();
+  // O laço principal já atualiza a interface a cada 0,12 s; aqui só na partida nova e para mostrar o resultado.
+  $('networkStatus').hidden=false;this.status(game.paused?'Partida suspensa · aguardando reconexão.':'Sala '+this.session.code+' · '+(this.side==='blue'?'Azul':'Vermelho'));renderer.dirty=true;if(fresh||game.winner&&!resultShown)updateUI();
  },
  interpolate(now){
   const t=game.paused?1:Math.max(0,Math.min(1,(now-this.receivedAt)/100));for(const u of game.units){const poses=this.poses.get(u.id);if(!poses){delete u._renderPose;continue;}const a=poses.from,b=poses.to,angle=Math.atan2(Math.sin(b.facing-a.facing),Math.cos(b.facing-a.facing));u._renderPose={x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,facing:a.facing+angle*t,_flightLevel:a._flightLevel+(b._flightLevel-a._flightLevel)*t};}

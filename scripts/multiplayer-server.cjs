@@ -1,9 +1,9 @@
 'use strict';
-const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),crypto=require('node:crypto');
+const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {WebSocketServer,WebSocket}=require('ws');
-const publicRoot=path.resolve(__dirname,'..','public'),engine=vm.createContext({console});
-vm.runInContext(fs.readFileSync(path.join(publicRoot,'js','engine.js'),'utf8')+'\nthis.shared={Game,TYPES,MAPS,NATION_DOCTRINES,PROCEDURAL,STARTING_DEFAULT,STARTING_BUDGET,startingCatalog,armyCost,cleanStartingArmy,STEP,SIZE,KEY,TILE,AIR,MISSILE};',engine);
-const {Game,TYPES,MAPS,NATION_DOCTRINES,PROCEDURAL,STARTING_DEFAULT,STARTING_BUDGET,startingCatalog,armyCost,cleanStartingArmy,STEP,SIZE,KEY,TILE,AIR,MISSILE}=engine.shared;
+const publicRoot=path.resolve(__dirname,'..','public');
+// O motor roda como função e não em vm.runInContext: o contexto vm deixa Math, Object e os demais globais ~5× mais lentos (tick de 300 unidades em marcha: 43 → 10 ms).
+const {Game,TYPES,MAPS,NATION_DOCTRINES,PROCEDURAL,STARTING_DEFAULT,STARTING_BUDGET,startingCatalog,armyCost,cleanStartingArmy,STEP,SIZE,KEY,TILE,AIR,MISSILE}=new Function(fs.readFileSync(path.join(publicRoot,'js','engine.js'),'utf8')+'\nreturn {Game,TYPES,MAPS,NATION_DOCTRINES,PROCEDURAL,STARTING_DEFAULT,STARTING_BUDGET,startingCatalog,armyCost,cleanStartingArmy,STEP,SIZE,KEY,TILE,AIR,MISSILE};')();
 const sides=['blue','red'],other=side=>side==='blue'?'red':'blue',plain=o=>o!==null&&typeof o==='object'&&!Array.isArray(o),id=n=>Number.isSafeInteger(n)&&n>0;
 const copy=o=>JSON.parse(JSON.stringify(o)),pick=(o,keys)=>Object.fromEntries(keys.filter(k=>o[k]!==undefined).map(k=>[k,o[k]]));
 const MIME={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.ogg':'audio/ogg','.mp3':'audio/mpeg','.wav':'audio/wav'};
@@ -23,30 +23,31 @@ function optical(game,side,u){if(u.spotted)return !!u.spotted[side]&&u.hp>0;cons
 function viewState(room,player){
  const game=room.game,side=player.side,known=new Set(),emitters=new Set(game.emitterContacts(side).map(c=>c.id));
  const visual=['id','type','owner','x','y','width','height','hp','maxHp','level','facing','altitude','altitudeTransition','flightState','entrenched','suppressed','launcherLevel','radarOn'];
- const ownEntity=u=>{const result=copy(u);if(result.spotted)result.spotted={[side]:!!result.spotted[side]};return result;};
+ // Cópias rasas: cada estado é serializado logo em seguida. `job` (rota do RTS) repete `path` e o cliente não o usa.
+ const ownEntity=u=>{const {job,...result}=u;if(result.spotted)result.spotted={[side]:!!result.spotted[side]};return result;};
  const entity=u=>{
   known.add(u.id);if(u.owner===side)return ownEntity(u);
   const contact=!TYPES[u.type].structure&&!optical(game,side,u);
   if(contact)return {...pick(u,['id','type','owner','x','y','facing','altitude','flightState','radarOn']),hp:1,maxHp:1,contactOnly:emitters.has(u.id)&&!game.radarContact(side,u)?'emitter':'radar',order:{type:'stop'},path:[],spotted:u.spotted?{[side]:!!u.spotted[side]}:undefined};
-  const result=copy(pick(u,visual));result.order={type:'stop'};result.path=[];if(u.runway)result.runway={level:u.runway.level};if(u.spotted)result.spotted={[side]:!!u.spotted[side]};return result;
+  const result=pick(u,visual);result.order={type:'stop'};result.path=[];if(u.runway)result.runway={level:u.runway.level};if(u.spotted)result.spotted={[side]:!!u.spotted[side]};return result;
  };
  const units=game.units.filter(u=>u.owner===side||game.isVisible(side,u)||emitters.has(u.id)).map(entity),structures=game.structures.filter(s=>s.owner===side||game.isVisible(side,s)).map(entity);
  const visiblePoint=(p,air=false)=>{const t=TILE(p);return t.x>=0&&t.y>=0&&t.x<128&&t.y<96&&!!(air?game.sky:game.visible)[side][KEY(t.x,t.y)];};
  const projectiles=game.projectiles.flatMap(p=>{
   const missile=MISSILE(p.weapon),t=Math.min(1,p.elapsed/p.duration),target=game.get(p.targetId),tx=target?.x??p.tx,ty=target?.y??p.ty,x=missile?p.x:p.sx+(tx-p.sx)*t,y=missile?p.y:p.sy+(ty-p.sy)*t;
   if(!missile&&p.owner!==side&&!visiblePoint({x,y},p.air))return [];
-  const q=copy(pick(p,['projectileId','owner','weapon','air','elapsed','duration','visualLevel','sourceLevel','targetLevel','heading']));
+  const q=pick(p,['projectileId','owner','weapon','air','elapsed','duration','visualLevel','sourceLevel','targetLevel','heading']);
   q.type=p.owner===side||known.has(p.attackerId)?p.type:missile?'missile':'infantry';q.networkVisual=true;q.x=x;q.y=y;q.sx=x;q.sy=y;q.tx=x;q.ty=y;
   if(p.weapon==='cruiseMissile'&&p.owner===side)q.area={x:p.tx,y:p.ty};
   if(known.has(p.attackerId))q.attackerId=p.attackerId;if(known.has(p.targetId))q.targetId=p.targetId;
   q.trail=(p.trail||[]).filter(v=>missile||p.owner===side||visiblePoint(v,p.air)).map(v=>pick(v,['x','y','level','time']));return [q];
  });
  const eventSeq=game.nextEventSeq||0,events=game.events.filter(e=>e.seq>player.eventCursor&&e.audiences?.includes(side)).map(e=>{
-  const q=copy(e);delete q.audiences;q.visible=true;for(const key of ['id','contactId','sourceId'])if(!known.has(q[key]))delete q[key];if(e.id&&!known.has(e.id))delete q.sourceType;if(q.cells)q.cells=q.cells.filter(p=>visiblePoint(p));return q;
+  const q={...e};delete q.audiences;q.visible=true;for(const key of ['id','contactId','sourceId'])if(!known.has(q[key]))delete q[key];if(e.id&&!known.has(e.id))delete q.sourceType;if(q.cells)q.cells=q.cells.filter(p=>visiblePoint(p));return q;
  });player.eventCursor=eventSeq;
  const logs=game.logs.filter(l=>l.audiences?.includes(side)).map(l=>pick(l,['time','text']));
- const state={...copy(pick(game,['map','mode','difficulty','seed','options','doctrines','time','round','turn','winner','nationName','turnEnding'])),multiplayer:true,playerSide:side,networkBusy:game.busy,paused:room.paused,terrainRevision:room.terrainRevision,units,structures,projectiles,events,logs,
-  visible:{[side]:mask(game.visible[side])},sky:{[side]:mask(game.sky[side])},explored:{[side]:mask(game.explored[side])},memory:{[side]:copy([...game.memory[side]])},radarContacts:{[side]:[...game.radarContacts[side]].filter(n=>known.has(n))},intel:[],claims:[],credits:{[side]:game.credits[side],[other(side)]:0},stats:{[side]:copy(game.stats[side]),[other(side)]:{kills:{},losses:{}}},initialArmies:{[side]:copy(game.initialArmies[side])},
+ const state={...pick(game,['map','mode','difficulty','seed','options','doctrines','time','round','turn','winner','nationName','turnEnding']),multiplayer:true,playerSide:side,networkBusy:game.busy,paused:room.paused,terrainRevision:room.terrainRevision,units,structures,projectiles,events,logs,
+  visible:{[side]:mask(game.visible[side])},sky:{[side]:mask(game.sky[side])},explored:{[side]:mask(game.explored[side])},memory:{[side]:[...game.memory[side]]},radarContacts:{[side]:[...game.radarContacts[side]].filter(n=>known.has(n))},intel:[],claims:[],credits:{[side]:game.credits[side],[other(side)]:0},stats:{[side]:game.stats[side],[other(side)]:{kills:{},losses:{}}},initialArmies:{[side]:game.initialArmies[side]},
   drops:(game.drops||[]).filter(d=>d.owner===side||visiblePoint(d)).map(d=>({...pick(d,['x','y','owner','elapsed']),passenger:pick(d.passenger,['id','type','owner','hp','maxHp']),destination:pick(d.destination,['x','y'])})),
   mines:game.mines.filter(m=>m.known[side]).map(m=>({x:m.x,y:m.y,known:{[side]:true}})),fires:game.fires.filter(f=>visiblePoint(f)).map(f=>pick(f,['x','y','left'])),actions:[],animation:null,aiEnabled:false,aiQueue:[],nextId:0};
  if(!player.knownTerrain){player.knownTerrain=game.terrain.slice();player.knownTerrainRevision=0;}
@@ -59,7 +60,8 @@ function createMultiplayerServer({graceMs=120000,now=Date.now,autoTick=true,maxR
  const rooms=new Map(),sockets=new Set();let tickNumber=0,closing=false;
  const send=(ws,value)=>{if(ws?.readyState===WebSocket.OPEN)ws.send(JSON.stringify(value));};
  const publicRoom=room=>({code:room.code,status:room.status,hostSide:room.players.find(p=>p.host)?.side,config:room.config,matchId:room.matchId,paused:room.paused,reconnectDeadline:room.paused?Math.min(...room.players.filter(p=>!p.ws).map(p=>p.disconnectedAt+graceMs)):null,result:room.result||null,players:room.players.map(p=>({nickname:p.nickname,side:p.side,ready:p.ready,connected:!!p.ws,doctrine:p.doctrine,army:p.army,rematch:!!p.rematch}))});
- const broadcast=(room)=>{for(const r of room?[room]:rooms.values())for(const p of r.players){if(!p.ws)continue;send(p.ws,{type:'room',side:p.side,room:publicRoom(r)});if(r.game)send(p.ws,{type:'state',side:p.side,matchId:r.matchId,state:viewState(r,p)});if(r.result)send(p.ws,{type:'result',...r.result});}};
+ // stateOnly: o envio periódico (10 Hz) leva só o estado; sala e resultado saem quando a sala muda.
+ const broadcast=(room,stateOnly=false)=>{for(const r of room?[room]:rooms.values())for(const p of r.players){if(!p.ws)continue;if(!stateOnly)send(p.ws,{type:'room',side:p.side,room:publicRoom(r)});if(r.game)send(p.ws,{type:'state',side:p.side,matchId:r.matchId,state:viewState(r,p)});if(r.result&&!stateOnly)send(p.ws,{type:'result',...r.result});}};
  const newPlayer=(name,side,host=false)=>({nickname:nickname(name),side,host,token:crypto.randomBytes(32).toString('hex'),ready:false,doctrine:'balanced',army:{...STARTING_DEFAULT},ws:null,lastSeq:0,acks:new Map(),eventCursor:0,terrainRevision:-1,disconnectedAt:null,rematch:false});
  const finish=(room,winner,reason)=>{room.status=winner?'finished':'cancelled';room.paused=false;room.finishedAt=now();room.result={winner:winner||null,reason};if(room.game)room.game.winner=winner||'cancelled';broadcast(room);};
  const abandon=(room,player)=>{if(room.status==='playing')finish(room,room.players.find(p=>p!==player)?.side,'abandonment');else if(room.status==='waiting'){if(player.host){room.status='cancelled';room.result={winner:null,reason:'host_left'};broadcast(room);rooms.delete(room.code);}else{room.players=room.players.filter(p=>p!==player);room.players.forEach(p=>p.ready=false);broadcast(room);}}};
@@ -69,7 +71,7 @@ function createMultiplayerServer({graceMs=120000,now=Date.now,autoTick=true,maxR
    if(room.status!=='playing')continue;
    const missing=room.players.filter(p=>!p.ws);if(missing.length){room.paused=true;if(missing.some(p=>now()-p.disconnectedAt>=graceMs)){const connected=room.players.find(p=>p.ws);finish(room,connected?.side,connected?'abandonment':'disconnected');}continue;}
    room.paused=false;const latest=room.game.nextEventSeq||0;room.game.update(STEP);if(room.game.events.some(e=>e.seq>latest&&e.kind==='terrainChanged'))room.terrainRevision++;
-   if(room.game.winner)finish(room,room.game.winner,'battle');else if(tickNumber%3===0)broadcast(room);
+   if(room.game.winner)finish(room,room.game.winner,'battle');else if(tickNumber%3===0)broadcast(room,true);
   }
  };
  const issue=(ws,e)=>send(ws,{type:'error',code:e.code||'invalid',message:e.status?e.message:'Mensagem inválida.'});
@@ -92,7 +94,8 @@ function createMultiplayerServer({graceMs=120000,now=Date.now,autoTick=true,maxR
    fs.readFile(file,(err,data)=>{if(err){res.writeHead(404).end('Não encontrado');return;}res.writeHead(200,{'Content-Type':MIME[path.extname(file).toLowerCase()]||'application/octet-stream','X-Content-Type-Options':'nosniff'});res.end(req.method==='HEAD'?undefined:data);});
   }catch(e){json(e.status||500,{error:e.status?e.message:'Não foi possível abrir a sala.',code:e.code||'invalid'});}
  });
- const wss=new WebSocketServer({noServer:true,maxPayload:16384,perMessageDeflate:{threshold:1024,serverNoContextTakeover:true,clientNoContextTakeover:true}});
+ // Nível 1: um estado de ~170 KB comprime em 0,4 ms (nível 6: 1,3 ms) e a CPU da hospedagem gratuita é curta.
+ const wss=new WebSocketServer({noServer:true,maxPayload:16384,perMessageDeflate:{threshold:1024,serverNoContextTakeover:true,clientNoContextTakeover:true,zlibDeflateOptions:{level:1}}});
  server.on('upgrade',(req,socket,head)=>{try{const url=new URL(req.url,'http://local');if(url.pathname!=='/multiplayer'||req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host){socket.destroy();return;}wss.handleUpgrade(req,socket,head,ws=>wss.emit('connection',ws,req));}catch{socket.destroy();}});
  const applyCommand=(room,player,msg)=>{
   const g=room.game,side=player.side,a=msg.args;if(room.status!=='playing'||room.paused||room.players.some(p=>!p.ws))throw failure('Aguarde a conexão dos dois jogadores.',409,'paused');if(!plain(a))throw failure('Argumentos inválidos.');const stop=msg.action==='order'&&a.type==='stop';if(g.mode==='turns'&&(g.turn!==side||g.busy&&!stop))throw failure('Aguarde seu turno e o fim da ação.',409,'turn');
@@ -128,7 +131,9 @@ function createMultiplayerServer({graceMs=120000,now=Date.now,autoTick=true,maxR
   sockets.add(ws);ws.alive=true;ws.rateAt=now();ws.rateCount=0;const authTimer=setTimeout(()=>{if(!ws.player)ws.close(1008,'Autenticação necessária');},10000);authTimer.unref();ws.on('pong',()=>ws.alive=true);
   ws.on('message',data=>{
    try{
-    if(now()-ws.rateAt>=1000){ws.rateAt=now();ws.rateCount=0;}if(++ws.rateCount>60)throw failure('Muitas mensagens. Aguarde.',429,'rate');let msg;try{msg=JSON.parse(data.toString());}catch{throw failure('JSON inválido.');}if(!plain(msg)||typeof msg.type!=='string')throw failure('Mensagem inválida.');
+    // Acima de 60 mensagens/s, ordens consomem o número de sequência e voltam recusadas (code 'rate'); sem isso toda ordem seguinte falharia por sequência até reconectar.
+    if(now()-ws.rateAt>=1000){ws.rateAt=now();ws.rateCount=0;}const limited=++ws.rateCount>60;let msg;try{msg=JSON.parse(data.toString());}catch{throw failure('JSON inválido.');}if(!plain(msg)||typeof msg.type!=='string')throw failure('Mensagem inválida.');
+    if(limited&&!(ws.player&&msg.type==='command'))throw failure('Muitas mensagens. Aguarde.',429,'rate');
     if(!ws.player){
      if(msg.type!=='auth'||msg.version!==1||typeof msg.code!=='string'||typeof msg.token!=='string')throw failure('Sessão inválida.',401,'auth');const room=rooms.get(msg.code);if(!room)throw failure('Sala indisponível ou encerrada.',404,'room_missing');const player=room.players.find(p=>p.token===msg.token);if(!player)throw failure('Sessão inválida.',401,'auth');
      if(room.status==='playing'&&room.players.some(p=>!p.ws&&now()-p.disconnectedAt>=graceMs)){const connected=room.players.find(p=>p.ws);finish(room,connected?.side,connected?'abandonment':'disconnected');}
@@ -137,7 +142,7 @@ function createMultiplayerServer({graceMs=120000,now=Date.now,autoTick=true,maxR
     const room=ws.room,player=ws.player;if(!rooms.has(room.code)||player.ws!==ws)throw failure('Sala indisponível ou encerrada.',404,'room_missing');room.lastTouch=now();
     if(msg.type==='command'){
      if(!id(msg.seq))throw failure('Número de comando inválido.');if(msg.seq<=player.lastSeq){send(ws,player.acks.get(msg.seq)||{type:'ack',seq:msg.seq,ok:false,duplicate:true});return;}if(msg.seq!==player.lastSeq+1)throw failure('Sequência de comandos inválida.',409,'sequence');
-     player.lastSeq=msg.seq;let ack;try{const ok=!!applyCommand(room,player,msg);ack={type:'ack',seq:msg.seq,ok,...(!ok?{message:'Ação indisponível neste estado.'}:{})};}catch(e){ack={type:'ack',seq:msg.seq,ok:false,message:e.status?e.message:'Comando inválido.',code:e.code||'invalid'};}player.acks.set(msg.seq,ack);while(player.acks.size>128)player.acks.delete(player.acks.keys().next().value);send(ws,ack);broadcast(room);return;
+     player.lastSeq=msg.seq;let ack;try{if(limited)throw failure('Muitas ordens de uma vez. Aguarde um instante.',429,'rate');const ok=!!applyCommand(room,player,msg);ack={type:'ack',seq:msg.seq,ok,...(!ok?{message:'Ação indisponível neste estado.'}:{})};}catch(e){ack={type:'ack',seq:msg.seq,ok:false,message:e.status?e.message:'Comando inválido.',code:e.code||'invalid'};}player.acks.set(msg.seq,ack);while(player.acks.size>128)player.acks.delete(player.acks.keys().next().value);send(ws,ack);return;
     }
     if(msg.type==='leave'){abandon(room,player);player.ws=null;ws.close(1000,'Você saiu da sala');return;}
     if(msg.type==='rematch'){

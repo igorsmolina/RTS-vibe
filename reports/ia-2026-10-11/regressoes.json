@@ -1,6 +1,6 @@
 {
   "source": "public/js/engine.js",
-  "sourceHash": "075cb50d1c38786581810ec73c0b7fe52c30191a76cf086523637da713310c03",
+  "sourceHash": "a30481ba067782498b1b5337aab9b7eb85fac7c6bedf0259e241fb64d6e6b413",
   "results": [
     {
       "name": "rts: captura sem acesso deve ser rejeitada",
@@ -111,7 +111,15 @@
       "ok": true
     },
     {
-      "name": "poupança de aviação não gasta o orçamento em tropas a cada ciclo",
+      "name": "poupança de aviação dentro da janela (≤45 s) segura o caixa",
+      "ok": true
+    },
+    {
+      "name": "exército pequeno: caixa vira tropa antes de poupar para aeronave",
+      "ok": true
+    },
+    {
+      "name": "aeronave longe demais da renda não deixa o caixa parado: gasta na doutrina",
       "ok": true
     },
     {
@@ -157,7 +165,7 @@
       "name": "avioes produzidos decolam, disparam e gastam munição real",
       "ok": true,
       "details": {
-        "paid": 4264,
+        "paid": 4214,
         "initial": {
           "jetAam": 2,
           "jetAgm": 5,
@@ -166,12 +174,12 @@
         },
         "ammo": {
           "jetAam": 2,
-          "jetAgm": 3,
+          "jetAgm": 1,
           "antiRadiation": 3,
           "jetGun": 80
         },
         "state": "approach",
-        "shots": 3
+        "shots": 5
       }
     },
     {
@@ -210,7 +218,7 @@
       "ok": true,
       "details": {
         "owner": "red",
-        "round": 7
+        "round": 8
       }
     },
     {
@@ -286,6 +294,120 @@
     },
     {
       "name": "aviação distingue alvo oculto de emissão identificável por antirradiação",
+      "ok": true
+    },
+    {
+      "name": "RTS: infantaria sem posto para capturar constrói posto no lado vermelho",
+      "ok": true,
+      "details": {
+        "post": {
+          "x": 90,
+          "y": 66
+        }
+      }
+    },
+    {
+      "name": "turnos: infantaria sem posto para capturar constrói posto",
+      "ok": true
+    },
+    {
+      "name": "sem infantaria a IA compra uma; com obra em andamento guarda 60 da doutrina",
+      "ok": true
+    },
+    {
+      "name": "derrota registrada exige 1,5× a força perdida antes de nova onda",
+      "ok": true
+    },
+    {
+      "name": "perda de onda registra derrota sem expirar",
+      "ok": true
+    },
+    {
+      "name": "posto vermelho recebe um guarda fora da onda e do grupo de combate",
+      "ok": true
+    },
+    {
+      "name": "guarda ataca inimigo perto do posto e a ameaça ao posto vale até 5 casas",
+      "ok": true
+    },
+    {
+      "name": "incursão escolhe posto azul fora da área derrotada e exige 2 postos",
+      "ok": true
+    },
+    {
+      "name": "transporte da incursão cai para helicóptero quando o caminhão não tem rota segura",
+      "ok": true
+    },
+    {
+      "name": "posto perdido vira local de reconstrução e pressão econômica",
+      "ok": true
+    },
+    {
+      "name": "sem construtor, infantaria é comprada primeiro; com construtor, o caixa vira tropa",
+      "ok": true
+    },
+    {
+      "name": "pressão econômica: vários construtores e vindo da onda, mesmo com posto caindo",
+      "ok": true
+    },
+    {
+      "name": "revelar mapa: inimigo oculto fica visível e a IA não ganha visão",
+      "ok": true
+    },
+    {
+      "name": "meta de postos sobe com a partida e respeita o teto da dificuldade",
+      "ok": true
+    },
+    {
+      "name": "helicóptero só faz manutenção em QG ou aeroporto, curando 8 HP por 1 crédito cada",
+      "ok": true
+    },
+    {
+      "name": "helicóptero sem crédito não cura vida, mas ainda repõe flares",
+      "ok": true
+    },
+    {
+      "name": "IA recua helicóptero ferido para QG ou aeroporto, nunca para posto",
+      "ok": true
+    },
+    {
+      "name": "engenheiros sem aeroporto não seguram créditos enquanto a economia não está montada",
+      "ok": true
+    },
+    {
+      "name": "batedor vai ao posto não reconhecido; ao vê-lo registra a força azul ao redor",
+      "ok": true
+    },
+    {
+      "name": "infantaria captura posto distante só com reconhecimento recente e sem força azul",
+      "ok": true
+    },
+    {
+      "name": "objetivo trata posto visto guardado como caro mesmo sem contato recente",
+      "ok": true
+    },
+    {
+      "name": "rota por travessia com força azul conhecida não recebe infantaria sozinha",
+      "ok": true
+    },
+    {
+      "name": "tropa perdida sem virar posto marca zona de perigo; infantaria que vira posto não",
+      "ok": true
+    },
+    {
+      "name": "prazo de preparo não lança 3 unidades contra força azul conhecida no gargalo",
+      "ok": true
+    },
+    {
+      "name": "construtor não escolhe local em zona de perigo",
+      "ok": true
+    },
+    {
+      "name": "primeira ida: posto distante do lado vermelho espera o reconhecimento; perto do QG não",
+      "ok": true
+    },
+    {
+      "name": "no teto de postos da dificuldade a IA para de capturar neutros",
       "ok": true
     }
   ]
