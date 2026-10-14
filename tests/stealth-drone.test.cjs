@@ -32,9 +32,9 @@ check('Dois mísseis sem reposição, um por ação; depois só reconhecimento',
  g.endTurn();for(let n=0;g.turn==='red'&&n<20000;n++)g.update(1/30);assert.ok(g.order(d,'attack',{targetId:foe.id}));settle(g);assert.equal(d.missiles,0);
  g.endTurn();for(let n=0;g.turn==='red'&&n<20000;n++)g.update(1/30);assert.equal(g.weapon(d,foe),null);assert.equal(g.canFire(d,foe),false);assert.equal(g.acquire(d),undefined);assert.equal(g.order(d,'attack',{targetId:foe.id}),false);
  assert.ok(g.order(d,'move',{x:14,y:14}),'Continua voando como olheiro');
- const r=field('rts'),e=r.add('blue','stealthDrone',10,10),t=r.add('red','infantry',15,10);t.hp=t.maxHp=1000;r.updateVision();
+ const r=field('rts'),e=r.add('blue','stealthDrone',10,10),t=r.add('red','engineer',12,10);t.hp=t.maxHp=1000;r.updateVision();
  advance(r,5);assert.equal(r.shotsFired,0,'Parado, não dispara sozinho');assert.ok(r.order(e,'attack',{targetId:t.id}));
- advance(r,.1);assert.equal(r.shotsFired,1);advance(r,2.8);assert.equal(r.shotsFired,1,'Intervalo de 3 s');advance(r,.3);assert.equal(r.shotsFired,2,'A ordem do jogador continua até acabar o estoque');advance(r,10);assert.equal(r.shotsFired,2);assert.equal(e.missiles,0);assert.equal(e.order.type,'stop','Sem mísseis, a ordem termina');assert.equal(e.x+','+e.y,'10,10','Não persegue o alvo');
+ advance(r,2);assert.equal(r.shotsFired,1);advance(r,10);assert.equal(r.shotsFired,2,'A ordem do jogador continua até acabar o estoque');advance(r,10);assert.equal(r.shotsFired,2);assert.equal(e.missiles,0);assert.equal(e.flightState,'patrol','Sem mísseis, volta a orbitar');
 });
 check('Blindagem: não fere tanque médio e pesado; atinge alvos leves, estruturas e aeronaves',()=>{
  const g=field(),d=g.add('blue','stealthDrone',10,10);
@@ -49,5 +49,11 @@ check('IA: caça antiaérea ao alcance, persegue lançadores vistos e, sem míss
  for(const mode of ['turns','rts']){const m=new Game('river','normal',23,mode);m.add('red','stealthDrone',31,4);m.add('blue','stealthDrone',4,23);m.updateVision();
   if(mode==='turns')for(let i=0;i<8&&!m.winner;i++){m.endTurn();for(let n=0;m.turn==='red'&&!m.winner&&n<20000;n++)m.update(1/30);settle(m);}else advance(m,60);
   for(const u of m.units)if(u.type==='stealthDrone'){assert.equal(u.altitude,'high');assert.ok(u.missiles>=0&&u.missiles<=2);}assert.ok(m.aiDecisions>0);}
+});
+check('Drones voam como aviões: além do alcance por turno e órbita ao chegar',()=>{
+ for(const mode of ['turns','rts']){const g=field(mode),d=g.add('blue','reconDrone',10,10);g.updateVision();
+  assert.ok(g.order(d,'move',{x:40,y:10}));if(mode==='turns')settle(g);else advance(g,40);
+  assert.ok(Math.hypot(d.x-40,d.y-10)<=5,'chegou perto do destino, sem limite de 7 casas');assert.equal(d.flightState,'patrol');
+  if(mode==='rts'){const a={x:d.x,y:d.y};advance(g,1);assert.ok(Math.hypot(d.x-a.x,d.y-a.y)>.5,'continua orbitando');}}
 });
 console.log(checks+' verificações do drone furtivo concluídas.');

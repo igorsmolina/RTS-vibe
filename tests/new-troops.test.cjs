@@ -61,7 +61,7 @@ check('Drone: nasce alto, sem armas, flares, altitude, manutenção, captura ou 
   assert.equal(d.altitude,'high');assert.equal(d.flares,0);assert.equal(d.weaponMode,undefined);assert.equal(g.flareReady(d),false);
   assert.equal(g.weapon(d,foe),null);assert.equal(g.range(d),0);assert.equal(g.acquire(d),undefined);assert.equal(g.order(d,'attack',{targetId:foe.id}),false);
   assert.equal(g.order(d,'altitude',{altitude:'low'}),false);assert.equal(g.setWeapon(d,'auto'),false);assert.equal(g.canService(d,post),false);assert.equal(g.canBuild(d),false);
-  assert.ok(g.order(d,'move',{x:12,y:5}));if(mode==='turns'){settle(g);assert.equal(d.x,12);}else{advance(g,.5);assert.ok(Math.abs(d.x-6.2)<1e-6);}}
+  assert.ok(g.order(d,'move',{x:12,y:5}));if(mode==='turns'){settle(g);assert.ok(Math.hypot(d.x-12,d.y-5)<=4.5,'voa como avião e orbita perto do destino');}else{advance(g,.5);{const m=Math.hypot(d.x-5,d.y-5);assert.ok(m>.5&&m<=1.2+1e-6,'voa na velocidade 2,4 com curva suave')};}}
 });
 check('Drone: visão 12 através da floresta, sem revelar minas',()=>{
  const g=field(),d=g.add('blue','reconDrone',10,10);g.mines.push({x:12,y:10,known:{blue:false,red:false}});g.terrain[KEY(10,15)]='forest';g.terrain[KEY(10,12)]='forest';g.updateVision();
@@ -70,7 +70,7 @@ check('Drone: visão 12 através da floresta, sem revelar minas',()=>{
 check('Drone: radar inimigo detecta globalmente; antiaérea 99% e lançador 90%, sem flares',()=>{
  const g=field(),d=g.add('blue','reconDrone',3,25),aa=g.add('red','antiAirVehicle',18,10),s=g.add('red','missileInfantry',4,25),heli=g.add('blue','helicopter',4,24);heli.altitude='high';g.updateVision();
  assert.equal(g.radarContact('red',d),true);assert.equal(g.isVisible('red',d),true);assert.ok(g.canFire(aa,d));
- assert.equal(g.accuracy(aa,d),.99);assert.equal(Math.round(g.accuracy(s,d)*100),90);assert.equal(Math.round(g.accuracy(aa,heli)*100),90,'Helicóptero alto continua 90%');
+ assert.equal(g.accuracy(aa,d),.99);assert.equal(Math.round(g.accuracy(s,d)*100),90);assert.equal(Math.round(g.accuracy(aa,heli)*100),99,'Míssil contra helicóptero alto: +15%, teto 99%');
  g.setRadar(aa,false);assert.equal(g.radarContact('red',d),false);
 });
 check('IA: bombardeia só posições vistas ou lembradas e evita área com tropa própria',()=>{

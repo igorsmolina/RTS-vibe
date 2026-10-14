@@ -37,12 +37,12 @@ const MAPS={river:'Vale dos Rios',desert:'Deserto Aberto',mountain:'Passe de Mon
 const HELICOPTER_MINIGUN={name:'Minigun',damage:4,range:3,accuracy:.85,cooldown:.2,shots:5,infantryMultiplier:3,vehicleMultiplier:.25,structureMultiplier:.5},HELICOPTER_CANNON={name:'Canhão',damage:20,range:3,accuracy:.85,cooldown:1,shots:1,infantryMultiplier:.6,vehicleMultiplier:1.5,structureMultiplier:.5};
 const TYPES={
  transportTruck:{move:7,vehicle:true,unarmed:true,weapons:[],capacity:4,name:'Caminhão de transporte',hp:90,speed:2.4,range:0,min:0,damage:0,accuracy:0,vision:4,cooldown:1,train:2,cost:100,reward:30,role:'Transporte de 4 tropas a pé · sem armas'},
- transportHelicopter:{move:8,air:true,unarmed:true,weapons:[],capacity:6,sling:{blue:'lightTank'},name:'Helicóptero de transporte',hp:150,speed:2.8,range:0,min:0,damage:0,accuracy:0,vision:6,cooldown:1,train:4,cost:220,reward:60,role:'Transporte de 6 tropas a pé · embarque em altitude baixa · aliado: 1 tanque leve pendurado · inimigo: rajada de mísseis 3×3 (alcance 10 baixo / 30 alto, 2 salvas, parado ao lançar)'},
+ transportHelicopter:{move:10,air:true,unarmed:true,weapons:[],capacity:6,sling:{blue:'lightTank'},name:'Helicóptero de transporte',hp:150,speed:3.4,range:0,min:0,damage:0,accuracy:0,vision:6,cooldown:1,train:4,cost:220,reward:60,role:'Transporte de 6 tropas a pé · embarque em altitude baixa · aliado: 1 tanque leve pendurado · aliado em altitude alta: 50% mais rápido, enxerga através de floresta e colina, flares mais eficazes · inimigo: rajada de mísseis 3×3 (alcance 10 baixo / 30 alto, 2 salvas, parado ao lançar)'},
  transportPlane:{move:0,plane:true,air:true,vehicle:true,unarmed:true,airdropPlane:true,capacity:12,weapons:[],ammo:{},evasion:0,flares:0,name:'Avião de transporte',hp:240,speed:4.5,range:0,min:0,damage:0,accuracy:0,vision:0,cooldown:1,cost:0,reward:90,role:'Pousa na pista do aeroporto · embarca tropas próximas · lança em linha por paraquedas · até 12 vagas'},
  infantry:{move:3,name:'Infantaria',hp:100,speed:1.35,range:3,min:0,damage:35,accuracy:.9,vision:4,cooldown:.8,train:1,cost:50,reward:20,role:'Captura e construção · fuzil alcance 3'},
  lightTank:{move:6,vehicle:true,tank:true,name:'Tanque leve',hp:110,speed:2,range:4,min:0,damage:35,accuracy:.75,vision:5,cooldown:2,train:2,cost:100,reward:35,role:'Mais rápido dos tanques · alcance 4 · não perfura pesados'},
  tank:{move:5,vehicle:true,tank:true,name:'Tanque médio',hp:170,speed:1.7,range:5,min:0,damage:60,accuracy:.75,vision:5,cooldown:2.5,train:3,cost:150,reward:50,role:'Alcance 5 · precisão cai após 3 casas · velocidade intermediária'},
- heavyTank:{move:4,vehicle:true,tank:true,name:'Tanque pesado',hp:280,speed:1.5,range:7,min:0,damage:80,accuracy:.85,vision:5,cooldown:3.5,train:4,cost:240,reward:80,role:'Alcance 7 · maior dano e precisão dos tanques · requer reconhecimento distante'},
+ heavyTank:{move:4,vehicle:true,tank:true,name:'Tanque pesado',hp:280,speed:1.5,range:7,min:0,damage:80,accuracy:.85,vision:5,cooldown:3.5,train:4,cost:240,reward:80,role:'Alcance 7 · maior dano e precisão dos tanques · Trophy: 3 cargas interceptam mísseis antitanque vindos de mais de 3 casas · requer reconhecimento distante'},
  artillery:{move:3,vehicle:true,name:'Artilharia',hp:100,speed:1.2,range:16,min:2,damage:85,accuracy:.85,vision:3,cooldown:5,train:4,cost:180,reward:40,role:'Cerco de longo alcance · área 3×3 · fogo amigo'},
  recon:{move:5,vehicle:true,name:'Batedor',hp:75,speed:2.25,range:2,min:0,damage:24,accuracy:.9,vision:7,cooldown:1.1,train:1,cost:75,reward:25,role:'Reconhecimento rápido'},
  engineer:{move:3,name:'Engenheiro',hp:85,speed:1.25,range:1.15,min:0,damage:20,accuracy:.9,vision:4,cooldown:1.2,train:2,cost:65,reward:25,role:'Reparo +24 HP por ação'},
@@ -66,11 +66,13 @@ const TYPES={
 const ARMORED=new Set(['tank','heavyTank']),BREAKERS=new Set(['antitank','lightTank','tank','heavyTank','artillery']);
 const WEAPONS={gun:HELICOPTER_CANNON,agm:{name:'Míssil ar-terra',damage:65,range:5,accuracy:.85,cooldown:3},aam:{name:'Míssil ar-ar',damage:70,range:6,accuracy:.9,cooldown:3,speed:4,evasionBonus:.2},stealthMissile:{name:'Míssil furtivo',damage:35,range:8,accuracy:.85,cooldown:3},
  atMissile:{name:'Míssil antitanque',damage:40,range:7,accuracy:.85,cooldown:3},rifle:{name:'Fuzil',damage:35,range:3,accuracy:.9,cooldown:.8},missileInfantry:{name:'Míssil portátil',evasionBonus:.25},rocket:{name:'Salva de mísseis',damage:20,range:30,accuracy:.8,cooldown:10}};
-const GROUND_WEAPONS=new Set(['atMissile','rifle']),AT_MISSILES=4,HELI_SALVOS=2;
+const GROUND_WEAPONS=new Set(['atMissile','rifle']),AT_MISSILES=4,HELI_SALVOS=2,HELI_REPAIR=8,HELI_REPAIR_COST=1,TROPHY_CHARGES=3,TROPHY_RANGE=3;
 const BARRAGE=u=>u?.type==='rocketArtillery'||u?.type==='transportHelicopter'&&u.owner==='red';
 const barrageRange=u=>u.type==='rocketArtillery'?TYPES.rocketArtillery.range:u.altitude==='high'?30:10;
 
 const PLANE=u=>!!TYPES[u?.type]?.plane;
+const DRONE=u=>!!TYPES[u?.type]?.drone,FLYER=u=>PLANE(u)||DRONE(u); // drones voam e orbitam como aviões, sem pista nem munição
+
 const AIRPORT=u=>!!TYPES[u?.type]?.airport;
 const POST_CAPTURERS=new Set(['infantry','missileInfantry','machinegun','antitank','commander']);
 const BOMB_TYPES=['bombCommon','bombFragment','bombIncendiary'];
@@ -103,12 +105,14 @@ Object.assign(WEAPONS,{
 });
 
 const AIR=u=>!!TYPES[u?.type]?.air&&(!PLANE(u)||!['grounded','service','offmap','waitRunway','taxiOut','takeoffRoll','landingRoll','taxiIn'].includes(u.flightState));
+const HELI=u=>!!TYPES[u?.type]?.air&&!PLANE(u)&&!TYPES[u.type].drone;
 const ALTITUDE_TIME=1;
 const AIRDROP_TYPES=['infantry','engineer','antitank','machinegun','missileInfantry','recon','lightTank','tank'];
 const AIRDROP_FEE=150,AIRDROP_CAPACITY=12,AIRPORT_SURCHARGE=1.2;
 const AIRDROP_SLOTS=type=>type==='tank'?6:TYPES[type].vehicle?4:1;
 const AIRDROP_REACH=2;
 const FOOT=u=>!!TYPES[u?.type]&&!TYPES[u.type].structure&&!TYPES[u.type].vehicle&&!TYPES[u.type].air;
+const HELI_HIGH=1.5,heliHigh=u=>u?.type==='transportHelicopter'&&u.owner==='blue'&&u.altitude==='high';
 function flightLevel(u){if(u.runway)return u.runway.level;const t=u.altitudeTransition;if(!t)return u.altitude==='high'?1:0;const p=Math.min(1,t.elapsed/(t.returning?.2:ALTITUDE_TIME));return t.from+(t.to-t.from)*p*p*(3-2*p);}
 const MISSILE=w=>['agm','aam','atMissile','antiAirVehicle','missileInfantry','rocket','stealthMissile','jetAam','antiRadiation','jetAgm','cruiseMissile'].includes(w);
 // Salva da artilharia de mísseis: quatro mísseis contra a casa central, 0,25 s entre lançamentos.
@@ -118,10 +122,10 @@ const LAUNCHER_TIME=.35;
 /* Níveis da IA: preparo (turnos; RTS ×30 s), margem sobre a força azul vista, onda mínima, fila e exército máximos,
    renda e recursos de combate (reforço de onda e recuo mais cedo na Veterana). */
 const PLAN={
- easy:{prep:5,margin:1.6,wave:6,queue:4,army:40,planes:2,income:.8,reinforce:false,followUp:1},
- normal:{prep:3,margin:1.15,wave:6,queue:4,army:48,planes:4,income:1,reinforce:true,followUp:1},
- hard:{prep:2,margin:1.05,wave:6,queue:6,army:56,planes:4,income:1.2,reinforce:true,followUp:1},
- veteran:{prep:2,margin:1,wave:5,queue:6,army:64,planes:5,income:1.35,reinforce:true,followUp:.5}
+ easy:{prep:5,margin:1.6,wave:6,queue:4,army:40,planes:2,income:.8,posts:6,reinforce:false,followUp:1},
+ normal:{prep:3,margin:1.15,wave:6,queue:4,army:48,planes:4,income:1,posts:9,reinforce:true,followUp:1},
+ hard:{prep:2,margin:1.05,wave:6,queue:6,army:56,planes:4,income:1.2,posts:12,reinforce:true,followUp:1},
+ veteran:{prep:2,margin:1,wave:5,queue:6,army:64,planes:5,income:1.35,posts:12,reinforce:true,followUp:.5}
 };
 /* Doutrina de compra: parcela do exército por tipo e mínimo fixo. A IA compra o tipo com maior déficit
    (alvo − existentes − na fila), ajustado pelo que vê; sem crédito para ele, poupa (salvo base ameaçada). */
@@ -199,7 +203,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   if(type==='stop'){u.pursuitIntent=null;u.gunBurst=null;if(AIR(u))this.setPatrol(u);else{u.flightJob=null;u.flightState='grounded';u.pending=false;u.order={type:'stop'};}if(this.animation?.id===u.id)this.animation=null;this.actions=this.actions.filter(a=>a.id!==u.id);return true;}
   let job={type,elapsed:0};
   if(['move','patrol','takeoff'].includes(type)){const p=type==='takeoff'?{x:u.x+4,y:u.y+3}:{x:Math.round(args.x),y:Math.round(args.y)};if(!INSIDE(p.x,p.y)||u.flightState==='service')return false;job.type='transfer';job.goal={x:Math.max(4,Math.min(COLS-5,p.x)),y:Math.max(4,Math.min(ROWS-5,p.y))};job.waypoint={x:job.goal.x+4,y:job.goal.y};}
-  else if(['attack','strike'].includes(type)){if(!AIR(u))return false;const target=this.get(args.targetId),weapon=args.weapon||u.weaponMode||'auto';if(!target||target.hp<=0||target.owner===u.owner||target.owner==='neutral')return false;const old=u.weaponMode;u.weaponMode=weapon;const w=this.weapon(u,target);if(!w||!this.canIdentify(u,target)){u.weaponMode=old;return false;}job=this.strikeJob(u,target,weapon,args.salvo===2?2:1);}
+  else if(['attack','strike'].includes(type)){if(!AIR(u))return false;const target=this.get(args.targetId),weapon=args.weapon||u.weaponMode||'auto';if(!target||target.hp<=0||target.owner===u.owner||target.owner==='neutral')return false;const old=u.weaponMode;u.weaponMode=weapon;const w=this.weapon(u,target);if(!w||!this.canIdentify(u,target)){u.weaponMode=old;return false;}job=this.strikeJob(u,target,weapon,args.salvo===2?2:1);if(DRONE(u))job={type:'droneStrike',targetId:target.id,elapsed:0};}
   else if(['return','land'].includes(type)){if(!AIR(u))return false;const base=this.get(args.targetId)||this.airports(u.owner).sort((a,b)=>DIST(u,a)-DIST(u,b)||a.id-b.id)[0];if(!base||!AIRPORT(base)||base.owner!==u.owner)return false;job.type='return';job.airportId=base.id;}
   else if(type==='strikeCell'){
    // Cruzeiro marca coordenada fixa, visível ou não. As demais armas mantêm a aposta na névoa.
@@ -211,7 +215,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   else if(type==='bombRun'){if(!AIR(u)||!this.bombLine(u.owner,args.start,args.end))return false;const count=args.bombCount===undefined?12:args.bombCount,capacity=BOMB_TYPES.reduce((n,w)=>n+(TYPES[u.type].ammo[w]||0),0);if(![6,12,24,48].includes(count)||count>capacity)return false;const bombs=[],remaining={...u.ammo};while(bombs.length<count){let added=false;for(const w of BOMB_TYPES)if(remaining[w]>0&&bombs.length<count){bombs.push(w);remaining[w]--;added=true;}if(!added)break;}if(!bombs.length)return false;job={...job,type:'bombRun',start:{...args.start},end:{...args.end},bombs,index:0,phase:'approach'};}
   else return false;
   u.pursuitIntent=job.type==='strike'&&AIR(this.get(job.targetId))?{targetId:job.targetId,weapon:job.weapon,salvo:job.salvo}:null;u.gunBurst=null;
-  if(!AIR(u)){const base=this.get(u.airportId);if(!base||base.owner!==u.owner||!AIRPORT(base))return false;u.runway={type:'takeoff',phase:'wait',baseId:base.id,level:0,elapsed:0};u.flightState='waitRunway';u.altitude='high';}else u.flightState='approach';u.flightJob=job;u.pending=true;u.path=[];u.segment=null;u.order={type:job.type,targetId:job.targetId,goal:job.goal};u.actionLeft=rts?true:false;u.moveLeft=0;u.moved=true;
+  if(!AIR(u)){const base=this.get(u.airportId);if(!base||base.owner!==u.owner||!AIRPORT(base))return false;u.runway={type:'takeoff',phase:'wait',baseId:base.id,level:0,elapsed:0};u.flightState='waitRunway';u.altitude='high';}else u.flightState='approach';u.flightJob=job;u.pending=true;u.path=[];u.segment=null;u.order={type:job.type==='droneStrike'?'attack':DRONE(u)&&job.type==='transfer'?'move':job.type,targetId:job.targetId,goal:job.goal};u.actionLeft=rts?true:false;u.moveLeft=0;u.moved=true;
   if(!rts)this.actions.push({id:u.id,type:'planeFlight',route:[],plane:true});return true;
  }
  finishPlaneFlight(u){this.setPatrol(u);if(!Object.values(u.ammo).some(n=>n>0))this.orderPlane(u,'return',{},true);return true;}
@@ -235,6 +239,13 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
    if(missile&&j.fired<j.salvo&&this.planeAligned(u,target,Math.PI/6)&&DIST(u,target)<=this.weaponRange(u,missile)&&j.clock<=1e-8&&u.cooldown<=1e-8){this.shoot(u,target,missile);j.fired++;j.clock=.6;u.flightState='attack';}
    const missilesDone=!missile||j.fired>=j.salvo;
    if(missilesDone){if(gun&&this.planeWeaponFits(u,'jetGun',target)){if(!j.gunStarted&&this.startGunBurst(u,target)){j.gunStarted=true;u.flightState='attack';}if(j.gunStarted&&!u.gunBurst)this.separatePlane(u);}else this.separatePlane(u);}
+  }
+  else if(j.type==='droneStrike'){
+   const target=this.get(j.targetId),w=target&&target.hp>0&&this.weapon(u,target);
+   if(!w||!this.canIdentify(u,target)||j.elapsed>30){this.setPatrol(u);return true;}
+   if(DIST(u,target)>this.range(u,target))this.flyToward(u,target,dt);
+   else if(u.cooldown>1e-8)this.orbitPlane(u,dt);
+   else{this.shoot(u,target,w);if(this.mode!=='rts'){this.setPatrol(u);return true;}} // RTS: a ordem segue até acabar o estoque
   }
   else if(j.type==='cellStrike'){
    const cell=j.cell;
@@ -304,7 +315,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   if(paid)this.credits[u.owner]-=missing;u.flightState='service';if(this.mode==='turns'){u.actionLeft=false;u.moveLeft=0;}u.serviceProgress=0;u.serviceRearm=paid;u.order={type:'planeService'};return true;
  }
  progressPlaneService(owner,elapsed){for(const u of this.units)if(PLANE(u)&&u.owner===owner&&u.flightState==='service'){const b=this.get(u.airportId);if(!b||b.owner!==owner)continue;u.serviceProgress+=elapsed;const duration=(b.type==='airportAsphalt'?1:2)*(this.mode==='rts'?10:1);if(u.serviceProgress+1e-8>=duration){u.hp=u.maxHp;u.flares=TYPES[u.type].flares;if(u.serviceRearm)u.ammo={...TYPES[u.type].ammo};u.flightState='grounded';u.pending=false;u.order={type:'stop'};this.event('ready',u);}}}
- completeTurn(owner){for(const u of this.units.filter(u=>u.owner===owner&&u.captureIntent&&!u.pending&&u.actionLeft)){const target=this.captureTarget(u);if(target&&(u.moveLeft>0||DIST(u,target)<=1))this.order(u,'capture',{targetId:target.id,position:u.captureIntent.position},true);}const planes=this.units.filter(u=>u.owner===owner&&PLANE(u)&&AIR(u)&&u.actionLeft&&!u.pending);if(!planes.length&&!this.actions.length){this.beginTurn(owner==='blue'?'red':'blue');return;}this.turnEnding=owner==='blue'?'red':'blue';for(const u of planes){if(u.pursuitIntent){const intent=u.pursuitIntent;if(this.orderPlane(u,'attack',intent,true))continue;this.endPursuit(u);}u.actionLeft=false;u.pending=true;u.flightJob=u.flightJob?.type==='return'?{...u.flightJob,wait:0}:{type:'patrolTurn',angle:0};this.actions.push({id:u.id,type:'planeFlight',plane:true,route:[]});}}
+ completeTurn(owner){for(const u of this.units.filter(u=>u.owner===owner&&u.captureIntent&&!u.pending&&u.actionLeft)){const target=this.captureTarget(u);if(target&&(u.moveLeft>0||DIST(u,target)<=1))this.order(u,'capture',{targetId:target.id,position:u.captureIntent.position},true);}const planes=this.units.filter(u=>u.owner===owner&&FLYER(u)&&AIR(u)&&u.actionLeft&&!u.pending);if(!planes.length&&!this.actions.length){this.beginTurn(owner==='blue'?'red':'blue');return;}this.turnEnding=owner==='blue'?'red':'blue';for(const u of planes){if(u.pursuitIntent){const intent=u.pursuitIntent;if(this.orderPlane(u,'attack',intent,true))continue;this.endPursuit(u);}u.actionLeft=false;u.pending=true;u.flightJob=u.flightJob?.type==='return'?{...u.flightJob,wait:0}:{type:'patrolTurn',angle:0};this.actions.push({id:u.id,type:'planeFlight',plane:true,route:[]});}}
 
  generateAirports(carve,nodes){if(seeded(this.seed^0x43c8a15b)()>=.5)return;const {width,height}=TYPES.airportAsphalt;for(const pos of [{x:4,y:4},{x:4,y:8},{x:8,y:4}]){const pair=[pos,{x:COLS-pos.x-width,y:ROWS-pos.y-height}];if(pair.some(p=>{const area={x:p.x-2,y:p.y,width:width+4,height};return !INSIDE(area.x,area.y)||!INSIDE(area.x+area.width-1,area.y+height-1)||this.structures.some(s=>DIST({...p,width,height},s)<2||DIST(area,s)===0)||this.units.some(u=>DIST(area,u)===0)||this.mines.some(m=>DIST(area,m)===0);} ))continue;for(const p of pair){const access={x:p.x-1,y:p.y+height-1};carve(access,nodes.slice().sort((a,b)=>DIST(a,access)-DIST(b,access))[0]);this.add('neutral','airportAsphalt',p.x,p.y);}for(const p of pair)for(let y=p.y;y<p.y+height;y++)for(let x=p.x-2;x<p.x+width+2;x++)if(x>=p.x&&x<p.x+width||!['road','bridge'].includes(this.terrain[KEY(x,y)]))this.terrain[KEY(x,y)]='plain';break;}}
  airportApproaches(cell){const cells=[];for(let y=cell.y;y<cell.y+2;y++)for(const x of [cell.x-2,cell.x-1,cell.x+6,cell.x+7])if(INSIDE(x,y))cells.push({x,y});return cells;}
@@ -512,7 +523,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   for(const k of ['visible','sky','explored'])if(!s[k]||!['blue','red'].every(o=>Array.isArray(s[k][o])&&s[k][o].length===SIZE))throw Error('Visão inválida.');
   const decoded=JSON.parse(JSON.stringify(s),(k,v)=>v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===1&&Array.isArray(v.mapEntries)?new Map(v.mapEntries):v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===1&&Array.isArray(v.setEntries)?new Set(v.setEntries):v);
   const game=Object.create(Game.prototype);for(const [key,data]of Object.entries(decoded)){if(key in Game.prototype)throw Error('Campo de save inválido.');game[key]=data;}
-  game.multiplayer=false;game.networkClient=false;game.drops||=[];for(const u of game.units){if(TYPES[u.type].capacity)u.cargo||=[];if(u.type==='antitank')u.atMissiles??=AT_MISSILES;if(u.type==='transportHelicopter'&&u.owner==='red')u.salvos??=HELI_SALVOS;}
+  game.multiplayer=false;game.networkClient=false;game.drops||=[];for(const u of game.units){if(TYPES[u.type].capacity)u.cargo||=[];if(u.type==='antitank')u.atMissiles??=AT_MISSILES;if(u.type==='heavyTank')u.trophy??=TROPHY_CHARGES;if(u.type==='transportHelicopter'&&u.owner==='red')u.salvos??=HELI_SALVOS;}
   for(const u of game.units)if(TYPES[u.type].airdropPlane&&u.airdrop){const m=u.airdrop;if(m.cargo){u.cargo=m.cargo;delete m.cargo;}if(m.phase==='approach'){m.phase='run';m.leg='toStart';m.line={start:{...m.destination},end:{...m.destination}};m.index=0;m.total=u.cargo.length;}else if(m.phase==='exit'&&m.baseId===undefined)m.phase='return';}
   if(game.mission&&(typeof Missions==='undefined'||!Missions.validate(game.mission,game)))throw Error('Estado de missão inválido.');
   game.rng=seeded(game.seed);game.rng.restore(value.rngState);game.updateVision();return game;
@@ -522,7 +533,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  add(owner,type,x,y){
   const t=TYPES[type];if(!t||!INSIDE(x,y)||!['blue','red','neutral'].includes(owner))return null;
   const u={id:this.nextId++,owner,type,x,y,facing:owner==='blue'?0:Math.PI,hp:t.hp,maxHp:t.hp,level:1,xp:0,cooldown:0,setup:0,packing:0,idle:0,entrenched:false,suppressed:0,revealed:0,work:0,reserved:0,order:{type:'stop'},path:[],segment:null,navGoal:null,healText:0,moveLeft:t.move||0,actionLeft:!t.structure,moved:false,pending:false};
-  u.hp=u.maxHp=this.baseHp(owner,type);if(t.width){u.width=t.width;u.height=t.height;}if(t.plane){u.ammo={...t.ammo};u.flightState='patrol';u.patrol={x:Math.max(4,Math.min(COLS-5,x-4)),y:Math.max(4,Math.min(ROWS-5,y)),angle:0};u.salvo=1;}if(t.structure)u.queue=[];if(t.air){if(!t.unarmed)u.weaponMode='auto';u.altitude=t.drone||t.plane?'high':'low';u.flares=t.drone?0:(t.flares??3);u.flareCooldown=0;u.flareUsed=false;}if(t.stealth){u.missiles=t.missiles;u.spotted={blue:false,red:false};}if(type==='antitank')u.atMissiles=AT_MISSILES;if(type==='transportHelicopter'&&owner==='red')u.salvos=HELI_SALVOS;if(type==='antiAirVehicle'){u.radarOn=true;u.smokeCharges=2;u.smokeCooldown=0;u.smokeTime=0;u.smokeUsed=false;u.reactionReady=true;}(t.structure?this.structures:this.units).push(u);if(type==='antiAirVehicle')this.updateRadarContacts();return u;
+  u.hp=u.maxHp=this.baseHp(owner,type);if(t.width){u.width=t.width;u.height=t.height;}if(t.plane){u.ammo={...t.ammo};u.flightState='patrol';u.patrol={x:Math.max(4,Math.min(COLS-5,x-4)),y:Math.max(4,Math.min(ROWS-5,y)),angle:0};u.salvo=1;}if(t.drone){u.flightState='patrol';u.patrol={x:Math.max(4,Math.min(COLS-5,x-4)),y:Math.max(4,Math.min(ROWS-5,y)),angle:0};}if(t.structure)u.queue=[];if(t.air){if(!t.unarmed)u.weaponMode='auto';u.altitude=t.drone||t.plane?'high':'low';u.flares=t.drone?0:(t.flares??3);u.flareCooldown=0;u.flareUsed=false;}if(t.stealth){u.missiles=t.missiles;u.spotted={blue:false,red:false};}if(type==='antitank')u.atMissiles=AT_MISSILES;if(type==='heavyTank')u.trophy=TROPHY_CHARGES;if(type==='transportHelicopter'&&owner==='red')u.salvos=HELI_SALVOS;if(type==='antiAirVehicle'){u.radarOn=true;u.smokeCharges=2;u.smokeCooldown=0;u.smokeTime=0;u.smokeUsed=false;u.reactionReady=true;}(t.structure?this.structures:this.units).push(u);if(type==='antiAirVehicle')this.updateRadarContacts();return u;
  }
   generate(){
   const o=this.options,rng=this.rng,mid=COLS/2,T=this.terrain,seed=this.seed;
@@ -628,16 +639,16 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  cost(u,x,y){if(!INSIDE(x,y))return Infinity;if(AIR(u))return 1;const t=this.terrain[KEY(x,y)];if(t==='river'||t==='mountain'&&u.type!=='infantry')return Infinity;if(t==='road')return .5;const vehicle=TYPES[u.type].vehicle;return t==='forest'&&vehicle?2:(t==='hill'||t==='hedge')&&vehicle?1.5:1;}
  moveDirections(u){return AIR(u)&&!PLANE(u)?AIR_DIRS:DIRS;}
  travelDistance(u,a,b){const dx=Math.abs(a.x-b.x),dy=Math.abs(a.y-b.y);return AIR(u)&&!PLANE(u)?Math.max(dx,dy)+(Math.SQRT2-1)*Math.min(dx,dy):dx+dy;}
- stepCost(u,from,to){return this.cost(u,to.x,to.y)*(AIR(u)&&!PLANE(u)?Math.hypot(to.x-from.x,to.y-from.y):1);}
+ stepCost(u,from,to){return this.cost(u,to.x,to.y)*(AIR(u)&&!PLANE(u)?Math.hypot(to.x-from.x,to.y-from.y)/(heliHigh(u)?HELI_HIGH:1):1);}
  crossingFlight(u,from,to,knownOnly=false){if(!AIR(u)||PLANE(u)||from.x===to.x||from.y===to.y)return false;return this.units.some(v=>v!==u&&v.hp>0&&AIR(v)&&!PLANE(v)&&v.segment&&(!knownOnly||v.owner===u.owner||this.isVisible(u.owner,v))&&v.segment.from.x!==v.segment.to.x&&v.segment.from.y!==v.segment.to.y&&from.x+to.x===v.segment.from.x+v.segment.to.x&&from.y+to.y===v.segment.from.y+v.segment.to.y);}
  /* Segmentos diagonais de outros voos conhecidos por u, como soma (de+para): é o que crossingFlight(u,a,b,true) procura, calculado uma vez por busca. */
  crossings(u){const sums=new Set();if(AIR(u)&&!PLANE(u))for(const v of this.units)if(v!==u&&v.hp>0&&AIR(v)&&!PLANE(v)&&v.segment&&v.segment.from.x!==v.segment.to.x&&v.segment.from.y!==v.segment.to.y&&(v.owner===u.owner||this.isVisible(u.owner,v)))sums.add((v.segment.from.x+v.segment.to.x)*512+v.segment.from.y+v.segment.to.y);return sums;}
  // Ocupação e reservas por camada: aeronaves só disputam casa com aeronaves; solo, com solo.
- occupied(x,y,except,air=AIR(except)){return this.units.find(u=>u!==except&&u.hp>0&&!(PLANE(u)&&AIR(u))&&AIR(u)===air&&(DIST(TILE(u),{x,y})===0||u.segment&&(DIST(u.segment.from,{x,y})===0||DIST(u.segment.to,{x,y})===0)));}
+ occupied(x,y,except,air=AIR(except)){return this.units.find(u=>u!==except&&u.hp>0&&!(FLYER(u)&&AIR(u))&&AIR(u)===air&&(DIST(TILE(u),{x,y})===0||u.segment&&(DIST(u.segment.from,{x,y})===0||DIST(u.segment.to,{x,y})===0)));}
  /* Grades por casa: guardam a primeira unidade/estrutura de cada casa, igual às buscas lineares, numa só varredura. */
  unitGrid(except){
   const grid=Array(SIZE).fill(null),air=AIR(except),mark=(x,y,v)=>{if(INSIDE(x,y)&&!grid[KEY(x,y)])grid[KEY(x,y)]=v;};
-  for(const v of this.units)if(v!==except&&v.hp>0&&!(PLANE(v)&&AIR(v))&&AIR(v)===air){mark(Math.round(v.x),Math.round(v.y),v);if(v.segment){mark(v.segment.from.x,v.segment.from.y,v);mark(v.segment.to.x,v.segment.to.y,v);}}
+  for(const v of this.units)if(v!==except&&v.hp>0&&!(FLYER(v)&&AIR(v))&&AIR(v)===air){mark(Math.round(v.x),Math.round(v.y),v);if(v.segment){mark(v.segment.from.x,v.segment.from.y,v);mark(v.segment.to.x,v.segment.to.y,v);}}
   return grid;
  }
  structureGrid(observer){const grid=Array(SIZE).fill(null),known=observer?.owner==='red'&&!this.multiplayer,list=known?[...this.structures.filter(s=>s.owner==='red'||this.isVisible('red',s)),...this.memory.red.values()]:this.structures;for(const s of list)if(s.hp===undefined||s.hp>0)for(let y=s.y;y<s.y+(s.height||1);y++)for(let x=s.x;x<s.x+(s.width||1);x++)if(INSIDE(x,y)&&!grid[KEY(x,y)])grid[KEY(x,y)]=s;return grid;}
@@ -657,7 +668,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  findPath(u,goal,avoidUnits=false,units=this.unitGrid(u),structures=this.structureGrid(u),near=null,min=0){
   const start=TILE(u);if(near===null&&(!INSIDE(goal.x,goal.y)||!Number.isFinite(this.cost(u,goal.x,goal.y))||!this.passable(u,goal.x,goal.y,avoidUnits,units,structures)))return null;
   // Batedor: menor número de casas; o custo do terreno só desempata rotas do mesmo tamanho. Demais tropas: rota mais rápida.
-  const shortest=u.type==='recon',step=shortest?(from,to)=>1+this.cost(u,to.x,to.y)*1e-3:(from,to)=>this.stepCost(u,from,to),h=shortest||AIR(u)?1:.5;
+  const shortest=u.type==='recon',step=shortest?(from,to)=>1+this.cost(u,to.x,to.y)*1e-3:(from,to)=>this.stepCost(u,from,to),h=shortest?1:AIR(u)?(heliHigh(u)?1/HELI_HIGH:1):.5;
   const diagonal=AIR(u)&&!PLANE(u),estimate=p=>(near===null?this.travelDistance(u,p,goal):Math.max(0,DIST(p,goal)-near)*(diagonal?Math.SQRT1_2:1))*h;
   const crossings=this.crossings(u),root=KEY(start.x,start.y),end=KEY(goal.x,goal.y),costs=new Float64Array(SIZE).fill(Infinity),parents=new Int16Array(SIZE),heap=[];let seq=0;costs[root]=0;
   const before=(a,b)=>a.f<b.f||a.f===b.f&&(a.g<b.g||a.g===b.g&&a.s<b.s);
@@ -683,7 +694,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  // Alcance contra um alvo; sem alvo, o maior alcance do modo de arma atual.
  weaponStats(u,w){return PLANE(u)?this.planeWeapon(u,w):w==='gun'?TYPES[u.type].gun||WEAPONS[w]:WEAPONS[w];}
  weaponRange(u,w,altitude=u.altitude){if(!TYPES[u.type].weapons?.includes(w))return 0;return this.weaponStats(u,w).range+(!PLANE(u)&&altitude==='high'&&w!=='gun'&&w!=='stealthMissile'?5:0);}
- range(u,target,altitude=u.altitude){const t=TYPES[u.type];if(target&&!this.weapon(u,target)||t.unarmed)return 0;if(u.type==='rocketArtillery'||u.type==='antiAirVehicle')return t.range;if(u.type==='missileInfantry')return t.range;if(u.type==='antitank'){const w=target?this.weapon(u,target):u.atMissiles>0?'atMissile':'rifle';return WEAPONS[w].range+({mountain:2,hill:1}[this.terrainAt(u)]||0);}if(!t.air)return t.range+({mountain:2,hill:1}[this.terrainAt(u)]||0);if(target)return this.weaponRange(u,this.weapon(u,target),altitude);const mode=u.weaponMode||'auto';return mode==='auto'?Math.max(...t.weapons.map(w=>this.weaponRange(u,w,altitude))):this.weaponRange(u,mode,altitude);}
+ range(u,target,altitude=u.altitude){const t=TYPES[u.type];if(target&&!this.weapon(u,target)||t.unarmed)return 0;if(u.type==='rocketArtillery'||u.type==='antiAirVehicle')return t.range;if(u.type==='missileInfantry')return t.range;if(u.type==='antitank'){const w=target?this.weapon(u,target):u.atMissiles>0?'atMissile':'rifle';const reach=WEAPONS[w].range+({mountain:2,hill:1}[this.terrainAt(u)]||0);return w==='atMissile'&&target?.type==='heavyTank'&&target.trophy>0&&u.owner==='red'&&!this.multiplayer?Math.min(reach,TROPHY_RANGE):reach;}if(!t.air)return t.range+({mountain:2,hill:1}[this.terrainAt(u)]||0);if(target)return this.weaponRange(u,this.weapon(u,target),altitude);const mode=u.weaponMode||'auto';return mode==='auto'?Math.max(...t.weapons.map(w=>this.weaponRange(u,w,altitude))):this.weaponRange(u,mode,altitude);}
  sight(u){if(TYPES[u.type].airdropPlane)return 0;if(PLANE(u))return AIR(u)?12:0;return AIR(u)&&!TYPES[u.type].drone&&u.altitude==='high'?15:TYPES[u.type].vision+(!AIR(u)&&['mountain','hill'].includes(this.terrainAt(u))?2:0);}
  /* Arma de a contra b, ou null se incompatível. Solo: a própria tropa (só infantaria e metralhador alcançam aeronaves).
     Helicóptero: arma manual se compatível; Auto prefere o míssil contra veículo/estrutura (ar-terra) ou aeronave (ar-ar). */
@@ -706,8 +717,9 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
    const seers=[];
    for(const list of [this.units,this.structures])for(const u of list){
     if(u.owner!==owner||u.hp<=0)continue;const p=u.type==='hq'||u.type==='post'?CENTER(u):u,r=this.sight(u),limit=r+.05,high=AIR(u)&&!TYPES[u.type].drone&&u.altitude==='high',detection=high?1:u.type==='recon'?3:2,x0=Math.max(0,Math.floor(p.x-r)),x1=Math.min(COLS-1,Math.ceil(p.x+r));seers.push([p,limit,this.strikeReach(u)]);
-    for(let y=Math.max(0,Math.floor(p.y-r));y<=Math.min(ROWS-1,Math.ceil(p.y+r));y++){const dy=Math.abs(p.y-y);for(let x=x0;x<=x1;x++){const d=Math.abs(p.x-x)+dy;if(d<=limit){const k=KEY(x,y),terrain=this.terrain[k],concealed=!TYPES[u.type].drone&&(CONCEAL.has(terrain)||high&&(terrain==='hill'||terrain==='mountain'));explored[k]=true;sky[k]=true;if(!concealed||d<=detection+.05)visible[k]=true;}}}
+    for(let y=Math.max(0,Math.floor(p.y-r));y<=Math.min(ROWS-1,Math.ceil(p.y+r));y++){const dy=Math.abs(p.y-y);for(let x=x0;x<=x1;x++){const d=Math.abs(p.x-x)+dy;if(d<=limit){const k=KEY(x,y),terrain=this.terrain[k],concealed=!TYPES[u.type].drone&&!heliHigh(u)&&(CONCEAL.has(terrain)||high&&(terrain==='hill'||terrain==='mountain'));explored[k]=true;sky[k]=true;if(!concealed||d<=detection+.05)visible[k]=true;}}}
    }
+   if(this._reveal===owner){visible.fill(true);sky.fill(true);explored.fill(true);} // fim de partida: mapa inteiro
    // A detecção furtiva acompanha a área de reconhecimento atual.
    for(const e of this.units)if(e.spotted&&e.owner!==owner&&e.hp>0){const p=TILE(e),wasSpotted=e.spotted[owner];e.spotted[owner]=!!sky[KEY(p.x,p.y)];if(e.spotted[owner]&&!wasSpotted){if(this.multiplayer){this.log('Drone furtivo inimigo descoberto.',[owner]);this.log('Seu drone furtivo foi descoberto.',[e.owner]);}else if(owner==='blue')this.log('Drone furtivo inimigo descoberto.');else if(e.owner==='blue')this.log('Seu drone furtivo foi descoberto.');}}
    // Helicóptero alto: cobertura terrestre até 1 casa; disparos revelam a quem tem alcance de visão, inclusive do alto.
@@ -726,10 +738,12 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  hasAura(u){return this.units.some(c=>c.owner===u.owner&&c.type==='commander'&&c.hp>0&&DIST(u,c)<=2);}
  cover(u){if(AIR(u))return 0;return Math.min(.75,TERRAIN[this.terrainAt(u)].cover+(u.entrenched?.25:0));}
  attackPower(u,w){return (PLANE(u)&&w||AIR(u)?this.weaponStats(u,w||'gun').damage:GROUND_WEAPONS.has(w)?WEAPONS[w].damage:TYPES[u.type].damage)*(1+(u.level-1)*.1)*(this.hasAura(u)?1.2:1)*NATION_DOCTRINES[this.doctrines[u.owner]||'balanced'].damage;}
- accuracy(a,b,w=this.weapon(a,b)){if(PLANE(a)){const model=TYPES[a.type],t=!BOMB_TYPES.includes(w)&&model.weaponModel?TYPES[model.weaponModel]:model,s=this.planeWeapon(a,w),d=s.range?Math.min(1,DIST(a,b)/s.range):0,red=t.team==='red';let base=w==='jetGun'?.85-.2*d:w==='jetAam'?(t.radar?(red?.9-.2*d:.95-.1*d):(red?.9-.1*d:.85-.1*d)):.7+t.evasion/2+(t===TYPES.multiroleRed?.1:0);return Math.max(.1,Math.min(.95,(base+(a.level-1)*.05+(this.hasAura(a)?.15:0)-(PLANE(b)?0:(b.level-1)*.05)-(a.suppressed>0?.25:0))*(w==='jetGun'&&PLANE(b)&&AIR(b)?1-this.planeEvasion(b)/2:1)));}return Math.max(.1,Math.min(.99,(AIR(a)&&this.weaponStats(a,w)?this.weaponStats(a,w).accuracy:GROUND_WEAPONS.has(w)?WEAPONS[w].accuracy:TYPES[a.type].accuracy)-(a.type==='tank'?Math.max(0,DIST(a,b)-3)*.1:0)+(a.level-1)*.05+(this.hasAura(a)?.15:0)-(PLANE(b)?0:(b.level-1)*.05)-(a.suppressed>0?.25:0)+(MISSILE(w)?(AIR(a)&&a.altitude==='high'?.1:0)+(AIR(b)&&b.altitude==='high'?.1:0)+(b.type==='reconDrone'&&['antiAirVehicle','missileInfantry'].includes(a.type)?.1:0):0)));}
+ accuracy(a,b,w=this.weapon(a,b)){if(PLANE(a)){const model=TYPES[a.type],t=!BOMB_TYPES.includes(w)&&model.weaponModel?TYPES[model.weaponModel]:model,s=this.planeWeapon(a,w),d=s.range?Math.min(1,DIST(a,b)/s.range):0,red=t.team==='red';let base=w==='jetGun'?.85-.2*d:w==='jetAam'?(t.radar?(red?.9-.2*d:.95-.1*d):(red?.9-.1*d:.85-.1*d)):.7+t.evasion/2+(t===TYPES.multiroleRed?.1:0);return Math.max(.1,Math.min(.95,(base+(a.level-1)*.05+(this.hasAura(a)?.15:0)-(PLANE(b)?0:(b.level-1)*.05)-(a.suppressed>0?.25:0)+(MISSILE(w)&&HELI(b)?.15:0))*(w==='jetGun'&&PLANE(b)&&AIR(b)?1-this.planeEvasion(b)/2:1)));}if(TYPES[a.type].tank&&DIST(a,b)<=1.05)return 1;return Math.max(.1,Math.min(.99,(AIR(a)&&this.weaponStats(a,w)?this.weaponStats(a,w).accuracy:GROUND_WEAPONS.has(w)?WEAPONS[w].accuracy:TYPES[a.type].accuracy)-(a.type==='tank'?Math.max(0,DIST(a,b)-3)*.1:0)+(a.level-1)*.05+(this.hasAura(a)?.15:0)-(PLANE(b)?0:(b.level-1)*.05)-(a.suppressed>0?.25:0)+(MISSILE(w)?(AIR(a)&&a.altitude==='high'?.1:0)+(AIR(b)&&b.altitude==='high'?.1:0)+(b.type==='reconDrone'&&['antiAirVehicle','missileInfantry'].includes(a.type)?.1:0):0)+(MISSILE(w)&&HELI(b)?.15:0)));}
  flareReady(u){return AIR(u)&&u.flares>0&&(this.mode==='rts'?u.flareCooldown<=1e-8:!u.flareUsed);}
- serviceSite(u,base){return (u.type==='antiAirVehicle'||u.type==='antitank'||AIR(u)&&!PLANE(u)&&u.altitude==='low')&&!u.segment&&base?.hp>0&&base.owner===u.owner&&['hq','post'].includes(base.type)&&DIST(u,base)<=1&&this.structures.includes(base);}
- canService(u,base){return this.serviceSite(u,base)&&(u.type==='antiAirVehicle'?u.smokeCharges<2:u.type==='antitank'?u.hp<u.maxHp||u.atMissiles<AT_MISSILES:u.hp<u.maxHp||u.flares<3||u.salvos<HELI_SALVOS);}
+ serviceSite(u,base){return (u.type==='antiAirVehicle'||u.type==='antitank'||u.type==='heavyTank'||AIR(u)&&!PLANE(u)&&u.altitude==='low')&&!u.segment&&base?.hp>0&&base.owner===u.owner&&(AIR(u)&&!PLANE(u)?base.type==='hq'||AIRPORT(base):['hq','post'].includes(base.type))&&DIST(u,base)<=1&&this.structures.includes(base);}
+ // Manutenção paga do helicóptero: HELI_REPAIR HP por passo, HELI_REPAIR_COST crédito por HP, limitado pelo caixa; devolve o curado.
+ heliHeal(u,hp=HELI_REPAIR){const n=Math.min(hp,u.maxHp-u.hp,Math.floor(this.credits[u.owner]/HELI_REPAIR_COST));if(n>0){this.credits[u.owner]-=n*HELI_REPAIR_COST;u.hp+=n;}return Math.max(0,n);}
+ canService(u,base){return this.serviceSite(u,base)&&(u.type==='antiAirVehicle'?u.smokeCharges<2:u.type==='antitank'?u.hp<u.maxHp||u.atMissiles<AT_MISSILES:u.type==='heavyTank'?u.hp<u.maxHp||u.trophy<TROPHY_CHARGES:u.hp<u.maxHp&&this.credits[u.owner]>=HELI_REPAIR_COST||u.flares<3||u.salvos<HELI_SALVOS);}
  canBombard(u,cell){if(!BARRAGE(u)||!cell||!INSIDE(cell.x,cell.y)||u.hp<=0||u.type!=='rocketArtillery'&&(u.altitudeTransition||!AIR(u)))return false;const d=DIST(u,cell);return d<=barrageRange(u)+.05&&d>=TYPES.rocketArtillery.min;}
  canFire(a,b){return !!b&&b.hp>0&&b.owner!==a.owner&&b.owner!=='neutral'&&!!this.weapon(a,b)&&this.canIdentify(a,b)&&DIST(a,b)<=this.range(a,b)+.05&&DIST(a,b)>=TYPES[a.type].min;}
 
@@ -774,7 +788,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   if(u.altitudeTransition.elapsed+1e-8<ALTITUDE_TIME)return false;
   u.altitude=altitude;u.altitudeTransition=null;this.updateVision();this.report(`Altitude ${altitude==='high'?'alta':'baixa'}.`,u);return true;
  }
- buildSite(u){if(u?.type!=='infantry'||u.hp<=0||u.segment)return false;const p={...TILE(u),width:TYPES.post.width,height:TYPES.post.height};if(!INSIDE(p.x+p.width-1,p.y+p.height-1)||this.structures.some(s=>DIST(s,p)<3))return false;for(let y=p.y;y<p.y+p.height;y++)for(let x=p.x;x<p.x+p.width;x++)if(!['plain','road','forest','field','hill'].includes(this.terrain[KEY(x,y)])||this.occupied(x,y,u,false)||this.mines.some(m=>m.x===x&&m.y===y))return false;return true;}
+ buildSite(u,at){if(u?.type!=='infantry'||u.hp<=0||u.segment)return false;const p={...(at||TILE(u)),width:TYPES.post.width,height:TYPES.post.height};if(!INSIDE(p.x+p.width-1,p.y+p.height-1)||this.structures.some(s=>DIST(s,p)<3))return false;for(let y=p.y;y<p.y+p.height;y++)for(let x=p.x;x<p.x+p.width;x++)if(!['plain','road','forest','field','hill'].includes(this.terrain[KEY(x,y)])||this.occupied(x,y,u,false)||this.mines.some(m=>m.x===x&&m.y===y))return false;return true;}
  canBuild(u){return !!u&&(this.mode==='rts'||u.owner===this.turn)&&u.actionLeft&&!u.pending&&this.credits[u.owner]>=60&&this.buildSite(u);}
  pathCost(u,path){let from=TILE(u.segment?.to||u),sum=0;for(const p of path){sum+=this.stepCost(u,from,p);from=p;}return sum;}
  trimPath(u,path){if(this.mode==='rts')return path;let left=u.moveLeft,from=TILE(u);const route=[];for(const p of path){const cost=this.stepCost(u,from,p);if(cost>left+1e-8)break;left-=cost;route.push(p);from=p;}return route;}
@@ -793,7 +807,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   const rts=this.mode==='rts';
   if(type==='embark'||type==='disembark')return this.transportOrder(u,type,args);
   if(TYPES[u?.type]?.airdropPlane)return type==='airdropLaunch'&&this.airdropLaunch(u,args);
-  if(PLANE(u))return this.orderPlane(u,type,args,batch);
+  if(PLANE(u)||DRONE(u)&&['move','stop','attack'].includes(type))return this.orderPlane(u,type,args,batch);
   if(!rts&&type==='stop'&&u?.pending&&AIR(u)&&u.owner===this.turn&&!this.winner&&this.units.includes(u)){
    this.cancelAltitude(u);this.actions=this.actions.filter(a=>a.id!==u.id);u.moveLeft=0;u.actionLeft=false;u.path=[];u.order={type:'stop'};
    if(this.animation?.id===u.id){if(u.segment){this.animation.type='move';this.animation.route=[];}else this.finishAction(u);}else u.pending=false;
@@ -845,7 +859,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  command(ids,type,args={},owner='blue'){
   if(this.winner||!['blue','red'].includes(owner)||this.mode!=='rts'&&(this.turn!==owner||this.busy))return 0;let count=0;const assigned=new Set(),army=[...new Set(ids)].map(id=>this.get(id)).filter(u=>u?.owner===owner&&!TYPES[u.type].structure);
   for(const u of army){
-   if(type==='move'&&army.length>1&&!PLANE(u)){
+   if(type==='move'&&army.length>1&&!FLYER(u)){
     const candidates=[];for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)if(DIST({x,y},args)<=4&&!this.occupied(x,y,u)&&(AIR(u)||this.structureAt(x,y)?.type!=='hq')&&Number.isFinite(this.cost(u,x,y)))candidates.push({x,y});
     candidates.sort((a,b)=>DIST(a,args)-DIST(b,args)||DIST(a,u)-DIST(b,u));
     for(const goal of candidates){const start=this.mode==='rts'&&u.segment?{...u,...u.segment.to}:u,path=this.findPath(start,goal,true,this.unitGrid(u));if(!path)continue;const route=this.trimPath(u,path),last=route[route.length-1],slot=(AIR(u)?'a':'g')+KEY(last?.x,last?.y);if(!last||assigned.has(slot))continue;if(this.order(u,type,goal,true)){assigned.add(slot);count++;break;}}
@@ -863,12 +877,12 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   if(u.type==='lightTank'&&target?.type==='heavyTank')return false;
   if(u.type==='artillery'&&this.mode!=='rts')u.moveLeft=0;
   // O projétil guarda arma, dano e alvo do disparo; trocar de arma depois não o altera. Helicópteros: recarga única por arma usada.
-  const w=weapon||this.weapon(u,target);if(!w||PLANE(u)&&!this.planeWeaponFits(u,w,target)||TYPES[u.type].gun&&!this.helicopterWeaponFits(u,w,target))return false;const missile=MISSILE(w);if(w==='atMissile')u.atMissiles--;if(PLANE(u))u.ammo[w]--;if(w==='stealthMissile')u.missiles--;
+  const w=weapon||this.weapon(u,target);if(!w||PLANE(u)&&!this.planeWeaponFits(u,w,target)||TYPES[u.type].gun&&!this.helicopterWeaponFits(u,w,target))return false;const missile=MISSILE(w);const trophy=w==='atMissile'&&target.type==='heavyTank'&&target.trophy>0&&DIST(u,target)>TROPHY_RANGE;if(trophy)target.trophy--;if(w==='atMissile')u.atMissiles--;if(PLANE(u))u.ammo[w]--;if(w==='stealthMissile')u.missiles--;
   if(!PLANE(u))u.facing=Math.atan2(target.x-u.x,u.y-target.y);if(w==='jetGun')u.gunShotClock=.06;else u.cooldown=u.reload=(TYPES[u.type].air?this.weaponStats(u,w):GROUND_WEAPONS.has(w)?WEAPONS[w]:TYPES[u.type]).cooldown;u.revealed=2;const artillery=u.type==='artillery',aim=artillery?TILE(target):{x:target.x,y:target.y};
-  const accuracyBase=this.accuracy(u,target,w),flareProtected=missile&&this.flareReady(target),evasiveAccuracy=accuracyBase*(missile&&PLANE(target)&&AIR(target)?1-Math.min(.8,this.planeEvasion(target)+(this.weaponStats(u,w)?.evasionBonus||0)):1),accuracy=evasiveAccuracy*(flareProtected?.5:1),roll=this.rng();
+  const accuracyBase=this.accuracy(u,target,w),flareProtected=missile&&this.flareReady(target),evasiveAccuracy=accuracyBase*(missile&&PLANE(target)&&AIR(target)?1-Math.min(.8,this.planeEvasion(target)+(this.weaponStats(u,w)?.evasionBonus||0)):1),accuracy=evasiveAccuracy*(flareProtected?(heliHigh(target)?.35:.5):1),roll=this.rng();
   const decoy=flareProtected?{x:Math.max(0,Math.min(COLS-1,target.x+(target.id%2?1.3:-1.3))),y:Math.max(0,Math.min(ROWS-1,target.y+1.2))}:null;
-  if(flareProtected){target.flares--;target.flareUsed=true;target.flareCooldown=8;this.event('flare',target,{decoy});}
-  this.projectiles.push({attackerId:u.id,owner:u.owner,type:u.type,weapon:w,air:AIR(u)||AIR(target),sourceLevel:AIR(u)?flightLevel(u):0,targetLevel:AIR(target)?flightLevel(target):0,targetId:target.id,sx:u.x,sy:u.y,x:u.x,y:u.y,tx:aim.x,ty:aim.y,heading:Math.atan2(aim.y-u.y,aim.x-u.x),trail:[],elapsed:0,duration:PLANE(u)?Math.max(.1,DIST(u,target)/this.planeWeapon(u,w).speed):missile?Math.max(.45,w==='aam'?DIST(u,target)/WEAPONS.aam.speed:w==='antiAirVehicle'?DIST(u,target)/12:Math.min(1.2,DIST(u,target)/6)):artillery?.7:u.type==='antitank'?.3:.18,power:this.attackPower(u,w),distance:DIST(u,target),range:PLANE(u)?this.weaponRange(u,w):this.range(u,target),accuracyBase,accuracy,flareProtected,attackerAltitude:u.altitude,targetAltitude:target.altitude,deflected:flareProtected&&roll>=accuracy&&roll<evasiveAccuracy,decoy,hit:roll<accuracy,critical:this.rng()<.1});
+  if(flareProtected){target.flares--;target.flareUsed=true;target.flareCooldown=heliHigh(target)?4:8;this.event('flare',target,{decoy});}
+  this.projectiles.push({attackerId:u.id,owner:u.owner,type:u.type,weapon:w,air:AIR(u)||AIR(target),sourceLevel:AIR(u)?flightLevel(u):0,targetLevel:AIR(target)?flightLevel(target):0,targetId:target.id,sx:u.x,sy:u.y,x:u.x,y:u.y,tx:aim.x,ty:aim.y,heading:Math.atan2(aim.y-u.y,aim.x-u.x),trail:[],elapsed:0,duration:PLANE(u)?Math.max(.1,DIST(u,target)/this.planeWeapon(u,w).speed):missile?Math.max(.45,w==='aam'?DIST(u,target)/WEAPONS.aam.speed:w==='antiAirVehicle'?DIST(u,target)/12:Math.min(1.2,DIST(u,target)/6)):artillery?.7:u.type==='antitank'?.3:.18,power:this.attackPower(u,w),distance:DIST(u,target),range:PLANE(u)?this.weaponRange(u,w):this.range(u,target),accuracyBase,accuracy,flareProtected,trophy,attackerAltitude:u.altitude,targetAltitude:target.altitude,deflected:flareProtected&&roll>=accuracy&&roll<evasiveAccuracy,decoy,hit:roll<accuracy,critical:this.rng()<.1});
   const shot=this.projectiles.at(-1);if(w==='antiRadiation'){if(!target.smokeTime)this.useSmoke(target);}this.shotsFired++;this.event('shot',u,{weapon:w==='gun'||w==='jetGun'?'machinegun':missile?'antitank':w==='rifle'?'infantry':u.type});
  }
   impact(p){
@@ -927,7 +941,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   if(u.type==='antiAirVehicle'||AIR(u))this.updateVision();
  }
 
- finishAction(u){if(u&&PLANE(u)){u.pending=false;this.animation=null;this.updateVision();return;}if(u){if(this.mode==='rts')this.finishRTS(u);else{u.pending=false;u.path=[];u.segment=null;u.order=u.captureIntent?{type:'capture',targetId:u.captureIntent.targetId}:{type:'stop'};}}this.animation=null;this.updateVision();}
+ finishAction(u){if(u&&FLYER(u)){u.pending=false;this.animation=null;this.updateVision();return;}if(u){if(this.mode==='rts')this.finishRTS(u);else{u.pending=false;u.path=[];u.segment=null;u.order=u.captureIntent?{type:'capture',targetId:u.captureIntent.targetId}:{type:'stop'};}}this.animation=null;this.updateVision();}
  resolveAction(job,u){
   const target=job.type==='capture'&&u.captureIntent?this.captureTarget(u):this.get(job.targetId);let valid=false;
   if(job.type==='capture'){if(target&&this.canCapture(u,target)&&DIST(u,target)<=1&&this.isVisible(u.owner,target)&&this.structures.includes(target)&&u.actionLeft){this.captureStructure(target,u);u.actionLeft=this.mode==='rts';u.captureIntent=null;}this.finishAction(u);return;}
@@ -938,7 +952,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
    if(this.canBombard(u,job.cell)){u.moveLeft=0;u.facing=Math.atan2(job.cell.x-u.x,u.y-job.cell.y);if(u.salvos!==undefined)u.salvos--;this.animation={...job,route:[],shots:SALVO.missiles,shotClock:0,fired:0,launcherPhase:'raising'};return;}
   }else if(job.type==='repair'&&!AIR(target)&&target?.owner===u.owner&&DIST(u,target)<=1){const heal=Math.min(24,target.maxHp-target.hp);target.hp+=heal;this.event('text',target,{text:'+'+Math.round(heal),color:'#a4e7bb'});valid=true;
   }else if(job.type==='altitude'&&AIR(u)){valid=this.advanceAltitude(u,job.altitude,0);
-  }else if(job.type==='service'&&this.serviceSite(u,target)){const heal=Math.min(24,u.maxHp-u.hp);u.hp+=heal;if(u.type==='antiAirVehicle')u.smokeCharges=Math.min(2,u.smokeCharges+1);else if(u.type==='antitank')u.atMissiles=Math.min(AT_MISSILES,u.atMissiles+2);else{u.flares=Math.min(3,u.flares+1);if(u.salvos!==undefined)u.salvos=Math.min(HELI_SALVOS,u.salvos+1);}this.event('text',u,{text:'+'+Math.round(heal)+' HP · manutenção',color:'#a4e7bb'});valid=true;
+  }else if(job.type==='service'&&this.serviceSite(u,target)){const heal=AIR(u)&&!PLANE(u)?this.heliHeal(u):Math.min(24,u.maxHp-u.hp);if(!(AIR(u)&&!PLANE(u)))u.hp+=heal;if(u.type==='antiAirVehicle')u.smokeCharges=Math.min(2,u.smokeCharges+1);else if(u.type==='antitank')u.atMissiles=Math.min(AT_MISSILES,u.atMissiles+2);else if(u.type==='heavyTank')u.trophy=Math.min(TROPHY_CHARGES,u.trophy+2);else{u.flares=Math.min(3,u.flares+1);if(u.salvos!==undefined)u.salvos=Math.min(HELI_SALVOS,u.salvos+1);}this.event('text',u,{text:'+'+Math.round(heal)+' HP · manutenção',color:'#a4e7bb'});valid=true;
   }else if(job.type==='capture'&&(target?.type==='post'||target?.missionTarget||AIRPORT(target))&&target.owner!==u.owner&&DIST(u,target)<=1){this.captureStructure(target,u);valid=true;
   }else if(job.type==='demine'&&DIST(u,job.goal)<=1){const mine=this.mines.find(m=>m.x===job.goal.x&&m.y===job.goal.y);if(mine){this.mines=this.mines.filter(m=>m!==mine);this.report('Mina removida.',u);valid=true;}
   }else if(job.type==='build'&&this.buildSite(u)){u.reserved=0;this.add(u.owner,'post',u.x,u.y);this.units=this.units.filter(v=>v!==u);this.report('Posto construído. Infantaria convertida em guarnição.',u);valid=true;}
@@ -984,7 +998,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  beginTurn(owner){
   this.turn=owner;if(owner==='blue')this.round++;
   for(const u of this.units){u.suppressed=Math.max(0,u.suppressed-1);u.revealed=Math.max(0,u.revealed-1);}
-  for(const u of this.units)if(u.owner===owner){u.moveLeft=TYPES[u.type].move;u.actionLeft=true;u.moved=false;u.pending=false;u.path=[];u.segment=null;if(!PLANE(u)&&!u.airportSiteId)u.order=u.captureIntent?{type:'capture',targetId:u.captureIntent.targetId}:{type:'stop'};if(PLANE(u)){if(u.flightJob?.type!=='return')u.flightJob=null;u.pending=false;if(u.pursuitIntent)u.order={type:'pursuit',targetId:u.pursuitIntent.targetId};}if(TYPES[u.type].air)u.flareUsed=false;}
+  for(const u of this.units)if(u.owner===owner){u.moveLeft=TYPES[u.type].move;u.actionLeft=true;u.moved=false;u.pending=false;u.path=[];u.segment=null;if(!PLANE(u)&&!u.airportSiteId)u.order=u.captureIntent?{type:'capture',targetId:u.captureIntent.targetId}:{type:'stop'};if(FLYER(u)){if(u.flightJob?.type!=='return')u.flightJob=null;u.pending=false;if(u.pursuitIntent)u.order={type:'pursuit',targetId:u.pursuitIntent.targetId};}if(TYPES[u.type].air)u.flareUsed=false;}
   for(const u of this.units)if(PLANE(u)&&u.owner!==owner){u.airReactionUsed=false;u.airReaction=null;}
   for(const a of this.units)if(a.type==='antiAirVehicle'&&a.owner!==owner){a.reactionReady=true;a.smokeUsed=false;a.smokeTime=0;}this.advanceFires(0,owner);this.progressPlaneService(owner,1);this.progressAirports(owner,1);
    if(this.round>1){this.credits[owner]+=this.income(owner);this.production(owner);}this.updateVision();
@@ -1068,7 +1082,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  }
  aiCargoMission(u,goal){for(const p of u.cargo||[])p.aiObjective={...goal,until:this.aiNow()+(this.mode==='rts'?120:12)};}
  aiTransport(u){
-  if(this.mode==='turns'&&!u.actionLeft)return;const goal=u.transportGoal||this.plan.objective||this.plan.rally;if(!goal)return;
+  if(this.mode==='turns'&&!u.actionLeft)return;const goal=u.transportGoal||this.plan.raid||this.plan.objective||this.plan.rally;if(!goal)return;
   const passengers=()=>this.aiPassengers(goal,u);
   const danger=this.units.some(e=>e.owner!==u.owner&&this.isVisible(u.owner,e)&&DIST(u,e)<=5&&(this.weapon(e,u)||(u.cargo||[]).some(p=>this.weapon(e,p))||BARRAGE(e)));
   if(this.mode==='rts'&&u.job?.type==='move'){
@@ -1098,7 +1112,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  }
  aiBuyTransport(){
   const now=this.aiNow();if(now<(this.aiTransportReview??-Infinity))return false;this.aiTransportReview=now+(this.mode==='rts'?8:1);
-  const base=this.commandBase('red'),goal=this.plan.objective;if(!base||!goal||this.aiAvoid(goal)||DIST(base,goal)<10)return false;
+  const base=this.commandBase('red'),goal=this.plan.raid||this.plan.objective;if(!base||!goal||this.aiAvoid(goal)||DIST(base,goal)<10)return false;
   const foes=this.units.filter(u=>u.owner==='blue'&&this.isVisible('red',u)),danger=foes.some(u=>DIST(u,base)<=8);if(danger)return false;
   const population=this.aiArmy().length+this.producers('red').reduce((n,s)=>n+s.queue.length,0);if(population>=PLAN[this.difficulty].army)return false;
   const airport=this.airports('red')[0],support=foes.some(u=>AIR(u))?'missileInfantry':foes.some(u=>TYPES[u.type].vehicle)?'antitank':'machinegun',cargo={infantry:2,[support]:2,recon:1};if(airport&&population+5+(this.airdropPlane('red')?0:1)<=PLAN[this.difficulty].army&&now>=(this.aiAirdropAfter??-Infinity)){
@@ -1107,41 +1121,62 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   }
   if(this.units.some(u=>u.owner==='red'&&TYPES[u.type].capacity&&!TYPES[u.type].airdropPlane)||this.structures.some(s=>s.owner==='red'&&s.queue?.some(q=>TYPES[q.type].capacity)))return false;
   const foot=this.aiPassengers(goal);if(foot.length<2||this.credits.red<320)return false;
-  const truck={...foot[0],type:'transportTruck'},type=this.pathToRange(truck,goal,3)===null?'transportHelicopter':'transportTruck',carrier={...foot[0],type},route=this.pathToRange(carrier,goal,3);if(route===null||!this.aiTransportRouteSafe(carrier,route))return false;
-  return this.enqueue('red',type,base);
+  // Caminhão se a rota for livre e segura; senão helicóptero (ponte travada pelo inimigo).
+  const usable=type=>{const c={...foot[0],type},r=this.pathToRange(c,goal,3);return r!==null&&this.aiTransportRouteSafe(c,r);},type=['transportTruck','transportHelicopter'].find(usable);
+  return type?this.enqueue('red',type,base):false;
  }
  aiArmy(){return [...this.units.filter(u=>u.owner==='red').flatMap(u=>[u,...u.cargo||[]]),...(this.drops||[]).filter(d=>d.passenger.owner==='red').map(d=>d.passenger)];}
  aiBuy(){
   if(!this.aiEnabled)return;const hq=this.commandBase('red'),cfg=PLAN[this.difficulty],bases=this.producers('red'),queue=bases.flatMap(s=>s.queue);if(!hq||queue.length>=cfg.queue)return;
   const army=this.aiArmy();if(army.length+queue.length>=cfg.army)return;
   const count=type=>army.filter(u=>u.type===type).length+queue.filter(q=>q.type===type).length;
-  const rally=this.plan.rally||hq;
-  const buy=type=>{const base=bases.filter(s=>this.canRecruit('red',type,s)&&this.credits.red>=this.recruitCost(type,s)&&s.queue.length<this.queueLimit(s)&&this.spawnCells('red',type,s).some(p=>!this.occupied(p.x,p.y,null,!!TYPES[type].air))).sort((a,b)=>this.productionWait(a,type)-this.productionWait(b,type)||this.recruitCost(type,a)-this.recruitCost(type,b)||DIST(a,rally)-DIST(b,rally)||a.id-b.id)[0];return base?this.enqueue('red',type,base):false;};
+  const rally=this.plan.rally||hq,reserve=60*army.filter(u=>u.aiBuild&&u.aiBuild.until>this.aiNow()&&u.order?.type!=='build').length;
+  const buy=type=>{const options=bases.filter(s=>this.canRecruit('red',type,s)&&this.credits.red-reserve>=this.recruitCost(type,s)&&s.queue.length<this.queueLimit(s)&&this.spawnCells('red',type,s).some(p=>!this.occupied(p.x,p.y,null,!!TYPES[type].air)));
+   // Não recruta num posto sob fogo conhecido (a tropa nasceria na mira); só se todos estiverem assim.
+   const safe=options.filter(s=>s.type==='hq'||this.aiDangerAt(s,6)===0),base=(safe.length?safe:options).sort((a,b)=>this.productionWait(a,type)-this.productionWait(b,type)||this.recruitCost(type,a)-this.recruitCost(type,b)||DIST(a,rally)-DIST(b,rally)||a.id-b.id)[0];return base?this.enqueue('red',type,base):false;};
   // Só o que a IA vê conta: aeronaves, blindados e tropas a pé azuis ajustam a doutrina; ameaça perto do QG libera compra imediata.
   const seen=this.all().filter(e=>e.owner==='blue'&&e.hp>0&&this.isVisible('red',e));
   const skies=Math.min(3,seen.filter(AIR).length),armor=Math.min(4,seen.filter(e=>TYPES[e.type].vehicle&&!AIR(e)).length),foot=Math.min(6,seen.filter(e=>!TYPES[e.type].vehicle&&!TYPES[e.type].structure&&!AIR(e)).length);
   const threatened=seen.some(e=>!TYPES[e.type].structure&&DIST(e,hq)<=6);
   const airBlocked=this.plan.airResponse?.until>this.aiNow();
+  // Infantaria é a única construtora de postos. Com pressão econômica (posto perdido ou poucos postos) ela vem antes de
+  // aviação e doutrina; obras em deslocamento seguram 60 créditos cada.
+  const posts=this.structures.filter(s=>s.owner==='red'&&s.type==='post'&&s.hp>0).length,unguarded=this.aiUnguarded().length,goal=this.aiPostGoal(),pressure=this.aiPressure();
+  const free=army.filter(u=>u.type==='infantry'&&!u.aiGuard).length+queue.filter(q=>q.type==='infantry').length,need=posts<goal?(pressure?Math.min(3,goal-posts):1):0;
+  // Economia primeiro: faltando postos, a infantaria construtora é a primeira compra; com a economia montada (≥4 postos)
+  // ela cede a vez à aviação. Sem pressão, o orçamento restante segue o fluxo normal.
+  const late=this.aiNow()>=(this.mode==='rts'?360:12),eco=posts>=4||late,built=eco||this.credits.red>=800; // rica: aeroporto não espera
+  // O construtor é pago e o resto do orçamento segue o fluxo normal no mesmo ciclo (uma compra extra no máximo).
+  let lacking=free<need;
+  if(lacking&&(pressure||!eco&&!threatened)&&this.credits.red>=TYPES.infantry.cost&&buy('infantry'))lacking=free+1<need;
   if(airBlocked&&!threatened&&!count('rocketArtillery')){buy('rocketArtillery');return;}
-  if(!threatened&&!(skies&&!count('antiAirVehicle'))&&this.aiBuyTransport())return;
-  if(!threatened&&!(skies&&!count('antiAirVehicle'))&&!this.airports('red').length){const queued=count('engineer');if(queued<2&&this.credits.red>=465){buy('engineer');return;}if(queued>=2&&this.credits.red<400)return;}
+  if(!threatened&&!lacking&&!(skies&&!count('antiAirVehicle'))&&this.aiBuyTransport())return;
   const planes=army.filter(u=>PLANE(u)&&!TYPES[u.type].airdropPlane).length+queue.filter(q=>TYPES[q.type].plane).length;
-  if(this.airports('red').length&&planes<cfg.planes&&!threatened&&!airBlocked){
+  if(this.airports('red').length&&planes<cfg.planes&&!threatened&&!airBlocked&&!lacking){
    const structures=[...this.memory.red.values()].filter(s=>s.owner==='blue'),knownGround=armor+foot||structures.length;
    const intercept=skies&&count('fighterRed')+count('stealthFighterRed')<skies;
    const type=intercept?(skies>=2&&count('fighterRed')?'stealthFighterRed':'fighterRed'):knownGround?(planes>=2&&count('multiroleRed')&&army.length>=12&&(structures.length>=2||foot>=3)&&!count('bomberRed')?'bomberRed':'multiroleRed'):planes===0?'fighterRed':'multiroleRed';
    const available=bases.filter(s=>AIRPORT(s)&&this.canRecruit('red',type,s)&&s.queue.length<this.queueLimit(s)&&this.airportSlot(s));
-   // Poupa pela primeira aeronave ou apoio solicitado; limite de fila/pátio não bloqueia compras terrestres.
-   if(available.length&&(planes===0||skies||knownGround)){if(buy(type))return;return;}
+   // A aeronave sai quando o caixa a paga; poupa por ela só dentro da janela limitada abaixo. O resto vira tropa no mesmo ciclo.
+   // Exército terrestre primeiro: sem ≥12 unidades (+4 por aeronave), a aeronave só entra com folga (1,5× o preço) ou com
+   // aeronave inimiga à vista; assim o caixa vira tropa em vez de esperar o avião.
+   const ready=army.length>=12+4*planes||skies||available.length&&this.credits.red>=this.recruitCost(type,available[0])*1.5;
+   if(ready&&available.length&&(planes===0||skies||knownGround)){
+    if(buy(type)||skies&&intercept)return;
+    // Janela de poupança limitada (decisão do usuário): segura o caixa só se a aeronave sai em ≤45 s (RTS) / 2 rodadas.
+    const rate=this.income('red')/(this.mode==='rts'?10:1),wait=(this.recruitCost(type,available[0])-this.credits.red)/Math.max(rate,1e-6);
+    if(wait<=(this.mode==='rts'?45:2))return;
+   }
   }
+  if(!threatened&&built&&!lacking&&!(skies&&!count('antiAirVehicle'))&&!this.airports('red').length){const queued=count('engineer');if(queued<2&&this.credits.red>=465){buy('engineer');return;}} // sem poupar para o aeroporto: ele sai quando o caixa sobra
   // Drone: um para reconhecimento; artilharia de mísseis quando já conhece estrutura azul (dano ×2).
-  const boost={antiAirVehicle:1.5*skies,missileInfantry:1.5*skies,helicopterAir:skies,antitank:.75*armor,helicopterGround:1.5*armor,heavyTank:.5*armor,machinegun:.4*foot,
-   infantry:this.plan.routeKind==='crossing'?.75:0,reconDrone:count('reconDrone')?0:.5,stealthDrone:!count('stealthDrone')&&(this.mode==='rts'?this.time/30:this.round)>=3?.4:0,rocketArtillery:[...this.memory.red.values()].some(s=>s.owner==='blue')?.5:0};
+  const boost={antiAirVehicle:1.5*skies,missileInfantry:1.5*skies,helicopterAir:skies,antitank:.75*armor,helicopterGround:1.5*armor,heavyTank:.5*armor,machinegun:.4*foot+.5*unguarded,
+   infantry:(this.plan.routeKind==='crossing'?.75:0)+.5*unguarded,reconDrone:count('reconDrone')?0:.5,stealthDrone:!count('stealthDrone')&&(this.mode==='rts'?this.time/30:this.round)>=3?.4:0,rocketArtillery:[...this.memory.red.values()].some(s=>s.owner==='blue')?.5:0};
   const norm=DOCTRINE.reduce((a,d)=>a+d.share,0),size=Math.max(8,army.length+queue.length),clock=this.mode==='rts'?this.time/30:this.round;
   const ranked=DOCTRINE.map((d,i)=>({type:d.type,i,share:d.share,score:Math.max(d.min||0,SCHEDULE[d.type]&&clock>=SCHEDULE[d.type]?1:0,Math.round(d.share/norm*size))-count(d.type)+(boost[d.type]||0)})).sort((x,y)=>y.score-x.score||x.i-y.i);
   // Poupa pelo tipo de maior déficit até poder pagá-lo: o caro entra quando junta o dinheiro, e não é trocado pelas baratas.
   const top=ranked[0];
-  if(this.credits.red>=TYPES[top.type].cost){buy(top.type);return;}
+  if(this.credits.red-reserve>=TYPES[top.type].cost){buy(top.type);return;}
   // Sem nenhum lançador de mísseis, compra o barato enquanto poupa pelo veículo antiaéreo; com um deles, espera.
   if(top.type==='antiAirVehicle'&&!count('missileInfantry')&&this.credits.red>=TYPES.missileInfantry.cost){buy('missileInfantry');return;}
   // Poupa para a classe escolhida; só gasta com o que tem para defender a base.
@@ -1150,12 +1185,19 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  }
  moveToward(u,target,near=1,leg=Infinity,batch=false){
   if(u.owner==='red'&&u.aiBlocked?.until>this.aiNow()&&u.aiBlocked.x===target.x&&u.aiBlocked.y===target.y)return false;
-  const route=this.pathToRange(u,target,near);if(!route?.length||u.owner==='red'&&TYPES[u.type].capacity&&!this.aiTransportRouteSafe(u,route))return false;const part=this.trimPath(u,route).slice(0,leg);
+  const route=this.pathToRange(u,target,near);if(!route?.length||u.owner==='red'&&TYPES[u.type].capacity&&!this.aiTransportRouteSafe(u,route))return false;
+  // Fora da onda aprovada, terrestres não atravessam zona de perigo conhecida (travessia bloqueada); batedores, defesa do
+  // próprio entorno e destinos dentro da zona (combate já decidido por outra regra) ficam de fora.
+  if(u.owner==='red'&&!AIR(u)&&u.type!=='recon'&&!(this.plan.phase==='attack'&&this.plan.wave?.includes(u.id))){
+   const zones=Object.values(this.plan.danger||{}).filter(z=>DIST(z,u)>6&&DIST(z,target)>8);
+   if(zones.some(z=>route.some((c,i)=>i%2===0&&DIST(z,c)<=6)))return false;
+  }
+  const part=this.trimPath(u,route).slice(0,leg);
   const ok=part.length?this.order(u,'move',part[part.length-1],batch):false;if(ok&&u.owner==='red')u.aiNav={x:target.x,y:target.y};return ok;
  }
  // Valor de combate: custo (100 sem custo) pela fração de vida. Combatentes da onda: tropas com arma, sem comandante, engenheiro e batedor.
  power(u){return TYPES[u.type].structure?0:(TYPES[u.type].cost||100)*u.hp/u.maxHp;}
- fighter(u){const t=TYPES[u.type];return u.owner==='red'&&!t.structure&&!t.plane&&t.damage>0&&!['commander','engineer','recon','stealthDrone'].includes(u.type);}
+ fighter(u){const t=TYPES[u.type];return u.owner==='red'&&!u.aiGuard&&!t.structure&&!t.plane&&t.damage>0&&!['commander','engineer','recon','stealthDrone'].includes(u.type);}
  presumedHQ(hq){return{x:COLS-(hq.width||1)-hq.x,y:ROWS-(hq.height||1)-hq.y,width:hq.width,height:hq.height};} // Espelha o retângulo completo da base.
  // Ponto de encontro: casa alcançável por tanque mais próxima de 30% do caminho entre o QG vermelho e o QG azul presumido.
  rallyPoint(hq){
@@ -1163,13 +1205,109 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   const seen=this.reachable({type:'tank',owner:'red',x:start.x,y:start.y},Array(SIZE).fill(null),this.structureGrid({owner:'red'}));let best=null;
   for(let k=0;k<SIZE;k++)if(seen[k]){const c={x:k%COLS,y:(k-k%COLS)/COLS};if(!best||DIST(c,aim)<DIST(best,aim))best=c;}return best||aim;
  }
+ // Postos vermelhos sem guarda viva (o QG tem o ponto de encontro).
+ aiUnguarded(){return this.structures.filter(s=>s.owner==='red'&&s.type==='post'&&s.hp>0&&!this.units.some(u=>u.owner==='red'&&u.hp>0&&u.aiGuard===s.id));}
+ // Um guarda por posto (máx. 25% do exército): o defensor mais próximo que não esteja em onda, captura ou transporte.
+ aiGuards(){
+  const army=this.units.filter(u=>u.owner==='red'&&u.hp>0),posts=this.structures.filter(s=>s.owner==='red'&&s.type==='post'&&s.hp>0),wave=this.plan.phase==='attack'?this.plan.wave:[];
+  for(const u of army)if(u.aiGuard&&!posts.some(s=>s.id===u.aiGuard))u.aiGuard=null;
+  const cap=Math.floor(army.length*.25);let guards=army.filter(u=>u.aiGuard).length;
+  for(const s of this.aiUnguarded()){
+   if(guards>=cap)break;
+   if(this.aiDangerAt(s,8)>TYPES.infantry.cost*2)continue; // um guarda não segura força maior; o posto vira alvo de reforço, não de sacrifício
+   const pick=army.filter(u=>!u.aiGuard&&DEFENSE.includes(u.type)&&!wave.includes(u.id)&&!u.captureIntent&&!u.aiBuild&&!u.aiObjective&&!u.aiPassengerId&&!u.airportSiteId&&!u.embarkedIn&&u.hp>=u.maxHp*.5).sort((a,b)=>DIST(a,s)-DIST(b,s)||a.id-b.id)[0];
+   if(pick){pick.aiGuard=s.id;guards++;}
+  }
+ }
+ // Meta de postos: sempre ≥4 e sobe com a partida (3 + minutos); acompanha o pico próprio e o azul conhecido +1. Teto: PLAN[dificuldade].posts.
+ aiPostGoal(){const blue=[...this.memory.red.values()].filter(s=>s.type==='post'&&s.owner==='blue').length,minutes=this.mode==='rts'?this.time/60:this.round/2;return Math.min(PLAN[this.difficulty].posts,Math.max(4,this.plan.peakPosts||0,blue+1,3+Math.floor(minutes)));}
+ // Pressão econômica: perdeu posto há pouco, ou passou o início da partida com menos de 2 postos.
+ aiPressure(){const p=this.plan,now=this.aiNow();return !!p.lostSites?.some(c=>c.until>now)||now>=(this.mode==='rts'?60:2)&&this.structures.filter(s=>s.owner==='red'&&s.type==='post'&&s.hp>0).length<2;}
+ // Registra o pico de postos e onde cada um caiu: esses locais são os primeiros a reconstruir.
+ aiTrackPosts(){
+  const p=this.plan,now=this.aiNow(),mine=this.structures.filter(s=>s.owner==='red'&&s.type==='post'&&s.hp>0);
+  const gone=(p.known||[]).filter(k=>!mine.some(m=>m.id===k.id)).map(({x,y})=>({x,y,until:now+(this.mode==='rts'?180:12)}));
+  p.lostSites=[...gone,...(p.lostSites||[])].filter(c=>c.until>now&&!mine.some(m=>DIST(m,c)<3)).slice(0,4);
+  p.known=mine.map(({id,x,y})=>({id,x,y}));p.peakPosts=Math.max(p.peakPosts||0,mine.length);
+ }
+ // Zonas de perigo: onde a IA viu força azul (ou perdeu tropa sem virar posto) nos últimos 240 s. Sobrevivem ao
+ // esquecimento do contato móvel, para a infantaria não voltar sozinha a um gargalo bloqueado.
+ aiTrackDanger(){
+  const p=this.plan,now=this.aiNow(),ttl=this.mode==='rts'?240:12,d=p.danger||(p.danger={});
+  for(const e of this.intel.values())if(!TYPES[e.type].structure&&!AIR(e))d[e.id]={x:e.x,y:e.y,power:this.power(e),until:now+ttl};
+  const army=this.aiArmy(),alive=new Set(army.map(u=>u.id)),prev=p.redSeen||{};
+  for(const [id,v] of Object.entries(prev))if(!alive.has(Number(id))&&!this.structures.some(s=>s.owner==='red'&&s.type==='post'&&DIST(s,v)<=2))d['x'+id]={x:v.x,y:v.y,power:Math.max(240,v.power*2),until:now+ttl*2}; // quem matou superava a tropa: ≥ um blindado pesado
+  p.redSeen=Object.fromEntries(this.units.filter(u=>u.owner==='red'&&u.hp>0&&!AIR(u)).map(u=>[u.id,{x:Math.round(u.x),y:Math.round(u.y),power:this.power(u)}]));
+  for(const k of Object.keys(d))if(d[k].until<=now)delete d[k];
+ }
+ aiDangerAt(c,radius=7){return Object.values(this.plan.danger||{}).filter(z=>DIST(z,c)<=radius).reduce((a,z)=>a+z.power,0);}
+ // Força azul conhecida (ou baixas próprias) ao longo da rota até o destino; Infinity sem rota. Evita travessias bloqueadas.
+ aiPathDanger(route){return Object.values(this.plan.danger||{}).filter(z=>route.some((c,i)=>i%2===0&&DIST(z,c)<=6)).reduce((a,z)=>a+z.power,0);}
+ aiRouteDanger(u,target,near=1){
+  if(!Object.keys(this.plan.danger||{}).length)return 0;
+  const route=this.pathToRange(u,target,near);return route===null?Infinity:this.aiPathDanger(route);
+ }
+ // Reconhecimento de postos: quando um posto não vermelho está à vista, guarda quando e quanta força azul havia ao redor.
+ // Só informação de visão; a captura e a escolha de objetivo usam esse registro enquanto ele é recente.
+ aiRecordPosts(){
+  const p=this.plan,now=this.aiNow(),log=p.postIntel||(p.postIntel={});
+  for(const s of this.memory.red.values())if(s.type==='post'&&s.owner!=='red'&&this.isVisible('red',s))
+   log[s.id]={at:now,threat:this.units.filter(e=>e.owner==='blue'&&e.hp>0&&DIST(e,s)<=6&&this.isVisible('red',e)).reduce((a,e)=>a+this.power(e),0)};
+ }
+ // Força azul associada a uma estrutura: o maior entre o que a IA vê/lembra por perto e o último reconhecimento do posto.
+ aiGuardPower(s,radius=8){return Math.max([...this.intel.values()].filter(e=>DIST(e,s)<=radius).reduce((a,e)=>a+this.power(e),0),this.plan.postIntel?.[s.id]?.threat||0);}
+ // Posto não vermelho mais próximo do QG cujo reconhecimento venceu (nunca visto ou antigo) e que nenhum outro batedor já busca.
+ aiScoutTarget(u,hq){
+  const p=this.plan,now=this.aiNow(),stale=this.mode==='rts'?60:4,taken=new Set(this.units.filter(v=>v!==u&&v.owner==='red'&&v.hp>0&&v.aiScout).map(v=>v.aiScout));
+  return [...this.memory.red.values()].filter(s=>s.type==='post'&&s.owner!=='red'&&!taken.has(s.id)&&!this.aiAvoid(s)&&now-(p.postIntel?.[s.id]?.at??-Infinity)>=stale&&(AIR(u)||this.aiDangerAt(s,8)===0)).sort((a,b)=>DIST(a,hq)-DIST(b,hq)||a.id-b.id)[0]||null;
+ }
+ // Batedor/drone: vai até a distância de visão do posto vencido; ao vê-lo, aiRecordPosts atualiza o registro e ele segue.
+ aiScoutPosts(u,hq){
+  const t=this.aiScoutTarget(u,hq);u.aiScout=t?t.id:null;
+  return !!t&&this.moveToward(u,t,Math.max(1,TYPES[u.type].vision-3));
+ }
+ // Local para um posto novo: primeiro onde um posto próprio caiu; depois lado vermelho do mapa a ≥6 casas de qualquer
+ // estrutura ou obra de outra tropa. Nunca perto de inimigo visto. ponytail: grade de passo 3 por decisão, sem cache.
+ aiPostSite(u,hq,far){
+  const now=this.aiNow(),others=this.units.filter(v=>v!==u&&v.owner==='red'&&v.aiBuild),foes=[...this.intel.values()].filter(e=>!TYPES[e.type].structure);
+  const free=c=>!this.aiAvoid(c)&&!others.some(v=>DIST(v.aiBuild,c)<6)&&!foes.some(e=>DIST(e,c)<=7)&&this.aiDangerAt(c,8)===0,grid=[];
+  for(let y=3;y<ROWS-3;y+=3)for(let x=3;x<COLS-3;x+=3){
+   const c={x,y},own=DIST(c,hq)+2<=DIST(c,far);
+   // Além da faixa vermelha, só até a linha do meio e com a casa à vista agora.
+   if(!(own||DIST(c,hq)<=DIST(c,far)&&this.visible.red[KEY(x,y)])||!free(c)||this.structures.some(s=>DIST(s,{...c,width:2,height:2})<6))continue;
+   grid.push(c);
+  }
+  const lost=(this.plan.lostSites||[]).filter(c=>c.until>now&&free(c)).sort((a,b)=>DIST(a,u)-DIST(b,u));
+  return [...lost,...grid.sort((a,b)=>DIST(a,u)-DIST(b,u)).slice(0,8)].find(c=>this.buildSite(u,c)&&this.aiRouteDanger(u,c,0)===0)||null;
+ }
+ // Expansão: a infantaria vai a um local seguro e converte-se em posto. Um construtor por vez; com pressão econômica,
+ // dois (três com ≤1 posto). Devolve true se usou o turno da tropa.
+ aiExpand(u,hq,far){
+  if(u.type!=='infantry'||u.hp<u.maxHp*.5||u.aiGuard||u.captureIntent||u.aiObjective||u.airportSiteId)return false;
+  const now=this.aiNow(),posts=this.structures.filter(s=>s.owner==='red'&&s.type==='post'&&s.hp>0).length,builders=this.units.filter(v=>v!==u&&v.owner==='red'&&v.hp>0&&v.aiBuild).length;
+  if(posts+builders>=this.aiPostGoal()||builders>=(this.aiPressure()?(posts<=1?3:2):1)){u.aiBuild=null;return false;} // sem vaga de obra: solta a reserva
+  if(u.aiBuild&&(u.aiBuild.until<=now||this.aiDangerAt(u.aiBuild,8)>0||DIST(u,u.aiBuild)>0&&!this.buildSite(u,u.aiBuild)))u.aiBuild=null;
+  if(!u.aiBuild){const site=this.aiPostSite(u,hq,far);if(!site)return false;u.aiBuild={x:site.x,y:site.y,until:now+(this.mode==='rts'?90:8)};}
+  if(DIST(u,u.aiBuild)>0)return this.moveToward(u,u.aiBuild,0)||!!(u.aiBuild=null);
+  if(this.credits.red<60){this.hold(u);return true;}
+  if(this.order(u,'build'))return true;
+  u.aiBuild=null;return false;
+ }
+ // Incursão: o posto azul conhecido menos guardado, fora das áreas onde a IA já perdeu uma onda.
+ aiRaidTarget(hq){
+  const guard=s=>this.aiGuardPower(s);
+  return [...this.memory.red.values()].filter(s=>s.type==='post'&&s.owner==='blue'&&!this.aiAvoid(s)&&!(this.plan.defeats||[]).some(d=>DIST(d,s)<=10)).sort((a,b)=>guard(a)-guard(b)||DIST(a,hq)-DIST(b,hq))[0]||null;
+ }
  aiNow(){return this.mode==='rts'?this.time:this.round;}
  aiAvoid(goal){const now=this.aiNow();return (this.plan.failures||[]).some(f=>f.until>now&&(f.reason==='transport-loss'?DIST(f,goal)<=8:f.x===goal.x&&f.y===goal.y));}
  aiTransportRouteSafe(u,route){
   const now=this.aiNow(),threats=this.units.filter(e=>e.owner==='blue'&&e.hp>0&&this.isVisible('red',e)&&(this.weapon(e,u)||BARRAGE(e)));
   return !route.some(p=>(this.plan.failures||[]).some(f=>f.reason==='transport-loss'&&f.until>now&&DIST(p,f)<=8&&DIST(p,f)<DIST(u,f))||threats.some(e=>DIST(p,e)<=(BARRAGE(e)?barrageRange(e):this.range(e,u))+2&&DIST(p,e)<DIST(u,e)));
  }
- aiFailure(goal,reason){if(!goal)return;const now=this.aiNow(),p=this.plan;p.failures=(p.failures||[]).filter(f=>f.until>now&&!(f.x===goal.x&&f.y===goal.y));p.failures.push({x:goal.x,y:goal.y,id:goal.id,reason,until:now+(this.mode==='rts'?90:6)});p.failures=p.failures.slice(-8);p.probe=null;}
+ aiFailure(goal,reason){if(!goal)return;const now=this.aiNow(),p=this.plan;p.failures=(p.failures||[]).filter(f=>f.until>now&&!(f.x===goal.x&&f.y===goal.y));p.failures.push({x:goal.x,y:goal.y,id:goal.id,reason,until:now+(this.mode==='rts'?90:6)});p.failures=p.failures.slice(-8);p.probe=null;
+  // Derrotas não expiram: a IA só volta ao mesmo ponto com 1,5× a força que perdeu ali.
+  if(reason==='losses')p.defeats=[...(p.defeats||[]),{x:goal.x,y:goal.y,power:p.waveStart||0}].slice(-8);}
+ aiLost(goal){return Math.min((this.plan.defeats||[]).filter(d=>DIST(d,goal)<=10).reduce((m,d)=>Math.max(m,d.power*1.5),0),PLAN[this.difficulty].army*50);}
  // Progresso físico, inclusive ordens pendentes: uma tropa bloqueada volta à fila de decisões.
  aiProgress(){
   const now=this.aiNow(),limit=this.mode==='rts'?12:2;
@@ -1189,12 +1327,12 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  // Objetivos comparados pela rota e pela força observada. Falhas expiram: não são aprendizado permanente.
  objective(hq){
   const p=this.plan,army=this.units.filter(u=>this.fighter(u)&&!AIR(u)),lead=army.sort((a,b)=>DIST(a,p.rally||hq)-DIST(b,p.rally||hq))[0]||this.units.find(u=>u.owner==='red'&&!AIR(u))||{type:'tank',owner:'red',...this.spawnCells('red','tank',hq)[0]},far=this.presumedHQ(hq);
-  const strength=army.reduce((n,u)=>n+this.power(u),0),guard=s=>[...this.intel.values()].filter(e=>DIST(e,s)<=8).reduce((a,e)=>a+this.power(e),0);
+  const strength=army.reduce((n,u)=>n+this.power(u),0),guard=s=>this.aiGuardPower(s);
   const known=[...this.memory.red.values()].filter(s=>s.owner!=='red'&&(s.owner==='blue'||s.type==='post'||AIRPORT(s))&&!this.aiAvoid(s));
   const goals=known.sort((a,b)=>DIST(a,lead)-DIST(b,lead)).slice(0,12);
   const scouts=[far,{x:COLS>>1,y:ROWS>>1},{x:COLS>>1,y:24},{x:COLS>>1,y:72}];goals.push(...scouts.filter(s=>!this.aiAvoid(s)));
   let best=null;
-  for(const s of goals){if(!s.id&&DIST(lead,s)<=3)continue;const force=guard(s),bias=force*.08-(s.owner==='neutral'?18:s.owner==='blue'&&strength>=force*PLAN[this.difficulty].margin?35:0);if(best&&Math.max(0,DIST(lead,s)-2)*.5+bias>=best.score)continue;const route=this.pathToRange(lead,s,2);if(route===null)continue;const score=this.pathCost(lead,route)+bias;if(!best||score<best.score)best={s,route,score};}
+  for(const s of goals){if(!s.id&&DIST(lead,s)<=3)continue;const force=guard(s),bias=force*.08-(s.owner==='neutral'?18:s.owner==='blue'&&strength>=force*PLAN[this.difficulty].margin?35:0);if(best&&Math.max(0,DIST(lead,s)-2)*.5+bias>=best.score)continue;const route=this.pathToRange(lead,s,2);if(route===null)continue;const score=this.pathCost(lead,route)+bias+this.aiPathDanger(route)*.08;if(!best||score<best.score)best={s,route,score};}
   if(best){p.routeKind=best.route.some(c=>this.terrain[KEY(c.x,c.y)]==='bridge')?'crossing':'open';p.strategy=best.s.owner==='neutral'?'expand':best.s.owner==='blue'?'attack':'scout';return {...best.s};}
   // Sem acesso ao destino: aproxima-se por uma casa alcançável em outro setor, sem atravessar água.
   const reach=this.reachable(lead),aim=scouts.find(s=>!this.aiAvoid(s))||far;let cell=null;
@@ -1207,6 +1345,11 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   const hq=this.commandBase('red');if(!this.aiEnabled||!hq)return;if(this.mode==='rts')this.aiAirportPlan();const p=this.plan,cfg=PLAN[this.difficulty],now=this.mode==='rts'?this.time:this.round,prep=this.mode==='rts'?cfg.prep*30:cfg.prep;
   this.aiProgress();p.rally||=this.rallyPoint(hq);const fighters=this.units.filter(u=>this.fighter(u)),sum=list=>list.reduce((a,u)=>a+this.power(u),0),home=u=>DIST(u,p.rally)<=4;
   const threats=[...this.intel.values()].filter(e=>DIST(e,hq)<=6&&this.isVisible('red',e));
+  this.aiTrackPosts();this.aiGuards();this.aiRecordPosts();this.aiTrackDanger();
+  // Incursões só depois de alguma economia (≥2 postos) e com derrota registrada ou travessia pelo caminho.
+  if(now-(p.raidReview??-Infinity)>=(this.mode==='rts'?8:1)){
+   p.raidReview=now;p.raid=this.structures.filter(s=>s.owner==='red'&&s.type==='post'&&s.hp>0).length>=2&&(p.defeats?.length||p.routeKind==='crossing')?this.aiRaidTarget(hq):null;
+  }
   if(threats.length){p.strategy='defend';}
   else if(p.phase==='prepare'&&(!p.objective||now-(p.review??-Infinity)>=(this.mode==='rts'?8:1))){p.objective=this.objective(hq);p.review=now;}
   if(p.phase==='attack'){
@@ -1228,11 +1371,19 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   if(p.phase==='regroup'&&(fighters.filter(home).length>=fighters.length*.7||now-p.since>=prep*cfg.followUp)){p.phase='prepare';p.since=now;}
   if(p.phase==='prepare'&&now-p.since>=prep){
    const gathered=fighters.filter(home);
-   p.objective||=this.objective(hq);const opposition=[...this.intel.values()].filter(e=>DIST(e,p.objective)<=10);
-   if(gathered.length>=cfg.wave&&sum(gathered)>=sum(opposition)*cfg.margin){p.phase='attack';p.wave=gathered.map(u=>u.id);p.waveStart=sum(gathered);p.probe=null;}
+   p.objective||=this.objective(hq);
+   // Força necessária: contato visto × margem; posto reconhecido, zonas de perigo (inclui baixas próprias) e rota × 1,5
+   // (defensor entrincheirado) e outra vez × 1,5 numa travessia (gargalo).
+   const need=(goal,lead)=>{
+    const way=lead&&this.pathToRange(lead,goal,2),stat=Math.max(this.aiGuardPower(goal,10),this.aiDangerAt(goal,10),way?this.aiPathDanger(way):0);
+    return Math.max(sum([...this.intel.values()].filter(e=>DIST(e,goal)<=10))*cfg.margin,stat*1.5*(p.routeKind==='crossing'?1.5:1),this.aiLost(goal));
+   };
+   if(gathered.length>=cfg.wave&&sum(gathered)>=need(p.objective,gathered[0]||fighters[0])){p.phase='attack';p.wave=gathered.map(u=>u.id);p.waveStart=sum(gathered);p.probe=null;}
    else if(now-p.since>=prep*2&&fighters.length>=Math.min(3,cfg.wave)){
-    // A concentração num gargalo tem prazo; a nova missão usa rota e oposição locais.
-    p.objective=this.objective(hq);p.phase='attack';p.wave=fighters.map(u=>u.id);p.waveStart=sum(fighters);p.probe=null;
+    // A concentração num gargalo tem prazo; a nova missão usa rota e oposição locais, medidas no destino novo.
+    const next=this.objective(hq);
+    if(sum(fighters)>=need(next,fighters[0])){p.objective=next;p.phase='attack';p.wave=fighters.map(u=>u.id);p.waveStart=sum(fighters);p.probe=null;}
+    else p.objective=next;
    }
   }
  }
@@ -1241,6 +1392,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  // Batedor: patrulha centro do mapa → 2/3 do caminho até o QG presumido → centro; ferido, volta ao ponto de encontro.
  scout(u,hq){
   if(u.hp/u.maxHp<.6)return this.moveToward(u,this.plan.rally,2);
+  if(this.aiScoutPosts(u,hq))return true;
   const far=this.presumedHQ(hq),legs=[{x:COLS>>1,y:ROWS>>1},{x:Math.round(hq.x+(far.x-hq.x)*2/3),y:Math.round(hq.y+(far.y-hq.y)*2/3)}];
   u.scoutLeg??=0;if(DIST(u,legs[u.scoutLeg%2])<=2)u.scoutLeg++;if(this.moveToward(u,legs[u.scoutLeg%2],2))return true;
   u.scoutLeg++;if(this.moveToward(u,legs[u.scoutLeg%2],2))return true;
@@ -1278,7 +1430,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
    if(BARRAGE(u)&&!u.cargo?.length&&!u.aiPassengerId){
     if(u.salvos===0||u.hp<u.maxHp*.5||u.flares===0){
      if(u.altitude!=='low'&&this.order(u,'altitude',{altitude:'low'}))return;
-     const bases=this.structures.filter(s=>s.owner===u.owner&&['hq','post'].includes(s.type)).sort((a,b)=>DIST(u,a)-DIST(u,b));
+     const bases=this.structures.filter(s=>s.owner===u.owner&&(s.type==='hq'||AIRPORT(s))).sort((a,b)=>DIST(u,a)-DIST(u,b));
      for(const b of bases)if(this.order(u,'service',{targetId:b.id})||this.moveToward(u,b,1))return;
     }else{
      this.aiTransport(u);if(u.pending||u.segment||u.cargo?.length||u.aiPassengerId)return;
@@ -1292,7 +1444,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   const p=this.plan,home=p.rally||(p.rally=this.rallyPoint(hq)),byDist=(a,b)=>DIST(a,u)-DIST(b,u),far=this.presumedHQ(hq);
   const army=this.units.filter(v=>v.owner==='red'),foes=this.all().filter(e=>e.owner==='blue'&&this.isVisible('red',e)),posts=this.structures.filter(s=>s.owner==='red'&&s.type==='post');
   // Ameaças: inimigos a até 6 casas do QG ou a até 3 de um posto vermelho.
-  const threats=foes.filter(e=>!TYPES[e.type].structure&&(DIST(e,hq)<=6||posts.some(s=>DIST(e,s)<=3))),wave=p.phase==='attack'&&p.wave.includes(u.id);this.aiState=threats.length?'defend':p.phase;
+  const threats=foes.filter(e=>!TYPES[e.type].structure&&(DIST(e,hq)<=6||posts.some(s=>DIST(e,s)<=5))),wave=p.phase==='attack'&&p.wave.includes(u.id);this.aiState=threats.length?'defend':p.phase;
   if(!threats.length&&u.type!=='commander'&&!u.captureIntent&&this.units.some(c=>c.owner===u.owner&&c.hp>0&&TYPES[c.type].capacity&&c.aiPassengerId===u.id)&&!this.acquire(u))return;
   if(PLANE(u)){this.aiPlaneAct(u,foes);return;}
   if(u.type==='antitank'&&(u.atMissiles===0||u.aiResupply&&u.atMissiles<AT_MISSILES)){
@@ -1304,7 +1456,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   if(AIR(u)){
    if(u.hp/u.maxHp<=.5||u.flares===0){
     if(u.altitude==='high'&&this.order(u,'altitude',{altitude:'low'}))return;
-    const bases=this.structures.filter(b=>b.owner===u.owner&&b.hp>0).map(b=>({b,route:this.pathToRange(u,b,1)})).filter(v=>v.route!==null).sort((a,b)=>this.pathCost(u,a.route)-this.pathCost(u,b.route));
+    const bases=this.structures.filter(b=>b.owner===u.owner&&b.hp>0&&(b.type==='hq'||AIRPORT(b))).map(b=>({b,route:this.pathToRange(u,b,1)})).filter(v=>v.route!==null).sort((a,b)=>this.pathCost(u,a.route)-this.pathCost(u,b.route));
     for(const {b,route}of bases){if(this.order(u,'service',{targetId:b.id}))return;if(route.length&&this.moveToward(u,b))return;}return;
    }
    const missileTarget=foes.find(e=>MISSILE(this.weapon(u,e))&&DIST(u,e)<=this.range(u,e,'high')+.05),danger=foes.some(e=>MISSILE(this.weapon(e,u))&&DIST(e,u)<=this.range(e,u));
@@ -1319,6 +1471,17 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   const firing=this.acquire(u);if(firing&&this.order(u,'attack',{targetId:firing.id}))return;
   // Defesa: fora da onda todos respondem; na onda, só ameaças a até 6 casas.
   for(const e of threats.filter(e=>(!wave||DIST(e,u)<=6)&&this.weapon(u,e)).sort(byDist))if(u.type==='artillery'?this.moveToward(u,e,this.range(u,e)-1):this.order(u,'attack',{targetId:e.id})||this.moveToward(u,e))return;
+  // Economia em risco: construir vem antes da onda e da guarda (sempre que não há inimigo ao alcance de combate).
+  if(this.aiPressure()&&this.aiExpand(u,hq,far))return;
+  if(u.aiGuard){
+   const post=this.get(u.aiGuard);
+   if(!post||post.owner!=='red'||post.hp<=0)u.aiGuard=null;
+   else{
+    for(const e of foes.filter(e=>!TYPES[e.type].structure&&DIST(e,post)<=6&&this.weapon(u,e)&&this.power(e)<=this.power(u)*3).sort(byDist))if(this.order(u,'attack',{targetId:e.id})||this.moveToward(u,e))return;
+    if(DIST(u,post)>2&&this.moveToward(u,post,2))return;
+    this.hold(u);return;
+   }
+  }
   // A captura de pista atravessa vários turnos; postos mais próximos não reiniciam essa viagem.
   const mission=u.captureIntent&&this.knownObjective(u.owner,u.captureIntent.targetId,u.captureIntent.position);
   if(AIRPORT(mission)&&mission.owner!=='red'&&!this.aiAvoid(mission)&&!(u.aiBlocked?.until>this.aiNow()&&u.aiBlocked.x===mission.x&&u.aiBlocked.y===mission.y)&&this.order(u,'capture',{targetId:mission.id,position:mission}))return;
@@ -1349,10 +1512,15 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   }
   if(u.type==='recon'&&this.scout(u,hq))return;
   if(POST_CAPTURERS.has(u.type)&&!threats.length){
-   // Expansão segura: só postos claramente do lado vermelho (6 casas mais perto do QG vermelho que do azul presumido).
-   const targets=[...this.memory.red.values()].filter(s=>(s.type==='post'||AIRPORT(s))&&s.owner!=='red'&&!this.claims.has(s.id)&&!this.aiAvoid(s)&&!(u.aiBlocked?.until>this.aiNow()&&u.aiBlocked.x===s.x&&u.aiBlocked.y===s.y)&&DIST(s,hq)+2<=DIST(s,far)).sort(byDist);
-   for(const s of targets){if(this.order(u,'capture',{targetId:s.id,position:s})){this.claims.add(s.id);return;}}
+   // Expansão: posto com reconhecimento recente (≤2 janelas) e sem força azul, até 40 casas da tropa, em qualquer lado do mapa;
+   // sem reconhecimento, só postos do lado vermelho a ≤25 casas do QG (o batedor confere os demais antes de a infantaria ir).
+   const now=this.aiNow(),fresh=(this.mode==='rts'?90:6)*2;
+   const ok=s=>{if(s.type!=='post')return DIST(s,hq)+2<=DIST(s,far);const r=this.plan.postIntel?.[s.id];if(r&&now-r.at<=fresh)return r.threat===0&&DIST(s,u)<=40;return DIST(s,hq)+2<=DIST(s,far)&&DIST(s,hq)<=25;};
+   const targets=[...this.memory.red.values()].filter(s=>(s.type==='post'||AIRPORT(s))&&s.owner!=='red'&&!this.claims.has(s.id)&&!this.aiAvoid(s)&&!(u.aiBlocked?.until>this.aiNow()&&u.aiBlocked.x===s.x&&u.aiBlocked.y===s.y)&&this.aiDangerAt(s,7)===0&&ok(s)&&(s.type!=='post'||posts.length<PLAN[this.difficulty].posts)).sort(byDist); // teto de postos da dificuldade
+   for(const s of targets.slice(0,4)){if(this.aiRouteDanger(u,s)>0)continue;if(this.order(u,'capture',{targetId:s.id,position:s})){this.claims.add(s.id);return;}}
   }
+  // Sem posto neutro para capturar, a infantaria constrói: renda +6 e ponto de recrutamento.
+  if(!threats.length&&this.aiExpand(u,hq,far))return;
   if(u.type==='engineer'&&p.phase==='attack'){const w=p.wave.map(id=>this.get(id)).filter(Boolean);if(w.length){const c={x:Math.round(w.reduce((a,v)=>a+v.x,0)/w.length),y:Math.round(w.reduce((a,v)=>a+v.y,0)/w.length)};if(this.moveToward(u,c,2,4))return;}}
   // Ponto de encontro: protege a área num raio de 4 e segura posição a até 3 casas.
   if(u.type!=='artillery')for(const e of foes.filter(e=>DIST(e,home)<=4).sort(byDist))if(this.order(u,'attack',{targetId:e.id}))return;
@@ -1371,11 +1539,11 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   job.route=route||[];u.path=job.route.slice();u.navWait=.4;
  }
  stepRTS(u,dt){
-  if(dt<=1e-8||u.hp<=0||PLANE(u))return;
+  if(dt<=1e-8||u.hp<=0||FLYER(u))return;
   u.navWait=Math.max(0,(u.navWait||0)-dt);
   // A nova ordem começa na próxima casa; o segmento em curso continua reservado.
   if(u.segment){
-   const seg=u.segment,dx=seg.to.x-u.x,dy=seg.to.y-u.y,d=Math.hypot(dx,dy),speed=TYPES[u.type].speed/(AIR(u)?1:seg.cost),step=speed*dt;
+   const seg=u.segment,dx=seg.to.x-u.x,dy=seg.to.y-u.y,d=Math.hypot(dx,dy),speed=TYPES[u.type].speed*(heliHigh(u)?HELI_HIGH:1)/(AIR(u)?1:seg.cost),step=speed*dt;
    if(d>0)u.facing=Math.atan2(dx,-dy);
    if(d<=step){u.x=seg.to.x;u.y=seg.to.y;u.segment=null;u.moved=true;u.pending=!!u.job;this.enterCell(u);this.touchVision();this.stepRTS(u,dt-d/speed);}
    else{u.x+=dx/d*step;u.y+=dy/d*step;}return;
@@ -1397,9 +1565,10 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   if(job.type==='service'){
    if(!this.serviceSite(u,target)){this.finishRTS(u);return;}
    if(u.type==='antiAirVehicle'){u.serviceClock=(u.serviceClock||0)+dt;if(u.serviceClock>=10){u.serviceClock-=10;u.smokeCharges=Math.min(2,u.smokeCharges+1);}if(u.smokeCharges===2)this.finishRTS(u);return;}
-   u.hp=Math.min(u.maxHp,u.hp+24*dt);u.serviceClock=(u.serviceClock||0)+dt;
-   if(u.serviceClock+1e-8>=3){u.serviceClock=Math.max(0,u.serviceClock-3);if(u.type==='antitank')u.atMissiles=Math.min(AT_MISSILES,u.atMissiles+1);else{u.flares=Math.min(3,u.flares+1);if(u.salvos!==undefined)u.salvos=Math.min(HELI_SALVOS,u.salvos+1);}}
-   if(u.hp>=u.maxHp&&(u.type==='antitank'?u.atMissiles>=AT_MISSILES:u.flares===3&&!(u.salvos<HELI_SALVOS)))this.finishRTS(u);return;
+   if(AIR(u)&&!PLANE(u)){u.healClock=(u.healClock||0)+dt;if(u.healClock>=1){u.healClock-=1;this.heliHeal(u);}}else u.hp=Math.min(u.maxHp,u.hp+24*dt);
+   u.serviceClock=(u.serviceClock||0)+dt;
+   if(u.serviceClock+1e-8>=3){u.serviceClock=Math.max(0,u.serviceClock-3);if(u.type==='antitank')u.atMissiles=Math.min(AT_MISSILES,u.atMissiles+1);else if(u.type==='heavyTank')u.trophy=Math.min(TROPHY_CHARGES,u.trophy+1);else{u.flares=Math.min(3,u.flares+1);if(u.salvos!==undefined)u.salvos=Math.min(HELI_SALVOS,u.salvos+1);}}
+   if((u.hp>=u.maxHp||AIR(u)&&!PLANE(u)&&this.credits[u.owner]<HELI_REPAIR_COST)&&(u.type==='antitank'?u.atMissiles>=AT_MISSILES:u.type==='heavyTank'?u.trophy>=TROPHY_CHARGES:u.flares===3&&!(u.salvos<HELI_SALVOS)))this.finishRTS(u);return;
   }
   if(['attack','repair'].includes(job.type)){
    // Sem arma compatível (ex.: drone furtivo sem mísseis), o ataque termina em vez de perseguir o alvo.
@@ -1458,7 +1627,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
   if(this.winner||!Number.isFinite(dt)||dt<=0)return;dt=Math.min(dt,.1);this.time+=dt;for(const u of this.units){u.cooldown=Math.max(0,u.cooldown-dt);if(u.cooldown<1e-8)u.cooldown=0;u.gunCooldown=Math.max(0,(u.gunCooldown||0)-dt);this.advanceGunBurst(u,dt);if(u.altitudeTransition?.returning){u.altitudeTransition.elapsed+=dt;if(u.altitudeTransition.elapsed>=.2)u.altitudeTransition=null;}if(this.mode==='rts'){u.suppressed=Math.max(0,u.suppressed-dt);u.revealed=Math.max(0,u.revealed-dt);if(AIR(u))u.flareCooldown=Math.max(0,u.flareCooldown-dt);if(u.type==='antiAirVehicle'){u.smokeCooldown=Math.max(0,u.smokeCooldown-dt);u.smokeTime=Math.max(0,u.smokeTime-dt);}}}
   this.advanceDrops(dt);this.defendPlanes(dt);
   if(this.projectiles.some(p=>p.weapon==='antiAirVehicle'&&!p.interceptor&&!p.lostGuidance))this.touchVision();
-  let planeAdvanced=false;if(this.mode==='rts'){for(const u of [...this.units])if(PLANE(u)&&(AIR(u)||u.runway))this.stepPlane(u,dt);for(const owner of ['blue','red']){this.progressPlaneService(owner,dt);this.progressAirports(owner,dt);}this.advanceFires(dt);this.flushVision();this.defendAir();}else if(this.animation?.plane){this.animate(dt);planeAdvanced=true;}
+  let planeAdvanced=false;if(this.mode==='rts'){for(const u of [...this.units])if(FLYER(u)&&(AIR(u)||u.runway))this.stepPlane(u,dt);for(const owner of ['blue','red']){this.progressPlaneService(owner,dt);this.progressAirports(owner,dt);}this.advanceFires(dt);this.flushVision();this.defendAir();}else if(this.animation?.plane){this.animate(dt);planeAdvanced=true;}
   if(this.mode==='turns')this.defendAir(true);
    const hits=[],starts=new Map();for(const p of this.projectiles){
    if(p.interceptor)continue;starts.set(p,{x:p.x,y:p.y,elapsed:p.elapsed});
@@ -1474,7 +1643,8 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
     p.heading=Math.atan2(y-p.y,x-p.x);p.trail.push({x:p.x,y:p.y,level:previousLevel,time:this.time});p.trail=p.trail.filter(v=>this.time-v.time<=1.2);p.x=x;p.y=y;
     this.event('smoke',{x:p.x,y:p.y,owner:p.owner},{air:p.air,contactId:p.targetId,sourceId:p.attackerId,flightLevel:p.visualLevel,visible:true,publicMissile:true});
    }
-   if(p.elapsed+1e-8>=p.duration)hits.push(p);
+   if(p.trophy&&!p.intercepted&&liveTarget&&liveTarget.hp>0&&DIST(p,liveTarget)<=TROPHY_RANGE){p.intercepted=true;this.event('blast',{x:p.x,y:p.y,owner:liveTarget.owner},{air:false,visible:true,publicMissile:true,interception:true,trophy:true});}
+   if(p.elapsed+1e-8>=p.duration||p.intercepted)hits.push(p);
   }this.advanceInterceptors(dt,starts,hits);this.projectiles=this.projectiles.filter(p=>!hits.includes(p));for(const p of hits)this.impact(p);
   if(this.mode==='rts'){this.updateRTS(dt);this.checkVictory();return;}
   if(this.animation&&!planeAdvanced)this.animate(dt);else if(!planeAdvanced&&!this.animation&&!this.projectiles.length&&this.actions.length){this.animation=this.actions.shift();this.animate(dt);}
