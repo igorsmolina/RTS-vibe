@@ -49,6 +49,20 @@ const count=(peer,type)=>peer.messages.filter(m=>m.type===type).length,pause=ms=
   assert.ok(mine.length>0&&mine.every(u=>!('job' in u)),'job não é enviado');assert.ok(mine.some(u=>u.path.length>0),'path segue sendo enviado');
   assert.ok(!('job' in JSON.parse(JSON.stringify(view)).units.find(u=>u.id===group[0])));
   console.log('OK estado sem job e com path');
+
+  // 5. Limite de tropas: com 50 tropas a produção volta recusada com code cap e a mensagem diz o limite.
+  time+=1000;g.credits.blue=5000;const hq=g.hq('blue');
+  for(let i=g.armySize('blue');i<50;i++)g.add('blue','infantry',10+i%30,60);
+  const capped=await blue.command('enqueue',{type:'infantry',baseId:hq.id});
+  assert.equal(capped.ok,false);assert.equal(capped.code,'cap');assert.match(capped.message,/50 tropas/);assert.equal(hq.queue.length,0);assert.equal(g.credits.blue,5000);
+  g.units=g.units.filter(u=>u.owner!=='blue'||u.type==='commander'||u.id===pair[0].id);time+=1000;
+  assert.equal((await blue.command('enqueue',{type:'infantry',baseId:hq.id})).ok,true,'abaixo do limite volta a produzir');
+  console.log('OK limite de 50 tropas recusado com code cap');
+
+  // 6. /health informa a carga do servidor.
+  const health=await (await fetch(url+'/health')).json();
+  assert.equal(health.ok,true);assert.equal(health.multiplayer,true);assert.equal(health.rooms,1);assert.equal(typeof health.tickRate,'number');assert.equal(typeof health.cpu,'number');
+  console.log('OK /health com rooms, tickRate e cpu');
   console.log('OK multiplayer: limite de taxa, envio periódico e estado enxuto');
  }finally{for(const ws of all)ws.terminate();await service.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -3,7 +3,7 @@ const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),
 const {WebSocketServer,WebSocket}=require('ws');
 const publicRoot=path.resolve(__dirname,'..','public');
 // O motor roda como função e não em vm.runInContext: o contexto vm deixa Math, Object e os demais globais ~5× mais lentos (tick de 300 unidades em marcha: 43 → 10 ms).
-const {Game,TYPES,MAPS,NATION_DOCTRINES,PROCEDURAL,STARTING_DEFAULT,STARTING_BUDGET,startingCatalog,armyCost,cleanStartingArmy,STEP,SIZE,KEY,TILE,AIR,MISSILE}=new Function(fs.readFileSync(path.join(publicRoot,'js','engine.js'),'utf8')+'\nreturn {Game,TYPES,MAPS,NATION_DOCTRINES,PROCEDURAL,STARTING_DEFAULT,STARTING_BUDGET,startingCatalog,armyCost,cleanStartingArmy,STEP,SIZE,KEY,TILE,AIR,MISSILE};')();
+const {Game,TYPES,MAPS,NATION_DOCTRINES,PROCEDURAL,STARTING_DEFAULT,STARTING_BUDGET,UNIT_CAP,startingCatalog,armyCost,cleanStartingArmy,STEP,SIZE,KEY,TILE,AIR,MISSILE}=new Function(fs.readFileSync(path.join(publicRoot,'js','engine.js'),'utf8')+'\nreturn {Game,TYPES,MAPS,NATION_DOCTRINES,PROCEDURAL,STARTING_DEFAULT,STARTING_BUDGET,UNIT_CAP,startingCatalog,armyCost,cleanStartingArmy,STEP,SIZE,KEY,TILE,AIR,MISSILE};')();
 const sides=['blue','red'],other=side=>side==='blue'?'red':'blue',plain=o=>o!==null&&typeof o==='object'&&!Array.isArray(o),id=n=>Number.isSafeInteger(n)&&n>0;
 const copy=o=>JSON.parse(JSON.stringify(o)),pick=(o,keys)=>Object.fromEntries(keys.filter(k=>o[k]!==undefined).map(k=>[k,o[k]]));
 const MIME={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.ogg':'audio/ogg','.mp3':'audio/mpeg','.wav':'audio/wav'};
@@ -24,7 +24,8 @@ function viewState(room,player){
  const game=room.game,side=player.side,known=new Set(),emitters=new Set(game.emitterContacts(side).map(c=>c.id));
  const visual=['id','type','owner','x','y','width','height','hp','maxHp','level','facing','altitude','altitudeTransition','flightState','entrenched','suppressed','launcherLevel','radarOn'];
  // Cópias rasas: cada estado é serializado logo em seguida. `job` (rota do RTS) repete `path` e o cliente não o usa.
- const ownEntity=u=>{const {job,...result}=u;if(result.spotted)result.spotted={[side]:!!result.spotted[side]};return result;};
+ // A rota inteira só serve à linha tracejada: as 16 próximas casas e o destino bastam (a rota era 57% do estado).
+ const ownEntity=u=>{const {job,...result}=u;if(result.spotted)result.spotted={[side]:!!result.spotted[side]};if(result.path?.length>17)result.path=[...result.path.slice(0,16),result.path[result.path.length-1]];return result;};
  const entity=u=>{
   known.add(u.id);if(u.owner===side)return ownEntity(u);
   const contact=!TYPES[u.type].structure&&!optical(game,side,u);
@@ -65,8 +66,11 @@ function createMultiplayerServer({graceMs=120000,now=Date.now,autoTick=true,maxR
  const newPlayer=(name,side,host=false)=>({nickname:nickname(name),side,host,token:crypto.randomBytes(32).toString('hex'),ready:false,doctrine:'balanced',army:{...STARTING_DEFAULT},ws:null,lastSeq:0,acks:new Map(),eventCursor:0,terrainRevision:-1,disconnectedAt:null,rematch:false});
  const finish=(room,winner,reason)=>{room.status=winner?'finished':'cancelled';room.paused=false;room.finishedAt=now();room.result={winner:winner||null,reason};if(room.game)room.game.winner=winner||'cancelled';broadcast(room);};
  const abandon=(room,player)=>{if(room.status==='playing')finish(room,room.players.find(p=>p!==player)?.side,'abandonment');else if(room.status==='waiting'){if(player.host){room.status='cancelled';room.result={winner:null,reason:'host_left'};broadcast(room);rooms.delete(room.code);}else{room.players=room.players.filter(p=>p!==player);room.players.forEach(p=>p.ready=false);broadcast(room);}}};
+ // Carga real do servidor para o /health: ticks por segundo executados (meta 30) e fração de um núcleo usada, em janelas de 5 s.
+ const load={tickRate:0,cpu:0};let loadAt=performance.now(),loadTicks=0,loadCpu=process.cpuUsage();
+ const sampleLoad=()=>{loadTicks++;const t=performance.now();if(t-loadAt<5000)return;const used=process.cpuUsage(loadCpu);load.tickRate=Math.round(loadTicks/(t-loadAt)*1e4)/10;load.cpu=Math.round((used.user+used.system)/1000/(t-loadAt)*100)/100;loadAt=t;loadTicks=0;loadCpu=process.cpuUsage();};
  const tick=()=>{
-  tickNumber++;for(const room of rooms.values()){
+  sampleLoad();tickNumber++;for(const room of rooms.values()){
    if(room.status==='waiting'&&now()-room.lastTouch>15*60000||['finished','cancelled'].includes(room.status)&&now()-room.finishedAt>5*60000){rooms.delete(room.code);for(const p of room.players)p.ws?.close(1000,'Sala encerrada');continue;}
    if(room.status!=='playing')continue;
    const missing=room.players.filter(p=>!p.ws);if(missing.length){room.paused=true;if(missing.some(p=>now()-p.disconnectedAt>=graceMs)){const connected=room.players.find(p=>p.ws);finish(room,connected?.side,connected?'abandonment':'disconnected');}continue;}
@@ -78,7 +82,7 @@ function createMultiplayerServer({graceMs=120000,now=Date.now,autoTick=true,maxR
  const server=http.createServer(async(req,res)=>{
   const json=(status,value)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
   try{
-   const url=new URL(req.url,'http://local');if(url.pathname==='/health'){json(200,{ok:true,multiplayer:true});return;}
+   const url=new URL(req.url,'http://local');if(url.pathname==='/health'){json(200,{ok:true,multiplayer:true,rooms:rooms.size,tickRate:load.tickRate,cpu:load.cpu});return;}
    if(url.pathname.startsWith('/api/')){
     if(req.method!=='POST')throw failure('Método inválido.',405);let raw='';for await(const chunk of req){raw+=chunk;if(Buffer.byteLength(raw)>8192)throw failure('Mensagem muito grande.',413);}let body;try{body=JSON.parse(raw);}catch{throw failure('JSON inválido.');}if(!plain(body))throw failure('Mensagem inválida.');
     if(url.pathname==='/api/rooms'){
@@ -102,6 +106,7 @@ function createMultiplayerServer({graceMs=120000,now=Date.now,autoTick=true,maxR
   const owned=n=>{if(!id(n))throw failure('Unidade inválida.');const u=g.get(n);if(!u||u.owner!==side||u.hp<=0)throw failure('Esta unidade não pertence a você.',403,'ownership');return u;};
   const ownIds=ids=>{if(!Array.isArray(ids)||!ids.length||ids.length>128||ids.some(n=>!id(n)))throw failure('Seleção inválida.');ids.forEach(owned);return [...new Set(ids)];};
   const point=p=>{if(!plain(p)||!Number.isInteger(p.x)||!Number.isInteger(p.y)||p.x<0||p.x>=128||p.y<0||p.y>=96)throw failure('Posição inválida.');return {x:p.x,y:p.y};};
+  const capped=(extra=1)=>{if(g.atUnitCap(side,extra))throw failure('Limite de '+UNIT_CAP+' tropas por jogador: em campo, embarcadas e na fila de produção.',409,'cap');};
   switch(msg.action){
    case 'order':{
     const ids=ownIds(a.ids),allowed=['move','attack','capture','repair','stop','altitude','service','demine','build','bombard','takeoff','patrol','strike','return','land','bombRun','strikeCell','embark','disembark','airdropLaunch'];if(!allowed.includes(a.type)||!plain(a.args||{}))throw failure('Ordem inválida.');const input=a.args||{},args={};
@@ -115,9 +120,9 @@ function createMultiplayerServer({graceMs=120000,now=Date.now,autoTick=true,maxR
     if(a.type==='airdropLaunch'){args.start=point(input.start);args.end=point(input.end);}
     if(a.type==='bombRun'){args.start=point(input.start);args.end=point(input.end);if(input.bombCount!==undefined){if(![6,12,24,48].includes(input.bombCount))throw failure('Quantidade de bombas inválida.');args.bombCount=input.bombCount;}}if(g.mode==='turns'&&g.busy&&stop)return ids.map(n=>g.order(g.get(n),'stop')).some(Boolean);return g.command(ids,a.type,args,side)>0;
    }
-   case 'enqueue':{const base=owned(a.baseId);if(typeof a.type!=='string'||!Object.hasOwn(TYPES,a.type))throw failure('Tropa inválida.');return g.enqueue(side,a.type,base);}
-   case 'requestAirdrop':{const base=owned(a.baseId);if(!plain(a.cargo))throw failure('Carga inválida.');return g.requestAirdrop(side,base.id,a.cargo,a.destination===undefined||a.destination===null?undefined:point(a.destination));}
-   case 'boardPurchase':{const base=owned(a.baseId);if(typeof a.type!=='string'||!Object.hasOwn(TYPES,a.type))throw failure('Tropa inválida.');return g.boardPurchase(side,base.id,a.type);}
+   case 'enqueue':{const base=owned(a.baseId);if(typeof a.type!=='string'||!Object.hasOwn(TYPES,a.type))throw failure('Tropa inválida.');capped();return g.enqueue(side,a.type,base);}
+   case 'requestAirdrop':{const base=owned(a.baseId);if(!plain(a.cargo))throw failure('Carga inválida.');capped(g.airdropQuote(a.cargo)?.types.length);return g.requestAirdrop(side,base.id,a.cargo,a.destination===undefined||a.destination===null?undefined:point(a.destination));}
+   case 'boardPurchase':{const base=owned(a.baseId);if(typeof a.type!=='string'||!Object.hasOwn(TYPES,a.type))throw failure('Tropa inválida.');capped();return g.boardPurchase(side,base.id,a.type);}
    case 'endTurn':return g.endTurn(side);
    case 'setWeapon':{const ids=ownIds(a.ids||[a.id]);if(typeof a.weapon!=='string')throw failure('Arma inválida.');return ids.map(n=>g.setWeapon(owned(n),a.weapon)).some(Boolean);}
    case 'setRadar':if(typeof a.on!=='boolean')throw failure('Radar inválido.');return g.setRadar(owned(a.id),a.on);

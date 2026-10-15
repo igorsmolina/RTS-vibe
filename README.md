@@ -2,7 +2,7 @@
 
 Jogo de estratégia militar com modo solo contra a IA e multiplayer privado por código. Capture postos, proteja seu comandante e destrua as bases inimigas. Escolha **Por turnos** ou **RTS** ao iniciar uma operação; pausa tática está disponível no modo solo.
 
-**Multiplayer:** execute `npm.cmd run start:multiplayer` para servir o jogo com salas para dois jogadores. Para jogar pela internet, publique o servidor preparado para o Render e compartilhe o endereço HTTPS. [Instalação, regras e hospedagem](docs/multiplayer.md). O modo solo continua abrindo por duplo clique.
+**Multiplayer:** execute `npm.cmd run start:multiplayer` para servir o jogo com salas para dois jogadores. Para jogar pela internet, publique o servidor preparado para o Render e compartilhe o endereço HTTPS. [Instalação, regras e hospedagem](docs/multiplayer.md). Cada jogador pode ter até 50 tropas ao mesmo tempo (em campo, embarcadas e na fila de produção); `/health` mostra `tickRate` (meta 30) e `cpu` do servidor. O modo solo continua abrindo por duplo clique.
 
 ## Menu inicial e configurações
 

@@ -75,6 +75,14 @@ const { createMultiplayerServer } = require('../scripts/multiplayer-server.cjs')
       await blue.locator('[data-recruit=infantry]').click();
       await blue.waitForFunction(() => game.hq('blue').queue.length === 1);
       assert.equal(g.credits.blue, before - 50);
+      // Limite de tropas: o painel mostra o contador e o botão de recrutar trava ao chegar em 50.
+      await blue.waitForFunction(() => /tropas \d+\/50/.test(document.getElementById('productionCredits').textContent));
+      const filler = []; for (let i = g.armySize('blue'); i < 50; i++) filler.push(g.add('blue', 'infantry', 10 + i % 30, 60));
+      g.credits.blue += 500; service.broadcast(room);
+      await blue.waitForFunction(() => document.querySelector('[data-recruit=infantry]').disabled);
+      assert.match(await blue.locator('#productionCredits').textContent(), /tropas 50\/50/);
+      g.units = g.units.filter(u => !filler.includes(u)); g.credits.blue -= 500; service.broadcast(room);
+      await blue.waitForFunction(() => /tropas \d+\/50/.test(document.getElementById('productionCredits').textContent) && !/tropas 50\/50/.test(document.getElementById('productionCredits').textContent));
       await red.evaluate(() => setSelection([game.hq('red').id]));
       assert.equal(await red.evaluate(() => selectedProducer().owner), 'red');
       if (mode === 'turns') {

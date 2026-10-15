@@ -141,6 +141,8 @@ const DOCTRINE=[
 const SCHEDULE={antiAirVehicle:4,helicopter:1,heavyTank:6,helicopterGround:10,helicopterAir:14};
 const DEFENSE=['infantry','machinegun','antitank','missileInfantry','antiAirVehicle','lightTank'];
 function seeded(seed){let n=seed>>>0;const rng=()=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n/4294967296;};rng.state=()=>n;rng.restore=value=>{n=value>>>0;};return rng;}
+// Limite de tropas por jogador no multiplayer: em campo, embarcadas, em queda de paraquedas e na fila de produção.
+const UNIT_CAP=50;
 const STARTING_BUDGET=600,STARTING_DEFAULT=Object.freeze({infantry:2,engineer:2,recon:1,tank:1,antitank:1});
 function startingCatalog(owner='blue'){return Object.keys(TYPES).filter(type=>TYPES[type].cost>0&&!TYPES[type].structure&&(!TYPES[type].plane||TYPES[type].team===owner));}
 function armyOverBudget(army){return !!army&&typeof army==='object'&&!Array.isArray(army)&&armyCost(army)>STARTING_BUDGET;}
@@ -168,6 +170,14 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  producer(owner,base){return ['blue','red'].includes(owner)&&!!base&&base.hp>0&&base.owner===owner&&['hq','post','airportDirt','airportAsphalt'].includes(base.type)&&this.structures.includes(base);}
  producers(owner){return this.structures.filter(s=>this.producer(owner,s));}
  queueLimit(){return 5;}
+ // Comandante e avião de transporte (serviço) não contam; passageiros, paraquedistas em queda e a fila de produção contam.
+ armySize(owner){
+  let n=0;for(const u of this.units)if(u.owner===owner&&u.hp>0){if(u.type!=='commander'&&!TYPES[u.type].airdropPlane)n++;n+=u.cargo?.length||0;}
+  for(const d of this.drops||[])if(d.owner===owner)n++;
+  for(const s of this.structures)if(s.owner===owner&&s.hp>0)n+=s.queue?.length||0;
+  return n;
+ }
+ atUnitCap(owner,extra=1){return !!this.multiplayer&&this.armySize(owner)+extra>UNIT_CAP;}
 
 
 
@@ -432,7 +442,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  // destination (ponto) é opcional: sem ele o avião pousa e espera embarque/linha; com ele decola sozinho depois de pousar (IA).
  canAirdrop(owner,baseId,cargo,destination){
   const plane=this.airdropPlane(owner),quote=this.airdropQuote(cargo,AIRDROP_CAPACITY-this.cargoSlots(plane)),base=this.get(baseId);
-  if(!quote||this.winner||!['blue','red'].includes(owner)||!(this.mode==='rts'||this.turn===owner&&!this.busy)||!AIRPORT(base)||base.owner!==owner||base.hp<=0||!this.structures.includes(base)||this.credits[owner]<quote.cost)return false;
+  if(!quote||this.winner||!['blue','red'].includes(owner)||!(this.mode==='rts'||this.turn===owner&&!this.busy)||!AIRPORT(base)||base.owner!==owner||base.hp<=0||!this.structures.includes(base)||this.credits[owner]<quote.cost||this.atUnitCap(owner,quote.types.length))return false;
   if(destination&&!(INSIDE(destination.x,destination.y)&&this.visible[owner][KEY(destination.x,destination.y)]&&this.airdropSpace(quote.types,destination)))return false;
   return plane?plane.airdrop?.phase==='parked'&&plane.airportId===base.id:!!this.airportSlot(base);
  }
@@ -455,7 +465,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  boardPrice(type){return Math.ceil(TYPES[type].cost*AIRPORT_SURCHARGE/5)*5;}
  canBoardPurchase(owner,baseId,type){
   const plane=this.airdropPlane(owner),base=this.get(baseId);
-  return AIRDROP_TYPES.includes(type)&&!this.winner&&['blue','red'].includes(owner)&&(this.mode==='rts'||this.turn===owner&&!this.busy)&&AIRPORT(base)&&base.owner===owner&&base.hp>0&&this.structures.includes(base)&&plane?.airdrop?.phase==='parked'&&plane.airportId===base.id&&this.cargoSlots(plane)+AIRDROP_SLOTS(type)<=AIRDROP_CAPACITY&&this.credits[owner]>=this.boardPrice(type);
+  return AIRDROP_TYPES.includes(type)&&!this.winner&&['blue','red'].includes(owner)&&(this.mode==='rts'||this.turn===owner&&!this.busy)&&AIRPORT(base)&&base.owner===owner&&base.hp>0&&this.structures.includes(base)&&plane?.airdrop?.phase==='parked'&&plane.airportId===base.id&&this.cargoSlots(plane)+AIRDROP_SLOTS(type)<=AIRDROP_CAPACITY&&this.credits[owner]>=this.boardPrice(type)&&!this.atUnitCap(owner);
  }
  boardPurchase(owner,baseId,type){
   if(!this.canBoardPurchase(owner,baseId,type))return false;const plane=this.airdropPlane(owner),base=this.get(baseId),price=this.boardPrice(type),p=this.add(owner,type,base.x,base.y);
@@ -709,7 +719,9 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  setWeapon(u,mode){if(!u||!TYPES[u.type]?.weapons?.length||!['auto',...TYPES[u.type].weapons].includes(mode))return false;u.weaponMode=mode;return true;}
  // Visão agrupada: no RTS vários movimentos por tick apenas marcam a visão como suja e flushVision a refaz uma vez; por turnos segue imediata.
  touchVision(){this.visionDirty=true;if(this.mode==='turns')this.flushVision();}
- flushVision(){if(this.visionDirty)this.updateVision();}
+ // No multiplayer RTS a visão só é refeita no relógio de 0,1 s (o mesmo ritmo do estado enviado): cada passo de cada tropa
+ // a refazia 2 vezes por tick, metade do custo da simulação com 100 tropas. Mortes de aeronave e antiaérea ainda atualizam na hora.
+ flushVision(){if(this.visionDirty&&!(this.multiplayer&&this.mode==='rts'))this.updateVision();}
  updateVision(){
   this.visionDirty=false;this.updateRadarContacts();const terrain=this.terrain;
   for(const owner of ['blue','red']){
@@ -998,7 +1010,7 @@ function enemyStartingArmy(seed){const rng=seeded((seed>>>0)^0x6a09e667),army={i
  productionBatches(base){const batches=[],groups=new Map();for(const job of base?.queue||[]){const key=job.batch??job;if(!groups.has(key)){const batch=[];groups.set(key,batch);batches.push(batch);}groups.get(key).push(job);}return batches;}
  productionWait(base,type){let wait=0;for(const batch of this.productionBatches(base)){const job=batch[0],remaining=Math.max(0,this.trainDuration(job.type)-job.progress);wait+=remaining;if(job.type===type&&remaining>1e-8)return wait;}return wait+this.trainDuration(type);}
  enqueue(owner,type,base=this.hq(owner)){
-  const t=TYPES[type],price=this.recruitCost(type,base);if(this.winner||this.mode!=='rts'&&(owner!==this.turn||this.busy)||!this.canRecruit(owner,type,base)||base.queue.length>=this.queueLimit(base)||this.credits[owner]<price)return false;
+  const t=TYPES[type],price=this.recruitCost(type,base);if(this.winner||this.mode!=='rts'&&(owner!==this.turn||this.busy)||!this.canRecruit(owner,type,base)||base.queue.length>=this.queueLimit(base)||this.credits[owner]<price||this.atUnitCap(owner))return false;
   const job=base.queue.find(q=>q.type===type&&q.progress+1e-8<this.trainDuration(type));if(job&&job.batch==null)job.batch=this.nextBatchId++;
   this.credits[owner]-=price;base.queue.push({type,progress:job?.progress||0,batch:job?.batch??this.nextBatchId++});const text=`${t.name} em treinamento (${this.trainDuration(type)} ${this.mode==='rts'?'s':'turno(s)'}).`;if(this.multiplayer)this.log(text,[owner]);else this.report(text,base);return true;
  }
