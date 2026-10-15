@@ -254,7 +254,7 @@ const { createMultiplayerServer } = require('../scripts/multiplayer-server.cjs')
       const remote = []; page.on('request', request => { if (/^https?:/.test(request.url())) remote.push(request.url()); });
       await page.goto(pathToFileURL(path.join(__dirname, '../public/index.html')).href);
       await page.locator('#titleMultiplayer').click();
-      assert.match(await page.locator('#mpStatus').textContent(), /versão online/);
+      await page.waitForFunction(() => /Abra o jogo pela internet/.test(document.getElementById('mpStatus').textContent));
       assert.equal(await page.locator('#mpCreate').isDisabled(), true);
       assert.deepEqual(remote, [], 'Fallback offline não tenta uma conexão inexistente');
     } finally { await offline.close(); }

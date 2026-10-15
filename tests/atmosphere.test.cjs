@@ -20,8 +20,8 @@ for(const replacement of ['stop','move','attack']){
  assert.ok(g.order(h,replacement,replacement==='move'?{x:8,y:5}:{targetId:enemy.id}));assert.equal(h.altitude,'low');assert.ok(Math.abs(flightLevel(h)-.5)<1e-7);
  advance(g,.1);assert.ok(flightLevel(h)>0&&flightLevel(h)<.5);advance(g,.2);assert.equal(flightLevel(h),0);advance(g,1);assert.equal(h.altitude,'low');
 }
-const g=field('rts'),h=g.add('blue','helicopter',5,5);g.order(h,'move',{x:8,y:5});advance(g,.1);const endpoint=h.segment.to.x;
-g.order(h,'altitude',{altitude:'high'});assert.equal(flightLevel(h),0);while(h.segment)g.update(.01);assert.equal(h.x,endpoint);const elapsed=h.altitudeTransition.elapsed;
+const g=field('rts'),h=g.add('blue','helicopter',5,5);g.order(h,'move',{x:8,y:5});advance(g,.1);const stopped=h.x;
+g.order(h,'altitude',{altitude:'high'});assert.equal(flightLevel(h),0);advance(g,.01);assert.equal(h.segment,null);assert.equal(h.x,stopped);const elapsed=h.altitudeTransition.elapsed;
 advance(g,1-elapsed-.01);assert.equal(h.altitude,'low');advance(g,.01);assert.equal(h.altitude,'high');
 for(const mode of ['turns','rts']){const g=field(mode),units=['helicopter','helicopterGround','helicopterAir'].map((type,i)=>g.add('blue',type,5+i,5));assert.equal(g.command(units.map(u=>u.id),'altitude',{altitude:'high'}),3);advance(g,3.1);assert.ok(units.every(u=>u.altitude==='high'&&!u.pending));}
 console.log('OK altitude 1 s, três classes e grupos nos dois modos; pausa, dano, bônus tardio, segmento e cancelamento suave.');

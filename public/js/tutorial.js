@@ -26,7 +26,7 @@ function startTutorial(){
  for(const dialog of document.querySelectorAll('dialog[open]'))dialog.close();backTo=null;
  tutorialState.starting=true;
  // Formação própria do treinamento não sobrescreve a formação salva do jogador.
- const army=settings.startingArmy;try{settings.startingArmy=STARTING_DEFAULT;newOperation('river','easy',TUTORIAL_SEED,'turns');}finally{settings.startingArmy=army;tutorialState.starting=false;}
+ const army=settings.startingArmy;try{settings.startingArmy=STARTING_DEFAULT;newOperation('river','easy',TUTORIAL_SEED,'turns',undefined,STANDARD_FACTIONS);}finally{settings.startingArmy=army;tutorialState.starting=false;}
  const hq=game.hq('blue'),infantry=game.units.find(u=>u.owner==='blue'&&u.type==='infantry'),sites=[];
  for(let y=Math.max(0,hq.y-8);y<=Math.min(ROWS-1,hq.y+8);y++)for(let x=Math.max(0,hq.x-8);x<=Math.min(COLS-1,hq.x+8);x++){
   const cell={x,y},distance=DIST(hq,cell);if(distance<4||distance>8||game.structureAt(x,y)||game.units.some(u=>u.x===x&&u.y===y))continue;

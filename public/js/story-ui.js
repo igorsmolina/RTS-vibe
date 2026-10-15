@@ -54,7 +54,7 @@ function startStoryMission(){const m=Story.marker(campaign);if(!m||campaign.stor
 function prepareStoryMission(){const m=Story.marker(campaign);if(!m)return;if(m.chapter===1&&!campaign.story.choices.secondary)openStoryScene('choice-secondary','launch');else if(m.chapter===4&&!campaign.story.choices.channel)openStoryScene('choice-channel','launch');else launchStoryMission();}
 function launchStoryMission(){
  const m=Story.marker(campaign);if(!m)return;campaign.mode=$('campaignMode').value;changeSetting('doctrine',cleanDoctrine($('campaignDoctrine').value));const a=Story.begin(campaign,m.chapter,m.region);if(!a)return;
- const b=battleFor(campaign,m.region);$('campaign').close();audio.unlock();newOperation(b.map,b.difficulty,a.seed,campaign.mode,b.options);Missions.setup(game,campaign,a);campaignBattle={region:m.region,attempt:{...a},resolved:false};game.title=Story.chapters[m.chapter].title;renderer.rebuild();centerCamera(12,76);saveCampaign();saveStoryCheckpoint();updateUI();say('Objetivos e unidades protegidas destacados no campo.');
+ const b=battleFor(campaign,m.region);$('campaign').close();audio.unlock();newOperation(b.map,b.difficulty,a.seed,campaign.mode,b.options,STANDARD_FACTIONS);Missions.setup(game,campaign,a);campaignBattle={region:m.region,attempt:{...a},resolved:false};game.title=Story.chapters[m.chapter].title;renderer.rebuild();centerCamera(12,76);saveCampaign();saveStoryCheckpoint();updateUI();say('Objetivos e unidades protegidas destacados no campo.');
 }
 function finishCampaignResult(){
  if(!campaignBattle||!game.winner||campaignBattle.resolved)return;const link=campaignBattle,won=game.winner==='blue';
