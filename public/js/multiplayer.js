@@ -1,6 +1,9 @@
 'use strict';
 // Optional public address for the static/offline copy. The hosted server uses its own origin.
 window.RTS_MULTIPLAYER_URL='https://rts-vibe-multiplayer.onrender.com';
+// Servidor hospedado num PC (scripts/host-local.cjs): o link muda a cada vez, então o host o publica neste tópico do ntfy.sh e a página lê daqui.
+// Qualquer um que conheça o tópico pode publicar; por isso só links https://*.trycloudflare.com são aceitos. Vazio = usa só o endereço acima.
+window.RTS_SERVER_REGISTRY='https://ntfy.sh/rts-vibe-b760a287e42ddf70';
 const Multiplayer={
  session:null,room:null,socket:null,connected:false,editingArmy:false,seq:0,pending:new Map(),matchId:null,lastEvent:0,retry:0,timer:null,poses:new Map(),receivedAt:0,
  get side(){return this.session?.side||'blue';},
@@ -13,7 +16,29 @@ const Multiplayer={
   catch{this.openRemote();return;}
   this.show();
  },
- openRemote(){
+ // Link atual do servidor do host: texto https://... (ligado), null (desligado ou sem sinal há 10 min) ou undefined (não consegui consultar).
+ async liveServer(){
+  try{
+   const response=await fetch(window.RTS_SERVER_REGISTRY+'/json?poll=1&since=12h',{signal:AbortSignal.timeout(6000)});if(!response.ok)return undefined;
+   const last=(await response.text()).split(String.fromCharCode(10)).filter(Boolean).map(line=>JSON.parse(line)).filter(e=>e.event==='message').at(-1);if(!last)return null;
+   const data=JSON.parse(last.message);
+   return data.state==='on'&&Date.now()/1000-last.time<600&&new RegExp('^https://[a-z0-9-]+[.]trycloudflare[.]com$').test(data.url)?data.url:null;
+  }catch{return undefined;}
+ },
+ // Na página hospedada fora do servidor (Vercel, arquivo local) mostra no botão se o servidor do host está ligado.
+ async serverInfo(){
+  if(!window.RTS_SERVER_REGISTRY||!$('titleMultiplayer'))return;
+  if(location.protocol!=='file:'){try{const data=await (await fetch('/health',{signal:AbortSignal.timeout(6000)})).json();if(data.multiplayer===true)return;}catch{}}
+  const live=await this.liveServer(),label=$('titleMultiplayer').querySelector('small');
+  if(label)label.textContent=live?'servidor ligado · toque para entrar':live===null?'servidor desligado (o host precisa ligar)':'salas privadas por código';
+ },
+ async openRemote(){
+  if(window.RTS_SERVER_REGISTRY){
+   this.show();$('mpCreate').disabled=$('mpJoin').disabled=true;this.status('Procurando o servidor do host…');
+   const live=await this.liveServer();
+   if(live){const room=new URLSearchParams(location.search).get('room'),target=new URL(live);target.searchParams.set('multiplayer','1');if(room)target.searchParams.set('room',room);location.assign(target.href);return;}
+   this.status(live===null?'Servidor desligado. Peça ao host para abrir o "Hospedar multiplayer.bat" e tente de novo.':'Não consegui consultar o servidor agora. Feche e abra o Multiplayer de novo em instantes.');return;
+  }
   let url;try{url=new URL(window.RTS_MULTIPLAYER_URL);if(url.protocol!=='https:'&&!(url.protocol==='http:'&&['localhost','127.0.0.1'].includes(url.hostname)))throw Error();}catch{}
   if(url&&url.origin!==location.origin){const room=new URLSearchParams(location.search).get('room');url.searchParams.set('multiplayer','1');if(room)url.searchParams.set('room',room);location.assign(url.href);return;}
   this.show();$('mpCreate').disabled=$('mpJoin').disabled=true;this.status('Abra a versão online para jogar pela internet. O endereço do servidor ainda não foi configurado nesta cópia.');
@@ -132,6 +157,6 @@ window.addEventListener('load',()=>{
  for(const id of ['mpMap','mpMode','mpSeed','mpWater','mpForest','mpRelief','mpFarmland','mpPosts'])$(id).addEventListener('change',()=>{Multiplayer.configure();$('mpTerrain').hidden=$('mpMap').value!=='random';});
  $('mpDoctrine').replaceChildren(...Object.entries(NATION_DOCTRINES).map(([id,d])=>new Option(d.name,id)));
  $('mpPosts').replaceChildren(...Array.from({length:16},(_,i)=>new Option(String(i*2+2),String(i*2+2))));$('mpPosts').value='24';
- const params=new URLSearchParams(location.search),invitation=params.get('room');if(invitation)$('mpCode').value=invitation;if(invitation||params.has('multiplayer'))Multiplayer.open();
+ const params=new URLSearchParams(location.search),invitation=params.get('room');if(invitation)$('mpCode').value=invitation;if(invitation||params.has('multiplayer'))Multiplayer.open();else Multiplayer.serverInfo();
  try{const session=JSON.parse(sessionStorage.getItem('rtsvibe.multiplayer')||'null');if(session?.code&&session.token&&location.protocol!=='file:'){Multiplayer.session=session;Multiplayer.seq=session.seq||0;$('mpNickname').value=session.nickname||'Jogador';Multiplayer.show();Multiplayer.connect();}}catch{}
 });

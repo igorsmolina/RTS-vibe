@@ -2,7 +2,7 @@
 
 Jogo de estratégia militar com modo solo contra a IA e multiplayer privado por código. Capture postos, proteja seu comandante e destrua as bases inimigas. Escolha **Por turnos** ou **RTS** ao iniciar uma operação; pausa tática está disponível no modo solo.
 
-**Multiplayer:** execute `npm.cmd run start:multiplayer` para servir o jogo com salas para dois jogadores. Para jogar pela internet, publique o servidor preparado para o Render e compartilhe o endereço HTTPS. [Instalação, regras e hospedagem](docs/multiplayer.md). Cada jogador pode ter até 50 tropas ao mesmo tempo (em campo, embarcadas e na fila de produção); `/health` mostra `tickRate` (meta 30) e `cpu` do servidor. O modo solo continua abrindo por duplo clique.
+**Multiplayer:** execute `npm.cmd run start:multiplayer` para servir o jogo com salas para dois jogadores. Para jogar pela internet, publique o servidor preparado para o Render e compartilhe o endereço HTTPS. [Instalação, regras e hospedagem](docs/multiplayer.md). Cada jogador pode ter até 50 tropas ao mesmo tempo (em campo, embarcadas e na fila de produção); `/health` mostra `tickRate` (meta 30) e `cpu` do servidor. Para hospedar neste PC, dê dois cliques em `Hospedar multiplayer.bat`: ele liga o servidor, gera o link público (Cloudflare) e desliga sozinho às 13:00; depois desse horário só liga se você autorizar (`HOST_CUTOFF=HH:MM` muda o horário). O link muda a cada vez, então o `.bat` o publica no tópico `RTS_SERVER_REGISTRY` (ntfy.sh, em `public/js/multiplayer.js`): quem abrir o jogo pela Vercel vê no botão Multiplayer se o servidor está ligado e entra por ele; com o servidor desligado a página só avisa. O modo solo continua abrindo por duplo clique.
 
 ## Menu inicial e configurações
 
