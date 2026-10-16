@@ -1,9 +1,9 @@
 'use strict';
 // Time azul (França): facção 'franca' com fichas próprias por unidade e mecânicas novas (GALIX, atira e foge, salva do Tigre…).
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
-const names='Game,TYPES,FR_TYPES,SPEC,UT,KIT,FRANCE,STANDARD_FACTIONS,startingCatalog,cleanStartingArmy,armyCost,STARTING_BUDGET,UNIT_CAP,BARRAGE,AIR,PLANE,FOOT,trophyMax,seatsUsed,salvoSize,GALIX_CHARGES,GALIX_SMOKE,SCOOT_TIME,SHORT_RUNWAY,AIRDROP_SLOTS,PLANE_MODELS'.split(',');
+const names='AUTO_CRUISE,Game,TYPES,FR_TYPES,SPEC,UT,KIT,FRANCE,STANDARD_FACTIONS,startingCatalog,cleanStartingArmy,armyCost,STARTING_BUDGET,UNIT_CAP,BARRAGE,AIR,PLANE,FOOT,trophyMax,seatsUsed,salvoSize,GALIX_CHARGES,GALIX_SMOKE,SCOOT_TIME,SHORT_RUNWAY,AIRDROP_SLOTS,PLANE_MODELS'.split(',');
 const E=new Function(fs.readFileSync(path.join(__dirname,'..','public','js','engine.js'),'utf8')+'\nreturn {'+names.join(',')+'};')();
-const {Game,TYPES,FR_TYPES,SPEC,UT,FRANCE,STANDARD_FACTIONS,startingCatalog,cleanStartingArmy,armyCost,STARTING_BUDGET,BARRAGE,AIR,PLANE,trophyMax,seatsUsed,salvoSize,GALIX_CHARGES,GALIX_SMOKE,SCOOT_TIME,SHORT_RUNWAY}=E;
+const {AUTO_CRUISE,Game,TYPES,FR_TYPES,SPEC,UT,FRANCE,STANDARD_FACTIONS,startingCatalog,cleanStartingArmy,armyCost,STARTING_BUDGET,BARRAGE,AIR,PLANE,trophyMax,seatsUsed,salvoSize,GALIX_CHARGES,GALIX_SMOKE,SCOOT_TIME,SHORT_RUNWAY}=E;
 const FR_SIDE={blue:FRANCE,red:'red'},cases=[],test=(name,fn)=>cases.push([name,fn]);
 function field(factions=FR_SIDE,mode='rts'){
  const g=new Game('river','normal',123,mode,{posts:2},{},{},null,factions);g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.actions=[];g.animation=null;g.projectiles=[];g.memory.blue.clear();g.memory.red.clear();g.intel.clear();g.aiEnabled=false;
@@ -150,6 +150,12 @@ test('saves e multiplayer aceitam a facção França',()=>{
  const legacy=g.snapshot();delete legacy.state.factions;for(const u of legacy.state.units)delete u.faction;assert.equal(Game.fromSnapshot(legacy).factionOf('blue'),'blue');
  const g2=new Game('river','normal',1,'rts',{posts:2},{},{},null,{blue:'franca',red:'franca'});assert.deepEqual({...g2.factions},{blue:FRANCE,red:FRANCE});
  assert.deepEqual({...new Game('river','normal',1,'rts',{posts:2},{},{},null,{blue:'x',red:'y'}).factions},STANDARD_FACTIONS);
+});
+test('Rafale: Automática usa mísseis comuns; cruzeiro só pelo botão. Bombardeiro mantém Auto = cruzeiro',()=>{
+const g=field(),r=g.add('blue','multiroleFr',40,40),b=g.add('blue','bomberFr',40,44);
+assert.equal(AUTO_CRUISE(r),false);assert.equal(AUTO_CRUISE(b),true);
+g.order(r,'strikeCell',{x:50,y:40,weapon:'auto'});assert.notEqual(r.flightJob?.weapon,'cruiseMissile');
+assert.equal(g.order(r,'strikeCell',{x:50,y:40,weapon:'cruiseMissile'}),true);assert.equal(r.flightJob.weapon,'cruiseMissile');
 });
 for(const [name,fn] of cases){fn();console.log('OK '+name);}
 console.log(cases.length+' verificações do time azul passaram.');

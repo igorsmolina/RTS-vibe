@@ -78,6 +78,7 @@ const DRONE=u=>!!TYPES[u?.type]?.drone,FLYER=u=>PLANE(u)||DRONE(u); // drones vo
 const AIRPORT=u=>!!TYPES[u?.type]?.airport;
 const POST_CAPTURERS=new Set(['infantry','missileInfantry','machinegun','antitank','commander']);
 const BOMB_TYPES=['bombCommon','bombFragment','bombIncendiary'];
+const AUTO_CRUISE=u=>UT(u).weapons.includes('cruiseMissile')&&'bombCommon' in UT(u).ammo; // só bombardeiro: Auto = cruzeiro; o Rafale usa os mísseis
 const AMMO_PRICE={jetGun:1,jetAam:20,antiRadiation:25,jetAgm:25,cruiseMissile:60,bombCommon:12,bombFragment:14,bombIncendiary:18};
 const PLANE_MODELS={
  fighterBlue:{name:'Caça aliado',team:'blue',hp:150,speed:6,evasion:.2,flares:60,hull:400,train:3,ammo:{jetAam:4,antiRadiation:2},radar:true,role:'Interceptação · radar 18 · investidas'},
@@ -256,7 +257,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   else if(['return','land'].includes(type)){if(!AIR(u))return false;const base=this.get(args.targetId)||this.airports(u.owner).sort((a,b)=>DIST(u,a)-DIST(u,b)||a.id-b.id)[0];if(!base||!AIRPORT(base)||base.owner!==u.owner)return false;job.type='return';job.airportId=base.id;}
   else if(type==='strikeCell'){
    // Cruzeiro marca coordenada fixa, visível ou não. As demais armas mantêm a aposta na névoa.
-   const x=args.x,y=args.y,pick=args.weapon||'auto',cruise=UT(u).weapons.includes('cruiseMissile')&&(pick==='auto'||pick==='cruiseMissile');
+   const x=args.x,y=args.y,pick=args.weapon||'auto',cruise=UT(u).weapons.includes('cruiseMissile')&&(pick==='cruiseMissile'||pick==='auto'&&AUTO_CRUISE(u));
    if(!AIR(u)||!INSIDE(x,y)||!cruise&&this.visible[u.owner][KEY(x,y)])return false;
    const weapon=cruise&&u.ammo.cruiseMissile>0?'cruiseMissile':pick==='auto'?['jetAgm','jetGun'].find(w=>u.ammo[w]>0)&&'auto':['jetAgm','jetGun'].includes(pick)&&u.ammo[pick]>0?pick:null;if(!weapon)return false;
    job={type:'cellStrike',elapsed:0,cell:{x,y},goal:{x,y},weapon,salvoAgm:args.salvo===2?2:1,salvo:1,fired:0,clock:0,limit:DIST(u,{x,y})/UT(u).speed+15,targetId:null,resolved:false};

@@ -321,7 +321,7 @@ $('productionToggle').addEventListener('click',()=>{productionCollapsed=!product
 $('productionPanel').addEventListener('pointerenter',()=>{pointer=null;hover=null;});
 
 const WEAPON_NAME={jetAam:'Ar-ar',antiRadiation:'Antirradiação',jetAgm:'Antiblindado',jetGun:'Metralhadora',cruiseMissile:'Míssil de cruzeiro'},WEAPON_TARGET={jetAam:'aeronaves',antiRadiation:'antiaérea com radar',jetAgm:'veículos e estruturas',jetGun:'infantaria e veículos leves',cruiseMissile:'área 3×3 · alcance 67 · fogo amigo'};
-function cruiseUnits(){const w=$('planeWeapon').value;return w==='auto'||w==='cruiseMissile'?selectedUnits().filter(u=>PLANE(u)&&UT(u).weapons.includes('cruiseMissile')):[];}
+function cruiseUnits(){const w=$('planeWeapon').value;return selectedUnits().filter(u=>PLANE(u)&&UT(u).weapons.includes('cruiseMissile')&&(w==='cruiseMissile'||w==='auto'&&AUTO_CRUISE(u)));}
 // Estado de cada ação do painel do avião: visível só se faz sentido, desabilitada com motivo escrito quando falta algo.
 function planeActionState(planes,can){
  const rts=game.mode==='rts',ready=u=>rts||u.actionLeft,flying=planes.filter(u=>!u.runway&&AIR(u)),grounded=planes.filter(u=>u.flightState==='grounded'),base=game.airports(localPlayerSide()).length>0;
