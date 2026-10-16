@@ -1,6 +1,6 @@
 'use strict';
 // Engine outlets in the current aircraft sprites, after their existing 0.86 scale.
-const BATTLEFIELD_ENGINES={fighterBlue:[[0,27]],fighterRed:[[-3,25],[3,25]],multiroleBlue:[[-4,25],[4,25]],multiroleRed:[[-4,21],[4,21]],bomberBlue:[[-7,15],[7,15]],bomberRed:[[-8,13],[-5,13],[5,13],[8,13]],stealthFighterRed:[[-4,20],[4,20]],stealthFighterBlue:[[-4,21],[4,21]]};
+const BATTLEFIELD_ENGINES={fighterBlue:[[0,27]],fighterRed:[[-3,25],[3,25]],multiroleBlue:[[-4,25],[4,25]],multiroleRed:[[-4,21],[4,21]],bomberBlue:[[-7,15],[7,15]],bomberRed:[[-8,13],[-5,13],[5,13],[8,13]],stealthFighterRed:[[-4,20],[4,20]],stealthFighterBlue:[[-4,21],[4,21]],fighterFr:[[0,27]],multiroleFr:[[-5,24],[5,24]],bomberFr:[[-5,15],[5,15]],stealthFighterFr:[[-5,20],[5,20]]};
 // Pivôs das antenas giratórias (fração da estrutura e comprimento relativo à largura), lidos da arte de 512 px.
 const STRUCTURE_ANTENNAS={hq:[.209,.047,.075],post:[.777,.174,.075]},WRECK_SECONDS=30;
 class BattlefieldFX{
@@ -43,7 +43,7 @@ class BattlefieldFX{
   for(const [id,points]of this.trails){let n=0;for(const p of points)if(this.time-p.time<=profile.trailLife)points[n++]=p;points.length=n;if(!n)this.trails.delete(id);}
   if(reducedMotion)return;
   for(const u of game.units){
-   const t=TYPES[u.type],plane=PLANE(u),vehicle=!!t.vehicle;
+   const t=UT(u),plane=PLANE(u),vehicle=!!t.vehicle;
    if(t.structure||!plane&&(AIR(u)||!vehicle&&profile.graphics==='performance')||!this.unitVisible(u))continue;const pose=flightPose(u),x=(pose.x+.5)*CELL,y=(pose.y+.5)*CELL,lift=18*pose.level,air=AIR(u),at={x,y,lift,air,contactId:air?u.id:undefined};if(!this.screen(x,y)||!this.visible(at))continue;
    let state=this.positions.get(u.id);if(!state){state={x:pose.x,y:pose.y,trail:-1,dust:-1,damage:-1,markX:x,markY:y,step:0};this.positions.set(u.id,state);}const moved=Math.hypot(pose.x-state.x,pose.y-state.y)>.001;state.x=pose.x;state.y=pose.y;state.seen=this.time;
    const facing=u.facing||0,sin=Math.sin(facing),cos=Math.cos(facing);

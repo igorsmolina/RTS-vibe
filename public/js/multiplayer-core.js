@@ -11,7 +11,7 @@ function createCore(engine,{graceMs=120000,now=Date.now,maxRooms=16}={}){
  const random32=()=>globalThis.crypto.getRandomValues(new Uint32Array(1))[0],privateRandom=()=>random32()/0x100000000;
  const token=()=>Array.from(globalThis.crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');
  const ALPHABET='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',roomCode=()=>Array.from(globalThis.crypto.getRandomValues(new Uint8Array(8)),b=>ALPHABET[b%ALPHABET.length]).join('');
- const factionOf=value=>value==='blue'||value==='red'?value:null;
+ const factionOf=value=>value==='blue'||value==='red'||value==='franca'?value:null;
  function nickname(value){if(typeof value!=='string'||!value.trim()||value.trim().length>32||/[\x00-\x1f\x7f]/.test(value))throw failure('Informe um apelido de 1 a 32 caracteres.');return value.trim();}
  function config(value={},previous={map:'river',mode:'rts',seed:1,options:{...PROCEDURAL}}){
   if(!plain(value))throw failure('Configuração inválida.');const result={...previous,options:{...previous.options}};
@@ -22,7 +22,7 @@ function createCore(engine,{graceMs=120000,now=Date.now,maxRooms=16}={}){
   return result;
  }
  // O catálogo vale para a facção (as unidades escolhidas), não para o lado.
- function army(value,faction){if(!plain(value)||Object.entries(value).some(([type,n])=>!startingCatalog(faction).includes(type)||!Number.isInteger(n)||n<0)||armyCost(value)>STARTING_BUDGET)throw failure('Exército inicial inválido ou acima do orçamento.');return copy(cleanStartingArmy(value,faction));}
+ function army(value,faction){if(!plain(value)||Object.entries(value).some(([type,n])=>!startingCatalog(faction).includes(type)||!Number.isInteger(n)||n<0)||armyCost(value,faction)>STARTING_BUDGET)throw failure('Exército inicial inválido ou acima do orçamento.');return copy(cleanStartingArmy(value,faction));}
  function mask(values){const bytes=new Uint8Array(Math.ceil(SIZE/8));for(let i=0;i<SIZE;i++)if(values[i])bytes[i>>3]|=1<<(i&7);let text='';for(const b of bytes)text+=String.fromCharCode(b);return btoa(text);}
  function optical(game,side,u){if(u.spotted)return !!u.spotted[side]&&u.hp>0;const p=TILE(u);return !!(AIR(u)?game.sky:game.visible)[side][KEY(p.x,p.y)];}
  function viewState(room,player){

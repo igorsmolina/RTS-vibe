@@ -71,7 +71,7 @@ function validateBundle(b){
  if(b.campaign!==null&&b.campaign!==undefined&&typeof b.campaign!=='string')return null;
  if(b.campaign&&typeof deserializeCampaign==='function'&&!deserializeCampaign(b.campaign))return null;
  const settings=b.settings&&typeof b.settings==='object'&&!Array.isArray(b.settings)?{...b.settings}:{};
- if(Object.hasOwn(settings,'nation'))settings.nation=cleanNation(settings.nation);if(Object.hasOwn(settings,'doctrine'))settings.doctrine=cleanDoctrine(settings.doctrine);if(Object.hasOwn(settings,'startingArmy')){if(armyOverBudget(settings.startingArmy))settings.armyRestored=true;settings.startingArmy=cleanStartingArmy(settings.startingArmy);}
+ if(Object.hasOwn(settings,'nation'))settings.nation=cleanNation(settings.nation);if(Object.hasOwn(settings,'doctrine'))settings.doctrine=cleanDoctrine(settings.doctrine);if(Object.hasOwn(settings,'startingArmy')){const faction={enemy:'red',franca:FRANCE}[settings.army]||'blue';if(armyOverBudget(settings.startingArmy,faction))settings.armyRestored=true;settings.startingArmy=cleanStartingArmy(settings.startingArmy,faction);}
  return {version:1,profile:mergeProfiles(newProfile(),b.profile),campaign:b.campaign??null,settings};
 }
 function mergeBundles(local,remote){
