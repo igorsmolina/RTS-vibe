@@ -5,7 +5,8 @@
    o núcleo anota nele o jogador e a sala. Recebe o motor pronto: createCore(engine, opções). */
 function createCore(engine,{graceMs=120000,now=Date.now,maxRooms=16}={}){
  const {Game,TYPES,MAPS,NATION_DOCTRINES,PROCEDURAL,STARTING_DEFAULT,STARTING_BUDGET,UNIT_CAP,startingCatalog,armyCost,cleanStartingArmy,STEP,SIZE,KEY,TILE,AIR,MISSILE}=engine;
- const other=side=>side==='blue'?'red':'blue',plain=o=>o!==null&&typeof o==='object'&&!Array.isArray(o),id=n=>Number.isSafeInteger(n)&&n>0;
+ // Até três jogadores, todos contra todos; o primeiro é o anfitrião. Sem escolha explícita, cada lado usa um time de unidades diferente.
+ const SIDES=['blue','red','green'],DEFAULT_FACTION={blue:'blue',red:'red',green:'franca'},plain=o=>o!==null&&typeof o==='object'&&!Array.isArray(o),id=n=>Number.isSafeInteger(n)&&n>0;
  const copy=o=>JSON.parse(JSON.stringify(o)),pick=(o,keys)=>Object.fromEntries(keys.filter(k=>o[k]!==undefined).map(k=>[k,o[k]]));
  const failure=(message,status=400,code='invalid')=>Object.assign(new Error(message),{status,code});
  const random32=()=>globalThis.crypto.getRandomValues(new Uint32Array(1))[0],privateRandom=()=>random32()/0x100000000;
@@ -26,7 +27,7 @@ function createCore(engine,{graceMs=120000,now=Date.now,maxRooms=16}={}){
  function mask(values){const bytes=new Uint8Array(Math.ceil(SIZE/8));for(let i=0;i<SIZE;i++)if(values[i])bytes[i>>3]|=1<<(i&7);let text='';for(const b of bytes)text+=String.fromCharCode(b);return btoa(text);}
  function optical(game,side,u){if(u.spotted)return !!u.spotted[side]&&u.hp>0;const p=TILE(u);return !!(AIR(u)?game.sky:game.visible)[side][KEY(p.x,p.y)];}
  function viewState(room,player){
-  const game=room.game,side=player.side,known=new Set(),emitters=new Set(game.emitterContacts(side).map(c=>c.id));
+  const game=room.game,side=player.side,others=game.sides.filter(s=>s!==side),known=new Set(),emitters=new Set(game.emitterContacts(side).map(c=>c.id));
   const visual=['id','type','owner','faction','x','y','width','height','hp','maxHp','level','facing','altitude','altitudeTransition','flightState','entrenched','suppressed','launcherLevel','radarOn'];
   // Cópias rasas: cada estado é serializado logo em seguida. `job` (rota do RTS) repete `path` e o cliente não o usa.
   // A rota inteira só serve à linha tracejada: as 16 próximas casas e o destino bastam (a rota era 57% do estado).
@@ -53,9 +54,10 @@ function createCore(engine,{graceMs=120000,now=Date.now,maxRooms=16}={}){
   });player.eventCursor=eventSeq;
   const logs=game.logs.filter(l=>l.audiences?.includes(side)).map(l=>pick(l,['time','text']));
   const state={...pick(game,['map','mode','difficulty','seed','options','doctrines','factions','time','round','turn','winner','nationName','turnEnding']),multiplayer:true,playerSide:side,networkBusy:game.busy,paused:room.paused,terrainRevision:room.terrainRevision,units,structures,projectiles,events,logs,
-   visible:{[side]:mask(game.visible[side])},sky:{[side]:mask(game.sky[side])},explored:{[side]:mask(game.explored[side])},memory:{[side]:[...game.memory[side]]},radarContacts:{[side]:[...game.radarContacts[side]].filter(n=>known.has(n))},intel:[],claims:[],credits:{[side]:game.credits[side],[other(side)]:0},stats:{[side]:game.stats[side],[other(side)]:{kills:{},losses:{}}},initialArmies:{[side]:game.initialArmies[side]},
+   visible:{[side]:mask(game.visible[side])},sky:{[side]:mask(game.sky[side])},explored:{[side]:mask(game.explored[side])},memory:{[side]:[...game.memory[side]]},radarContacts:{[side]:[...game.radarContacts[side]].filter(n=>known.has(n))},intel:[],claims:[],credits:{[side]:game.credits[side],...Object.fromEntries(others.map(s=>[s,0]))},stats:{[side]:game.stats[side],...Object.fromEntries(others.map(s=>[s,{kills:{},losses:{}}]))},initialArmies:{[side]:game.initialArmies[side]},
    drops:(game.drops||[]).filter(d=>d.owner===side||visiblePoint(d)).map(d=>({...pick(d,['x','y','owner','elapsed']),passenger:pick(d.passenger,['id','type','owner','faction','hp','maxHp']),destination:pick(d.destination,['x','y'])})),
    mines:game.mines.filter(m=>m.known[side]).map(m=>({x:m.x,y:m.y,known:{[side]:true}})),fires:game.fires.filter(f=>visiblePoint(f)).map(f=>pick(f,['x','y','left'])),actions:[],animation:null,aiEnabled:false,aiQueue:[],nextId:0};
+  state.out=[...(game.out||[])];if(!state.winner&&game.isOut(side))state.winner='eliminated'; // eliminado: vê a derrota, os outros seguem
   if(!player.knownTerrain){player.knownTerrain=game.terrain.slice();player.knownTerrainRevision=0;}
   let terrainChanged=false;for(let i=0;i<SIZE;i++)if(game.visible[side][i]&&player.knownTerrain[i]!==game.terrain[i]){player.knownTerrain[i]=game.terrain[i];terrainChanged=true;}if(terrainChanged)player.knownTerrainRevision++;
   state.terrainRevision=player.knownTerrainRevision;if(player.terrainRevision!==player.knownTerrainRevision){state.terrain=player.knownTerrain.slice();player.terrainRevision=player.knownTerrainRevision;}
@@ -65,14 +67,26 @@ function createCore(engine,{graceMs=120000,now=Date.now,maxRooms=16}={}){
  // ponytail: salas em um processo; persistência e múltiplas instâncias exigirão armazenamento compartilhado.
  const rooms=new Map(),sockets=new Set();let tickNumber=0,closing=false;
  const send=(socket,value)=>{if(socket&&(socket.readyState===undefined||socket.readyState===1))socket.send(JSON.stringify(value));};
- const publicRoom=room=>({code:room.code,status:room.status,hostSide:room.players.find(p=>p.host)?.side,config:room.config,matchId:room.matchId,paused:room.paused,reconnectDeadline:room.paused?Math.min(...room.players.filter(p=>!p.ws).map(p=>p.disconnectedAt+graceMs)):null,result:room.result||null,players:room.players.map(p=>({nickname:p.nickname,side:p.side,ready:p.ready,connected:!!p.ws,doctrine:p.doctrine,faction:p.faction,army:p.army,rematch:!!p.rematch}))});
+ const publicRoom=room=>({code:room.code,status:room.status,hostSide:room.players.find(p=>p.host)?.side,config:room.config,matchId:room.matchId,paused:room.paused,reconnectDeadline:room.paused?Math.min(...room.players.filter(p=>!p.ws&&!p.out).map(p=>p.disconnectedAt+graceMs)):null,result:room.result||null,players:room.players.map(p=>({nickname:p.nickname,side:p.side,ready:p.ready,connected:!!p.ws,doctrine:p.doctrine,faction:p.faction,army:p.army,rematch:!!p.rematch,out:!!p.out}))});
  // stateOnly: o envio periódico (10 Hz) leva só o estado; sala e resultado saem quando a sala muda.
  const broadcast=(room,stateOnly=false)=>{for(const r of room?[room]:rooms.values())for(const p of r.players){if(!p.ws)continue;if(!stateOnly)send(p.ws,{type:'room',side:p.side,room:publicRoom(r)});if(r.game)send(p.ws,{type:'state',side:p.side,matchId:r.matchId,state:viewState(r,p)});if(r.result&&!stateOnly)send(p.ws,{type:'result',...r.result});}};
- const newPlayer=(name,side,host=false)=>({nickname:nickname(name),side,host,token:token(),ready:false,doctrine:'balanced',faction:null,army:{...STARTING_DEFAULT},ws:null,lastSeq:0,acks:new Map(),eventCursor:0,terrainRevision:-1,disconnectedAt:null,rematch:false});
- // Facção = unidades usadas; sem escolha explícita acompanha o lado.
- const factionFor=p=>p.faction||p.side;
- const finish=(room,winner,reason)=>{room.status=winner?'finished':'cancelled';room.paused=false;room.finishedAt=now();room.result={winner:winner||null,reason};if(room.game)room.game.winner=winner||'cancelled';broadcast(room);};
- const abandon=(room,player)=>{if(room.status==='playing')finish(room,room.players.find(p=>p!==player)?.side,'abandonment');else if(room.status==='waiting'){if(player.host){room.status='cancelled';room.result={winner:null,reason:'host_left'};broadcast(room);rooms.delete(room.code);}else{room.players=room.players.filter(p=>p!==player);room.players.forEach(p=>p.ready=false);broadcast(room);}}};
+ const newPlayer=(name,side,host=false)=>({nickname:nickname(name),side,host,token:token(),ready:false,doctrine:'balanced',faction:null,army:{...STARTING_DEFAULT},ws:null,lastSeq:0,acks:new Map(),eventCursor:0,terrainRevision:-1,disconnectedAt:null,rematch:false,out:false,left:false});
+ // Facção = unidades usadas; sem escolha explícita vale o padrão do lado.
+ const factionFor=p=>p.faction||DEFAULT_FACTION[p.side];
+ const active=room=>room.players.filter(p=>!p.out);
+ // Jogadores derrotados em combate (o motor registra em game.out) ficam marcados na sala; devolve se algo mudou.
+ const sync=room=>{let changed=false;for(const p of room.players)if(!p.out&&room.game?.out?.includes(p.side)){p.out=true;changed=true;}return changed;};
+ // Lados contíguos na ordem de entrada (sem buracos depois que alguém sai da sala de espera).
+ const compact=room=>{room.players.sort((a,b)=>SIDES.indexOf(a.side)-SIDES.indexOf(b.side));room.players.forEach((p,i)=>{p.side=SIDES[i];});};
+ const finish=(room,winner,reason)=>{room.status=winner?'finished':'cancelled';room.paused=false;room.finishedAt=now();room.players=room.players.filter(p=>!p.left);room.result={winner:winner||null,reason};if(room.game)room.game.winner=winner||'cancelled';broadcast(room);};
+ // Sai da partida (desistência, abandono ou prazo de reconexão): com três vivos ela segue sem ele; com dois, o outro vence.
+ // `expired` só dá a vitória a quem ainda está conectado.
+ const lose=(room,player,reason)=>{
+  sync(room);if(player.out||room.status!=='playing')return;const rest=active(room).filter(p=>p!==player);
+  if(rest.length>1){player.out=true;room.game.eliminate(player.side);broadcast(room);return;}
+  const winner=reason==='expired'?rest.find(p=>p.ws):rest[0];finish(room,winner?.side,reason==='expired'?winner?'abandonment':'disconnected':reason);
+ };
+ const abandon=(room,player)=>{if(room.status==='playing')lose(room,player,'abandonment');else if(room.status==='waiting'){if(player.host){room.status='cancelled';room.result={winner:null,reason:'host_left'};broadcast(room);rooms.delete(room.code);}else{room.players=room.players.filter(p=>p!==player);room.players.forEach(p=>p.ready=false);compact(room);broadcast(room);}}};
  // Carga real do servidor para o /health: ticks por segundo executados (meta 30) e fração de um núcleo usada, em janelas de 5 s.
  const load={tickRate:0,cpu:0},cpuUsage=typeof process!=='undefined'&&typeof process.cpuUsage==='function'?process.cpuUsage:null;let loadAt=performance.now(),loadTicks=0,loadCpu=cpuUsage?.();
  const sampleLoad=()=>{loadTicks++;const t=performance.now();if(t-loadAt<5000)return;load.tickRate=Math.round(loadTicks/(t-loadAt)*1e4)/10;if(cpuUsage){const used=cpuUsage(loadCpu);load.cpu=Math.round((used.user+used.system)/1000/(t-loadAt)*100)/100;loadCpu=cpuUsage();}loadAt=t;loadTicks=0;};
@@ -80,9 +94,12 @@ function createCore(engine,{graceMs=120000,now=Date.now,maxRooms=16}={}){
   sampleLoad();tickNumber++;for(const room of rooms.values()){
    if(room.status==='waiting'&&now()-room.lastTouch>15*60000||['finished','cancelled'].includes(room.status)&&now()-room.finishedAt>5*60000){rooms.delete(room.code);for(const p of room.players)p.ws?.close(1000,'Sala encerrada');continue;}
    if(room.status!=='playing')continue;
-   const missing=room.players.filter(p=>!p.ws);if(missing.length){room.paused=true;if(missing.some(p=>now()-p.disconnectedAt>=graceMs)){const connected=room.players.find(p=>p.ws);finish(room,connected?.side,connected?'abandonment':'disconnected');}continue;}
+   for(const p of active(room))if(!p.ws&&now()-p.disconnectedAt>=graceMs)lose(room,p,'expired');
+   if(room.status!=='playing')continue;
+   const missing=active(room).filter(p=>!p.ws);if(missing.length){room.paused=true;continue;}
    room.paused=false;const latest=room.game.nextEventSeq||0;room.game.update(STEP);if(room.game.events.some(e=>e.seq>latest&&e.kind==='terrainChanged'))room.terrainRevision++;
-   if(room.game.winner)finish(room,room.game.winner,'battle');else if(tickNumber%3===0)broadcast(room,true);
+   const changed=sync(room);
+   if(room.game.winner)finish(room,room.game.winner,'battle');else if(changed)broadcast(room);else if(tickNumber%3===0)broadcast(room,true);
   }
  };
  const issue=(socket,e)=>send(socket,{type:'error',code:e.code||'invalid',message:e.status?e.message:'Mensagem inválida.'});
@@ -94,13 +111,13 @@ function createCore(engine,{graceMs=120000,now=Date.now,maxRooms=16}={}){
   return {code,token:player.token,side:player.side};
  }
  function joinRoom(code,name){
-  const room=rooms.get(code);if(!room)throw failure('Sala indisponível ou encerrada.',404,'room_missing');if(room.status!=='waiting'||room.players.length>=2)throw failure('Sala cheia ou partida já iniciada.',409,'room_full');
-  const player=newPlayer(name,'red');room.players.push(player);room.players.forEach(p=>p.ready=false);room.lastTouch=now();
+  const room=rooms.get(code);if(!room)throw failure('Sala indisponível ou encerrada.',404,'room_missing');if(room.status!=='waiting'||room.players.length>=SIDES.length)throw failure('Sala cheia ou partida já iniciada.',409,'room_full');
+  const player=newPlayer(name,SIDES.find(s=>!room.players.some(p=>p.side===s)));room.players.push(player);room.players.forEach(p=>p.ready=false);room.lastTouch=now();
   return {code:room.code,token:player.token,side:player.side,room};
  }
 
  const applyCommand=(room,player,msg)=>{
-  const g=room.game,side=player.side,a=msg.args;if(room.status!=='playing'||room.paused||room.players.some(p=>!p.ws))throw failure('Aguarde a conexão dos dois jogadores.',409,'paused');if(!plain(a))throw failure('Argumentos inválidos.');const stop=msg.action==='order'&&a.type==='stop';if(g.mode==='turns'&&(g.turn!==side||g.busy&&!stop))throw failure('Aguarde seu turno e o fim da ação.',409,'turn');
+  const g=room.game,side=player.side,a=msg.args;if(player.out)throw failure('Você foi eliminado.',403,'eliminated');if(room.status!=='playing'||room.paused||active(room).some(p=>!p.ws))throw failure('Aguarde a conexão dos jogadores.',409,'paused');if(!plain(a))throw failure('Argumentos inválidos.');const stop=msg.action==='order'&&a.type==='stop';if(g.mode==='turns'&&(g.turn!==side||g.busy&&!stop))throw failure('Aguarde seu turno e o fim da ação.',409,'turn');
   const owned=n=>{if(!id(n))throw failure('Unidade inválida.');const u=g.get(n);if(!u||u.owner!==side||u.hp<=0)throw failure('Esta unidade não pertence a você.',403,'ownership');return u;};
   const ownIds=ids=>{if(!Array.isArray(ids)||!ids.length||ids.length>128||ids.some(n=>!id(n)))throw failure('Seleção inválida.');ids.forEach(owned);return [...new Set(ids)];};
   const point=p=>{if(!plain(p)||!Number.isInteger(p.x)||!Number.isInteger(p.y)||p.x<0||p.x>=128||p.y<0||p.y>=96)throw failure('Posição inválida.');return {x:p.x,y:p.y};};
@@ -146,20 +163,21 @@ function createCore(engine,{graceMs=120000,now=Date.now,maxRooms=16}={}){
     // Entrar sem HTTP (hospedagem pelo navegador): devolve o token e a conexão segue com auth.
     if(msg.type==='join'){if(msg.version!==1||typeof msg.code!=='string')throw failure('Mensagem inválida.');const joined=joinRoom(msg.code,msg.nickname);send(ws,{type:'joined',code:joined.code,token:joined.token,side:joined.side});broadcast(joined.room);return;}
     if(msg.type!=='auth'||msg.version!==1||typeof msg.code!=='string'||typeof msg.token!=='string')throw failure('Sessão inválida.',401,'auth');const room=rooms.get(msg.code);if(!room)throw failure('Sala indisponível ou encerrada.',404,'room_missing');const player=room.players.find(p=>p.token===msg.token);if(!player)throw failure('Sessão inválida.',401,'auth');
-    if(room.status==='playing'&&room.players.some(p=>!p.ws&&now()-p.disconnectedAt>=graceMs)){const connected=room.players.find(p=>p.ws);finish(room,connected?.side,connected?'abandonment':'disconnected');}
-    clearTimeout(ws.authTimer);if(player.ws&&player.ws!==ws)player.ws.close(1000,'Sessão retomada em outra aba');player.ws=ws;player.disconnectedAt=null;player.terrainRevision=-1;player.eventCursor=room.game?.nextEventSeq||0;ws.player=player;ws.room=room;room.lastTouch=now();room.paused=room.status==='playing'&&room.players.some(p=>!p.ws);send(ws,{type:'authenticated',side:player.side,lastSeq:player.lastSeq});broadcast(room);return;
+    if(room.status==='playing')for(const p of active(room))if(!p.ws&&now()-p.disconnectedAt>=graceMs)lose(room,p,'expired');
+    clearTimeout(ws.authTimer);if(player.ws&&player.ws!==ws)player.ws.close(1000,'Sessão retomada em outra aba');player.ws=ws;player.disconnectedAt=null;player.terrainRevision=-1;player.eventCursor=room.game?.nextEventSeq||0;ws.player=player;ws.room=room;room.lastTouch=now();room.paused=room.status==='playing'&&active(room).some(p=>!p.ws);send(ws,{type:'authenticated',side:player.side,lastSeq:player.lastSeq});broadcast(room);return;
    }
    const room=ws.room,player=ws.player;if(!rooms.has(room.code)||player.ws!==ws)throw failure('Sala indisponível ou encerrada.',404,'room_missing');room.lastTouch=now();
    if(msg.type==='command'){
     if(!id(msg.seq))throw failure('Número de comando inválido.');if(msg.seq<=player.lastSeq){send(ws,player.acks.get(msg.seq)||{type:'ack',seq:msg.seq,ok:false,duplicate:true});return;}if(msg.seq!==player.lastSeq+1)throw failure('Sequência de comandos inválida.',409,'sequence');
     player.lastSeq=msg.seq;let ack;try{if(limited)throw failure('Muitas ordens de uma vez. Aguarde um instante.',429,'rate');const ok=!!applyCommand(room,player,msg);ack={type:'ack',seq:msg.seq,ok,...(!ok?{message:'Ação indisponível neste estado.'}:{})};}catch(e){ack={type:'ack',seq:msg.seq,ok:false,message:e.status?e.message:'Comando inválido.',code:e.code||'invalid'};}player.acks.set(msg.seq,ack);while(player.acks.size>128)player.acks.delete(player.acks.keys().next().value);send(ws,ack);return;
    }
-   if(msg.type==='leave'){abandon(room,player);player.ws=null;ws.close(1000,'Você saiu da sala');return;}
+   if(msg.type==='leave'){player.left=true;abandon(room,player);if(['finished','cancelled'].includes(room.status)&&room.players.includes(player)){room.players=room.players.filter(p=>p!==player);broadcast(room);}player.ws=null;ws.close(1000,'Você saiu da sala');return;}
    // Desistir: derrota de quem desistiu, os dois seguem na sala (revanche). Só o anfitrião encerra a partida para todos.
-   if(msg.type==='surrender'){if(room.status!=='playing')throw failure('Não há partida em andamento.');finish(room,other(player.side),'surrender');return;}
+   if(msg.type==='surrender'){if(room.status!=='playing')throw failure('Não há partida em andamento.');if(player.out)throw failure('Você já foi eliminado.');lose(room,player,'surrender');return;}
    if(msg.type==='end'){if(!player.host)throw failure('Somente o anfitrião pode encerrar a partida.',403,'host');if(room.status!=='playing')throw failure('Não há partida em andamento.');finish(room,null,'host_ended');return;}
    if(msg.type==='rematch'){
-    if(room.status!=='finished'||room.players.some(p=>!p.ws))throw failure('Revanche indisponível.');player.rematch=true;if(room.players.every(p=>p.rematch)){room.status='waiting';room.game=null;room.result=null;room.paused=false;for(const p of room.players){p.side=other(p.side);p.ready=false;p.rematch=false;p.army={...STARTING_DEFAULT};p.lastSeq=0;p.acks.clear();p.eventCursor=0;p.terrainRevision=-1;}room.terrainRevision=0;}broadcast(room);return;
+    // Só quem continua conectado entra na revanche (quem saiu ou caiu fica de fora); os lados giram: azul → vermelho → verde → azul.
+    const staying=room.players.filter(p=>p.ws);if(room.status!=='finished'||staying.length<2||!staying.includes(player))throw failure('Revanche indisponível.');player.rematch=true;if(staying.every(p=>p.rematch)){room.players=staying;room.status='waiting';room.game=null;room.result=null;room.paused=false;for(const p of room.players){p.side=SIDES[(SIDES.indexOf(p.side)+1)%staying.length];p.out=false;p.ready=false;p.rematch=false;p.army={...STARTING_DEFAULT};p.lastSeq=0;p.acks.clear();p.eventCursor=0;p.terrainRevision=-1;}room.terrainRevision=0;}broadcast(room);return;
    }
    if(room.status!=='waiting')throw failure('A partida já começou.');
    if(msg.type==='configure'){if(!player.host)throw failure('Somente o anfitrião pode configurar.',403,'host');room.config=config(msg.config,room.config);room.players.forEach(p=>p.ready=false);}
@@ -170,13 +188,13 @@ function createCore(engine,{graceMs=120000,now=Date.now,maxRooms=16}={}){
    }
    else if(msg.type==='ready'){if(typeof msg.ready!=='boolean')throw failure('Confirmação inválida.');player.ready=msg.ready;}
    else if(msg.type==='start'){
-    if(!player.host||room.players.length!==2||room.players.some(p=>!p.ready||!p.ws))throw failure('Os dois jogadores precisam estar conectados e prontos.');const c=room.config,doctrines={},armies={},factions={};for(const p of room.players){doctrines[p.side]=p.doctrine;armies[p.side]=p.army;factions[p.side]=factionFor(p);p.eventCursor=0;p.terrainRevision=-1;p.lastSeq=0;p.acks.clear();}
-    room.game=new Game(c.map,'normal',c.seed,c.mode,c.options,doctrines,armies,privateRandom,factions);room.game.multiplayer=true;room.game.aiEnabled=false;room.game.rng=privateRandom;room.game.radarRng=privateRandom;room.game.logs=[];room.game.events=[];room.game.log('Partida multiplayer iniciada.',['blue','red']);for(const p of room.players){p.knownTerrain=null;p.knownTerrainRevision=0;}room.status='playing';room.paused=false;room.matchId++;room.terrainRevision=0;
+    if(!player.host||room.players.length<2||room.players.some(p=>!p.ready||!p.ws))throw failure('Todos os jogadores precisam estar conectados e prontos (mínimo de dois).');const c=room.config,doctrines={},armies={},factions={};for(const p of room.players){p.out=false;doctrines[p.side]=p.doctrine;armies[p.side]=p.army;factions[p.side]=factionFor(p);p.eventCursor=0;p.terrainRevision=-1;p.lastSeq=0;p.acks.clear();}
+    room.game=new Game(c.map,'normal',c.seed,c.mode,c.options,doctrines,armies,privateRandom,factions);room.game.multiplayer=true;room.game.aiEnabled=false;room.game.rng=privateRandom;room.game.radarRng=privateRandom;room.game.logs=[];room.game.events=[];room.game.log('Partida multiplayer iniciada.',room.game.sides);for(const p of room.players){p.knownTerrain=null;p.knownTerrainRevision=0;}room.status='playing';room.paused=false;room.matchId++;room.terrainRevision=0;
    }else throw failure('Mensagem desconhecida.');broadcast(room);
   }catch(e){issue(ws,e);if(!ws.player)ws.close(1008,'Sessão inválida');}
  }
  function detach(ws){
-  clearTimeout(ws.authTimer);sockets.delete(ws);const p=ws.player,r=ws.room;if(!p||p.ws!==ws)return;p.ws=null;p.disconnectedAt=now();if(closing)return;if(r.status==='playing')r.paused=true;else if(r.status==='waiting')r.players.forEach(q=>q.ready=false);broadcast(r);
+  clearTimeout(ws.authTimer);sockets.delete(ws);const p=ws.player,r=ws.room;if(!p||p.ws!==ws)return;p.ws=null;p.disconnectedAt=now();if(closing)return;if(r.status==='playing'&&!p.out)r.paused=true;else if(r.status==='waiting')r.players.forEach(q=>q.ready=false);broadcast(r);
  }
  return {rooms,sockets,load,createRoom,joinRoom,attach,receive,detach,tick,broadcast,viewState:(room,side)=>viewState(room,room.players.find(p=>p.side===side)),close(){closing=true;}};
 }

@@ -18,8 +18,9 @@ const start=(a)=>{for(const s of [a.host,a.guest])say(s,{type:'ready',ready:true
 
 {const a=pair();
  assert.equal(a.joined.side,'red');assert.equal(a.room.players.length,2);assert.ok(last(a.guest,'authenticated'));
- // entrar sem código válido ou com sala cheia é recusado, e a conexão é fechada
- const stranger=socket();say(stranger,{type:'join',version:1,code:a.code,nickname:'Terceiro'});assert.equal(last(stranger,'error').code,'room_full');assert.ok(stranger.closed);
+ // a sala comporta três jogadores; o quarto (ou um código inválido) é recusado, e a conexão é fechada
+ const third=socket();say(third,{type:'join',version:1,code:a.code,nickname:'Terceiro'});assert.equal(last(third,'joined').side,'green');
+ const stranger=socket();say(stranger,{type:'join',version:1,code:a.code,nickname:'Quarto'});assert.equal(last(stranger,'error').code,'room_full');assert.ok(stranger.closed);
  const lost=socket();say(lost,{type:'join',version:1,code:'ZZZZZZZZ',nickname:'X'});assert.equal(last(lost,'error').code,'room_missing');
  console.log('OK entrar na sala sem HTTP: token, auth e sala cheia');}
 
@@ -66,4 +67,46 @@ const start=(a)=>{for(const s of [a.host,a.guest])say(s,{type:'ready',ready:true
  core.detach(a.guest);assert.equal(a.room.paused,true);time+=119000;core.tick();assert.equal(a.room.status,'playing');
  time+=2000;core.tick();assert.equal(a.room.status,'finished');assert.equal(a.room.result.reason,'abandonment');
  console.log('OK reconexão: prazo de dois minutos antes do abandono');}
+{const a=pair();
+ // três jogadores, cada um com o seu time de unidades; o verde começa com os franceses
+ const third=socket();say(third,{type:'join',version:1,code:a.code,nickname:'Terceiro'});const j3=last(third,'joined');say(third,{type:'auth',version:1,code:a.code,token:j3.token});
+ say(a.guest,{type:'prepare',faction:'franca'});say(third,{type:'prepare',faction:'red'});
+ for(const s of [a.host,a.guest,third])say(s,{type:'ready',ready:true});
+ say(a.host,{type:'start'});assert.equal(a.room.status,'playing');
+ const game=a.room.game;
+ assert.deepEqual(game.sides,['blue','red','green']);assert.deepEqual({...game.factions},{blue:'blue',red:'franca',green:'red'});
+ assert.ok(['blue','red','green'].every(s=>game.hq(s)));
+ // cada jogador só enxerga o próprio dinheiro
+ core.tick();core.tick();core.tick();
+ const view=last(third,'state').state;assert.equal(view.playerSide,'green');assert.equal(view.credits.green,game.credits.green);assert.equal(view.credits.blue,0);assert.equal(view.credits.red,0);
+ // desistir com três vivos elimina só quem desistiu: a partida segue e ele vê a derrota
+ say(third,{type:'surrender'});
+ assert.equal(a.room.status,'playing');assert.ok(game.isOut('green'));assert.equal(game.units.filter(u=>u.owner==='green').length,0);assert.equal(game.winner,null);
+ core.tick();core.tick();core.tick();assert.equal(last(third,'state').state.winner,'eliminated');assert.equal(last(a.host,'state').state.winner,null);
+ say(third,{type:'command',seq:1,action:'endTurn',args:{}});assert.equal(last(third,'ack').code,'eliminated');
+ say(third,{type:'surrender'});assert.equal(last(third,'error').message,'Você já foi eliminado.');
+ // o jogador eliminado que cai da rede não pausa a partida
+ core.detach(third);core.tick();assert.equal(a.room.paused,false);
+ // com dois vivos, a desistência encerra: vence o outro
+ say(a.guest,{type:'surrender'});
+ assert.equal(a.room.status,'finished');assert.deepEqual({...a.room.result},{winner:'blue',reason:'surrender'});
+ console.log('OK três jogadores: times próprios, estado por jogador, eliminação e vitória');}
+
+{const a=pair();
+ const third=socket();say(third,{type:'join',version:1,code:a.code,nickname:'Terceiro'});const j3=last(third,'joined');say(third,{type:'auth',version:1,code:a.code,token:j3.token});
+ for(const s of [a.host,a.guest,third])say(s,{type:'ready',ready:true});say(a.host,{type:'start'});
+ // quem fica sem rede por mais de dois minutos é eliminado; os outros dois seguem jogando
+ core.detach(third);assert.equal(a.room.paused,true);time+=121000;core.tick();
+ assert.equal(a.room.status,'playing');assert.ok(a.room.game.isOut('green'));assert.equal(a.room.paused,false);
+ // quem caiu da rede não trava a revanche; os lados giram
+ say(a.guest,{type:'surrender'});assert.equal(a.room.status,'finished');
+ say(a.host,{type:'rematch'});say(a.guest,{type:'rematch'});
+ assert.equal(a.room.status,'waiting');assert.deepEqual(a.room.players.map(p=>p.side).sort(),['blue','red']);
+ console.log('OK três jogadores: queda de rede elimina e a revanche ignora quem saiu');}
+
+{const a=pair();
+ // na sala de espera, sair libera o lugar e os lados voltam a ser contíguos
+ const third=socket();say(third,{type:'join',version:1,code:a.code,nickname:'Terceiro'});
+ say(a.guest,{type:'leave'});assert.deepEqual(a.room.players.map(p=>p.side),['blue','red']);assert.equal(a.room.players[1].nickname,'Terceiro');
+ console.log('OK sair da sala de espera reorganiza os lados');}
 console.log('núcleo do multiplayer: verificações concluídas');

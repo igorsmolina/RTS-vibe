@@ -7,7 +7,7 @@
     "start": "node scripts/serve.cjs",
     "start:multiplayer": "node scripts/multiplayer-server.cjs",
     "host": "node scripts/host-local.cjs",
-    "test:multiplayer:integration": "node tests/multiplayer-rate.integration.cjs && node tests/multiplayer-server.integration.cjs && node tests/multiplayer.browser.integration.cjs",
+    "test:multiplayer:integration": "node tests/multiplayer-rate.integration.cjs && node tests/multiplayer-server.integration.cjs && node tests/multiplayer.browser.integration.cjs && node tests/multiplayer-three.browser.integration.cjs",
     "test:integration:match": "node tests/match-cycle.browser.test.cjs && node tests/match-economy.browser.integration.cjs && node tests/match-combat.browser.integration.cjs && node tests/unit-balance.browser.test.cjs",
     "test:integration:helicopters": "node tests/helicopter-weapons.browser.integration.cjs",
     "test:integration:all": "npm run test:integration && npm run test:integration:match && npm run test:integration:helicopters && npm run test:multiplayer:integration && npm run test:integration:aviation",

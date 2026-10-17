@@ -96,8 +96,8 @@
 </div>
 <nav class="title-menu" aria-label="Menu inicial"><button id="titleResume" class="title-btn primary" hidden="">Continuar partida</button><button id="titlePlay" class="title-btn primary">Jogar<small>batalha rápida</small></button><button id="titleMultiplayer" class="title-btn">Multiplayer<small>salas privadas por código</small></button><button class="title-btn" id="titleTutorial"><span>Treinamento</span><small>Aprenda os comandos em 8 passos</small></button><button id="titleCampaign" class="title-btn"><span>Campanha</span><small id="titleCampaignInfo">Mapa-múndi gerado por semente</small></button><button id="titleSettings" class="title-btn">Configurações<small>gráficos, som, grade e padrões</small></button><button id="titleProfile" class="title-btn">Perfil e conquistas<small id="titleProfileInfo"></small></button><button id="titleHelp" class="title-btn">Como jogar<small>controles e regras</small></button></nav>
 <p class="title-foot">Setas navegam · Enter escolhe · Esc volta ao jogo</p></div>
-<div class="title-chart map-sheet"><span class="chart-columns" aria-hidden="true">A　 B　 C　 D　 E　 F　 G</span><span class="chart-rows" aria-hidden="true">1<br>2<br>3<br>4</span><canvas id="titleBg" class="title-bg" width="1008" height="784" aria-hidden="true"></canvas>
-<div class="map-legend"><span class="friendly">Sua nação</span><span class="hostile">Inimigo</span><span class="neutral">Posto neutro</span></div>
+<div class="title-chart map-sheet"><span class="chart-columns" aria-hidden="true"><i>A</i><i>B</i><i>C</i><i>D</i><i>E</i><i>F</i><i>G</i></span><div class="chart-field"><span class="chart-rows" aria-hidden="true"><i>1</i><i>2</i><i>3</i><i>4</i></span><canvas id="titleBg" class="title-bg" width="1024" height="768" aria-hidden="true"></canvas></div><p id="titleMapName" class="chart-caption" aria-hidden="true"></p>
+<div class="map-legend"><span class="friendly">Sua nação</span><span class="hostile">Inimigo</span><span class="third">Terceiro time</span><span class="neutral">Posto neutro</span></div>
 <div class="chart-scale"><svg viewBox="0 0 240 32" aria-hidden="true"><path d="M12 24V6m-5 7 5-7 5 7M80 20h120m-120-5v10m60-10v10m60-10v10" fill="none" stroke="currentColor"></path><text x="25" y="17">N</text><text x="80" y="12">0</text><text x="170" y="12">10 casas</text></svg></div>
 </div>
 </dialog>
@@ -398,7 +398,7 @@
 <div class="dialog-buttons"><button id="review">Rever campo</button><button id="revealMap" hidden="">Ver mapa inteiro</button><button id="backToWorld" hidden="">Voltar ao mapa-múndi</button><button id="resultToMenu">Voltar ao menu inicial</button><button id="playAgain" class="primary">Nova operação</button></div>
 </div></dialog>
 <dialog id="multiplayer" class="settings-dialog" aria-labelledby="mpTitle">
-<h2 id="mpTitle">Multiplayer</h2><p>Partida privada para dois jogadores. Sem conta obrigatória; as salas são temporárias. Cada jogador pode ter até 50 tropas ao mesmo tempo (em campo, embarcadas e na fila de produção).</p>
+<h2 id="mpTitle">Multiplayer</h2><p>Partida privada para 2 ou 3 jogadores, todos contra todos: cada um escolhe o seu time de unidades. Sem conta obrigatória; as salas são temporárias. Cada jogador pode ter até 50 tropas ao mesmo tempo (em campo, embarcadas e na fila de produção).</p>
 <p id="mpStatus" role="status" aria-live="polite">Crie uma sala ou entre com o código do seu amigo.</p>
 <div id="mpEntry" class="multiplayer-entry">
 <div class="field"><label for="mpNickname">Seu apelido</label><input id="mpNickname" required minlength="1" maxlength="24" autocomplete="nickname" value="Jogador"></div>
@@ -411,7 +411,7 @@
 <div class="field"><label for="mpMode">Modo</label><select id="mpMode"><option value="rts">RTS contínuo</option><option value="turns">Por turnos</option></select></div>
 <div class="field"><label for="mpSeed">Semente do mapa</label><input id="mpSeed" type="number" min="1" max="4294967295" step="1" value="1"></div>
 </div><fieldset id="mpTerrain" class="procedural" hidden><label>Água<input id="mpWater" type="range" min="0" max="100" value="35"></label><label>Floresta<input id="mpForest" type="range" min="0" max="100" value="40"></label><label>Relevo<input id="mpRelief" type="range" min="0" max="100" value="35"></label><label>Campos e sebes<input id="mpFarmland" type="range" min="0" max="100" value="60"></label><label>Postos<select id="mpPosts"></select></label></fieldset></fieldset>
-<section id="mpFormation" hidden><h3>Sua força</h3><div class="field"><label for="mpDoctrine">Doutrina</label><select id="mpDoctrine"></select></div><div class="field"><label for="mpFaction">Suas unidades</label><select id="mpFaction"><option value="">Do meu time (padrão)</option><option value="blue">Unidades verdes</option><option value="red">Unidades vermelhas</option><option value="franca">Unidades azuis (França)</option></select></div><div class="army-summary"><button id="mpArmy" type="button">Montar exército inicial</button><small id="mpArmySummary"></small></div><p>Cada time tem unidades diferentes (aviões, helicóptero de transporte); você pode jogar com as do outro time. A revanche troca os lados.</p><div class="dialog-buttons"><button id="mpReady" type="button" aria-pressed="false">Estou pronto</button><button id="mpStart" type="button" class="primary">Iniciar partida</button><button id="mpRematch" type="button" hidden>Solicitar revanche</button><button id="mpResume" type="button" hidden>Voltar ao campo</button><button id="mpEnd" type="button" hidden>Encerrar partida</button><button id="mpLeave" type="button" class="danger">Sair da sala</button></div></section>
+<section id="mpFormation" hidden><h3>Sua força</h3><div class="field"><label for="mpDoctrine">Doutrina</label><select id="mpDoctrine"></select></div><div class="field"><label for="mpFaction">Suas unidades</label><select id="mpFaction"><option value="">Do meu time (padrão)</option><option value="blue">Unidades verdes</option><option value="red">Unidades vermelhas</option><option value="franca">Unidades azuis (França)</option></select></div><div class="army-summary"><button id="mpArmy" type="button">Montar exército inicial</button><small id="mpArmySummary"></small></div><p>Cada time tem unidades diferentes (aviões, helicóptero de transporte); você pode jogar com as de qualquer time, até com as mesmas dos outros jogadores. A revanche gira os lados (azul, vermelho, verde).</p><div class="dialog-buttons"><button id="mpReady" type="button" aria-pressed="false">Estou pronto</button><button id="mpStart" type="button" class="primary">Iniciar partida</button><button id="mpRematch" type="button" hidden>Solicitar revanche</button><button id="mpResume" type="button" hidden>Voltar ao campo</button><button id="mpEnd" type="button" hidden>Encerrar partida</button><button id="mpLeave" type="button" class="danger">Sair da sala</button></div></section>
 <div class="dialog-buttons"><button id="mpBack" type="button">Voltar</button></div>
 </dialog>
 <div id="networkStatus" class="network-status" role="status" aria-live="polite" hidden></div>
@@ -454,6 +454,7 @@
 <script src="js/battlefield-fx.js"></script>
 <script src="js/p2p.js"></script>
 <script src="js/multiplayer.js"></script>
+<script src="js/title-map.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/campaign.js"></script>
 <script src="js/neon-config.js"></script>
