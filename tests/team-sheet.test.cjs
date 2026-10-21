@@ -74,5 +74,33 @@ test('tanque leve vermelho fere o pesado com o míssil',()=>{
  const g=field({blue:'blue',red:'red'}),lt=g.add('red','lightTank',60,40),h=g.add('blue','heavyTank',62,40),hp=h.hp;g.rng=()=>.1;
  assert.notEqual(g.shoot(lt,h),false);assert.equal(lt.atMissiles,3);for(let i=0;i<30;i++)g.update(1/30);assert.ok(h.hp<hp);
 });
+test('helicóptero ar-terra tem munição limitada e avisa',()=>{
+ const g=field({blue:'blue',red:'red'}),h=g.add('blue','helicopterGround',60,40),tank=g.add('red','tank',63,40);
+ assert.deepEqual(g.missileLoad(h),{have:8,max:8});assert.deepEqual(g.missileLoad(g.add('red','helicopterGround',100,10)),{have:12,max:12});
+ h.missiles=3;g.events=[];g.ammoWarning(h);assert.equal(g.events.length,0,'3 de 8 ainda não é pouca');
+ h.missiles=2;g.events=[];g.ammoWarning(h);assert.equal(g.events.at(-1).text,'Pouca munição');
+ h.missiles=0;g.events=[];g.ammoWarning(h);assert.equal(g.events.at(-1).text,'Munição acabou');
+ assert.equal(g.weapon(h,tank),'gun','sem mísseis, Auto cai para o canhão');h.weaponMode='agm';assert.equal(g.weapon(h,tank),null);
+ const fr=field({blue:FRANCE,red:'red'});assert.equal(fr.missileLoad(fr.add('blue','helicopterGround',60,40)),null,'França sem limite');
+ assert.deepEqual(fr.missileLoad(fr.add('blue','stealthDrone',60,44)),{have:6,max:6});
+ assert.deepEqual(g.missileLoad(g.add('blue','fighterBlue',10,80)),{have:8,max:8});
+});
+test('salva de avião avisa uma vez',()=>{
+ const g=field({blue:'blue',red:'red'}),p=g.add('blue','fighterBlue',10,80);
+ p.ammo.jetAam=0;p.ammo.antiRadiation=3;g.events=[];g.ammoWarning(p);g.ammoWarning(p);
+ assert.equal(g.events.filter(e=>e.text==='Pouca munição').length,0,'have=3 > limiar 2');
+ p.ammo.antiRadiation=2;g.ammoWarning(p);p.ammo.antiRadiation=1;g.ammoWarning(p);
+ assert.equal(g.events.filter(e=>e.text==='Pouca munição').length,1);
+});
+test('disparos reais do helicóptero esgotam os mísseis, avisam uma vez e recarregam na manutenção',()=>{
+ const g=field({blue:'blue',red:'red'}),h=g.add('blue','helicopterGround',60,40),tank=g.add('red','tank',63,40);g.rng=()=>.99;g.events=[];
+ const used=[];for(let i=0;i<10;i++){used.push(g.weapon(h,tank));assert.notEqual(g.shoot(h,tank),false);h.cooldown=0;}
+ assert.deepEqual(used,[...Array(8).fill('agm'),'gun','gun']);assert.equal(h.missiles,0);
+ const said=t=>g.events.filter(e=>e.text===t).length;assert.equal(said('Pouca munição'),1);assert.equal(said('Munição acabou'),1);
+ h.weaponMode='agm';assert.equal(g.shoot(h,tank),false,'modo míssil sem mísseis não dispara');assert.equal(h.missiles,0);
+ h.altitude='low';h.x=2;h.y=90;h.weaponMode='auto';assert.ok(g.canService(h,g.structures[0]));assert.ok(g.order(h,'service',{targetId:g.structures[0].id}));
+ for(let i=0;i<30*7;i++)g.update(1/30);assert.equal(h.missiles,2,'+1 a cada 3 s');
+ for(let i=0;i<30*30;i++)g.update(1/30);assert.equal(h.missiles,8,'nunca acima da ficha');
+});
 for(const [name,fn] of cases){fn();console.log('OK '+name);}
 console.log(cases.length+' verificações de ficha por time passaram.');
