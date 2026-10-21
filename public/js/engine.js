@@ -661,7 +661,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   const cut=(f,frac)=>{const v=[];each((x,y)=>v.push(f(x,y)));v.sort((p,q)=>p-q);return v[v.length-1-Math.floor(frac*v.length)];};
   // Rios: caminho 4-conectado que busca o alvo balançando em torno de uma linha sinuosa (sway), foge de montanha, desce o relevo e
   // é obrigado a virar a cada 3–6 casas (meandros). Alarga rio abaixo (1 → 2 → 3) e registra o curso em this._rivers (testes, fora do save).
-  this._rivers=[];
+  this._rivers=[];this._height=height;
   const wetCell=(x,y)=>{if(INSIDE(x,y)&&at(x,y)!=='mountain')set(x,y,'river');};
   const riverWalk=(sx,sy,tx,ty,{minX=3,maxX=COLS-4,sway=10,exact=false}={})=>{
    const visited=new Set([KEY(sx,sy)]),path=[{x:sx,y:sy}],phase=rng()*40,lateral=y=>(wobble(phase+y*.3,phase*.5+y*.15)-.5)*2*sway;
@@ -790,14 +790,25 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   // 7. Estradas: A* com custo de obra (planície barata, colina e floresta caras, rio vira ponte, serra proibida).
   const build={road:.3,bridge:.3,plain:1,field:1.1,hedge:1.4,hill:2.4,forest:3,river:4.5};
   const reserved=new Uint8Array(SIZE);for(const s of [...hqs,...placed,...placed.map(mirror)])for(let y=s.y;y<s.y+s.height;y++)for(let x=s.x;x<s.x+s.width;x++)reserved[KEY(x,y)]=1;
-  // Se uma serra isolar os pontos, a segunda tentativa abre uma passagem por ela.
+  // Custo extra de cada casa para a estrada: sobe e desce custam (inclinação), altitude custa, encostas e matas custam, vale (rio a até 2 casas) alivia,
+  // curva custa e um ruído suave faz a estrada ondular em vez de seguir a régua. Casas que já são estrada custam só o preço de estrada.
+  const roadNoise=noise(6),verge=new Float32Array(SIZE),hgt=new Float32Array(SIZE);for(let k=0;k<SIZE;k++)hgt[k]=height(k%COLS,(k-k%COLS)/COLS);
+  for(let k=0;k<SIZE;k++){const x=k%COLS,y=(k-x)/COLS;let bad=false,river=false;for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){if(!INSIDE(x+dx,y+dy))continue;const t=T[KEY(x+dx,y+dy)];if(Math.abs(dx)<=1&&Math.abs(dy)<=1&&(t==='hill'||t==='forest'))bad=true;if(t==='river')river=true;}verge[k]=(bad?.6:0)-(river?.3:0)+1.3*roadNoise(x,y);}
+  // Se uma serra isolar os pontos, a segunda tentativa abre uma passagem por ela. A* sobre (casa, direção de chegada) com heap binário.
+  const isRoadType=t=>t==='road'||t==='bridge';
+  const NSTATE=SIZE*5,costArr=new Float64Array(NSTATE),fromArr=new Int32Array(NSTATE),heapF=new Float64Array(NSTATE*4),heapS=new Int32Array(NSTATE*4);
   const carve=(a,b)=>{
    for(const mountain of [undefined,8]){
-    const step={...build,mountain},cost=new Float64Array(SIZE).fill(Infinity),from=new Int32Array(SIZE).fill(-1),start=KEY(a.x,a.y),end=KEY(b.x,b.y),open=[[DIST(a,b),start]];cost[start]=0;
-    while(open.length){let i=0;for(let j=1;j<open.length;j++)if(open[j][0]<open[i][0])i=j;const [,k]=open.splice(i,1)[0];if(k===end)break;const px=k%COLS,py=(k-px)/COLS;
-     for(const [dx,dy]of DIRS){const x=px+dx,y=py+dy;if(!INSIDE(x,y))continue;const n=KEY(x,y),w=step[at(x,y)];if(reserved[n]&&n!==end||w===undefined)continue;const c=cost[k]+w;if(c<cost[n]){cost[n]=c;from[n]=k;open.push([c+DIST({x,y},b)*.3,n]);}}}
-    if(end!==start&&from[end]<0)continue;
-    for(let k=end;k>=0;k=from[k]){const x=k%COLS,y=(k-x)/COLS;set(x,y,['river','bridge'].includes(at(x,y))?'bridge':'road');}return;
+    const step={...build,mountain},cost=costArr.fill(Infinity),from=fromArr.fill(-1),start=KEY(a.x,a.y)*5+4,end=KEY(b.x,b.y),h=(x,y)=>(Math.abs(x-b.x)+Math.abs(y-b.y))*1.3;let size=0;cost[start]=0;
+    const push=(f,st)=>{let i=size++;while(i){const up=(i-1)>>1;if(heapF[up]<=f)break;heapF[i]=heapF[up];heapS[i]=heapS[up];i=up;}heapF[i]=f;heapS[i]=st;};
+    push(h(a.x,a.y),start);let goal=-1;
+    while(size){const f=heapF[0],state=heapS[0];size--;if(size){const lf=heapF[size],ls=heapS[size];let i=0;for(;;){const l=2*i+1;if(l>=size)break;const r=l+1,m=r<size&&heapF[r]<heapF[l]?r:l;if(heapF[m]>=lf)break;heapF[i]=heapF[m];heapS[i]=heapS[m];i=m;}heapF[i]=lf;heapS[i]=ls;}
+     const k=(state/5)|0,dir=state-k*5,px=k%COLS,py=(k-px)/COLS;if(f-h(px,py)>cost[state]+1e-9)continue;if(k===end){goal=state;break;}
+     for(let d=0;d<4;d++){const x=px+DIRS[d][0],y=py+DIRS[d][1];if(x<0||y<0||x>=COLS||y>=ROWS)continue;const n=y*COLS+x,type=T[n],w=step[type];if(reserved[n]&&n!==end||w===undefined)continue;
+      const extra=type==='road'||type==='bridge'?0:Math.max(-.3,10*Math.abs(hgt[n]-hgt[k])+14*(hgt[n]-.5)+verge[n]),c=cost[state]+Math.max(.1,w+extra)+(dir<4&&dir!==d?.05:0),ns=n*5+d;
+      if(c<cost[ns]){cost[ns]=c;from[ns]=state;push(c+h(x,y),ns);}}}
+    if(goal<0)continue;
+    for(let st=goal;st>=0;st=from[st]){const k=(st/5)|0,x=k%COLS,y=(k-x)/COLS;set(x,y,['river','bridge'].includes(at(x,y))?'bridge':'road');}return;
    }
   };
   const center=[...Array(SIZE).keys()].filter(k=>reach[k]&&!reserved[k]&&!['river','mountain'].includes(T[k])).map(k=>({x:k%COLS,y:(k-k%COLS)/COLS})).sort((p,q)=>Math.hypot(p.x-mid+.5,p.y-ROWS/2+.5)-Math.hypot(q.x-mid+.5,q.y-ROWS/2+.5))[0]||{x:mid-1,y:ROWS/2-1};
@@ -813,6 +824,21 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
    for(const cells of land){if(cells===main||cells.length<30)continue;linked=false;const cx=cells.reduce((n,c)=>n+c%COLS,0)/cells.length,cy=cells.reduce((n,c)=>n+(c-c%COLS)/COLS,0)/cells.length,pick=cells.filter(c=>!reserved[c]&&T[c]!=='mountain').sort((m,n)=>Math.hypot(m%COLS-cx,(m-m%COLS)/COLS-cy)-Math.hypot(n%COLS-cx,(n-n%COLS)/COLS-cy))[0];if(pick===undefined)continue;const a={x:pick%COLS,y:(pick-pick%COLS)/COLS};carve(a,nodes.slice().sort((m,n)=>DIST(m,a)-DIST(n,a))[0]);nodes.push(a,mirror(a));break;}
    if(linked)break;
   }
+  // Meandro: retas de estrada com 11+ casas ganham uma curva em S (o terço do meio desloca 2–3 casas para o lado), sem cruzar rio, serra, prédio ou outra estrada.
+  {const roadAt=(x,y)=>INSIDE(x,y)&&at(x,y)==='road',anyRoad=(x,y)=>INSIDE(x,y)&&isRoadType(at(x,y));
+   const shift=(vertical,m,i0,i1)=>{const len=i1-i0+1,a=i0+Math.floor(len/3),b=i0+Math.floor(2*len/3),cx=i=>vertical?m:i,cy=i=>vertical?i:m,px=(i,k)=>vertical?m+k:i,py=(i,k)=>vertical?i:m+k;
+    const mid=Math.floor((a+b)/2);if(!half(cx(mid),cy(mid)))return;
+    for(let i=a;i<=b;i++)for(const k of [-1,1]){const x=px(i,k),y=py(i,k);if(anyRoad(x,y)||INSIDE(x,y)&&reserved[KEY(x,y)])return;}
+    for(const off of [2,-2,3,-3]){const sign=Math.sign(off),cells=[];let ok=true;
+     for(let i=a;i<=b&&ok;i++)cells.push([px(i,off),py(i,off)]);
+     for(const i of [a,b])for(let k=1;k<Math.abs(off);k++)cells.push([px(i,sign*k),py(i,sign*k)]);
+     for(const [x,y] of cells){if(!INSIDE(x,y)||reserved[KEY(x,y)]||!['plain','field','hedge','forest','hill'].includes(at(x,y))){ok=false;break;}}
+     if(!ok)continue;
+     for(let i=a+1;i<b;i++)set(cx(i),cy(i),'plain');
+     for(const [x,y] of cells)set(x,y,'road');
+     for(let i=a;i<=b;i++)set(px(i,off),py(i,off),'road');
+     return;}};
+   for(const vertical of [false,true]){const L=vertical?ROWS:COLS,M=vertical?COLS:ROWS;for(let m=0;m<M;m++){let run=0;for(let i=0;i<=L;i++){if(i<L&&roadAt(vertical?m:i,vertical?i:m))run++;else{if(run>=11)shift(vertical,m,i-run,i-1);run=0;}}}}}
   // Complexos neutros com acesso pela borda, sem estrada atravessando os prédios.
   for(const p of placed)for(const c of [p,mirror(p)]){for(let y=c.y;y<c.y+c.height;y++)for(let x=c.x;x<c.x+c.width;x++)T[KEY(x,y)]='plain';this.add('neutral','post',c.x,c.y);}
   // 8. Tropas iniciais.

@@ -89,6 +89,15 @@ check('Lavouras sem xadrez: sebes raramente em reta, campo aberto e lotes de tam
  assert.ok(mean(hedge)<=.25,'sebes em reta '+mean(hedge).toFixed(2));assert.ok(mean(plain)>=.30,'planície no Continente '+mean(plain).toFixed(2));
  const m=mean(sizes),cv=Math.sqrt(mean(sizes.map(v=>(v-m)**2)))/m;assert.ok(cv>=.4,'variação dos lotes '+cv.toFixed(2));});
 console.log(checks+' verificações de lavoura concluídas.');}
+// --- T7: estradas que seguem o terreno ---
+{let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
+const roadFacts=g=>{let es=0,en=0,ls=0,ln=0;const road=k=>g.terrain[k]==='road'||g.terrain[k]==='bridge';for(let k=0;k<SIZE;k++){const x=k%COLS,y=(k-x)/COLS,e=g._height(x,y),t=g.terrain[k];if(road(k)){es+=e;en++;}if(t!=='river'&&t!=='mountain'){ls+=e;ln++;}}
+ let long=0;for(let y=0;y<ROWS;y++){let run=0;for(let x=0;x<=COLS;x++){if(x<COLS&&road(y*COLS+x))run++;else{if(run>=15)long+=run;run=0;}}}for(let x=0;x<COLS;x++){let run=0;for(let y=0;y<=ROWS;y++){if(y<ROWS&&road(y*COLS+x))run++;else{if(run>=15)long+=run;run=0;}}}
+ return {elev:(es/en)/(ls/ln),longShare:long/en};};
+check('Estradas seguem o terreno: vales (relevo mais baixo), curvas e poucas retas longas',()=>{for(const c of configs){const f=[],st=[];for(let seed=1;seed<=8;seed++){const g=make(c,seed);f.push(roadFacts(g));st.push(roadShape(g));}
+ const e=mean(f.map(x=>x.elev)),long=mean(f.map(x=>x.longShare)),stair=mean(st.map(x=>x.stair)),run=mean(st.map(x=>x.meanRun));
+ assert.ok(e<=.95,JSON.stringify(c)+' elevação das estradas / terra = '+e.toFixed(3));assert.ok(long<=.2,JSON.stringify(c)+' estrada em reta de 15+ = '+long.toFixed(3));assert.ok(stair<=.2,JSON.stringify(c)+' escada '+stair.toFixed(3));assert.ok(run>=2.5&&run<=15,JSON.stringify(c)+' reta média '+run.toFixed(2));}});
+console.log(checks+' verificações de estrada concluídas.');}
 // --- determinismo: mesma semente e opções geram o mesmo terreno, minas e estruturas ---
 {let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
 check('Determinismo: 8 configurações × 5 sementes geram terreno, minas e estruturas idênticos',()=>{for(const c of configs)for(let seed=1;seed<=5;seed++){const a=make(c,seed),b=make(c,seed),key=g=>JSON.stringify([g.terrain,g.mines.map(m=>[m.x,m.y]),g.structures.map(s=>[s.type,s.x,s.y,s.owner])]);assert.equal(key(a),key(b),JSON.stringify(c)+' '+seed);}});
