@@ -4,7 +4,6 @@
    Os "sockets" devolvidos têm a cara de um WebSocket (send, close, readyState, addEventListener) para o multiplayer.js. */
 const P2P=(()=>{
  const ICE=[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun.cloudflare.com:3478'}];
- const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
  const topic=code=>(window.RTS_SIGNAL||'https://ntfy.sh')+'/rts-vibe-sala-'+String(code).toLowerCase();
  const randomId=()=>Array.from(crypto.getRandomValues(new Uint8Array(8)),b=>b.toString(16).padStart(2,'0')).join('');
  // Compressão do texto (ofertas WebRTC e estados do jogo): deflate-raw nativo do navegador.
@@ -13,9 +12,13 @@ const P2P=(()=>{
  const toBase64=bytes=>{let text='';for(const b of bytes)text+=String.fromCharCode(b);return btoa(text);};
  const pack=async text=>toBase64(await deflate(text)),unpack=async data=>inflate(Uint8Array.from(atob(data),c=>c.charCodeAt(0)));
  async function post(code,message){const response=await fetch(topic(code),{method:'POST',body:JSON.stringify(message)});if(!response.ok)throw Error('Sinalização indisponível ('+response.status+').');}
- async function poll(code,since){
-  const response=await fetch(topic(code)+'/json?poll=1&since='+(since||'all'));if(!response.ok)throw Error('Sinalização indisponível ('+response.status+').');
-  return (await response.text()).split(String.fromCharCode(10)).filter(Boolean).map(line=>JSON.parse(line)).filter(e=>e.event==='message');
+ // Assinatura por SSE: uma conexão aberta em vez de consultas repetidas (o ntfy.sh limita requisições por IP e o polling de 3 jogadores dava 429).
+ // Queda de rede o EventSource reconecta sozinho (e recebe tudo de novo: quem ouve ignora repetidos); resposta de erro HTTP o fecha.
+ function listen(code,onData,onFail){
+  const source=new EventSource(topic(code)+'/sse?since=all');
+  source.onmessage=event=>{try{const e=JSON.parse(event.data);if(e.event==='message')onData(JSON.parse(e.message));}catch{}};
+  source.onerror=()=>{if(source.readyState===EventSource.CLOSED)onFail?.();};
+  return source;
  }
  const gathered=(pc,limit=5000)=>new Promise(resolve=>{if(pc.iceGatheringState==='complete'){resolve();return;}const done=()=>{if(pc.iceGatheringState==='complete'){pc.removeEventListener('icegatheringstatechange',done);resolve();}};pc.addEventListener('icegatheringstatechange',done);setTimeout(resolve,limit);});
  // Canal de dados com ordem preservada: textos grandes (estados de 60–180 KB) vão comprimidos, os pequenos direto.
@@ -43,44 +46,41 @@ const P2P=(()=>{
    if(data.type==='out')(channels.get(data.id)?.send??sinks.get(data.id)?.text)?.call(null,data.text);
    else if(data.type==='closed'){channels.get(data.id)?.channel.close();sinks.get(data.id)?.close('');}
   });
-  const code=created.code,answered=new Set();let since='',fastUntil=Date.now()+90000;
+  const code=created.code,answered=new Set();let source=null;
   async function accept(offer){
    const pc=new RTCPeerConnection({iceServers:ICE});
    pc.addEventListener('datachannel',({channel})=>{
     const id='g'+(++guests),wrapped=wrap(channel);channels.set(id,wrapped);worker.postMessage({type:'open',id});
     wrapped.onText(text=>worker.postMessage({type:'in',id,text}));
-    channel.addEventListener('close',()=>{worker.postMessage({type:'close',id});channels.delete(id);pc.close();fastUntil=Date.now()+90000;});
+    channel.addEventListener('close',()=>{worker.postMessage({type:'close',id});channels.delete(id);pc.close();});
    });
    await pc.setRemoteDescription({type:'offer',sdp:await unpack(offer.sdp)});await pc.setLocalDescription(await pc.createAnswer());await gathered(pc);
    await post(code,{kind:'answer',to:offer.id,sdp:await pack(pc.localDescription.sdp)});
   }
-  (async()=>{
-   while(!stopped){
-    try{for(const message of await poll(code,since)){since=message.id;const data=JSON.parse(message.message);if(data.kind==='offer'&&!answered.has(data.id)){answered.add(data.id);accept(data).catch(()=>answered.delete(data.id));}}}catch{}
-    // O ntfy.sh limita as consultas (rajada de 60, depois 1 a cada 5 s): rápido enquanto espera alguém e devagar depois.
-    await pause(Date.now()<fastUntil?2000:10000);
-   }
-  })();
+  const subscribe=()=>{if(stopped)return;source=listen(code,data=>{if(data.kind==='offer'&&!answered.has(data.id)){answered.add(data.id);accept(data).catch(()=>answered.delete(data.id));}},()=>setTimeout(subscribe,15000));};
+  subscribe();
   return {code,token:created.token,side:created.side,hosting:true,
    socket(){
     worker.postMessage({type:'open',id:'local'});
     return fakeSocket({send:text=>worker.postMessage({type:'in',id:'local',text}),close:()=>worker.postMessage({type:'close',id:'local'}),isOpen:()=>!stopped,
      subscribe:(onText,onClose)=>sinks.set('local',{text:onText,close:onClose})});
    },
-   stop(){stopped=true;worker.terminate();for(const {channel} of channels.values())try{channel.close();}catch{}}};
+   stop(){stopped=true;source?.close();worker.terminate();for(const {channel} of channels.values())try{channel.close();}catch{}}};
  }
 
  // Convidado: oferta → resposta pelo ntfy → canal aberto. Reaproveitado para reconectar (a sessão continua válida pelo token).
  async function connect(code){
   const pc=new RTCPeerConnection({iceServers:ICE}),channel=pc.createDataChannel('rts'),id=randomId();
   await pc.setLocalDescription(await pc.createOffer());await gathered(pc);
-  await post(code,{kind:'offer',id,sdp:await pack(pc.localDescription.sdp)});
-  let since='',answered=false;const deadline=Date.now()+45000;
-  while(!answered&&Date.now()<deadline){
-   for(const message of await poll(code,since)){since=message.id;const data=JSON.parse(message.message);if(data.kind==='answer'&&data.to===id){await pc.setRemoteDescription({type:'answer',sdp:await unpack(data.sdp)});answered=true;}}
-   if(!answered)await pause(1200);
-  }
-  if(!answered){pc.close();throw Error('O anfitrião não respondeu. Confira o código e se ele mantém a aba aberta.');}
+  let source;
+  try{
+   const answer=await new Promise((resolve,reject)=>{
+    const timer=setTimeout(()=>reject(Error('O anfitrião não respondeu. Confira o código e se ele mantém a aba aberta.')),45000);
+    source=listen(code,data=>{if(data.kind==='answer'&&data.to===id){clearTimeout(timer);resolve(data);}},()=>{clearTimeout(timer);reject(Error('Sinalização indisponível.'));});
+    pack(pc.localDescription.sdp).then(sdp=>post(code,{kind:'offer',id,sdp})).catch(error=>{clearTimeout(timer);reject(error);});
+   });
+   await pc.setRemoteDescription({type:'answer',sdp:await unpack(answer.sdp)});
+  }catch(error){pc.close();throw error;}finally{source?.close();}
   await opened(channel);return {pc,wrapped:wrap(channel)};
  }
  const guestSocket=({wrapped})=>fakeSocket({send:text=>wrapped.send(text),close:()=>wrapped.channel.close(),isOpen:()=>wrapped.open,

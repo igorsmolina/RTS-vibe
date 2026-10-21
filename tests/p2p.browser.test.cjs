@@ -18,6 +18,9 @@ async function main(){
   const ntfy=route=>{
    const url=new URL(route.request().url()),topic=url.pathname.split('/')[1],list=topics.get(topic)||[];topics.set(topic,list);
    if(route.request().method()==='POST'){list.push({id:'m'+(++counter),time:Math.floor(Date.now()/1000),event:'message',topic,message:route.request().postData()});route.fulfill({status:200,headers:{'access-control-allow-origin':'*'},body:'{}'});return;}
+   if(url.pathname.endsWith('/sse')){ // assinatura SSE: devolve tudo e fecha; o EventSource reconecta em 300 ms e recebe de novo (quem ouve ignora repetidos)
+    route.fulfill({status:200,headers:{'access-control-allow-origin':'*'},contentType:'text/event-stream',body:'retry: 300\n\n'+list.map(m=>'data: '+JSON.stringify(m)+'\n\n').join('')});return;
+   }
    const since=url.searchParams.get('since'),from=since&&since!=='all'?list.findIndex(m=>m.id===since)+1:0;
    route.fulfill({status:200,headers:{'access-control-allow-origin':'*'},contentType:'application/x-ndjson',body:list.slice(from).map(m=>JSON.stringify(m)).join(String.fromCharCode(10))});
   };
