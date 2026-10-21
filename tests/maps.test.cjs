@@ -82,6 +82,13 @@ check('Matas grandes têm clareiras e borda irregular',()=>{let forests=0,cleari
   for(const cells of components(g,t=>t!=='forest')){if(cells.length<2||cells.length>40)continue;const set=new Set(cells);let enclosed=true;for(const k of cells){const x=k%COLS,y=(k-x)/COLS;for(const [dx,dy] of NEIGH){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=COLS||ny>=ROWS){enclosed=false;continue;}const n=ny*COLS+nx;if(!set.has(n)&&g.terrain[n]!=='forest')enclosed=false;}}if(enclosed)clearings++;}edge.push(forestEdge(g));}
  assert.ok(forests>=10,'poucas matas grandes '+forests);assert.ok(clearings>=forests/2,'clareiras '+clearings+' para '+forests+' matas');assert.ok(mean(edge)>=5.5,'borda '+mean(edge).toFixed(2));});
 console.log(checks+' verificações de mata concluídas.');}
+// --- T6: lavouras orgânicas ---
+{let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
+check('Lavouras sem xadrez: sebes raramente em reta, campo aberto e lotes de tamanhos variados',()=>{const farm=[{map:'river'},{map:'mountain'},{map:'random',options:{landscape:'continent'}},{map:'random',options:{landscape:'lakes'}}];const hedge=[],sizes=[],plain=[];
+ for(const c of farm)for(let seed=1;seed<=10;seed++){const g=make(c,seed);if(g.terrain.includes('hedge'))hedge.push(straightShare(g,'hedge'));for(const cells of components(g,t=>t==='field'))if(cells.length>=10)sizes.push(cells.length);if(c.map==='random'&&c.options.landscape==='continent')plain.push(share(g,'plain'));}
+ assert.ok(mean(hedge)<=.25,'sebes em reta '+mean(hedge).toFixed(2));assert.ok(mean(plain)>=.30,'planície no Continente '+mean(plain).toFixed(2));
+ const m=mean(sizes),cv=Math.sqrt(mean(sizes.map(v=>(v-m)**2)))/m;assert.ok(cv>=.4,'variação dos lotes '+cv.toFixed(2));});
+console.log(checks+' verificações de lavoura concluídas.');}
 // --- determinismo: mesma semente e opções geram o mesmo terreno, minas e estruturas ---
 {let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
 check('Determinismo: 8 configurações × 5 sementes geram terreno, minas e estruturas idênticos',()=>{for(const c of configs)for(let seed=1;seed<=5;seed++){const a=make(c,seed),b=make(c,seed),key=g=>JSON.stringify([g.terrain,g.mines.map(m=>[m.x,m.y]),g.structures.map(s=>[s.type,s.x,s.y,s.owner])]);assert.equal(key(a),key(b),JSON.stringify(c)+' '+seed);}});
