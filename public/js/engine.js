@@ -415,8 +415,8 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
  progressPlaneService(owner,elapsed){for(const u of this.units)if(PLANE(u)&&u.owner===owner&&u.flightState==='service'){const b=this.get(u.airportId);if(!b||b.owner!==owner)continue;u.serviceProgress+=elapsed;const duration=(b.type==='airportAsphalt'?1:2)*(this.mode==='rts'?10:1);if(u.serviceProgress+1e-8>=duration){u.hp=u.maxHp;u.flares=UT(u).flares;if(u.serviceRearm)u.ammo={...UT(u).ammo};u.flightState='grounded';u.pending=false;u.order={type:'stop'};this.event('ready',u);}}}
  completeTurn(owner){for(const u of this.units.filter(u=>u.owner===owner&&u.captureIntent&&!u.pending&&u.actionLeft)){const target=this.captureTarget(u);if(target&&(u.moveLeft>0||DIST(u,target)<=1))this.order(u,'capture',{targetId:target.id,position:u.captureIntent.position},true);}const planes=this.units.filter(u=>u.owner===owner&&FLYER(u)&&AIR(u)&&u.actionLeft&&!u.pending);if(!planes.length&&!this.actions.length){this.beginTurn(this.nextSide(owner));return;}this.turnEnding=this.nextSide(owner);for(const u of planes){if(u.pursuitIntent){const intent=u.pursuitIntent;if(this.orderPlane(u,'attack',intent,true))continue;this.endPursuit(u);}u.actionLeft=false;u.pending=true;u.flightJob=u.flightJob?.type==='return'?{...u.flightJob,wait:0}:{type:'patrolTurn',angle:0};this.actions.push({id:u.id,type:'planeFlight',plane:true,route:[]});}}
 
- // Paisagens novas: a pista não pode cobrir estrada (o prédio fecharia o corredor, como numa serra); Continente mantém o gerador antigo.
- roadIn(area){for(let y=area.y;y<area.y+area.height;y++)for(let x=area.x;x<area.x+area.width;x++)if(['road','bridge'].includes(this.terrain[KEY(x,y)]))return true;return false;}
+ // Paisagens novas: a pista não pode cobrir estrada (o prédio fecharia o corredor) nem água (viraria istmo entre ilhas); Continente mantém a regra antiga.
+ roadIn(area){for(let y=area.y;y<area.y+area.height;y++)for(let x=area.x;x<area.x+area.width;x++)if(['road','bridge','river'].includes(this.terrain[KEY(x,y)]))return true;return false;}
  generateAirports(carve,nodes){if(seeded(this.seed^0x43c8a15b)()>=.5)return;const {width,height}=TYPES.airportAsphalt;for(const pos of [{x:4,y:4},{x:4,y:8},{x:8,y:4}]){const pair=[pos,{x:COLS-pos.x-width,y:ROWS-pos.y-height}];if(pair.some(p=>{const area={x:p.x-2,y:p.y,width:width+4,height};return !INSIDE(area.x,area.y)||!INSIDE(area.x+area.width-1,area.y+height-1)||this.structures.some(s=>DIST({...p,width,height},s)<2||DIST(area,s)===0)||this.units.some(u=>DIST(area,u)===0)||this.mines.some(m=>DIST(area,m)===0)||this.landscape!=='continent'&&this.roadIn(area);} ))continue;for(const p of pair){const access={x:p.x-1,y:p.y+height-1};carve(access,nodes.slice().sort((a,b)=>DIST(a,access)-DIST(b,access))[0]);this.add('neutral','airportAsphalt',p.x,p.y);}for(const p of pair)for(let y=p.y;y<p.y+height;y++)for(let x=p.x-2;x<p.x+width+2;x++)if(x>=p.x&&x<p.x+width||!['road','bridge'].includes(this.terrain[KEY(x,y)]))this.terrain[KEY(x,y)]='plain';break;}}
  airportApproaches(cell){const cells=[];for(let y=cell.y;y<cell.y+2;y++)for(const x of [cell.x-2,cell.x-1,cell.x+6,cell.x+7])if(INSIDE(x,y))cells.push({x,y});return cells;}
  airportBuildInfo(cell){const approaches=cell?this.airportApproaches(cell):[];let valid=!!cell&&INSIDE(cell.x-2,cell.y)&&INSIDE(cell.x+7,cell.y+1),duration=30;if(valid)for(let y=cell.y;y<cell.y+2;y++)for(let x=cell.x-2;x<cell.x+8;x++){const t=this.terrain[KEY(x,y)];if(['forest','hedge','hill','mountain'].includes(t))duration=60;if(t==='river'||this.structureAt(x,y)||this.mines.some(m=>m.x===x&&m.y===y)||x>=cell.x&&x<cell.x+6&&this.occupied(x,y,null,false))valid=false;}return {valid,duration,approaches};}
@@ -654,7 +654,9 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   const hash=(a,b)=>{let n=(seed^Math.imul(a+7,0x9e3779b1)^Math.imul(b+3,0x85ebca6b))>>>0;n=Math.imul(n^(n>>>15),0x2c1b3c6d)>>>0;return((n^(n>>>13))>>>0)/4294967296;};
   // Ruído de valor: grade grossa sorteada e interpolada, para manchas e contornos naturais.
   const noise=scale=>{const w=Math.ceil(COLS/scale)+2,h=Math.ceil(ROWS/scale)+2,g=Array.from({length:w*h},rng),s=t=>t*t*(3-2*t);return(x,y)=>{const fx=x/scale,fy=y/scale,ix=Math.floor(fx),iy=Math.floor(fy),tx=s(fx-ix),ty=s(fy-iy),v=(a,b)=>g[(iy+b)*w+ix+a];return(v(0,0)*(1-tx)+v(1,0)*tx)*(1-ty)+(v(0,1)*(1-tx)+v(1,1)*tx)*ty;};};
-  const height=noise(6),moisture=noise(5),flow=noise(8),wobble=noise(4);
+  // Elevação compartilhada (fBm de três escalas, simétrica): colinas, serras, rios e estradas leem o mesmo relevo.
+  const n16=noise(16),n8=noise(8),n4=noise(4),rawHeight=(x,y)=>.55*n16(x,y)+.3*n8(x,y)+.15*n4(x,y),height=(x,y)=>(rawHeight(x,y)+rawHeight(COLS-1-x,ROWS-1-y))/2;
+  const moisture=noise(5),flow=noise(8),wobble=noise(4);
   // Limiar por quantil: a fração pedida da meia malha recebe o terreno.
   const cut=(f,frac)=>{const v=[];each((x,y)=>v.push(f(x,y)));v.sort((p,q)=>p-q);return v[v.length-1-Math.floor(frac*v.length)];};
   // Relevo e água (etapas 1 e 2): cada paisagem tem a sua; Continente é o gerador original.
@@ -698,13 +700,13 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   const masses=(pred)=>{const seen=new Uint8Array(SIZE),out=[];for(let k=0;k<SIZE;k++){if(seen[k]||!pred(T[k]))continue;const cells=[],stack=[k];seen[k]=1;while(stack.length){const c=stack.pop(),x=c%COLS,y=(c-x)/COLS;cells.push(c);for(const [dx,dy]of DIRS){const nx=x+dx,ny=y+dy;if(!INSIDE(nx,ny))continue;const n=KEY(nx,ny);if(!seen[n]&&pred(T[n])){seen[n]=1;stack.push(n);}}}out.push(cells);}return out;};
   const islands=()=>{
    const nearBase=(x,y)=>Math.hypot(x-2,y-(ROWS-3))<11;
-   for(let attempt=0;attempt<16;attempt++){
+   for(let attempt=0;attempt<30;attempt++){
     T.fill('plain');
     const sea=noise(14),detail=noise(5),f=(x,y)=>sea(x,y)*.8+detail(x,y)*.2,base=Math.max(.2,Math.min(.55,.2+.4*o.water)),thr=cut(f,base-.03+attempt*.01+rng()*.06);
     each((x,y)=>set(x,y,f(x,y)>thr&&!nearBase(x,y)&&!nearBase(COLS-1-x,ROWS-1-y)?'river':'plain'));
     for(const cells of masses(t=>t!=='river'))if(cells.length<150)for(const c of cells)set(c%COLS,(c-c%COLS)/COLS,'river');
     const w=T.filter(t=>t==='river').length/SIZE;
-    if(w>=base-.04&&w<=base+.08&&masses(t=>t!=='river').length>=3)break;
+    if(w>=base-.02-attempt*.003&&w<=base+.08+attempt*.003&&masses(t=>t!=='river').length>=3)break;
    }
    const hillCut=cut(height,.05+.25*o.relief);each((x,y)=>{if(at(x,y)==='plain'&&height(x,y)>hillCut)set(x,y,'hill');});
    if(o.relief>.6){const peakCut=cut(height,(o.relief-.6)*.15);each((x,y)=>{if(at(x,y)!=='river'&&!nearBase(x,y)&&!nearBase(COLS-1-x,ROWS-1-y)&&height(x,y)>peakCut)set(x,y,'mountain');});}
@@ -721,6 +723,8 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
    const lakeCut=cut(flow,.02*o.water);each((x,y)=>{if(flow(x,y)>lakeCut&&at(x,y)!=='mountain')set(x,y,'river');});
   };
   ({continent,lakes,islands,highlands})[this.landscape]();
+  // Sopé: planície a até 2 casas de uma montanha vira colina (serra nunca encosta direto em mata, campo ou planície).
+  {const foot=[];each((x,y)=>{if(at(x,y)!=='plain')return;for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)if(INSIDE(x+dx,y+dy)&&at(x+dx,y+dy)==='mountain'){foot.push([x,y]);return;}});for(const [x,y]of foot)set(x,y,'hill');}
   // 3. Florestas em manchas pela umidade, só em planície.
   const woods=cut(moisture,.3*P.forest);each((x,y)=>{if(at(x,y)==='plain'&&moisture(x,y)>woods)set(x,y,'forest');});
   // 4. Campos e sebes: lotes entre linhas espelhadas; lote cultivado vira campo e suas bordas viram sebes com porteiras.

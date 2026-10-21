@@ -57,6 +57,12 @@ check('Fronteira procedural: água, floresta, relevo e campos seguem os controle
 });
 console.log(checks+' verificações de mapas concluídas.');
 }
+// --- T3: relevo gradual ---
+{let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
+check('Relevo gradual: serra cercada de colina, rio ou estrada; nem mata nem campo colados na montanha',()=>{for(const c of configs){const sopes=[];for(let seed=1;seed<=8;seed++){const g=make(c,seed);sopes.push(foothills(g));
+ for(let k=0;k<SIZE;k++){if(!['forest','field'].includes(g.terrain[k]))continue;const x=k%COLS,y=(k-x)/COLS;for(const [dx,dy] of NEIGH){const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<COLS&&ny<ROWS)assert.notEqual(g.terrain[ny*COLS+nx],'mountain',JSON.stringify(c)+' '+seed+' mata/campo na serra '+x+','+y);}}}
+ assert.ok(mean(sopes)>=.9,JSON.stringify(c)+' sopé '+mean(sopes).toFixed(2));}});
+console.log(checks+' verificações de relevo concluídas.');}
 // --- determinismo: mesma semente e opções geram o mesmo terreno, minas e estruturas ---
 {let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
 check('Determinismo: 8 configurações × 5 sementes geram terreno, minas e estruturas idênticos',()=>{for(const c of configs)for(let seed=1;seed<=5;seed++){const a=make(c,seed),b=make(c,seed),key=g=>JSON.stringify([g.terrain,g.mines.map(m=>[m.x,m.y]),g.structures.map(s=>[s.type,s.x,s.y,s.owner])]);assert.equal(key(a),key(b),JSON.stringify(c)+' '+seed);}});
