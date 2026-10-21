@@ -3,7 +3,7 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const names='Game,TYPES,FR_TYPES,RED_TYPES,SPEC,UT,FRANCE,PLANE_MODELS,trophyMax,NATION_DOCTRINES'.split(',');
 const E=new Function(fs.readFileSync(path.join(__dirname,'..','public','js','engine.js'),'utf8')+'\nreturn {'+names.join(',')+'};')();
-const {Game,SPEC,UT,FRANCE,PLANE_MODELS,trophyMax,NATION_DOCTRINES}=E;
+const {Game,TYPES,SPEC,UT,FRANCE,PLANE_MODELS,trophyMax,NATION_DOCTRINES}=E;
 const cases=[],test=(name,fn)=>cases.push([name,fn]);
 function field(factions){
  const g=new Game('river','normal',123,'rts',{posts:2},{},{},null,factions);g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.actions=[];g.animation=null;g.projectiles=[];g.memory.blue.clear();g.memory.red.clear();g.intel.clear();g.aiEnabled=false;
@@ -47,6 +47,15 @@ test('mísseis e armas mudam por time',()=>{
  assert.deepEqual([pow(vD,'stealthMissile'),g.weaponRange(vD,'stealthMissile'),pow(rD,'stealthMissile'),g.weaponRange(rD,'stealthMissile'),rD.missiles],[80,15,50,10,4]);
  const rHt=g.add('red','heavyTank',100,20),vTgt=g.add('blue','heavyTank',108,20);assert.equal(pow(rHt,'atMissile'),50);assert.equal(g.weaponStats(rHt,'atMissile').range,12);
  assert.ok(g.accuracy(vAt,vTgt,'atMissile')>0,'precisão do míssil terrestre vem de weaponStats');
+});
+test('aviões: dano e alcance por modelo',()=>{
+ const g=field({blue:'blue',red:'red'}),w=(type,side,weapon)=>g.planeWeapon(g.add(side,type,side==='blue'?10:100,side==='blue'?80:10),weapon);
+ assert.equal(w('fighterBlue','blue','jetAam').damage,90);assert.equal(w('stealthFighterBlue','blue','jetAam').damage,90);
+ assert.equal(w('multiroleBlue','blue','jetAam').damage,90);assert.equal(w('multiroleBlue','blue','jetAgm').damage,80);
+ assert.equal(w('fighterRed','red','jetAam').damage,75,'célula vermelha não editada mantém o código');assert.equal(w('multiroleRed','red','jetAgm').damage,90);
+ assert.equal(w('bomberRed','red','cruiseMissile').range,70);assert.equal(w('bomberBlue','blue','cruiseMissile').range,67);
+ const fr=field({blue:FRANCE,red:'red'});assert.equal(fr.planeWeapon(fr.add('blue','bomberFr',10,80),'cruiseMissile').range,75);
+ assert.equal(TYPES.bomberRed.range,70);assert.equal(TYPES.bomberFr.range,75);assert.equal(TYPES.bomberBlue.range,67);
 });
 for(const [name,fn] of cases){fn();console.log('OK '+name);}
 console.log(cases.length+' verificações de ficha por time passaram.');
