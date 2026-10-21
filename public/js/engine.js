@@ -691,7 +691,22 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
    // Riachos entre lagos vizinhos.
    for(let i=1;i<centers.length;i+=2){const a=centers[i-1],b=centers[i],n=Math.ceil(Math.hypot(b.x-a.x,b.y-a.y));for(let k=0;k<=n;k++)wetLake(Math.round(a.x+(b.x-a.x)*k/n),Math.round(a.y+(b.y-a.y)*k/n+(wobble(k,i)-.5)*3));}
   };
-  ({continent,lakes,islands:continent,highlands:continent})[this.landscape]();
+  // Ilhas: mar pelo ruído de escala grande (30–48% de água), massas de terra com menos de 150 casas viram mar, base sempre em terra.
+  // Se as ilhas não ficarem em 3 massas grandes, sorteia de novo (até 8 vezes); as pontes vêm das estradas e do passo de ligação abaixo.
+  const masses=(pred)=>{const seen=new Uint8Array(SIZE),out=[];for(let k=0;k<SIZE;k++){if(seen[k]||!pred(T[k]))continue;const cells=[],stack=[k];seen[k]=1;while(stack.length){const c=stack.pop(),x=c%COLS,y=(c-x)/COLS;cells.push(c);for(const [dx,dy]of DIRS){const nx=x+dx,ny=y+dy;if(!INSIDE(nx,ny))continue;const n=KEY(nx,ny);if(!seen[n]&&pred(T[n])){seen[n]=1;stack.push(n);}}}out.push(cells);}return out;};
+  const islands=()=>{
+   const nearBase=(x,y)=>Math.hypot(x-2,y-(ROWS-3))<11;
+   for(let attempt=0;attempt<8;attempt++){
+    T.fill('plain');
+    const sea=noise(14),detail=noise(5),f=(x,y)=>sea(x,y)*.8+detail(x,y)*.2,thr=cut(f,.32+attempt*.01+rng()*.12);
+    each((x,y)=>set(x,y,f(x,y)>thr&&!nearBase(x,y)&&!nearBase(COLS-1-x,ROWS-1-y)?'river':'plain'));
+    for(const cells of masses(t=>t!=='river'))if(cells.length<150)for(const c of cells)set(c%COLS,(c-c%COLS)/COLS,'river');
+    const w=T.filter(t=>t==='river').length/SIZE;
+    if(w>=.31&&w<=.48&&masses(t=>t!=='river').length>=3)break;
+   }
+   const hillCut=cut(height,.1);each((x,y)=>{if(at(x,y)==='plain'&&height(x,y)>hillCut)set(x,y,'hill');});
+  };
+  ({continent,lakes,islands,highlands:continent})[this.landscape]();
   // 3. Florestas em manchas pela umidade, só em planície.
   const woods=cut(moisture,.3*P.forest);each((x,y)=>{if(at(x,y)==='plain'&&moisture(x,y)>woods)set(x,y,'forest');});
   // 4. Campos e sebes: lotes entre linhas espelhadas; lote cultivado vira campo e suas bordas viram sebes com porteiras.
@@ -745,6 +760,12 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   if(P.centralRiver){const y=Math.round(ROWS*.2),ends=[{x:mid-8,y},{x:mid+7,y}];for(let x=ends[0].x;x<=ends[1].x;x++)set(x,y,['river','bridge'].includes(at(x,y))?'bridge':'road');
    for(const e of ends){carve(e,nodes.slice().sort((m,n)=>DIST(m,e)-DIST(n,e))[0]);nodes.push(e,mirror(e));}}
   for(const p of placed){const access={x:p.x-1,y:p.y},q=nodes.slice().sort((m,n)=>DIST(m,access)-DIST(n,access))[0];carve(access,q);nodes.push(access,mirror(access));}
+  // Ilhas: toda massa de terra grande ganha uma ponte até a rede de estradas (as demais estradas já cruzam o mar).
+  if(this.landscape==='islands')for(let pass=0;pass<12;pass++){
+   const land=masses(t=>t!=='river'),main=land.find(cells=>cells.includes(KEY(exit.x,exit.y)));let linked=true;
+   for(const cells of land){if(cells===main||cells.length<30)continue;linked=false;const cx=cells.reduce((n,c)=>n+c%COLS,0)/cells.length,cy=cells.reduce((n,c)=>n+(c-c%COLS)/COLS,0)/cells.length,pick=cells.filter(c=>!reserved[c]&&T[c]!=='mountain').sort((m,n)=>Math.hypot(m%COLS-cx,(m-m%COLS)/COLS-cy)-Math.hypot(n%COLS-cx,(n-n%COLS)/COLS-cy))[0];if(pick===undefined)continue;const a={x:pick%COLS,y:(pick-pick%COLS)/COLS};carve(a,nodes.slice().sort((m,n)=>DIST(m,a)-DIST(n,a))[0]);nodes.push(a,mirror(a));break;}
+   if(linked)break;
+  }
   // Complexos neutros com acesso pela borda, sem estrada atravessando os prédios.
   for(const p of placed)for(const c of [p,mirror(p)]){for(let y=c.y;y<c.y+c.height;y++)for(let x=c.x;x<c.x+c.width;x++)T[KEY(x,y)]='plain';this.add('neutral','post',c.x,c.y);}
   // 8. Tropas iniciais.
@@ -753,7 +774,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   // ponytail: com três lados não há aeroportos neutros (cairiam colados à base verde) e os postos não são balanceados para ela; ajustar se a partida pedir.
   if(!three)this.generateAirports(carve,nodes);
   // 9. Minas no centro, fora de água, serra, ponte e estruturas.
-  const mineRandom=this.mineRng||rng;for(let placedMines=0,tries=0;placedMines<4&&tries<200;tries++){const wide=this.landscape!=='continent'&&tries>=60?2.2:1,x=Math.round(mid-6*wide+mineRandom()*12*wide),y=Math.round(Math.floor(ROWS/2)-5*wide+mineRandom()*10*wide)-(wide>1?0:0),cells=[[x,y],[COLS-1-x,ROWS-1-y]];
+  const mineRandom=this.mineRng||rng;for(let placedMines=0,tries=0;placedMines<4&&tries<(this.landscape==='continent'?200:500);tries++){const wide=this.landscape==='continent'?1:tries>=150?4:tries>=60?2.2:1,x=Math.round(mid-6*wide+mineRandom()*12*wide),y=Math.round(Math.floor(ROWS/2)-5*wide+mineRandom()*10*wide)-(wide>1?0:0),cells=[[x,y],[COLS-1-x,ROWS-1-y]];
    if(cells.some(([cx,cy])=>['river','mountain','bridge'].includes(at(cx,cy))||this.structureAt(cx,cy)||this.mines.some(m=>m.x===cx&&m.y===cy))||x===COLS-1-x&&y===ROWS-1-y)continue;
    for(const [cx,cy]of cells)this.mines.push({x:cx,y:cy,known:Object.fromEntries(this.sides.map(s=>[s,false]))});placedMines++;}
   for(const owner of this.sides){const positions=[];for(let y=ROWS-5;y<ROWS;y++)for(let x=0;x<6;x++)positions.push({x,y});positions.sort((a,b)=>(a.y-ROWS+5)%2-(b.y-ROWS+5)%2||a.y-b.y||Math.abs(a.x-1)-Math.abs(b.x-1)||a.x-b.x);

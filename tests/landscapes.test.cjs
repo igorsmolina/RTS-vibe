@@ -21,5 +21,12 @@ test('lagos: água, lagos grandes, ilhas, conexão e minas',()=>{let withIsland=
  if(!Object.keys(o).length&&components(g,t=>t!=='river').some(c=>c.size>=4&&c.size<=150&&!c.edge))withIsland++;
  connected(g,label);assert.equal(g.mines.length,8,label+' minas');assert.equal(g.structures.filter(s=>s.type==='post').length,o.posts||24,label+' postos');}
  assert.ok(withIsland>=15,'ilha em '+withIsland+'/30 sementes');});
+test('ilhas: mar, massas de terra, pontes, conexão, aeroportos e minas',()=>{let withAirport=0;for(let seed=1;seed<=30;seed++){const g=make('islands',seed),label='islands/'+seed;
+ const w=share(g,'river');assert.ok(w>=.30&&w<=.50,label+' água '+w.toFixed(3));assert.ok(share(g,'mountain')<=.04,label+' montanha');
+ assert.ok(components(g,t=>t!=='river'&&t!=='bridge').filter(c=>c.size>=150).length>=3,label+' massas de terra');
+ assert.ok(g.terrain.includes('bridge'),label+' sem ponte');connected(g,label);assert.equal(g.mines.length,8,label+' minas');
+ const tank={type:'tank',owner:'blue',x:4,y:ROWS-2};for(const a of g.structures.filter(s=>s.type==='airportAsphalt'&&s.owner==='neutral')){withAirport++;for(let y=a.y;y<a.y+a.height;y++)for(let x=a.x;x<a.x+a.width;x++)assert.notEqual(g.terrain[KEY(x,y)],'river',label+' aeroporto na água');
+  const ring=[];for(let i=-1;i<=a.width;i++)for(let j=-1;j<=a.height;j++)if(i<0||j<0||i>=a.width||j>=a.height)ring.push({x:a.x+i,y:a.y+j});assert.ok(ring.some(c=>g.findPath(tank,c)),label+' aeroporto inalcançável');}}
+ assert.ok(withAirport>0,'nenhum aeroporto neutro gerado nas 30 sementes');});
 module.exports={make,share,components,connected,test,tests};
 if(require.main===module){for(const [name,fn] of tests){fn();console.log('OK '+name);}console.log(tests.length+' verificações de paisagem passaram.');}
