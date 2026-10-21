@@ -659,6 +659,30 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   const moisture=noise(5),flow=noise(8),wobble=noise(4);
   // Limiar por quantil: a fração pedida da meia malha recebe o terreno.
   const cut=(f,frac)=>{const v=[];each((x,y)=>v.push(f(x,y)));v.sort((p,q)=>p-q);return v[v.length-1-Math.floor(frac*v.length)];};
+  // Rios: caminho 4-conectado que busca o alvo balançando em torno de uma linha sinuosa (sway), foge de montanha, desce o relevo e
+  // é obrigado a virar a cada 3–6 casas (meandros). Alarga rio abaixo (1 → 2 → 3) e registra o curso em this._rivers (testes, fora do save).
+  this._rivers=[];
+  const wetCell=(x,y)=>{if(INSIDE(x,y)&&at(x,y)!=='mountain')set(x,y,'river');};
+  const riverWalk=(sx,sy,tx,ty,{minX=3,maxX=COLS-4,sway=10,exact=false}={})=>{
+   const visited=new Set([KEY(sx,sy)]),path=[{x:sx,y:sy}],phase=rng()*40,lateral=y=>(wobble(phase+y*.3,phase*.5+y*.15)-.5)*2*sway;
+   let x=sx,y=sy,dir=[ty>sy?0:0,ty>=sy?1:-1],run=0,cap=3+Math.floor(rng()*4);
+   for(let step=0;step<Math.round(2.4*(Math.abs(tx-sx)+Math.abs(ty-sy)))+10&&(exact?Math.abs(x-tx)+Math.abs(y-ty)>1:y!==ty);step++){
+    let pick=null;for(const level of [2,1]){for(const d of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+d[0],ny=y+d[1];if(!INSIDE(nx,ny)||nx<minX||nx>maxX||visited.has(KEY(nx,ny))||at(nx,ny)==='mountain'||d[0]===-dir[0]&&d[1]===-dir[1])continue;
+     const same=d[0]===dir[0]&&d[1]===dir[1];if(level===2&&same&&run>=cap)continue;
+     const cost=4*height(nx,ny)+.6*Math.abs(ty-ny)+.45*Math.abs(nx-(tx+lateral(ny)))+rng()*.3+(same?-.2:.15);if(!pick||cost<pick.cost)pick={cost,d,nx,ny};}if(pick)break;}
+    if(!pick)break;if(pick.d[0]===dir[0]&&pick.d[1]===dir[1])run++;else{run=1;cap=3+Math.floor(rng()*4);dir=pick.d;}
+    x=pick.nx;y=pick.ny;visited.add(KEY(x,y));path.push({x,y});
+   }
+   return path;};
+  const river=(sx,sy,tx,ty,opts={})=>{
+   const {min=30,tributaries=false,maxWidth=3}=opts,path=opts.path||riverWalk(sx,sy,tx,ty,opts),n=path.length;
+   path.forEach((c,i)=>{const w=Math.min(maxWidth,i<n/3?1:i<2*n/3?2:3),next=path[Math.min(n-1,i+1)],prev=path[Math.max(0,i-1)],px=Math.abs(next.y-prev.y),py=Math.abs(next.x-prev.x);wetCell(c.x,c.y);if(w>=2)wetCell(c.x+px,c.y+py);if(w>=3)wetCell(c.x-px,c.y-py);});
+   if(n>=min&&path[n-1].y===ty)this._rivers.push({path,width:{start:1,end:Math.min(maxWidth,3)},elev:{start:height(path[0].x,path[0].y),end:height(path[n-1].x,path[n-1].y)}});
+   if(tributaries&&n>=40)for(let t=0;t<1+(rng()<.5?1:0);t++){const at0=path[Math.floor(n*(.3+rng()*.5))],side=rng()<.5?-1:1,fx=Math.max(4,Math.min(COLS-6,at0.x+side*(8+Math.floor(rng()*10)))),fy=Math.max(0,at0.y-10-Math.floor(rng()*8));river(fx,fy,at0.x,at0.y,{sway:5,min:1e9,maxWidth:1,exact:true});}
+   return path;};
+  // Oásis (deserto): poças deformadas de 2–4 casas de raio; a planície em volta vira campo irrigado.
+  const oases=count=>{for(let i=0;i<count;i++){const cx=8+Math.floor(rng()*(COLS-16)),cy=6+Math.floor(rng()*(ROWS-12)),r=2+rng()*2;if(Math.hypot(cx-2,cy-(ROWS-3))<12||Math.hypot(COLS-1-cx-2,ROWS-1-cy-(ROWS-3))<12)continue;
+    for(let y=Math.floor(cy-r-3);y<=cy+r+3;y++)for(let x=Math.floor(cx-r-3);x<=cx+r+3;x++){if(!INSIDE(x,y)||at(x,y)==='mountain')continue;const d=Math.hypot(x-cx,y-cy);if(d<r*(.8+.45*wobble(x,y)))wetCell(x,y);else if(d<=r+3&&at(x,y)==='plain')set(x,y,'field');}}};
   // Relevo e água (etapas 1 e 2): cada paisagem tem a sua; Continente é o gerador original.
   const continent=()=>{
   // 1. Relevo: colinas em manchas; picos de serra raros; no Passe, uma serra central com três passagens.
@@ -669,13 +693,16 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
    for(const row of [Math.round(ROWS*.22),ROWS/2-1])for(let x=0;x<COLS;x++)for(const y of [row,row+1])if(at(x,y)==='mountain')set(x,y,'hill');
   }
   // 2. Água: rio central contínuo (Vale dos Rios) ou rios de borda a borda; lagos pelo ruído de fluxo.
-  const wet=(x,y)=>{if(INSIDE(x,y)&&at(x,y)!=='mountain')set(x,y,'river');};
   if(P.centralRiver){
-   let x=mid-1;for(let y=ROWS/2-1;y>=0;y--){wet(x,y);wet(x+1,y);const r=rng(),nx=Math.max(mid-6,Math.min(mid+4,x+(r<.32?-1:r>.68?1:0)));if(nx!==x){wet(nx,y);wet(nx+1,y);}x=nx;if(y===Math.round(ROWS*.3))for(let dx=-1;dx<=2;dx++)for(let dy=-1;dy<=1;dy++)wet(x+dx,y+dy);}
+   // Vale dos Rios: rio central do meio do mapa ao topo (o espelho completa o outro lado), sinuoso e dentro de uma faixa estreita.
+   river(mid-1,ROWS/2-1,mid-1,0,{minX:mid-5,maxX:mid+3,sway:7,min:30});
+   {const y=Math.round(ROWS*.3);for(let k=0;k<SIZE;k++){const x=k%COLS,yy=(k-x)/COLS;if(Math.abs(yy-y)<=1&&Math.abs(x-(mid+1))<=2&&at(x,yy)!=='mountain')set(x,yy,'river');}}
   }else for(let i=0;i<Math.round(P.water*2.2);i++){
-   let x=5+Math.floor(rng()*(COLS-12));const wide=P.water>.6;
-   for(let y=0;y<ROWS;y++){wet(x,y);if(wide)wet(x+1,y);const r=rng(),nx=Math.max(4,Math.min(COLS-6,x+(r<.3?-1:r>.7?1:0)));if(nx!==x){wet(nx,y);if(wide)wet(nx+1,y);}x=nx;}
+   // Rios de cima a baixo: nascem na parte alta (melhor de 8 sorteios), serpenteiam e alargam rio abaixo; afluentes entram pelos lados.
+   let sx=0,sy=0,best=-1;for(let t=0;t<8;t++){const cx=5+Math.floor(rng()*(COLS-12)),cy=Math.floor(rng()*6);if(height(cx,cy)>best){best=height(cx,cy);sx=cx;sy=cy;}}
+   river(sx,sy,Math.max(4,Math.min(COLS-6,sx+Math.round((rng()-.5)*30))),ROWS-1,{sway:12,min:30,tributaries:true});
   }
+  if(P.irrigated)oases(3+Math.floor(rng()*3));
   const lakes=cut(flow,.035*P.water);each((x,y)=>{if(flow(x,y)>lakes&&at(x,y)!=='mountain')set(x,y,'river');});
   };
   // Lagos: colinas suaves e manchas d'água arredondadas (3 a 14 centros até 12–28% do mapa), às vezes com ilha central e riachos ligando lagos.
@@ -719,7 +746,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
    const plateau=[];each((x,y)=>{if(at(x,y)!=='plain')return;for(let dy=-reach;dy<=reach;dy++)for(let dx=-reach;dx<=reach;dx++)if(INSIDE(x+dx,y+dy)&&at(x+dx,y+dy)==='mountain'&&Math.abs(dx)+Math.abs(dy)<=reach+1){plateau.push([x,y]);return;}});
    for(const [x,y]of plateau)set(x,y,'hill');
    // Riachos: um ou dois, de cima a baixo, sem atravessar montanha.
-   for(let i=0;i<Math.round(4*o.water);i++){let x=8+Math.floor(rng()*(COLS-16));for(let y=0;y<ROWS;y++){if(at(x,y)!=='mountain')set(x,y,'river');const r=rng();x=Math.max(4,Math.min(COLS-6,x+(r<.3?-1:r>.7?1:0)));}}
+   for(let i=0;i<Math.round(4*o.water);i++)for(let attempt=0;attempt<6;attempt++){const sx=8+Math.floor(rng()*(COLS-16)),tx=Math.max(4,Math.min(COLS-6,sx+Math.round((rng()-.5)*30))),path=riverWalk(sx,0,tx,ROWS-1,{sway:10});if(path.at(-1).y===ROWS-1){river(sx,0,tx,ROWS-1,{path});break;}}
    const lakeCut=cut(flow,.02*o.water);each((x,y)=>{if(flow(x,y)>lakeCut&&at(x,y)!=='mountain')set(x,y,'river');});
   };
   ({continent,lakes,islands,highlands})[this.landscape]();
