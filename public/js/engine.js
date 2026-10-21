@@ -40,25 +40,25 @@ const TYPES={
  transportHelicopter:{move:10,air:true,unarmed:true,weapons:[],capacity:6,sling:{blue:'lightTank'},name:'Helicóptero de transporte',hp:150,speed:3.4,range:0,min:0,damage:0,accuracy:0,vision:6,cooldown:1,train:4,cost:220,reward:60,role:'Transporte de 6 tropas a pé · embarque em altitude baixa · aliado: 1 tanque leve pendurado · aliado em altitude alta: 50% mais rápido, enxerga através de floresta e colina, flares mais eficazes · inimigo: rajada de mísseis 3×3 (alcance 10 baixo / 30 alto, 2 salvas, parado ao lançar)'},
  transportPlane:{move:0,plane:true,air:true,vehicle:true,unarmed:true,airdropPlane:true,capacity:12,weapons:[],ammo:{},evasion:0,flares:300,name:'Avião de transporte',hp:240,speed:4.5,range:0,min:0,damage:0,accuracy:0,vision:12,cooldown:1,cost:0,reward:90,role:'Pousa na pista do aeroporto · embarca tropas próximas · lança em linha por paraquedas · até 12 vagas · reconhecimento: visão 12 através do terreno · 300 flares'},
  infantry:{move:3,name:'Infantaria',hp:100,speed:1.35,range:3,min:0,damage:35,accuracy:.9,vision:4,cooldown:.8,train:1,cost:50,reward:20,role:'Captura e construção · fuzil alcance 3'},
- lightTank:{move:6,vehicle:true,tank:true,name:'Tanque leve',hp:110,speed:2,range:4,min:0,damage:35,accuracy:.75,vision:5,cooldown:2,train:2,cost:100,reward:35,role:'Mais rápido dos tanques · alcance 4 · não perfura pesados'},
- tank:{move:5,vehicle:true,tank:true,name:'Tanque médio',hp:170,speed:1.7,range:5,min:0,damage:60,accuracy:.75,vision:5,cooldown:2.5,train:3,cost:150,reward:50,role:'Alcance 5 · precisão cai após 3 casas · velocidade intermediária'},
- heavyTank:{move:4,vehicle:true,tank:true,name:'Tanque pesado',hp:280,speed:1.5,range:7,min:0,damage:80,accuracy:.85,vision:5,cooldown:3.5,train:4,cost:240,reward:80,role:'Alcance 7 · maior dano e precisão dos tanques · Trophy: 3 cargas interceptam mísseis antitanque vindos de mais de 3 casas · requer reconhecimento distante'},
+ lightTank:{move:6,vehicle:true,tank:true,name:'Tanque leve',hp:110,speed:2.2,range:4,min:0,damage:35,accuracy:.75,vision:6,cooldown:2,train:2,cost:100,reward:35,role:'Mais rápido dos tanques · velocidade 2.2 · visão 6 · alcance 4 · não perfura pesados'},
+ tank:{move:5,vehicle:true,tank:true,name:'Tanque médio',hp:170,speed:2,range:5,min:0,damage:60,accuracy:.75,vision:6,cooldown:2.5,train:3,cost:150,reward:50,role:'Alcance 5 · precisão cai após 3 casas · velocidade 2 · visão 6'},
+ heavyTank:{move:4,vehicle:true,tank:true,name:'Tanque pesado',hp:280,speed:1.7,range:7,min:0,damage:80,accuracy:.85,vision:6,trophy:6,cooldown:3.5,train:4,cost:240,reward:80,role:'Alcance 7 · maior dano e precisão dos tanques · Trophy: 6 cargas interceptam mísseis antitanque vindos de mais de 3 casas · velocidade 1.7 · visão 6 · requer reconhecimento distante'},
  artillery:{move:3,vehicle:true,name:'Artilharia',hp:100,speed:1.2,range:16,min:2,damage:85,accuracy:.85,vision:3,cooldown:5,train:4,cost:180,reward:40,role:'Cerco de longo alcance · área 3×3 · fogo amigo'},
  recon:{move:5,vehicle:true,name:'Batedor',hp:75,speed:2.25,range:2,min:0,damage:24,accuracy:.9,vision:7,cooldown:1.1,train:1,cost:75,reward:25,role:'Reconhecimento rápido'},
- engineer:{move:3,name:'Engenheiro',hp:85,speed:1.25,range:1.15,min:0,damage:20,accuracy:.9,vision:4,cooldown:1.2,train:2,cost:65,reward:25,role:'Reparo +24 HP por ação'},
- antitank:{move:3,name:'Antitanque',hp:90,speed:1.05,range:7,min:0,damage:40,accuracy:.85,vision:4,cooldown:3,train:2,cost:110,reward:35,role:'Míssil antitanque alcance 7 contra veículos e estruturas · 4 mísseis · fuzil alcance 3 contra tropas'},
+ engineer:{move:3,name:'Engenheiro',repair:24,hp:85,speed:1.25,range:1.15,min:0,damage:20,accuracy:.9,vision:4,cooldown:1.2,train:2,cost:65,reward:25,role:'Reparo +24 HP por ação'},
+ antitank:{move:3,name:'Antitanque',atMissiles:4,hp:90,speed:1.05,range:7,min:0,damage:40,accuracy:.85,vision:4,cooldown:3,train:2,cost:110,reward:35,role:'Míssil antitanque alcance 7 contra veículos e estruturas · 4 mísseis · fuzil alcance 3 contra tropas'},
  machinegun:{move:2,name:'Metralhador',hp:110,speed:1.05,range:3,min:0,damage:18,accuracy:.75,vision:4,cooldown:.3,train:2,cost:90,reward:30,role:'Fogo rápido contra tropas a pé · alcance 3 · menos preciso que a infantaria'},
  antiAirVehicle:{move:5,vehicle:true,name:'Veículo antiaéreo',hp:70,speed:2.25,range:30,min:0,damage:80,accuracy:.8,vision:6,cooldown:3.5,train:3,cost:160,reward:45,role:'Mísseis · radar global · alcance 30 contra aeronaves · exige escolta'},
- missileInfantry:{move:3,name:'Soldado lançador',hp:80,speed:1.25,range:10,min:0,damage:40,accuracy:.7,vision:4,cooldown:3,train:2,cost:90,reward:30,role:'Mísseis só contra aeronaves · alcance 10 · fáceis de despistar'},
+ missileInfantry:{move:3,name:'Soldado lançador',hp:80,speed:1.25,range:10,min:0,damage:55,accuracy:.7,vision:4,cooldown:3,train:2,cost:90,reward:30,role:'Mísseis só contra aeronaves · dano 55 · alcance 10 · fáceis de despistar'},
  helicopter:{...HELICOPTER_MINIGUN,gun:HELICOPTER_MINIGUN,air:true,weapons:['gun'],move:8,name:'Helicóptero',hp:120,speed:3.2,min:0,vision:6,train:3,cost:150,reward:50,role:'Minigun · alta cadência contra infantaria'},
- helicopterGround:{...HELICOPTER_CANNON,gun:HELICOPTER_CANNON,air:true,weapons:['gun','agm'],move:8,name:'Helicóptero ar-terra',hp:120,speed:3.2,min:0,vision:6,train:4,cost:230,reward:50,role:'Canhão perfurante e mísseis ar-terra'},
- helicopterAir:{...HELICOPTER_CANNON,gun:{...HELICOPTER_CANNON,vehicleMultiplier:1.25},air:true,weapons:['gun','aam'],move:8,name:'Helicóptero ar-ar',hp:120,speed:3.2,min:0,vision:6,train:4,cost:180,reward:50,role:'Canhão perfurante e mísseis ar-ar'},
+ helicopterGround:{...HELICOPTER_CANNON,gun:HELICOPTER_CANNON,air:true,weapons:['gun','agm'],missiles:8,move:8,name:'Helicóptero ar-terra',hp:120,speed:3.2,min:0,vision:6,train:4,cost:230,reward:50,role:'Canhão perfurante e 8 mísseis ar-terra · dano 60, alcance 7 (20 em altitude alta), recarga 3 s'},
+ helicopterAir:{...HELICOPTER_CANNON,gun:{...HELICOPTER_CANNON,vehicleMultiplier:1.25},air:true,weapons:['gun','aam'],move:8,name:'Helicóptero ar-ar',hp:120,speed:3.2,min:0,vision:6,train:4,cost:180,reward:50,role:'Canhão perfurante e mísseis ar-ar · dano 85, alcance 17'},
  // Equilíbrio provisório das duas classes abaixo (ainda não validado em partidas).
  rocketArtillery:{move:2,vehicle:true,name:'Artilharia de mísseis',hp:90,speed:.85,range:30,min:3,damage:20,accuracy:.8,vision:3,cooldown:10,train:4,cost:240,reward:60,role:'Bombardear área 3×3 · 4 mísseis · ×2 contra estruturas'},
  reconDrone:{air:true,drone:true,unarmed:true,weapons:[],move:7,name:'Drone de reconhecimento',hp:60,speed:2.4,range:0,min:0,damage:0,accuracy:0,vision:12,cooldown:1,train:2,cost:90,reward:30,role:'Reconhecimento · visão 12 através do terreno · sempre em altitude alta · sem armas'},
  // Drone furtivo: invisível ao radar; exige reconhecimento atual.
- stealthDrone:{air:true,drone:true,stealth:true,weapons:['stealthMissile'],missiles:2,move:6,name:'Drone furtivo',hp:50,speed:2.2,range:8,min:0,damage:35,accuracy:.85,vision:12,cooldown:3,train:3,cost:160,reward:45,role:'Furtivo ao radar · visão 12 através do terreno · 2 mísseis, alcance 8, só por ordem · sempre em altitude alta'},
- commander:{move:3,name:'Comandante',hp:140,speed:1.35,range:2,min:0,damage:40,accuracy:.9,vision:5,cooldown:1.5,reward:70,role:'Aura de comando · raio 2'},
+ stealthDrone:{air:true,drone:true,stealth:true,weapons:['stealthMissile'],missiles:2,move:6,name:'Drone furtivo',hp:50,speed:2.2,range:15,min:0,damage:80,accuracy:.85,vision:12,cooldown:3,train:3,cost:160,reward:45,role:'Furtivo ao radar · visão 12 através do terreno · 2 mísseis, dano 80, alcance 15, só por ordem · sempre em altitude alta'},
+ commander:{move:3,aura:6,name:'Comandante',hp:140,speed:1.35,range:2,min:0,damage:40,accuracy:.9,vision:5,cooldown:1.5,reward:70,role:'Aura de comando · raio 6'},
  hq:{name:'Quartel-general',hp:300,speed:0,range:0,damage:0,vision:5,structure:true,width:3,height:3,reward:100},
  post:{name:'Posto avançado',hp:90,speed:0,range:0,damage:0,vision:8,structure:true,width:2,height:2,reward:30,role:'Reconhecimento · visão base 8 · recrutamento'}
 };
@@ -81,19 +81,19 @@ const BOMB_TYPES=['bombCommon','bombFragment','bombIncendiary'];
 const AUTO_CRUISE=u=>UT(u).weapons.includes('cruiseMissile')&&'bombCommon' in UT(u).ammo; // só bombardeiro: Auto = cruzeiro; o Rafale usa os mísseis
 const AMMO_PRICE={jetGun:1,jetAam:20,antiRadiation:25,jetAgm:25,cruiseMissile:60,bombCommon:12,bombFragment:14,bombIncendiary:18};
 const PLANE_MODELS={
- fighterBlue:{name:'Caça aliado',team:'blue',hp:150,speed:6,evasion:.2,flares:60,hull:400,train:3,ammo:{jetAam:4,antiRadiation:2},radar:true,role:'Interceptação · radar 18 · investidas'},
+ fighterBlue:{name:'Caça aliado',team:'blue',hp:150,speed:6,evasion:.2,flares:60,hull:400,train:3,ammo:{jetAam:4,antiRadiation:4},radar:true,role:'Interceptação · radar 18 · investidas'},
  fighterRed:{name:'Caça inimigo',team:'red',hp:160,speed:5.4,evasion:.3,flares:60,hull:400,train:3,ammo:{jetAam:4,antiRadiation:2},radar:true,role:'Interceptação · manobrabilidade'},
- multiroleBlue:{name:'Multifunção aliado',team:'blue',hp:180,speed:5.6,evasion:.3,flares:60,hull:480,train:4,ammo:{jetAam:2,jetAgm:4,antiRadiation:2},role:'Ar/solo · rápido e manobrável'},
- multiroleRed:{name:'Multifunção inimigo',team:'red',hp:200,speed:4.8,evasion:.2,flares:80,hull:600,train:4,ammo:{jetAam:2,jetAgm:5,antiRadiation:3},role:'Ar/solo · mísseis superiores'},
+ multiroleBlue:{name:'Multifunção aliado',team:'blue',hp:180,speed:5.6,evasion:.3,flares:60,hull:480,train:4,ammo:{jetAam:2,jetAgm:6,antiRadiation:4},role:'Ar/solo · rápido e manobrável'},
+ multiroleRed:{name:'Multifunção inimigo',team:'red',hp:200,speed:4.8,evasion:.2,flares:80,hull:600,train:4,ammo:{jetAam:2,jetAgm:4,antiRadiation:3},role:'Ar/solo · mísseis superiores'},
  stealthFighterBlue:{name:'Caça furtivo aliado',team:'blue',hp:180,speed:6.2,evasion:.3,flares:60,hull:750,train:5,ammo:{jetAam:6,antiRadiation:2},radar:true,radarStealth:true,weaponModel:'fighterBlue',reward:140,role:'Furtivo ao radar · interceptação · radar 18'},
  stealthFighterRed:{name:'Caça furtivo inimigo',team:'red',hp:190,speed:5.8,evasion:.35,flares:60,hull:780,train:5,ammo:{jetAam:6,antiRadiation:2},radar:true,radarStealth:true,weaponModel:'fighterRed',reward:140,role:'Furtivo ao radar · interceptação · radar 18'},
  bomberBlue:{name:'Bombardeiro furtivo aliado',team:'blue',hp:240,speed:3.5,evasion:.1,flares:100,hull:1000,train:6,ammo:{bombCommon:4,bombFragment:4,bombIncendiary:4,cruiseMissile:2},radarStealth:true,role:'Furtivo ao radar · 12 bombas · 2 cruzeiros, alcance 67 · sem metralhadora'},
- bomberRed:{name:'Bombardeiro pesado inimigo',team:'red',hp:340,speed:3.8,evasion:.1,flares:120,hull:100,train:8,ammo:{bombCommon:16,bombFragment:16,bombIncendiary:16,cruiseMissile:6},reward:180,role:'48 bombas · 6 cruzeiros, alcance 67 · sem metralhadora · detectável por radar'},
+ bomberRed:{name:'Bombardeiro pesado inimigo',team:'red',hp:340,speed:3,evasion:.1,flares:120,hull:100,train:8,ammo:{bombCommon:16,bombFragment:16,bombIncendiary:16,cruiseMissile:6},reward:180,role:'48 bombas · 6 cruzeiros, alcance 67 · sem metralhadora · detectável por radar'},
  // Time azul (França): custo final dentro de ±10% do aliado; veja unidades.md.
- fighterFr:{name:'Caça azul',team:'franca',hp:140,speed:6.3,evasion:.25,flares:60,hull:400,train:3,ammo:{jetAam:4,antiRadiation:1,jetGun:100},radar:true,role:'Mirage 2000 · interceptador mais rápido · radar 18 · pouco antirradiação'},
- multiroleFr:{name:'Multifunção azul',team:'franca',hp:185,speed:5.3,evasion:.25,flares:70,hull:480,train:4,ammo:{jetAam:2,jetAgm:3,antiRadiation:1,cruiseMissile:1},role:'Rafale · 1 míssil de cruzeiro SCALP, alcance 67 · menos antiblindado e antirradiação'},
- stealthFighterFr:{name:'Caça furtivo azul',team:'franca',hp:175,speed:6,evasion:.35,flares:60,hull:780,train:5,ammo:{jetAam:4,antiRadiation:2},radar:true,radarStealth:true,sensorNet:true,weaponModel:'fighterFr',reward:140,role:'FCAS · furtivo ao radar · rede de sensores: revela furtivos inimigos a 8 casas · radar 18'},
- bomberFr:{name:'Bombardeiro azul',team:'franca',hp:200,speed:5,evasion:.2,flares:80,hull:960,train:6,ammo:{bombCommon:6,bombFragment:6,bombIncendiary:0,cruiseMissile:3},reward:150,role:'Mirage IV · supersônico, detectável por radar · 12 bombas · 3 cruzeiros, alcance 67 · sem metralhadora'}
+ fighterFr:{name:'Caça azul',team:'franca',hp:140,speed:6.5,evasion:.25,flares:60,hull:400,train:3,ammo:{jetAam:4,antiRadiation:2,jetGun:100},radar:true,role:'Mirage 2000 · interceptador mais rápido, velocidade 6.5 · radar 18 · 2 antirradiação'},
+ multiroleFr:{name:'Multifunção azul',team:'franca',hp:185,speed:6,evasion:.25,flares:70,hull:480,train:4,ammo:{jetAam:2,jetAgm:3,antiRadiation:2,cruiseMissile:1},role:'Rafale · velocidade 6 · 1 míssil de cruzeiro SCALP, alcance 67 · 2 antirradiação · menos antiblindado'},
+ stealthFighterFr:{name:'Caça furtivo azul',team:'franca',hp:175,speed:5.7,evasion:.35,flares:60,hull:780,train:5,ammo:{jetAam:4,antiRadiation:2},radar:true,radarStealth:true,sensorNet:true,weaponModel:'fighterFr',reward:140,role:'FCAS · furtivo ao radar · rede de sensores: revela furtivos inimigos a 8 casas · radar 18'},
+ bomberFr:{name:'Bombardeiro azul',team:'franca',hp:200,speed:5,evasion:.2,flares:80,hull:960,train:6,ammo:{bombCommon:6,bombFragment:6,bombIncendiary:0,cruiseMissile:4},reward:150,role:'Mirage IV · supersônico, detectável por radar · 12 bombas · 4 cruzeiros, alcance 67 · sem metralhadora'}
 };
 for(const [type,m]of Object.entries(PLANE_MODELS)){if(!m.ammo.bombCommon)m.ammo={...m.ammo,jetGun:m.ammo.jetGun??80};TYPES[type]={...m,plane:true,air:true,vehicle:true,vision:12,move:0,min:0,range:m.ammo.cruiseMissile?67:m.ammo.jetAam?30:4,damage:80,accuracy:.8,cooldown:.6,reward:m.reward??120,weapons:Object.keys(m.ammo),cost:m.hull+Object.entries(m.ammo).reduce((n,[w,q])=>n+AMMO_PRICE[w]*q,0)};}
 Object.assign(TYPES,{
@@ -111,32 +111,59 @@ Object.assign(WEAPONS,{
  bombFragment:{name:'Fragmentação',damage:70,range:0,accuracy:.8,cooldown:.1},
  bombIncendiary:{name:'Incendiária',damage:40,range:0,accuracy:.8,cooldown:.1}
 });
+// Armas por kit da ficha verde (precisam de WEAPONS, declarado acima).
+Object.assign(TYPES.antitank,{arms:{atMissile:{...WEAPONS.atMissile,damage:50}}});
+Object.assign(TYPES.helicopterGround,{arms:{agm:{...WEAPONS.agm,damage:60,range:7,highRange:20,cooldown:3}}});
+Object.assign(TYPES.helicopterAir,{arms:{aam:{...WEAPONS.aam,damage:85,range:17}}});
+Object.assign(TYPES.stealthDrone,{arms:{stealthMissile:{...WEAPONS.stealthMissile,damage:80,range:15}}});
 
+/* Kit vermelho: RED guarda só o que difere da ficha verde (TYPES), no mesmo formato de FR. */
+const RED={
+ lightTank:{speed:1.9,vision:5,atMissiles:4,role:'Tanque leve vermelho · velocidade 1.9 · visão 5 · alcance 4 · 4 mísseis antitanque (dano 40, alcance 7) que perfuram pesados'},
+ tank:{speed:1.8,vision:5,falloff:4,role:'Alcance 5 · precisão cai só após 4 casas · velocidade 1.8 · visão 5'},
+ heavyTank:{speed:1.5,vision:5,trophy:3,atMissiles:4,arms:{atMissile:{...WEAPONS.atMissile,damage:50,range:12}},role:'Alcance 7 · maior dano e precisão dos tanques · 4 mísseis antitanque (dano 50, alcance 12) · Trophy: 3 cargas interceptam mísseis antitanque vindos de mais de 3 casas · velocidade 1.5 · visão 5'},
+ engineer:{repair:30,role:'Reparo +30 HP por ação'},
+ antitank:{atMissiles:6,arms:{atMissile:{...WEAPONS.atMissile,damage:40}},role:'Míssil antitanque alcance 7 contra veículos e estruturas · 6 mísseis · fuzil alcance 3 contra tropas'},
+ missileInfantry:{damage:45,range:15,role:'Mísseis só contra aeronaves · dano 45 · alcance 15 · fáceis de despistar'},
+ recon:{speed:2.5,role:'Reconhecimento rápido · velocidade 2.5'},
+ transportTruck:{unarmed:false,damage:20,range:3,accuracy:.75,cooldown:1,role:'Transporte de 4 tropas a pé · metralhadora leve (dano 20, alcance 3), não fere tanques médios/pesados'},
+ helicopter:{damage:7,gun:{...HELICOPTER_MINIGUN,damage:7},role:'Minigun dano 7 · alta cadência contra infantaria'},
+ helicopterGround:{missiles:12,arms:{agm:{...WEAPONS.agm,damage:80,range:7,highRange:23,cooldown:2.5}},role:'Canhão perfurante e 12 mísseis ar-terra · dano 80, alcance 7 (23 em altitude alta), recarga 2.5 s'},
+ helicopterAir:{arms:{aam:{...WEAPONS.aam,damage:70,range:15}},role:'Canhão perfurante e mísseis ar-ar · dano 70, alcance 15'},
+ stealthDrone:{damage:50,range:10,missiles:4,arms:{stealthMissile:{...WEAPONS.stealthMissile,damage:50,range:10}},role:'Furtivo ao radar · visão 12 através do terreno · 4 mísseis, dano 50, alcance 10, só por ordem · sempre em altitude alta'}
+};
 /* Facção França (id 'franca', "Azul" na interface): FR guarda só o que difere da ficha base; UT(u) devolve a ficha pela facção da unidade.
    Campos próprios: evade (−fração de precisão contra ela), falloff (casas até a precisão cair), galix (fumaça ao ser atingido),
    arms (armas trocadas), barrage (salva de foguetes), salvo (mísseis por salva), seats (vagas por tipo), scoot (atira e foge), noHigh. */
 const FRANCE='franca',GALIX_CHARGES=2,GALIX_SMOKE=3,GALIX_PENALTY=.6,SCOOT_TIME=3,SCOOT_SPEED=1.3,SENSOR_NET=8,SHORT_RUNWAY=.7;
 const FR_GUN={...HELICOPTER_MINIGUN,name:'Metralhadora',damage:6,shots:4,cooldown:.25,infantryMultiplier:2.5,vehicleMultiplier:.4},FR_CANNON={...HELICOPTER_CANNON,damage:22,cooldown:1.2};
 const FR={
- lightTank:{hp:95,speed:2.3,move:7,damage:40,cooldown:2.2,vision:6,role:'AMX-10 RC · sobre rodas, o mais rápido do jogo · canhão de 105 mm · alcance 4 · não perfura pesados'},
- tank:{cost:155,hp:155,damage:55,cooldown:2.1,falloff:4,role:'Leclerc · carregador automático · alcance 5 · precisão cai só após 4 casas'},
- heavyTank:{hp:300,damage:75,range:6,speed:1.4,galix:true,role:'Leclerc blindado · alcance 6 · GALIX: 2 cargas de fumaça ao ser atingido, −40% de precisão contra ele por 3 s · sem Trophy'},
- artillery:{hp:80,speed:1.7,move:4,range:14,damage:80,scoot:true,role:'CAESAR · sobre caminhão 6×6 · alcance 14 · atira e foge: +1 Mov (RTS: +30% de velocidade por 3 s) depois de disparar'},
- recon:{hp:65,speed:2.4,move:6,damage:20,cooldown:1,evade:.1,role:'VBL · silhueta pequena: −10% de precisão contra ele · reconhecimento rápido'},
- antiAirVehicle:{cost:145,hp:85,range:20,damage:60,cooldown:2.5,role:'Mistral · mísseis alcance 20 contra aeronaves · radar global · recarga curta · exige escolta'},
- rocketArtillery:{cost:250,hp:115,speed:.95,range:24,damage:14,cooldown:11,salvo:6,role:'LRU · lagartas · salva de 6 foguetes ×14, alcance 24 · ×2 contra estruturas'},
+ infantry:{damage:55,role:'Captura e construção · fuzil alcance 3, dano 55'},
+ engineer:{cost:50},
+ machinegun:{cost:60,damage:20},
+ antitank:{cost:60},
+ missileInfantry:{cost:55,damage:40,range:12,rifle:true,role:'Mísseis contra aeronaves, dano 40 · alcance 12 · fuzil alcance 3 contra tropas a pé · fáceis de despistar'},
+ commander:{aura:8,role:'Aura de comando · raio 8'},
+ lightTank:{hp:95,speed:2.5,move:7,damage:40,cooldown:2.2,vision:6,role:'AMX-10 RC · sobre rodas, o mais rápido do jogo · canhão de 105 mm · alcance 4 · não perfura pesados'},
+ tank:{cost:155,hp:155,speed:2,vision:5,damage:55,cooldown:2.1,falloff:4,role:'Leclerc · carregador automático · velocidade 2 · alcance 5 · precisão cai só após 4 casas'},
+ heavyTank:{hp:300,damage:75,range:6,speed:1.7,vision:5,galix:true,role:'Leclerc blindado · alcance 6 · GALIX: 2 cargas de fumaça ao ser atingido, −40% de precisão contra ele por 3 s · sem Trophy'},
+ artillery:{hp:80,speed:1.8,move:4,range:14,damage:80,cooldown:4,scoot:true,role:'CAESAR · sobre caminhão 6×6 · alcance 14 · atira e foge: +1 Mov (RTS: +30% de velocidade por 3 s) depois de disparar'},
+ recon:{hp:65,speed:3,move:6,damage:20,cooldown:1,evade:.1,role:'VBL · silhueta pequena: −10% de precisão contra ele · reconhecimento rápido'},
+ antiAirVehicle:{cost:145,hp:85,range:25,damage:90,cooldown:2.5,role:'Mistral · mísseis dano 90, alcance 25 contra aeronaves · radar global · recarga curta · exige escolta'},
+ rocketArtillery:{cost:250,hp:115,speed:1,range:25,damage:20,cooldown:11,salvo:6,role:'LRU · lagartas · salva de 6 foguetes ×20, alcance 25 · ×2 contra estruturas'},
  transportTruck:{cost:115,hp:100,speed:2.2,move:6,capacity:5,role:'TRM 10000 · transporte de 5 tropas a pé · cabine blindada · sem armas'},
  helicopter:{cost:140,hp:100,speed:3.6,move:9,vision:7,damage:6,cooldown:.25,shots:4,infantryMultiplier:2.5,vehicleMultiplier:.4,gun:FR_GUN,role:'Gazelle · metralhadora 6×4 tiros · o mais rápido, visão 7 · frágil'},
- helicopterGround:{cost:245,hp:110,damage:22,cooldown:1.2,gun:FR_CANNON,arms:{agm:{...WEAPONS.agm,damage:60,range:6,cooldown:3.5}},barrage:{range:4,min:1,missiles:4,damage:12,cooldown:8,infantry:1.5,vehicle:.5},role:'Tigre · canhão 30 mm, míssil alcance 6 e foguetes em área 3×3 (2 salvas, alcance 4, ×1.5 contra infantaria)'},
- helicopterAir:{cost:175,hp:140,speed:3,gun:undefined,weapons:['aam'],arms:{aam:{...WEAPONS.aam,damage:60,cooldown:2.2}},role:'Panther · 4 Mistral, sem canhão: não ataca alvos no solo · recarga curta'},
+ helicopterGround:{cost:245,hp:110,speed:3.5,missiles:undefined,damage:22,cooldown:1.2,gun:FR_CANNON,arms:{agm:{...WEAPONS.agm,damage:60,range:6,cooldown:3.5}},barrage:{range:4,min:1,missiles:4,damage:12,cooldown:8,infantry:1.5,vehicle:.5},role:'Tigre · canhão 30 mm, míssil alcance 6 e foguetes em área 3×3 (2 salvas, alcance 4, ×1.5 contra infantaria)'},
+ helicopterAir:{cost:175,hp:140,speed:3.8,gun:undefined,weapons:['aam'],arms:{aam:{...WEAPONS.aam,damage:60,cooldown:2.2}},role:'Panther · 4 Mistral, sem canhão: não ataca alvos no solo · recarga curta'},
  transportHelicopter:{cost:230,hp:160,speed:3.2,move:9,capacity:8,seats:{recon:5},noHigh:true,role:'NH90 · rampa traseira: 8 tropas a pé ou 1 batedor + 3 tropas · sem altitude alta · sem armas'},
- reconDrone:{cost:95,hp:70,speed:2,move:6,vision:14,role:'Patroller · reconhecimento · visão 14 através do terreno · sempre em altitude alta · sem armas'},
- stealthDrone:{cost:170,hp:55,range:5,damage:50,accuracy:.9,arms:{stealthMissile:{name:'Bomba guiada',damage:50,range:5,accuracy:.9,cooldown:3,structureMultiplier:1.5}},role:'nEUROn · furtivo ao radar · 2 bombas guiadas alcance 5, ×1.5 contra estruturas, só por ordem · sempre em altitude alta'},
- transportPlane:{hp:230,speed:4.8,capacity:10,shortRunway:true,role:'A400M · pista curta: pouso e embarque 30% mais rápidos · até 10 vagas · 300 flares'}
+ reconDrone:{cost:95,hp:70,speed:2,move:6,vision:15,role:'Patroller · reconhecimento · visão 15 através do terreno · sempre em altitude alta · sem armas'},
+ stealthDrone:{cost:170,hp:55,missiles:6,range:5,damage:50,accuracy:.9,arms:{stealthMissile:{name:'Bomba guiada',damage:50,range:5,accuracy:.9,cooldown:3,structureMultiplier:1.5}},role:'nEUROn · furtivo ao radar · 6 bombas guiadas alcance 5, ×1.5 contra estruturas, só por ordem · sempre em altitude alta'},
+ transportPlane:{hp:230,speed:5,capacity:10,shortRunway:true,role:'A400M · pista curta: pouso e embarque 30% mais rápidos · até 10 vagas · 300 flares'}
 };
-const FR_TYPES=Object.fromEntries(Object.entries(FR).map(([type,o])=>[type,{...TYPES[type],...o}]));
-const SPEC=(type,faction)=>faction===FRANCE&&FR_TYPES[type]||TYPES[type];
-const UT=u=>u&&(u.faction===FRANCE?FR_TYPES[u.type]||TYPES[u.type]:TYPES[u.type]);
+const withOverrides=table=>Object.fromEntries(Object.entries(table).map(([type,o])=>[type,{...TYPES[type],...o}]));
+const FR_TYPES=withOverrides(FR),RED_TYPES=withOverrides(RED),KIT_TYPES={red:RED_TYPES,[FRANCE]:FR_TYPES};
+const SPEC=(type,faction)=>KIT_TYPES[faction]?.[type]||TYPES[type];
+const UT=u=>u&&SPEC(u.type,KIT(u));
 const salvoSize=u=>UT(u).barrage?.missiles||UT(u).salvo||SALVO.missiles;
 const trophyMax=u=>UT(u)?.galix?GALIX_CHARGES:TROPHY_CHARGES;
 // Vagas ocupadas num transportador: a pé 1 cada; tipos de seats (batedor no NH90) ocupam as suas.
