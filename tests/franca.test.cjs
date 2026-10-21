@@ -61,7 +61,7 @@ test('GALIX: fumaça ao ser atingido, −40% de precisão contra ele, sem Trophy
  run(g,GALIX_SMOKE+.2);assert.equal(tank.smokeTime,0);g.hurt(tank,10,foe);assert.equal(tank.trophy,0);
  const tr=g.add('blue','heavyTank',60,40);tr.trophy=2;const at=g.add('red','antitank',60,30);at.atMissiles=4;
  g.shoot(at,tr,'atMissile');assert.equal(tr.trophy,2,'o Trophy do verde não intercepta aqui: GALIX não é Trophy');
- const gv=field({blue:'blue',red:'red'}),vt=gv.add('blue','heavyTank',60,40),vat=gv.add('red','antitank',60,30);gv.shoot(vat,vt,'atMissile');assert.equal(vt.trophy,2,'Trophy do verde gasta uma carga');
+ const gv=field({blue:'blue',red:'red'}),vt=gv.add('blue','heavyTank',60,40),vat=gv.add('red','antitank',60,30);gv.shoot(vat,vt,'atMissile');assert.equal(vt.trophy,5,'Trophy do verde gasta uma carga');
 });
 test('atira e foge do CAESAR: +1 Mov por turnos e +30% de velocidade no RTS',()=>{
  const t=field(FR_SIDE,'turns'),a=t.add('blue','artillery',40,60),foe=t.add('red','infantry',40,50);t.updateVision();

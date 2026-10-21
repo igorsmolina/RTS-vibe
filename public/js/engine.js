@@ -165,7 +165,7 @@ const FR_TYPES=withOverrides(FR),RED_TYPES=withOverrides(RED),KIT_TYPES={red:RED
 const SPEC=(type,faction)=>KIT_TYPES[faction]?.[type]||TYPES[type];
 const UT=u=>u&&SPEC(u.type,KIT(u));
 const salvoSize=u=>UT(u).barrage?.missiles||UT(u).salvo||SALVO.missiles;
-const trophyMax=u=>UT(u)?.galix?GALIX_CHARGES:TROPHY_CHARGES;
+const trophyMax=u=>UT(u)?.galix?GALIX_CHARGES:(UT(u)?.trophy??TROPHY_CHARGES);
 // Vagas ocupadas num transportador: a pé 1 cada; tipos de seats (batedor no NH90) ocupam as suas.
 const seatsUsed=u=>{const s=UT(u).seats;return (u.cargo||[]).reduce((n,p)=>n+(FOOT(p)?1:s?.[p.type]||0),0);};
 const AIR=u=>!!TYPES[u?.type]?.air&&(!PLANE(u)||!['grounded','service','offmap','waitRunway','taxiOut','takeoffRoll','landingRoll','taxiIn'].includes(u.flightState));
@@ -836,7 +836,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
    }
   }
  }
- hasAura(u){return this.units.some(c=>c.owner===u.owner&&c.type==='commander'&&c.hp>0&&DIST(u,c)<=2);}
+ hasAura(u){return this.units.some(c=>c.owner===u.owner&&c.type==='commander'&&c.hp>0&&DIST(u,c)<=(UT(c).aura??2));}
  cover(u){if(AIR(u))return 0;return Math.min(.75,TERRAIN[this.terrainAt(u)].cover+(u.entrenched?.25:0));}
  attackPower(u,w){return (PLANE(u)&&w||AIR(u)?this.weaponStats(u,w||'gun').damage:GROUND_WEAPONS.has(w)?WEAPONS[w].damage:UT(u).damage)*(1+(u.level-1)*.1)*(this.hasAura(u)?1.2:1)*NATION_DOCTRINES[this.doctrines[u.owner]||'balanced'].damage;}
  accuracy(a,b,w=this.weapon(a,b)){
@@ -1069,7 +1069,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
    if(this.canFire(u,target)){const weapon=this.weapon(u,target),gun=weapon==='gun'?this.weaponStats(u,weapon):null;this.animation={...job,weapon,route:[],shots:gun?.shots||(u.type==='machinegun'?3:1),shotInterval:gun?.shots>1?gun.cooldown:.12,shotClock:0,fired:0};return;}
   }else if(job.type==='bombard'){
    if(this.canBombard(u,job.cell)){u.moveLeft=0;u.facing=Math.atan2(job.cell.x-u.x,u.y-job.cell.y);if(u.salvos!==undefined)u.salvos--;this.animation={...job,route:[],shots:salvoSize(u),shotClock:0,fired:0,launcherPhase:'raising'};return;}
-  }else if(job.type==='repair'&&!AIR(target)&&target?.owner===u.owner&&DIST(u,target)<=1){const heal=Math.min(24,target.maxHp-target.hp);target.hp+=heal;this.event('text',target,{text:'+'+Math.round(heal),color:'#a4e7bb'});valid=true;
+  }else if(job.type==='repair'&&!AIR(target)&&target?.owner===u.owner&&DIST(u,target)<=1){const heal=Math.min(UT(u).repair??24,target.maxHp-target.hp);target.hp+=heal;this.event('text',target,{text:'+'+Math.round(heal),color:'#a4e7bb'});valid=true;
   }else if(job.type==='altitude'&&AIR(u)){valid=this.advanceAltitude(u,job.altitude,0);
   }else if(job.type==='service'&&this.serviceSite(u,target)){const heal=AIR(u)&&!PLANE(u)?this.heliHeal(u):Math.min(24,u.maxHp-u.hp);if(!(AIR(u)&&!PLANE(u)))u.hp+=heal;if(u.type==='antiAirVehicle')u.smokeCharges=Math.min(2,u.smokeCharges+1);else if(u.type==='antitank')u.atMissiles=Math.min(AT_MISSILES,u.atMissiles+2);else if(u.type==='heavyTank')u.trophy=Math.min(trophyMax(u),u.trophy+2);else{u.flares=Math.min(3,u.flares+1);if(u.salvos!==undefined)u.salvos=Math.min(HELI_SALVOS,u.salvos+1);}this.event('text',u,{text:'+'+Math.round(heal)+' HP · manutenção',color:'#a4e7bb'});valid=true;
   }else if(job.type==='capture'&&(target?.type==='post'||target?.missionTarget||AIRPORT(target))&&target.owner!==u.owner&&DIST(u,target)<=1){this.captureStructure(target,u);valid=true;
@@ -1732,7 +1732,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
    u.work+=dt;const duration=job.type==='build'?3:job.type==='capture'?2:1;
    if(u.work+1e-8<duration)return;u.work=0;
    if(job.type==='repair'){
-    const heal=Math.min(24,target.maxHp-target.hp);target.hp+=heal;this.event('text',target,{text:'+'+heal,color:'#a4e7bb'});if(target.hp>=target.maxHp)this.finishRTS(u);
+    const heal=Math.min(UT(u).repair??24,target.maxHp-target.hp);target.hp+=heal;this.event('text',target,{text:'+'+heal,color:'#a4e7bb'});if(target.hp>=target.maxHp)this.finishRTS(u);
    }else this.resolveAction(job,u);return;
   }
   if(job.type==='move'&&DIST(u,job.goal)===0){this.finishRTS(u);return;}

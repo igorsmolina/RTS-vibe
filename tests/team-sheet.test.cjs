@@ -1,9 +1,9 @@
 'use strict';
 // Fichas por time (verde = 'blue', vermelho = 'red', azul = França) conforme a planilha.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
-const names='Game,TYPES,FR_TYPES,RED_TYPES,SPEC,UT,FRANCE,PLANE_MODELS'.split(',');
+const names='Game,TYPES,FR_TYPES,RED_TYPES,SPEC,UT,FRANCE,PLANE_MODELS,trophyMax'.split(',');
 const E=new Function(fs.readFileSync(path.join(__dirname,'..','public','js','engine.js'),'utf8')+'\nreturn {'+names.join(',')+'};')();
-const {Game,SPEC,UT,FRANCE,PLANE_MODELS}=E;
+const {Game,SPEC,UT,FRANCE,PLANE_MODELS,trophyMax}=E;
 const cases=[],test=(name,fn)=>cases.push([name,fn]);
 function field(factions){
  const g=new Game('river','normal',123,'rts',{posts:2},{},{},null,factions);g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.actions=[];g.animation=null;g.projectiles=[];g.memory.blue.clear();g.memory.red.clear();g.intel.clear();g.aiEnabled=false;
@@ -26,6 +26,14 @@ test('ficha verde, vermelha e azul seguem a planilha',()=>{
 test('a ficha vem do kit, não do dono',()=>{
  const g=field({blue:'red',red:'blue'});const mine=g.add('blue','lightTank',10,80),theirs=g.add('red','lightTank',100,10);
  assert.equal(UT(mine).speed,1.9);assert.equal(UT(theirs).speed,2.2);
+});
+test('aura, reparo e Trophy dependem do time',()=>{
+ for(const [kit,aura] of [['blue',6],['red',6],[FRANCE,8]]){const g=field({blue:kit,red:'red'});g.add('blue','commander',10,80);
+  assert.equal(g.hasAura(g.add('blue','infantry',10+aura,80)),true,kit);assert.equal(g.hasAura(g.add('blue','infantry',11+aura,80)),false,kit);}
+ const g=field({blue:'blue',red:'red'});
+ assert.equal(trophyMax(g.add('blue','heavyTank',10,80)),6);assert.equal(trophyMax(g.add('red','heavyTank',100,10)),3);
+ for(const [side,x,y,heal] of [['blue',20,80,24],['red',100,20,30]]){const e=g.add(side,'engineer',x,y),t=g.add(side,'infantry',x+1,y);t.hp=10;
+  assert.ok(g.order(e,'repair',{targetId:t.id}));for(let i=0;i<90&&t.hp===10;i++){g.update(1/30);g.events=[];}assert.equal(t.hp,10+heal,side);}
 });
 for(const [name,fn] of cases){fn();console.log('OK '+name);}
 console.log(cases.length+' verificações de ficha por time passaram.');

@@ -566,7 +566,7 @@ class Renderer{
    if(game.turn===localPlayerSide()){const target=game.get(u.order.targetId),goal=u.order.goal||(target&&game.isVisible(localPlayerSide(),target)?TILE(target):u.order.last);if(goal)this.outline(goal.x,goal.y,['attack','attackMove'].includes(u.order.type)?'#f9b09a':'#b8e5e6',2);}
    if(u.order.type==='bombard'&&u.order.cell)this.area(u.order.cell.x,u.order.cell.y,.08);
    if(u.flightJob?.weapon==='cruiseMissile'&&u.flightJob.cell)this.area(u.flightJob.cell.x,u.flightJob.cell.y,.08);
-   if(u.type==='commander'){c.strokeStyle='#e9cf8944';c.lineWidth=2;polygon(c,[[u.x*CELL+28,(u.y-1.5)*CELL],[(u.x+2.5)*CELL,u.y*CELL+28],[u.x*CELL+28,(u.y+2.5)*CELL],[(u.x-1.5)*CELL,u.y*CELL+28]],'#edd0980d','#edd09855');}
+   if(u.type==='commander'){c.strokeStyle='#e9cf8944';c.lineWidth=2;{const r=(UT(u).aura??2)*CELL,cx=(u.x+.5)*CELL,cy=(u.y+.5)*CELL;polygon(c,[[cx,cy-r],[cx+r,cy],[cx,cy+r],[cx-r,cy]],'#edd0980d','#edd09855');}}
   }
   for(const m of game.mines)if(m.known[localPlayerSide()]&&game.explored[localPlayerSide()][KEY(m.x,m.y)]){polygon(c,[[(m.x+.5)*CELL,m.y*CELL+18],[m.x*CELL+42,m.y*CELL+42],[m.x*CELL+14,m.y*CELL+42]],'#d8bc77','#4d513d');c.fillStyle='#39403b';c.font='bold 17px sans-serif';c.textAlign='center';c.fillText('!',(m.x+.5)*CELL,m.y*CELL+37);}
   if(hover&&INSIDE(Math.round(hover.x),Math.round(hover.y))&&game.explored[localPlayerSide()][KEY(Math.round(hover.x),Math.round(hover.y))])this.outline(Math.round(hover.x),Math.round(hover.y),'#e9eac56b',1.2);
