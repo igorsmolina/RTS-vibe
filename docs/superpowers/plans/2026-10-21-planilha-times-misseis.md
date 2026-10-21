@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Aplicar no jogo os valores que o usuário editou na planilha `unidades.xlsx` (separados por time: verde, vermelho e azul/França), dar munição limitada aos mísseis de helicóptero e drone, mostrar na tela quantos mísseis cada unidade carrega (com aviso "Pouca munição" e "Munição acabou") e garantir que todo míssil tenha imagem.
+**Goal:** Aplicar no jogo os valores que o usuário editou na planilha `unidades.xlsx` (separados por time: verde, vermelho e azul/França), dar munição limitada aos mísseis de helicóptero e drone, mostrar na tela quantos mísseis cada unidade carrega (com aviso "Pouca munição" e "Munição acabou") garantir que todo míssil tenha imagem e permitir afastar o zoom até enxergar o mapa inteiro.
 
 **Architecture:** O kit é `KIT(u)` (`'blue'` = verdes, `'red'` = vermelhas, `'franca'` = azuis). Hoje só a França tem tabela de sobrescrita (`FR` → `FR_TYPES`). O plano cria `RED` → `RED_TYPES` no mesmo formato e faz `SPEC`/`UT` escolherem pela facção. A base `TYPES` passa a ser a ficha **verde**. Armas por kit usam o campo existente `arms` (já lido por `weaponStats`), agora também lido por `planeWeapon`, pelas armas terrestres (`atMissile`, `rifle`) e com `highRange` para altitude alta.
 
@@ -20,6 +20,7 @@
 - Valores finais por time são exatamente os das tabelas A–D. Campos fora das tabelas não mudam.
 - Textos de interface em português, como os existentes. Avisos flutuantes: `'Pouca munição'` (cor `'#ffdc92'`) e `'Munição acabou'` (cor `'#f26d5b'`).
 - Limiar de "pouca munição": `have === Math.max(1, Math.floor(max/4))`, avisado só ao cruzar (no disparo que leva até ele).
+- Zoom out: o limite mínimo deixa de ser `.35` fixo e passa a ser o zoom que enquadra o mapa inteiro (128 × 96 casas × `CELL`=56) na área útil do campo. O zoom máximo continua `1.5`.
 - Sem dependências novas. Sem arte nova: os mísseis sem sprite reusam os PNGs de `assets/Misseis`.
 - Nenhum teste existente é apagado ou pulado. Asserções que fixam valores antigos são atualizadas para os valores das tabelas.
 
@@ -364,12 +365,59 @@ console.log('OK',missiles.length,'mísseis com imagem');
 - [ ] **Step 4: Rodar.** Run: `node tests/missile-art.test.cjs && node tests/missiles.browser.test.cjs && node tests/rocket-animation.browser.test.cjs`. Expected: PASS. Se os testes de navegador não acharem o Chrome, rode com `executablePath:'/opt/pw-browsers/chromium'` conforme o ambiente e registre isso no relatório. Depois abra o jogo (`npm start`) e confira numa captura: um antitanque mostra `4/4` sob a vida, e o texto "Pouca munição" sobe ao chegar a 1.
 - [ ] **Step 5: Commit** (`feat: contador de mísseis na tela e imagem para todo míssil`).
 
-### Task 8: Suíte completa e documentação das fichas
+### Task 8: Zoom out até enxergar o mapa inteiro
+
+**Files:**
+- Modify: `public/js/render.js:344` (`clampCamera`, limite fixo `.35`) e `:342-343` (`cameraViewport`), `public/js/ui.js:294` (roda do mouse: `cam.zoom*=…` seguido de `clampCamera()`), `public/index.html:222` (texto do manual: citar que a roda afasta até o mapa inteiro)
+- Test: `tests/zoom.browser.test.cjs`, `tests/camera-performance.browser.test.cjs` (acrescentar o novo zoom mínimo)
+
+**Interfaces:**
+- Produces: `const minZoom=()=>{const v=cameraViewport();return Math.min(v.width/(COLS*CELL),v.height/(ROWS*CELL));}` (top-level em `render.js`, junto de `cameraViewport`). `clampCamera` usa `Math.max(minZoom(),Math.min(1.5,cam.zoom))`. Em cada eixo cujo mapa cabe inteiro na janela (`cells*CELL*z<=size`), a câmera fica fixa de modo que o mapa fique centralizado, em vez do clamp atual por centro. `minZoom()` nunca passa de `1.5`, para janelas muito pequenas.
+
+- [ ] **Step 1: Escrever o teste que falha**
+
+Em `tests/zoom.browser.test.cjs` (mesmo esqueleto de Playwright e `newOperation(...)` já usado), antes do `assert.deepEqual(errors,[])` final, para cada viewport de `[{width:1440,height:1000},{width:1920,height:1080},{width:390,height:844}]`:
+
+```js
+const fit=await page.evaluate(async()=>{await renderer.groundReady;for(let i=0;i<60;i++){cam.zoom*=1/1.15;clampCamera();}
+ const v=cameraViewport(),expected=Math.min(v.width/(COLS*CELL),v.height/(ROWS*CELL));renderer.draw(0);
+ const c=viewCells();return{zoom:cam.zoom,expected,x0:c.x0,y0:c.y0,x1:c.x1,y1:c.y1,cols:COLS,rows:ROWS};});
+assert.ok(Math.abs(fit.zoom-fit.expected)<1e-9,'zoom mínimo deve enquadrar o mapa inteiro');
+assert.deepEqual([fit.x0,fit.y0,fit.x1,fit.y1],[0,0,fit.cols,fit.rows],'todas as casas do mapa visíveis');
+```
+
+e verifique também que `cam.zoom` nunca fica abaixo de `expected` (mais um `for` de zoom out depois do primeiro e uma asserção `>=`), e que um segundo `cam.zoom*=1.15; clampCamera();` volta a aproximar (`fit.zoom<cam.zoom`).
+
+- [ ] **Step 2: Rodar e ver falhar**
+
+Run: `node tests/zoom.browser.test.cjs`
+Expected: FAIL, `zoom mínimo deve enquadrar o mapa inteiro` (hoje o piso é `.35`; a 1440×1000 o enquadramento exige ≈ `.166`).
+
+- [ ] **Step 3: Implementar `minZoom()`**
+
+Atualize `clampCamera` conforme Interfaces. Ajuste o clamp de cada eixo: se o mapa cabe na janela, `cam[axis]=(cells*CELL)/2-size/z/2` (centralizado); senão mantém a fórmula atual. Verifique a lógica de zoom em `ui.js:294`: ela já chama `clampCamera()` duas vezes, então não precisa mudar além do piso. Confirme em `render.js` que nada mais assume `cam.zoom>=.35` (procure por `.35` e `cam.zoom<`): o seletor `cell>=6||label` das réguas (`:607-608`) já trata a densidade em zoom baixo.
+
+- [ ] **Step 4: Rodar o teste novo e o desempenho**
+
+Acrescente `.17` e o zoom mínimo calculado à lista `[1.5,1,.7]` de `tests/camera-performance.browser.test.cjs:31`, e `minZoom()` à lista `[1,.5,.35]` de `tests/zoom.browser.test.cjs`, com a mesma exigência de nenhuma textura recriada com a câmera parada e `terrainReads<cells*4`.
+Run: `node tests/zoom.browser.test.cjs && node tests/camera-performance.browser.test.cjs && node tests/minimap-load.browser.test.cjs`
+Expected: PASS. Se o desenho a `minZoom()` ultrapassar o orçamento de quadro dos testes, a correção fica em `Renderer.draw` (por exemplo, não desenhar sprites menores que 2 px ou usar só `groundOverviewImage()` abaixo de `.2`), nunca em afrouxar o teste. Registre o tempo medido por quadro no relatório.
+
+- [ ] **Step 5: Atualizar o manual e fazer commit**
+
+Troque no manual (`public/index.html:222`) "a roda aproxima e afasta" por "a roda aproxima e afasta, até enxergar o mapa inteiro".
+
+```bash
+git add public/js/render.js public/js/ui.js public/index.html tests/zoom.browser.test.cjs tests/camera-performance.browser.test.cjs
+git commit -m "feat: zoom out até enquadrar o mapa inteiro"
+```
+
+### Task 9: Suíte completa e documentação das fichas
 
 **Files:**
 - Modify: `unidades.md` (valores por time), `public/js/ui.js` (manual: números citados que mudaram, como "Caminhão: 4 tropas", alcance do lançador e cargas do Trophy), testes existentes que ainda fixem valores antigos
 
 - [ ] **Step 1: Rodar a suíte inteira.** Run: `npm test`. Expected: tudo passa. Cada falha que só fixa um valor antigo das tabelas recebe o valor novo. Falha de comportamento é bug da task correspondente e se corrige lá.
-- [ ] **Step 2: Rodar os testes de navegador ligados a combate.** Run: `node tests/missiles.browser.test.cjs && node tests/franca.test.cjs && node tests/unit-balance.browser.test.cjs`. Expected: PASS ou, em `unit-balance`, metas de equilíbrio que mudaram com a planilha. Nesse caso, não altere a planilha: relate quais metas mudaram para o usuário decidir.
+- [ ] **Step 2: Rodar os testes de navegador ligados a combate.** Run: `node tests/missiles.browser.test.cjs && node tests/franca.test.cjs && node tests/unit-balance.browser.test.cjs && node tests/zoom.browser.test.cjs`. Expected: PASS ou, em `unit-balance`, metas de equilíbrio que mudaram com a planilha. Nesse caso, não altere a planilha: relate quais metas mudaram para o usuário decidir.
 - [ ] **Step 3: Atualizar `unidades.md` e o manual** com os números das tabelas A–D, por time.
 - [ ] **Step 4: Commit** (`docs: fichas por time e testes atualizados`).
