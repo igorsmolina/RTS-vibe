@@ -849,7 +849,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
  serviceSite(u,base){return (u.type==='antiAirVehicle'||atMax(u)||u.type==='heavyTank'||AIR(u)&&!PLANE(u)&&u.altitude==='low')&&!u.segment&&base?.hp>0&&base.owner===u.owner&&(AIR(u)&&!PLANE(u)?base.type==='hq'||AIRPORT(base):['hq','post'].includes(base.type))&&DIST(u,base)<=1&&this.structures.includes(base);}
  // Manutenção paga do helicóptero: HELI_REPAIR HP por passo, HELI_REPAIR_COST crédito por HP, limitado pelo caixa; devolve o curado.
  heliHeal(u,hp=HELI_REPAIR){const n=Math.min(hp,u.maxHp-u.hp,Math.floor(this.credits[u.owner]/HELI_REPAIR_COST));if(n>0){this.credits[u.owner]-=n*HELI_REPAIR_COST;u.hp+=n;}return Math.max(0,n);}
- missileLoad(u){const t=UT(u);if(atMax(u))return {have:u.atMissiles,max:atMax(u)};if(t?.missiles)return {have:u.missiles,max:t.missiles};const ws=t?.plane?Object.keys(t.ammo||{}).filter(MISSILE):[];return ws.length?{have:ws.reduce((n,w)=>n+(u.ammo[w]||0),0),max:ws.reduce((n,w)=>n+t.ammo[w],0)}:null;}
+ missileLoad(u){const t=UT(u);if(atMax(u))return typeof u.atMissiles==='number'?{have:u.atMissiles,max:atMax(u)}:null;if(t?.missiles)return typeof u.missiles==='number'?{have:u.missiles,max:t.missiles}:null;const ws=t?.plane&&u.ammo?Object.keys(t.ammo||{}).filter(MISSILE):[];return ws.length?{have:ws.reduce((n,w)=>n+(u.ammo[w]||0),0),max:ws.reduce((n,w)=>n+t.ammo[w],0)}:null;}
  // Avisa só no disparo que leva até o limiar (igualdade exata), então uma salva avisa uma vez.
  ammoWarning(u){const l=this.missileLoad(u);if(!l)return;const text=l.have===0?'Munição acabou':l.have===Math.max(1,Math.floor(l.max/4))?'Pouca munição':null;if(text)this.event('text',u,{text,color:l.have?'#ffdc92':'#f26d5b'});}
  canService(u,base){return this.serviceSite(u,base)&&(u.type==='antiAirVehicle'?u.smokeCharges<2:atMax(u)||u.type==='heavyTank'?u.hp<u.maxHp||u.atMissiles<atMax(u)||u.trophy<trophyMax(u):u.hp<u.maxHp&&this.credits[u.owner]>=HELI_REPAIR_COST||u.flares<3||u.salvos<HELI_SALVOS||u.missiles<UT(u).missiles);}
@@ -1583,7 +1583,8 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   const threats=foes.filter(e=>!UT(e).structure&&(DIST(e,hq)<=6||posts.some(s=>DIST(e,s)<=5))),wave=p.phase==='attack'&&p.wave.includes(u.id);this.aiState=threats.length?'defend':p.phase;
   if(!threats.length&&u.type!=='commander'&&!u.captureIntent&&this.units.some(c=>c.owner===u.owner&&c.hp>0&&UT(c).capacity&&c.aiPassengerId===u.id)&&!this.acquire(u))return;
   if(PLANE(u)){this.aiPlaneAct(u,foes);return;}
-  if(atMax(u)&&(u.atMissiles===0||u.aiResupply&&u.atMissiles<atMax(u))){
+  // Lançador volta para recarregar; tanque só volta se não houver alvo ao alcance do canhão.
+  if(atMax(u)&&(u.type==='antitank'||!this.acquire(u))&&(u.atMissiles===0||u.aiResupply&&u.atMissiles<atMax(u))){
    u.aiResupply=true;for(const b of this.structures.filter(s=>s.owner===u.owner&&['hq','post'].includes(s.type)).sort(byDist))if(this.order(u,'service',{targetId:b.id})||this.moveToward(u,b,1))return;
   }else u.aiResupply=false;
   if(u.type==='reconDrone'){if(!this.droneAct(u,hq))this.hold(u);return;}

@@ -102,5 +102,17 @@ test('disparos reais do helicóptero esgotam os mísseis, avisam uma vez e recar
  for(let i=0;i<30*7;i++)g.update(1/30);assert.equal(h.missiles,2,'+1 a cada 3 s');
  for(let i=0;i<30*30;i++)g.update(1/30);assert.equal(h.missiles,8,'nunca acima da ficha');
 });
+test('tanque vermelho sem mísseis luta com o canhão em vez de voltar à base',()=>{
+ const g=field({blue:'blue',red:'red'});g.aiEnabled=true;const lt=g.add('red','lightTank',60,40),tank=g.add('blue','tank',63,40);lt.atMissiles=0;g.updateVision();
+ g.aiAct(lt);assert.equal(lt.order.type,'attack');assert.equal(lt.order.targetId,tank.id);
+ const at=g.add('red','antitank',60,50);g.add('blue','tank',62,50);at.atMissiles=0;g.updateVision();g.aiAct(at);assert.notEqual(at.order.type,'attack','lançador sem mísseis ainda volta');
+});
+test('missileLoad sem dados de munição (inimigo no multiplayer) devolve null',()=>{
+ const g=field({blue:'blue',red:'red'}),u=g.add('red','fighterRed',100,10);delete u.ammo;
+ assert.equal(g.missileLoad(u),null);
+ const lt=g.add('red','lightTank',100,14);delete lt.atMissiles;assert.equal(g.missileLoad(lt),null);
+ const h=g.add('red','helicopterGround',100,18);delete h.missiles;assert.equal(g.missileLoad(h),null);
+ assert.deepEqual(g.missileLoad(g.add('blue','fighterBlue',10,80)),{have:8,max:8});
+});
 for(const [name,fn] of cases){fn();console.log('OK '+name);}
 console.log(cases.length+' verificações de ficha por time passaram.');

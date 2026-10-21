@@ -174,7 +174,7 @@ Comandante e antiaéreas acompanham a linha terrestre durante a ofensiva. Antita
 | Helicóptero | 8 | 140 | 3 turnos / 30 s | Metralhadora; apoio e reconhecimento aéreo |
 | Helicóptero ar-terra | 8 | 230 | 4 turnos / 40 s | Metralhadora e mísseis contra alvos terrestres |
 | Helicóptero ar-ar | 8 | 180 | 4 turnos / 40 s | Metralhadora e mísseis contra aeronaves |
-| Comandante | 3 | — | — | Aura de dano/precisão em raio 2; unidade inicial |
+| Comandante | 3 | — | — | Aura de dano/precisão em raio 6 (8 na França); unidade inicial |
 
 Os custos de treinamento são descontados uma vez ao comprar. QG, postos e aeroportos aceitam **5 encomendas por estrutura**, incluindo tropas prontas sem saída. Tipos iguais compartilham o lote em treinamento; tipos diferentes aguardam em sequência. Cada estrutura produz simultaneamente às demais: no início do turno do dono a partir da segunda rodada, ou continuamente no RTS. Reforços surgem a até duas casas da estrutura; saída bloqueada mantém a unidade pronta até liberar espaço. Um lote parcialmente implantado termina de sair antes de o próximo começar. Captura ou destruição elimina sua fila **sem reembolso**; o novo dono recebe uma fila vazia. Um QG ou posto vivo mantém a equipe na partida, mesmo sem tropas; aeroportos e encomendas sozinhos não impedem derrota.
 
@@ -195,7 +195,7 @@ Os três tanques estão disponíveis no QG do jogador e da IA. A formação suge
 - **Helicópteros** (`air:true`): 120 HP, 3,2 casas/s no RTS, visão 6 em baixa / 15 em alta, recompensa 50. Voam sobre água e montanhas com custo 1 por passo reto e √2 por diagonal, sem bônus de estrada, penalidade de floresta, cobertura ou bônus de montanha; a floresta não os esconde. Dividem casa com tropas terrestres e estruturas, nunca com outra aeronave; a saída aérea do QG só é bloqueada por aeronaves. Minas, a explosão da artilharia e a queda de uma aeronave não atingem a outra camada. Infantaria e metralhadores os atacam com dano reduzido (infantaria −75%, metralhador −35%, caindo até a metade no alcance máximo do disparo). A manutenção em baixa altitude, junto a uma base aliada, recupera vida e flares. Não capturam, constroem nem transportam.
 - **Armas aéreas:** metralhadora 20 de dano, alcance 3, 85%, recarga 1 s (×0,35 contra veículos terrestres, ×0,5 contra estruturas); míssil ar-terra 65, alcance 5 em baixa / 10 em alta, 85%, 3 s (só alvos terrestres; ×1,5 contra veículos, ×0,5 contra tropas a pé); míssil ar-ar 70, alcance 6 em baixa / 11 em alta, 90%, 3 s (só helicópteros). Auto escolhe o míssil contra veículo/estrutura (ar-terra) ou helicóptero (ar-ar) e a metralhadora no resto; os botões Auto, Metralhadora e Míssil fixam a arma. Por turnos um disparo gasta a ação, e trocar de arma não a devolve; no RTS as duas armas dividem a recarga do último disparo. O projétil guarda arma, dano e alvo do momento do disparo. Clique de novo na mesma casa para alternar entre a aeronave e a tropa abaixo dela.
 - **Supressão:** tropa que leva dano e sobrevive perde 25 pontos de precisão por 3 s no RTS ou durante o próprio turno seguinte; novo dano renova sem acumular. Estruturas não são suprimidas.
-- **Comandante:** +20% dano e +15 pontos de precisão no raio 2. Sua morte remove metade dos créditos.
+- **Comandante:** +20% dano e +15 pontos de precisão no raio 6 (verde e vermelho) ou 8 (França). Sua morte remove metade dos créditos.
 - **Vitória:** elimine todos os QGs e postos do adversário. Tropas, aeroportos e filas não substituem essas bases. Se ambos perderem todas as bases, há empate.
 
 ## Desenvolvimento e verificação
