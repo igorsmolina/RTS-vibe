@@ -1,9 +1,9 @@
 'use strict';
 // Fichas por time (verde = 'blue', vermelho = 'red', azul = França) conforme a planilha.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
-const names='Game,TYPES,FR_TYPES,RED_TYPES,SPEC,UT,FRANCE,PLANE_MODELS,trophyMax'.split(',');
+const names='Game,TYPES,FR_TYPES,RED_TYPES,SPEC,UT,FRANCE,PLANE_MODELS,trophyMax,NATION_DOCTRINES'.split(',');
 const E=new Function(fs.readFileSync(path.join(__dirname,'..','public','js','engine.js'),'utf8')+'\nreturn {'+names.join(',')+'};')();
-const {Game,SPEC,UT,FRANCE,PLANE_MODELS,trophyMax}=E;
+const {Game,SPEC,UT,FRANCE,PLANE_MODELS,trophyMax,NATION_DOCTRINES}=E;
 const cases=[],test=(name,fn)=>cases.push([name,fn]);
 function field(factions){
  const g=new Game('river','normal',123,'rts',{posts:2},{},{},null,factions);g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.actions=[];g.animation=null;g.projectiles=[];g.memory.blue.clear();g.memory.red.clear();g.intel.clear();g.aiEnabled=false;
@@ -34,6 +34,19 @@ test('aura, reparo e Trophy dependem do time',()=>{
  assert.equal(trophyMax(g.add('blue','heavyTank',10,80)),6);assert.equal(trophyMax(g.add('red','heavyTank',100,10)),3);
  for(const [side,x,y,heal] of [['blue',20,80,24],['red',100,20,30]]){const e=g.add(side,'engineer',x,y),t=g.add(side,'infantry',x+1,y);t.hp=10;
   assert.ok(g.order(e,'repair',{targetId:t.id}));for(let i=0;i<90&&t.hp===10;i++){g.update(1/30);g.events=[];}assert.equal(t.hp,10+heal,side);}
+});
+test('mísseis e armas mudam por time',()=>{
+ const g=field({blue:'blue',red:'red'}),pow=(u,w)=>g.attackPower(u,w)/NATION_DOCTRINES.balanced.damage;
+ const vAt=g.add('blue','antitank',10,80),rAt=g.add('red','antitank',100,10);assert.equal(pow(vAt,'atMissile'),50);assert.equal(pow(rAt,'atMissile'),40);
+ const vH=g.add('blue','helicopterGround',12,80),rH=g.add('red','helicopterGround',100,12);
+ assert.deepEqual([pow(vH,'agm'),g.weaponRange(vH,'agm','low'),g.weaponRange(vH,'agm','high'),g.weaponStats(vH,'agm').cooldown],[60,7,20,3]);
+ assert.deepEqual([pow(rH,'agm'),g.weaponRange(rH,'agm','low'),g.weaponRange(rH,'agm','high'),g.weaponStats(rH,'agm').cooldown],[80,7,23,2.5]);
+ const vA=g.add('blue','helicopterAir',14,80),rA=g.add('red','helicopterAir',100,14);assert.deepEqual([pow(vA,'aam'),g.weaponRange(vA,'aam','low'),pow(rA,'aam'),g.weaponRange(rA,'aam','low')],[85,17,70,15]);
+ assert.equal(pow(g.add('red','helicopter',100,16),'gun'),7);
+ const vD=g.add('blue','stealthDrone',16,80),rD=g.add('red','stealthDrone',100,18);
+ assert.deepEqual([pow(vD,'stealthMissile'),g.weaponRange(vD,'stealthMissile'),pow(rD,'stealthMissile'),g.weaponRange(rD,'stealthMissile'),rD.missiles],[80,15,50,10,4]);
+ const rHt=g.add('red','heavyTank',100,20),vTgt=g.add('blue','heavyTank',108,20);assert.equal(pow(rHt,'atMissile'),50);assert.equal(g.weaponStats(rHt,'atMissile').range,12);
+ assert.ok(g.accuracy(vAt,vTgt,'atMissile')>0,'precisão do míssil terrestre vem de weaponStats');
 });
 for(const [name,fn] of cases){fn();console.log('OK '+name);}
 console.log(cases.length+' verificações de ficha por time passaram.');
