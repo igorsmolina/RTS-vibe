@@ -19,7 +19,7 @@ function createCore(engine,{graceMs=120000,now=Date.now,maxRooms=16}={}){
   if(value.map!==undefined){if(!Object.hasOwn(MAPS,value.map))throw failure('Mapa inválido.');result.map=value.map;}
   if(value.mode!==undefined){if(!['rts','turns'].includes(value.mode))throw failure('Modo inválido.');result.mode=value.mode;}
   if(value.seed!==undefined){if(!Number.isInteger(value.seed)||value.seed<0||value.seed>0xffffffff)throw failure('Semente inválida.');result.seed=value.seed;}
-  if(value.options!==undefined){if(!plain(value.options))throw failure('Terreno inválido.');for(const [key,n]of Object.entries(value.options)){if(!Object.hasOwn(PROCEDURAL,key)||!Number.isFinite(n)||(key==='posts'?!(Number.isInteger(n)&&n>=2&&n<=32&&n%2===0):n<0||n>1))throw failure('Opção de terreno inválida.');result.options[key]=n;}}
+  if(value.options!==undefined){if(!plain(value.options))throw failure('Terreno inválido.');for(const [key,n]of Object.entries(value.options)){if(!Object.hasOwn(PROCEDURAL,key)||(key==='landscape'?!['auto','continent','lakes','islands','highlands'].includes(n):!Number.isFinite(n)||(key==='posts'?!(Number.isInteger(n)&&n>=2&&n<=32&&n%2===0):n<0||n>1)))throw failure('Opção de terreno inválida.');result.options[key]=n;}}
   return result;
  }
  // O catálogo vale para a facção (as unidades escolhidas), não para o lado.

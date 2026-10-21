@@ -104,7 +104,7 @@ Os quatro cenários foram redesenhados no estilo de Broken Arrow, sempre simétr
 - **Vale dos Rios:** bocage temperado — lotes de cultivo cercados por sebes, rio central sinuoso de borda a borda com três ou mais pontes, colinas suaves.
 - **Deserto Aberto:** solo de areia, dunas (colinas), poucos oásis com cultivo irrigado, estradas longas.
 - **Passe de Montanha:** serra central intransitável para veículos, cortada por três passagens, com encostas e vales cultivados.
-- **Fronteira procedural:** controles de água, floresta, relevo, campos e postos.
+- **Fronteira procedural:** escolha a **Paisagem** (Aleatória, Continente, Lagos, Ilhas ou Serras) e ajuste floresta, campos e postos; água e relevo valem na paisagem Continente.
 
 Os postos ficam em pontos estratégicos (colinas, cabeceiras de rio, meio do mapa) e uma malha de estradas traçada pelo terreno liga QGs, postos e centro, com pontes onde cruza a água. Os terrenos usam as texturas ilustradas em camadas (grama ou areia, árvores, rochas, água, margens, estradas e pontes); campos, sebes e colinas são desenhados em Canvas sobre elas, com cor e fileiras por lote. A composição considera oito vizinhos para suavizar bordas e cantos, sem revelar terreno desconhecido sob a névoa.
 
@@ -114,7 +114,7 @@ As 11 imagens de 128 × 128 pixels estão em `assets/terrain/` e incorporadas em
 
 ### Gerador procedural
 
-Escolha **Fronteira procedural** no diálogo de nova operação para ajustar **Água** (rios contínuos de borda a borda e lagos), **Floresta**, **Relevo** (colinas; acima de 55% surgem serras), **Campos e sebes** e o número de **Postos** (4–12). A prévia mostra o mapa da semente atual e muda junto com os controles; **Gerar outro** sorteia uma nova semente. O mapa é sempre simétrico para os dois lados e as estradas com pontes garantem que todo o mapa seja alcançável. A prévia também funciona para os três mapas fixos.
+Escolha **Fronteira procedural** no diálogo de nova operação. A **Paisagem** define o tipo de terreno: **Continente** (rios e campos, o gerador de sempre), **Lagos** (12–28% de água, ilhas nos lagos maiores), **Ilhas** (arquipélago com pontes entre as massas de terra), **Serras** (maciços de montanha com planaltos e passagens) ou **Aleatória** (sorteia uma pela semente). No Continente também dá para ajustar **Água** (rios contínuos de borda a borda e lagos), **Floresta**, **Relevo** (colinas; acima de 55% surgem serras), **Campos e sebes** e o número de **Postos** (4–12). A prévia mostra o mapa da semente atual e muda junto com os controles; **Gerar outro** sorteia uma nova semente. O mapa é sempre simétrico para os dois lados e as estradas com pontes garantem que todo o mapa seja alcançável. A prévia também funciona para os três mapas fixos.
 
 ### Campanha no mapa-múndi
 

@@ -109,4 +109,9 @@ const start=(a)=>{for(const s of [a.host,a.guest])say(s,{type:'ready',ready:true
  const third=socket();say(third,{type:'join',version:1,code:a.code,nickname:'Terceiro'});
  say(a.guest,{type:'leave'});assert.deepEqual(a.room.players.map(p=>p.side),['blue','red']);assert.equal(a.room.players[1].nickname,'Terceiro');
  console.log('OK sair da sala de espera reorganiza os lados');}
+{ // paisagem do mapa procedural viaja nas opções e é validada contra a lista
+ for(const landscape of ['auto','continent','lakes','islands','highlands']){const made=core.createRoom('Anfitrião',{map:'random',mode:'rts',seed:5,options:{landscape}});assert.equal(core.rooms.get(made.code).config.options.landscape,landscape);}
+ assert.throws(()=>core.createRoom('Anfitrião',{map:'random',mode:'rts',seed:5,options:{landscape:'vulcão'}}),e=>/Opção de terreno inválida/.test(e.message||String(e)));
+ assert.doesNotThrow(()=>core.createRoom('Anfitrião',{map:'random',mode:'rts',seed:5,options:{water:.5,posts:12}}));
+ console.log('OK paisagem do mapa procedural validada na sala');}
 console.log('núcleo do multiplayer: verificações concluídas');

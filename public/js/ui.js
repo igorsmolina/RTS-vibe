@@ -412,11 +412,11 @@ function refreshTitle(){paintTitle();drawNationFlag('titleNationFlag',settings.n
 function paintTitle(){TitleMap.paint();}
 function setupDescription(){$('setupDescription').textContent=$('modeSelect').value==='rts'?'Tropas e IA agem ao mesmo tempo. Pressione P ou Pausar para congelar o combate, selecionar tropas e preparar ordens. Continue para executá-las.':'Você joga primeiro. Cada tropa tem movimento limitado e uma ação por turno. A IA só age quando você encerra o turno. Planeje sem limite de tempo.';}
 $('modeSelect').addEventListener('change',setupDescription);
-function setupOptions(){return{water:$('genWater').value/100,forest:$('genForest').value/100,relief:$('genRelief').value/100,farmland:$('genFarmland').value/100,posts:Number($('genPosts').value)};}
+function setupOptions(){return{landscape:$('genLandscape').value,water:$('genWater').value/100,forest:$('genForest').value/100,relief:$('genRelief').value/100,farmland:$('genFarmland').value/100,posts:Number($('genPosts').value)};}
 let preparedSeed=1;
 function setupPreview(){const seed=Number($('seed').value)||preparedSeed;preparedSeed=seed;$('procedural').hidden=$('mapSelect').value!=='random';drawPreview($('preview'),new Game($('mapSelect').value,'normal',seed,'turns',setupOptions()));showDoctrines('playerDoctrine','playerDoctrineInfo','enemyDoctrineInfo',seed);}
 function rerollSeed(){$('seed').value=Math.floor(Math.random()*4294967294)+1;setupPreview();}
-for(const id of ['mapSelect','seed','genWater','genForest','genRelief','genFarmland','genPosts'])$(id).addEventListener('input',setupPreview);$('reroll').addEventListener('click',rerollSeed);
+for(const id of ['mapSelect','seed','genLandscape','genWater','genForest','genRelief','genFarmland','genPosts'])$(id).addEventListener('input',setupPreview);$('reroll').addEventListener('click',rerollSeed);
 function openSetup(){if($('result').open)$('result').close();$('mapSelect').value=game.map;// Primeira operação usa as configurações padrão; depois, repete o modo e a dificuldade da partida anterior.
 $('difficulty').value=started?game.difficulty:settings.difficulty;$('modeSelect').value=started?game.mode:settings.mode;setupDescription();updateArmySummary();if(!$('seed').value)rerollSeed();else setupPreview();openMenu('setup');}
 // Facção do jogador: as unidades "inimigas" (vermelhas) valem na batalha rápida e na campanha livre; tutorial e história passam o padrão.
