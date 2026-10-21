@@ -135,7 +135,7 @@ const RED={
 /* Facção França (id 'franca', "Azul" na interface): FR guarda só o que difere da ficha base; UT(u) devolve a ficha pela facção da unidade.
    Campos próprios: evade (−fração de precisão contra ela), falloff (casas até a precisão cair), galix (fumaça ao ser atingido),
    arms (armas trocadas), barrage (salva de foguetes), salvo (mísseis por salva), seats (vagas por tipo), scoot (atira e foge), noHigh. */
-const FRANCE='franca',GALIX_CHARGES=2,GALIX_SMOKE=3,GALIX_PENALTY=.6,SCOOT_TIME=3,SCOOT_SPEED=1.3,SENSOR_NET=8,SHORT_RUNWAY=.7;
+const LANDING_SPEED=.6,TURN_RATE=3,FRANCE='franca',GALIX_CHARGES=2,GALIX_SMOKE=3,GALIX_PENALTY=.6,SCOOT_TIME=3,SCOOT_SPEED=1.3,SENSOR_NET=8,SHORT_RUNWAY=.7;
 const FR_GUN={...HELICOPTER_MINIGUN,name:'Metralhadora',damage:6,shots:4,cooldown:.25,infantryMultiplier:2.5,vehicleMultiplier:.4},FR_CANNON={...HELICOPTER_CANNON,damage:22,cooldown:1.2};
 const FR={
  infantry:{damage:55,role:'Captura e construção · fuzil alcance 3, dano 55'},
@@ -468,22 +468,28 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
  runwayBusy(base){const p=this.get(base.runwayId);if(!p||p.hp<=0||p.runway?.baseId!==base.id){base.runwayId=null;return false;}return true;}
  releaseRunway(u){const b=this.get(u.runway?.baseId);if(b?.runwayId===u.id)b.runwayId=null;u.runway=null;}
  redirectPlane(u,lost){this.releaseRunway(u);u.airportId=null;const base=this.airports(u.owner).filter(b=>b!==lost).sort((a,b)=>DIST(u,a)-DIST(u,b)||a.id-b.id)[0];if(base){u.flightState='approach';u.flightJob={type:'return',airportId:base.id};u.pending=true;}else{this.setPatrol(u);if(this.mode==='turns'){this.actions=this.actions.filter(a=>a.id!==u.id);if(this.animation?.id===u.id)this.finishAction(u);}}}
- runwayPoints(base){const y=base.y+base.height/2-.5;return {start:{x:base.x+.5,y},end:{x:base.x+base.width-1.5,y},approach:{x:base.x-1.5,y},climb:{x:Math.min(COLS-1,base.x+base.width+.5),y}};}
- runwayPhase(u,phase,goal,duration,level){const r=u.runway;r.phase=phase;r.elapsed=0;r.from={x:u.x,y:u.y};r.goal=goal;r.duration=duration*(UT(u).shortRunway?SHORT_RUNWAY:1);r.fromLevel=r.level;r.toLevel=level;u.flightState=phase;}
+ // O ponto de aproximação fica a (v0+v1)/2·T antes da cabeceira para o pouso entrar na pista com a velocidade de voo, sem tranco.
+ runwayPoints(base,u){const y=base.y+base.height/2-.5,k=u?UT(u).speed*(1+LANDING_SPEED)/2*1.5*(UT(u).shortRunway?SHORT_RUNWAY:1):2;return {start:{x:base.x+.5,y},end:{x:base.x+base.width-1.5,y},approach:{x:Math.max(0,base.x+.5-k),y},climb:{x:Math.min(COLS-1,base.x+base.width+.5),y}};}
+ turnToward(u,heading,dt,rate=TURN_RATE){const d=((heading-(u.facing||0)+Math.PI)%(2*Math.PI)+2*Math.PI)%(2*Math.PI)-Math.PI,m=rate*dt;u.facing=(u.facing||0)+Math.max(-m,Math.min(m,d));}
+ // Cada fase é uma curva de Hermite com velocidade inicial v0 e final v1 (casas/s) que casa com a fase vizinha; a duração e o ponto final não mudam.
+ runwayPhase(u,phase,goal,duration,level){const r=u.runway,T=duration*(UT(u).shortRunway?SHORT_RUNWAY:1),D=Math.hypot(goal.x-u.x,goal.y-u.y),speed=UT(u).speed,prev=r.v1||0;
+  const [v0,v1]=phase==='takeoffRoll'?[0,D?2*D/T:0]:phase==='climb'?[prev,speed]:phase==='landing'?[speed,speed*LANDING_SPEED]:phase==='landingRoll'?[prev,0]:[0,0];
+  r.phase=phase;r.elapsed=0;r.from={x:u.x,y:u.y};r.goal=goal;r.duration=T;r.fromLevel=r.level;r.toLevel=level;u.flightState=phase;
+  r.dist=D;r.v0=v0;r.v1=v1;r.m0=Math.min(v0*T,3*D);r.m1=Math.min(v1*T,3*D);}
  stepRunway(u,dt){
   const r=u.runway,base=this.get(r.baseId);
   if(UT(u).airdropPlane&&(!base||base.hp<=0||base.owner!==u.owner)){this.releaseRunway(u);if(AIR(u))return false;this.hurt(u,u.hp);return true;}
   if(!base||base.hp<=0||base.owner!==u.owner){if(AIR(u)){this.redirectPlane(u,base);return !u.flightJob;}this.releaseRunway(u);this.hurt(u,u.hp);return true;}
-  const points=this.runwayPoints(base);
+  const points=this.runwayPoints(base,u);
   if(r.phase==='wait'){if(this.runwayBusy(base)&&base.runwayId!==u.id)return false;base.runwayId=u.id;this.runwayPhase(u,'taxiOut',points.start,1.2,0);}
-  if(r.phase==='approach'){if(this.incoming(u)){this.flyCombat(u,this.jink(u,points.approach),dt);return false;}if(this.flyToward(u,points.approach,dt)){u.facing=Math.PI/2;this.runwayPhase(u,'landing',points.start,1.5,0);}return false;}
-  r.elapsed=Math.min(r.duration,r.elapsed+dt);const p=r.elapsed/r.duration,q=r.phase==='takeoffRoll'?p*p:r.phase==='landingRoll'?1-(1-p)*(1-p):p;
-  const dx=r.goal.x-r.from.x,dy=r.goal.y-r.from.y;if(Math.hypot(dx,dy)>.001)u.facing=Math.atan2(dx,-dy);u.x=r.from.x+dx*q;u.y=r.from.y+dy*q;r.level=r.fromLevel+(r.toLevel-r.fromLevel)*p*p*(3-2*p);
+  if(r.phase==='approach'){if(this.incoming(u)){this.flyCombat(u,this.jink(u,points.approach),dt);return false;}if(this.flyToward(u,points.approach,dt)){this.runwayPhase(u,'landing',points.start,1.5,0);}return false;}
+  r.elapsed=Math.min(r.duration,r.elapsed+dt);const p=r.elapsed/r.duration,hermite=r.dist>1e-6?Math.max(0,Math.min(1,(p*(1-p)*(1-p)*r.m0+p*p*(3-2*p)*r.dist+p*p*(p-1)*r.m1)/r.dist)):p,q=hermite;
+  const dx=r.goal.x-r.from.x,dy=r.goal.y-r.from.y;if(Math.hypot(dx,dy)>.001)this.turnToward(u,Math.atan2(dx,-dy),dt);u.x=r.from.x+dx*q;u.y=r.from.y+dy*q;r.level=r.fromLevel+(r.toLevel-r.fromLevel)*p*p*(3-2*p);
   if(r.elapsed+1e-8<r.duration)return false;
   if(r.phase==='taxiOut')this.runwayPhase(u,'takeoffRoll',points.end,1.8,0);
-  else if(r.phase==='takeoffRoll'){u.airportId=null;this.runwayPhase(u,'climb',points.climb,1,1);}
+  else if(r.phase==='takeoffRoll'){u.airportId=null;this.runwayPhase(u,'climb',{x:Math.min(COLS-1,u.x+(r.v1+UT(u).speed)/2*1*(UT(u).shortRunway?SHORT_RUNWAY:1)),y:points.climb.y},1,1);}
   else if(r.phase==='climb'){this.releaseRunway(u);u.flightState='approach';}
-  else if(r.phase==='landing'){u.airportId=base.id;this.runwayPhase(u,'landingRoll',points.end,2,0);}
+  else if(r.phase==='landing'){u.airportId=base.id;this.event('touchdown',u);this.runwayPhase(u,'landingRoll',points.end,2,0);}
   else if(r.phase==='landingRoll')this.runwayPhase(u,'taxiIn',r.slot,1.5,0);
   else if(r.phase==='taxiIn'){this.releaseRunway(u);u.flightState='grounded';u.pending=false;u.flightJob=null;u.order={type:'stop'};
    if(UT(u).airdropPlane){const m=u.airdrop;m.phase='parked';m.baseId=base.id;m.line=null;u.airportId=base.id;if(m.autoLine&&u.cargo.length){const line=m.autoLine;m.autoLine=null;this.beginAirdropRun(u,line);return false;}m.autoLine=null;this.report('Avião de transporte pousou: leve tropas perto do aeroporto, embarque e use Lançar tropas.',u);return true;}
