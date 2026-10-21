@@ -427,6 +427,7 @@ class Renderer{
    this.fx.consume(e);
    if(e.kind==='terrainChanged')this.invalidateGround(e.cells);
    else if(e.kind==='defenseSmoke'){for(let i=0;i<12;i++)this.particles.push({x:(e.x+.5)*CELL,y:(e.y+.5)*CELL,vx:(i%4-1.5)*12,vy:Math.floor(i/4)*-8,t:0,life:3,size:12,color:'#c7c8bc',smoke:true,air:false});}
+   else if(e.kind==='touchdown'){if(!reducedMotion)for(const side of [-1,1])for(let i=0;i<3;i++){const f=e.facing||0,px=Math.cos(f)*side*10,py=Math.sin(f)*side*10;this.particles.push({x:(e.x+.5)*CELL+px,y:(e.y+.5)*CELL+py,vx:-Math.sin(f)*(8+i*4),vy:-Math.cos(f)*(8+i*4)-4-i*2,t:0,life:.9,size:4+i,color:'#d9dcd6',smoke:true,air:false,sourceId:e.id});}}
    else if(e.kind==='smoke'){this.particles.push({x:(e.x+.5)*CELL,y:(e.y+.5)*CELL-18*e.flightLevel,lift:18*e.flightLevel,contactId:e.contactId,sourceId:e.sourceId,publicMissile:!!e.publicMissile,vx:2,vy:-3,t:0,life:1.2,size:3,color:'#b5bdbe',smoke:true,air:e.air});}
    else if(e.kind==='flare'){
     const n=e.count||5;for(let i=0;i<n;i++){const k=i-(n-1)/2,dx=(e.decoy.x-e.x)*CELL,dy=(e.decoy.y-e.y)*CELL;this.particles.push({x:(e.x+.5)*CELL,y:(e.y+.5)*CELL-18*e.flightLevel,lift:18*e.flightLevel,contactId:e.contactId,vx:dx*(.8+i*.08*5/n)+k*13*(n>5?2:1),vy:dy*(.8+i*.08*5/n)-k*9*(n>5?2:1),t:0,life:n>5?1.2+i%5*.2:1.2,size:n>5?3:2.5,color:'#ffe6ad',flare:true,air:true});}

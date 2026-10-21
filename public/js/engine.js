@@ -489,7 +489,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   if(r.phase==='taxiOut')this.runwayPhase(u,'takeoffRoll',points.end,1.8,0);
   else if(r.phase==='takeoffRoll'){u.airportId=null;this.runwayPhase(u,'climb',{x:Math.min(COLS-1,u.x+(r.v1+UT(u).speed)/2*1*(UT(u).shortRunway?SHORT_RUNWAY:1)),y:points.climb.y},1,1);}
   else if(r.phase==='climb'){this.releaseRunway(u);u.flightState='approach';}
-  else if(r.phase==='landing'){u.airportId=base.id;this.event('touchdown',u);this.runwayPhase(u,'landingRoll',points.end,2,0);}
+  else if(r.phase==='landing'){u.airportId=base.id;this.event('touchdown',u,{facing:u.facing});this.runwayPhase(u,'landingRoll',points.end,2,0);}
   else if(r.phase==='landingRoll')this.runwayPhase(u,'taxiIn',r.slot,1.5,0);
   else if(r.phase==='taxiIn'){this.releaseRunway(u);u.flightState='grounded';u.pending=false;u.flightJob=null;u.order={type:'stop'};
    if(UT(u).airdropPlane){const m=u.airdrop;m.phase='parked';m.baseId=base.id;m.line=null;u.airportId=base.id;if(m.autoLine&&u.cargo.length){const line=m.autoLine;m.autoLine=null;this.beginAirdropRun(u,line);return false;}m.autoLine=null;this.report('Avião de transporte pousou: leve tropas perto do aeroporto, embarque e use Lançar tropas.',u);return true;}
