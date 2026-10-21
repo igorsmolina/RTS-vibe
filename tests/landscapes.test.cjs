@@ -30,5 +30,10 @@ test('serras: montanha, planalto, passagens, conexão e minas',()=>{for(let seed
  const m=share(g,'mountain');assert.ok(m>=.12&&m<=.24,label+' montanha '+m.toFixed(3));assert.ok(share(g,'hill')>=.18,label+' colina');assert.ok(share(g,'river')<=.08,label+' água');
  let gaps=0;for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){if(at(x,y)==='mountain')continue;const side=(dx,dy)=>[1,2].some(k=>at(x+dx*k,y+dy*k)==='mountain');if(side(1,0)&&side(-1,0)||side(0,1)&&side(0,-1))gaps++;}
  assert.ok(gaps>=6,label+' passagens '+gaps);connected(g,label);assert.equal(g.mines.length,8,label+' minas');}});
+test('água e relevo valem em todas as paisagens',()=>{const avg=(landscape,o,f)=>{let n=0;for(let seed=1;seed<=10;seed++)n+=f(make(landscape,seed,o));return n/10;};
+ const water=g=>share(g,'river')+share(g,'bridge'),rough=g=>share(g,'hill')+share(g,'mountain');
+ for(const [landscape,need] of [['continent',.03],['lakes',.08],['islands',.08],['highlands',.03]]){const wet=avg(landscape,{water:.9},water)-avg(landscape,{water:.1},water);assert.ok(wet>=need,landscape+': água .9 menos .1 = '+wet.toFixed(3)+' (mínimo '+need+')');
+  const hilly=avg(landscape,{relief:.9},rough)-avg(landscape,{relief:.1},rough);assert.ok(hilly>=.10,landscape+': relevo .9 menos .1 = '+hilly.toFixed(3));}
+ for(const landscape of ['lakes','islands','highlands'])for(let seed=1;seed<=6;seed++)for(const o of [{water:.1,relief:.9},{water:.9,relief:.1},{water:0,relief:0},{water:1,relief:1}])connected(make(landscape,seed,o),landscape+'/'+seed+'/'+JSON.stringify(o));});
 module.exports={make,share,components,connected,test,tests};
 if(require.main===module){for(const [name,fn] of tests){fn();console.log('OK '+name);}console.log(tests.length+' verificações de paisagem passaram.');}

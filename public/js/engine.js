@@ -679,10 +679,10 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   // Lagos: colinas suaves e manchas d'água arredondadas (3 a 14 centros até 12–28% do mapa), às vezes com ilha central e riachos ligando lagos.
   const baseZone=(x,y)=>x<9&&y>=ROWS-9||x>=COLS-9&&y<9;
   const lakes=()=>{
-   const hillCut=cut(height,.08);each((x,y)=>set(x,y,height(x,y)>hillCut?'hill':'plain'));
-   const target=.13+rng()*.08,centers=[],water=()=>{let n=0;for(let k=0;k<SIZE;k++)if(T[k]==='river')n++;return n/SIZE;};
+   const hillCut=cut(height,.04+.24*o.relief),peakCut=o.relief>.6?cut(height,(o.relief-.6)*.2):Infinity;each((x,y)=>set(x,y,height(x,y)>peakCut?'mountain':height(x,y)>hillCut?'hill':'plain'));
+   const target=.05+.32*o.water+rng()*.03,minLakes=2+Math.round(8*o.water),centers=[],water=()=>{let n=0;for(let k=0;k<SIZE;k++)if(T[k]==='river')n++;return n/SIZE;};
    const wetLake=(x,y)=>{if(INSIDE(x,y)&&!baseZone(x,y))set(x,y,'river');};
-   for(let i=0;i<14&&(i<4||water()<target);i++){
+   for(let i=0;i<14&&(i<minLakes||water()<target);i++){
     // Lagos separados (e do espelho de cada um) para não virarem uma massa só.
     let r=0,cx=0,cy=0;for(let tries=0;tries<30;tries++){r=5+rng()*5;cx=8+Math.floor(rng()*(COLS-16));cy=6+Math.floor(rng()*(ROWS-12));if(centers.every(c=>Math.hypot(c.x-cx,c.y-cy)>=(c.r+r)*1.15&&Math.hypot(COLS-1-c.x-cx,ROWS-1-c.y-cy)>=(c.r+r)*1.15)&&Math.hypot(COLS-1-cx-cx,ROWS-1-cy-cy)>=r*2.3)break;}
     centers.push({x:cx,y:cy,r});
@@ -698,25 +698,27 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   const masses=(pred)=>{const seen=new Uint8Array(SIZE),out=[];for(let k=0;k<SIZE;k++){if(seen[k]||!pred(T[k]))continue;const cells=[],stack=[k];seen[k]=1;while(stack.length){const c=stack.pop(),x=c%COLS,y=(c-x)/COLS;cells.push(c);for(const [dx,dy]of DIRS){const nx=x+dx,ny=y+dy;if(!INSIDE(nx,ny))continue;const n=KEY(nx,ny);if(!seen[n]&&pred(T[n])){seen[n]=1;stack.push(n);}}}out.push(cells);}return out;};
   const islands=()=>{
    const nearBase=(x,y)=>Math.hypot(x-2,y-(ROWS-3))<11;
-   for(let attempt=0;attempt<8;attempt++){
+   for(let attempt=0;attempt<16;attempt++){
     T.fill('plain');
-    const sea=noise(14),detail=noise(5),f=(x,y)=>sea(x,y)*.8+detail(x,y)*.2,thr=cut(f,.32+attempt*.01+rng()*.12);
+    const sea=noise(14),detail=noise(5),f=(x,y)=>sea(x,y)*.8+detail(x,y)*.2,base=Math.max(.2,Math.min(.55,.2+.4*o.water)),thr=cut(f,base-.03+attempt*.01+rng()*.06);
     each((x,y)=>set(x,y,f(x,y)>thr&&!nearBase(x,y)&&!nearBase(COLS-1-x,ROWS-1-y)?'river':'plain'));
     for(const cells of masses(t=>t!=='river'))if(cells.length<150)for(const c of cells)set(c%COLS,(c-c%COLS)/COLS,'river');
     const w=T.filter(t=>t==='river').length/SIZE;
-    if(w>=.31&&w<=.48&&masses(t=>t!=='river').length>=3)break;
+    if(w>=base-.04&&w<=base+.08&&masses(t=>t!=='river').length>=3)break;
    }
-   const hillCut=cut(height,.1);each((x,y)=>{if(at(x,y)==='plain'&&height(x,y)>hillCut)set(x,y,'hill');});
+   const hillCut=cut(height,.05+.25*o.relief);each((x,y)=>{if(at(x,y)==='plain'&&height(x,y)>hillCut)set(x,y,'hill');});
+   if(o.relief>.6){const peakCut=cut(height,(o.relief-.6)*.15);each((x,y)=>{if(at(x,y)!=='river'&&!nearBase(x,y)&&!nearBase(COLS-1-x,ROWS-1-y)&&height(x,y)>peakCut)set(x,y,'mountain');});}
   };
   // Serras: maciços de montanha (19% da meia malha) com planalto de colinas em volta, riachos raros; as passagens vêm do carve() (serra custa 8).
   const highlands=()=>{
-   const ridge=noise(8),detail=noise(4),m=(x,y)=>ridge(x,y)*.75+detail(x,y)*.25,mountainCut=cut(m,.19),hillCut=cut(height,.12);
+   const ridge=noise(8),detail=noise(4),m=(x,y)=>ridge(x,y)*.75+detail(x,y)*.25,mountainCut=cut(m,Math.min(.3,.06+.36*o.relief)),hillCut=cut(height,.12),reach=2+Math.round(2*o.relief);
    each((x,y)=>set(x,y,m(x,y)>mountainCut?'mountain':height(x,y)>hillCut?'hill':'plain'));
    // Planalto: planície a até 3 casas de uma montanha vira colina.
-   const plateau=[];each((x,y)=>{if(at(x,y)!=='plain')return;for(let dy=-3;dy<=3;dy++)for(let dx=-3;dx<=3;dx++)if(INSIDE(x+dx,y+dy)&&at(x+dx,y+dy)==='mountain'&&Math.abs(dx)+Math.abs(dy)<=4){plateau.push([x,y]);return;}});
+   const plateau=[];each((x,y)=>{if(at(x,y)!=='plain')return;for(let dy=-reach;dy<=reach;dy++)for(let dx=-reach;dx<=reach;dx++)if(INSIDE(x+dx,y+dy)&&at(x+dx,y+dy)==='mountain'&&Math.abs(dx)+Math.abs(dy)<=reach+1){plateau.push([x,y]);return;}});
    for(const [x,y]of plateau)set(x,y,'hill');
    // Riachos: um ou dois, de cima a baixo, sem atravessar montanha.
-   for(let i=0;i<1+Math.floor(rng()*2);i++){let x=8+Math.floor(rng()*(COLS-16));for(let y=0;y<ROWS;y++){if(at(x,y)!=='mountain')set(x,y,'river');const r=rng();x=Math.max(4,Math.min(COLS-6,x+(r<.3?-1:r>.7?1:0)));}}
+   for(let i=0;i<Math.round(4*o.water);i++){let x=8+Math.floor(rng()*(COLS-16));for(let y=0;y<ROWS;y++){if(at(x,y)!=='mountain')set(x,y,'river');const r=rng();x=Math.max(4,Math.min(COLS-6,x+(r<.3?-1:r>.7?1:0)));}}
+   const lakeCut=cut(flow,.02*o.water);each((x,y)=>{if(flow(x,y)>lakeCut&&at(x,y)!=='mountain')set(x,y,'river');});
   };
   ({continent,lakes,islands,highlands})[this.landscape]();
   // 3. Florestas em manchas pela umidade, só em planície.
