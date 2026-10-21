@@ -753,7 +753,10 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   // Sopé: planície a até 2 casas de uma montanha vira colina (serra nunca encosta direto em mata, campo ou planície).
   {const foot=[];each((x,y)=>{if(at(x,y)!=='plain')return;for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)if(INSIDE(x+dx,y+dy)&&at(x+dx,y+dy)==='mountain'){foot.push([x,y]);return;}});for(const [x,y]of foot)set(x,y,'hill');}
   // 3. Florestas em manchas pela umidade, só em planície.
-  const woods=cut(moisture,.3*P.forest);each((x,y)=>{if(at(x,y)==='plain'&&moisture(x,y)>woods)set(x,y,'forest');});
+  // Mata ribeirinha: a umidade ganha bônus a até 2 casas de um rio e perde com a altitude; clareiras dentro das matas grandes.
+  {const near=new Uint8Array(SIZE);for(let k=0;k<SIZE;k++){if(T[k]!=='river')continue;const x=k%COLS,y=(k-x)/COLS;for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)if(INSIDE(x+dx,y+dy))near[KEY(x+dx,y+dy)]=1;}
+   const broad=noise(11),wet=(x,y)=>.55*moisture(x,y)+.45*broad(x,y)+(near[KEY(x,y)]?.14:0)-.25*(height(x,y)-.5),woods=cut(wet,.3*P.forest);each((x,y)=>{if(at(x,y)==='plain'&&wet(x,y)>woods)set(x,y,'forest');});
+   const glade=noise(3),gladeCut=cut(glade,.12);for(const cells of masses(t=>t==='forest')){if(cells.length<60)continue;for(const k of cells){const x=k%COLS,y=(k-x)/COLS;if(glade(x,y)>gladeCut&&half(x,y))set(x,y,'plain');}}}
   // 4. Campos e sebes: lotes entre linhas espelhadas; lote cultivado vira campo e suas bordas viram sebes com porteiras.
   if(P.farmland>0){
    const lines=(n,min,max)=>{const out=[];for(let v=1+Math.floor(rng()*3);v<n/2-1;v+=min+Math.floor(rng()*(max-min+1)))out.push(v,n-1-v);return new Set(out);};
@@ -793,7 +796,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
    for(const mountain of [undefined,8]){
     const step={...build,mountain},cost=new Float64Array(SIZE).fill(Infinity),from=new Int32Array(SIZE).fill(-1),start=KEY(a.x,a.y),end=KEY(b.x,b.y),open=[[DIST(a,b),start]];cost[start]=0;
     while(open.length){let i=0;for(let j=1;j<open.length;j++)if(open[j][0]<open[i][0])i=j;const [,k]=open.splice(i,1)[0];if(k===end)break;const px=k%COLS,py=(k-px)/COLS;
-     for(const [dx,dy]of DIRS){const x=px+dx,y=py+dy;if(!INSIDE(x,y))continue;const n=KEY(x,y),w=step[at(x,y)];if(reserved[n]||w===undefined)continue;const c=cost[k]+w;if(c<cost[n]){cost[n]=c;from[n]=k;open.push([c+DIST({x,y},b)*.3,n]);}}}
+     for(const [dx,dy]of DIRS){const x=px+dx,y=py+dy;if(!INSIDE(x,y))continue;const n=KEY(x,y),w=step[at(x,y)];if(reserved[n]&&n!==end||w===undefined)continue;const c=cost[k]+w;if(c<cost[n]){cost[n]=c;from[n]=k;open.push([c+DIST({x,y},b)*.3,n]);}}}
     if(end!==start&&from[end]<0)continue;
     for(let k=end;k>=0;k=from[k]){const x=k%COLS,y=(k-x)/COLS;set(x,y,['river','bridge'].includes(at(x,y))?'bridge':'road');}return;
    }
