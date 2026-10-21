@@ -857,6 +857,20 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
  heliHeal(u,hp=HELI_REPAIR){const n=Math.min(hp,u.maxHp-u.hp,Math.floor(this.credits[u.owner]/HELI_REPAIR_COST));if(n>0){this.credits[u.owner]-=n*HELI_REPAIR_COST;u.hp+=n;}return Math.max(0,n);}
  missileLoad(u){const t=UT(u);if(atMax(u))return typeof u.atMissiles==='number'?{have:u.atMissiles,max:atMax(u)}:null;if(t?.missiles)return typeof u.missiles==='number'?{have:u.missiles,max:t.missiles}:null;const ws=t?.plane&&u.ammo?Object.keys(t.ammo||{}).filter(MISSILE):[];return ws.length?{have:ws.reduce((n,w)=>n+(u.ammo[w]||0),0),max:ws.reduce((n,w)=>n+t.ammo[w],0)}:null;}
  // Avisa só no disparo que leva até o limiar (igualdade exata), então uma salva avisa uma vez.
+ // Segundos restantes da manutenção RTS em base (mesmas regras do passo 'service': cura, itens a cada 3 s, fumaça do antiaéreo a cada 10 s).
+ serviceEta(u){const clock=u.serviceClock||0;if(u.type==='antiAirVehicle')return Math.max(0,10*(2-(u.smokeCharges??2))-clock);
+  const heli=AIR(u)&&!PLANE(u),hurt=u.maxHp-u.hp,hp=hurt<=0?0:heli?(this.credits[u.owner]<HELI_REPAIR_COST?0:Math.ceil(hurt/HELI_REPAIR)-(u.healClock||0)):hurt/24;
+  const missing=atMax(u)||u.type==='heavyTank'?Math.max(atMax(u)?atMax(u)-u.atMissiles:0,u.type==='heavyTank'?trophyMax(u)-u.trophy:0):Math.max(3-(u.flares??3),u.salvos!==undefined?HELI_SALVOS-u.salvos:0,UT(u).missiles?UT(u).missiles-u.missiles:0);
+  return Math.max(0,hp,missing>0?3*missing-clock:0);}
+ // Cronômetro de um processo com duração (só RTS). Devolve null sem processo ou sem os campos (unidade inimiga em multiplayer chega só com os campos visuais).
+ timerFor(u){if(this.mode!=='rts'||!u)return null;const job=u.job,t=UT(u);if(!t)return null;
+  const make=(label,total,left)=>({label,progress:total>0?Math.max(0,Math.min(1,1-left/total)):0,left:Math.max(0,left)});
+  if(t.structure){if(u.type==='airportSite'&&u.work>0){const d=this.airportDuration(u);return make('Obra',d,d-u.work);}const q=u.queue?.[0];if(q&&typeof q.progress==='number'){const d=this.trainDuration(q.type);return make('Treinando',d,d-q.progress);}return null;}
+  if(PLANE(u)){if(u.flightState!=='service'||typeof u.serviceProgress!=='number')return null;const b=this.get(u.airportId),d=(b?.type==='airportAsphalt'?1:2)*10;return make('Manutenção',d,d-u.serviceProgress);}
+  if(!job)return null;const work={capture:['Capturando',2],build:['Construindo',3],repair:['Reparando',1],demine:['Desminando',1]}[job.type];
+  if(work&&u.work>0)return make(work[0],work[1],work[1]-u.work);
+  if(job.type==='service'){const left=this.serviceEta(u);if(left<=0)return null;job.serviceTotal=Math.max(job.serviceTotal||0,left);return make('Manutenção',job.serviceTotal,left);}
+  return null;}
  ammoWarning(u){const l=this.missileLoad(u);if(!l)return;const text=l.have===0?'Munição acabou':l.have===Math.max(1,Math.floor(l.max/4))?'Pouca munição':null;if(text)this.event('text',u,{text,color:l.have?'#ffdc92':'#f26d5b'});}
  canService(u,base){return this.serviceSite(u,base)&&(u.type==='antiAirVehicle'?u.smokeCharges<2:atMax(u)||u.type==='heavyTank'?u.hp<u.maxHp||u.atMissiles<atMax(u)||u.trophy<trophyMax(u):u.hp<u.maxHp&&this.credits[u.owner]>=HELI_REPAIR_COST||u.flares<3||u.salvos<HELI_SALVOS||u.missiles<UT(u).missiles);}
  canBombard(u,cell){if(!BARRAGE(u)||!cell||!INSIDE(cell.x,cell.y)||u.hp<=0||u.type!=='rocketArtillery'&&(u.altitudeTransition||!AIR(u)))return false;const d=DIST(u,cell);return d<=barrageRange(u)+.05&&d>=(UT(u).barrage?.min??TYPES.rocketArtillery.min);}
