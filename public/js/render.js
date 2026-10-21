@@ -26,7 +26,7 @@ const rocketLauncherImages=Array.from({length:2},()=>[new Image(),new Image()]);
 const franceImages=Object.fromEntries(Object.keys(franceSpriteData).map(type=>[type,new Image()])),franceLaunchImages=[new Image(),new Image()];
 const FRANCE_SIZES={lightTank:48,tank:54,heavyTank:60,artillery:60,recon:52,antiAirVehicle:54,rocketArtillery:56,transportTruck:56,transportHelicopter:76,transportPlane:96,helicopter:62,helicopterGround:62,helicopterAir:62,reconDrone:66,stealthDrone:60};
 const missileImages=Object.fromEntries(Object.keys(missileSpriteData).map(name=>[name,new Image()]));
-const missileArt={antiAirVehicle:['anti-air',32],agm:['air-ground',28],aam:['air-air',28],jetAam:['air-air',28],rocket:['artillery-rocket',30],stealthMissile:['drone-missile',22],cruiseMissile:['cruise',42]};
+const missileArt={antiAirVehicle:['anti-air',32],missileInfantry:['anti-air',24],atMissile:['air-ground',22],jetAgm:['air-ground',28],antiRadiation:['air-air',30],agm:['air-ground',28],aam:['air-air',28],jetAam:['air-air',28],rocket:['artillery-rocket',30],stealthMissile:['drone-missile',22],cruiseMissile:['cruise',42]};
 const ambientClouds=Array.from({length:3},()=>new Image()),cloudShadows=[];
 const battlefieldImages={hq:new Image(),post:new Image()},battlefieldClouds=Array.from({length:3},()=>new Image()),battlefieldCloudShadows=[],battlefieldTerrainImages={};
 const GRAPHICS={performance:{clouds:0,visibleClouds:0,particles:80,interval:.3,alpha:0,light:.045},balanced:{clouds:32,visibleClouds:6,particles:200,interval:.18,alpha:.15,light:.075},cinematic:{clouds:64,visibleClouds:12,particles:400,interval:.1,alpha:.23,light:.11}};
@@ -436,6 +436,8 @@ class Renderer{
  }
  outline(x,y,color,width=2){const c=this.ctx;c.strokeStyle=color;c.lineWidth=width;c.strokeRect(x*CELL+2,y*CELL+2,CELL-4,CELL-4);}
  area(x,y,alpha=.2){const c=this.ctx;c.save();for(let yy=y-1;yy<=y+1;yy++)for(let xx=x-1;xx<=x+1;xx++)if(INSIDE(xx,yy)){c.fillStyle=`rgba(242,174,94,${alpha})`;c.fillRect(xx*CELL+1,yy*CELL+1,CELL-2,CELL-2);this.outline(xx,yy,'#ffdc92',1.6);}c.restore();}
+ // Contador de mísseis da unidade (só as suas): cor muda com pouca munição e sem munição, como os avisos flutuantes.
+ ammoBadge(x,y,u){const l=game.missileLoad(u);if(!l||u.owner!==localPlayerSide())return;const c=this.ctx,text=l.have+'/'+l.max,color=l.have===0?'#f26d5b':l.have<=Math.max(1,Math.floor(l.max/4))?'#ffdc92':'#dde6cf';c.save();c.font='bold 11px Segoe UI';c.textAlign='left';const w=c.measureText(text).width+18,x0=x-w/2;c.fillStyle='#0b2028cc';c.fillRect(x0,y+32,w,14);c.fillStyle=color;c.fillRect(x0+4,y+35,2.5,7);c.beginPath();c.moveTo(x0+3,y+35);c.lineTo(x0+5.25,y+31.5);c.lineTo(x0+7.5,y+35);c.fill();c.fillText(text,x0+11,y+43);c.restore();}
  bar(x,y,width,ratio,color){const c=this.ctx;c.fillStyle='#0b2028';c.fillRect(x-width/2-1,y-1,width+2,6);c.fillStyle=color;c.fillRect(x-width/2,y,width*Math.max(0,Math.min(1,ratio)),4);}
  transportAnimation(c,u,x,y,scale){
   if(u.type!=='transportHelicopter'&&u.type!=='transportPlane'||KIT(u)===FRANCE)return;c.save();c.translate(x,y+2);c.rotate(u.facing||0);c.scale(scale*.86,scale*.86);c.strokeStyle='#b4c0b6';c.lineWidth=1.8;
@@ -491,6 +493,7 @@ class Renderer{
   }
   if(!memory&&game.radarContact(localPlayerSide(),u)){const r=32*pose.scale;c.strokeStyle='#102a1c';c.lineWidth=4;c.strokeRect(x-r,y-r,r*2,r*2);c.strokeStyle='#68ef8d';c.lineWidth=1.8;c.strokeRect(x-r,y-r,r*2,r*2);}
   if(!memory&&(chosen||u.hp<u.maxHp))this.bar(x,y+24,36,u.hp/u.maxHp,u.hp/u.maxHp>.45?'#b8dba5':'#f69d87');
+  if(!memory)this.ammoBadge(x,y,u);
   if(!memory&&!UT(u).structure){
    if(AIR(u)&&(u.altitude==='high'||u.order.type==='altitude')){const transition=u.order.type==='altitude',label=transition?(u.order.altitude==='high'?'SUBINDO':'DESCENDO'):'ALTA',width=transition?66:32;c.font='bold 9px Segoe UI';c.textAlign='center';c.fillStyle='#132a35';c.fillRect(x-width/2,y-46,width,14);c.fillStyle='#e4f1f5';c.fillText(label,x,y-36);if(transition)this.bar(x,y-30,width,Math.min(1,(u.altitudeTransition?.returning?0:u.altitudeTransition?.elapsed||0)/ALTITUDE_TIME),'#92dae4');}
    if(u.level>1||chosen){c.fillStyle='#ffde96';c.font='10px Segoe UI';c.textAlign='center';c.fillText('★'.repeat(u.level),x,y-22);}
