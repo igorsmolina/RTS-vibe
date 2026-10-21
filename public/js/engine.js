@@ -674,7 +674,24 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   }
   const lakes=cut(flow,.035*P.water);each((x,y)=>{if(flow(x,y)>lakes&&at(x,y)!=='mountain')set(x,y,'river');});
   };
-  ({continent,lakes:continent,islands:continent,highlands:continent})[this.landscape]();
+  // Lagos: colinas suaves e manchas d'água arredondadas (3 a 14 centros até 12–28% do mapa), às vezes com ilha central e riachos ligando lagos.
+  const baseZone=(x,y)=>x<9&&y>=ROWS-9||x>=COLS-9&&y<9;
+  const lakes=()=>{
+   const hillCut=cut(height,.08);each((x,y)=>set(x,y,height(x,y)>hillCut?'hill':'plain'));
+   const target=.13+rng()*.08,centers=[],water=()=>{let n=0;for(let k=0;k<SIZE;k++)if(T[k]==='river')n++;return n/SIZE;};
+   const wetLake=(x,y)=>{if(INSIDE(x,y)&&!baseZone(x,y))set(x,y,'river');};
+   for(let i=0;i<14&&(i<4||water()<target);i++){
+    // Lagos separados (e do espelho de cada um) para não virarem uma massa só.
+    let r=0,cx=0,cy=0;for(let tries=0;tries<30;tries++){r=5+rng()*5;cx=8+Math.floor(rng()*(COLS-16));cy=6+Math.floor(rng()*(ROWS-12));if(centers.every(c=>Math.hypot(c.x-cx,c.y-cy)>=(c.r+r)*1.15&&Math.hypot(COLS-1-c.x-cx,ROWS-1-c.y-cy)>=(c.r+r)*1.15)&&Math.hypot(COLS-1-cx-cx,ROWS-1-cy-cy)>=r*2.3)break;}
+    centers.push({x:cx,y:cy,r});
+    for(let y=Math.floor(cy-r*1.4);y<=cy+r*1.4;y++)for(let x=Math.floor(cx-r*1.4);x<=cx+r*1.4;x++)if(INSIDE(x,y)&&Math.hypot(x-cx,y-cy)<r*(.75+.6*wobble(x,y)))wetLake(x,y);
+   }
+   // Ilha central nos lagos grandes (metade deles).
+   for(const c of centers)if(c.r>=7&&rng()<.5){const ir=1+Math.floor(rng()*3);for(let y=c.y-ir;y<=c.y+ir;y++)for(let x=c.x-ir;x<=c.x+ir;x++)if(INSIDE(x,y)&&Math.hypot(x-c.x,y-c.y)<=ir+.3)set(x,y,'plain');}
+   // Riachos entre lagos vizinhos.
+   for(let i=1;i<centers.length;i+=2){const a=centers[i-1],b=centers[i],n=Math.ceil(Math.hypot(b.x-a.x,b.y-a.y));for(let k=0;k<=n;k++)wetLake(Math.round(a.x+(b.x-a.x)*k/n),Math.round(a.y+(b.y-a.y)*k/n+(wobble(k,i)-.5)*3));}
+  };
+  ({continent,lakes,islands:continent,highlands:continent})[this.landscape]();
   // 3. Florestas em manchas pela umidade, só em planície.
   const woods=cut(moisture,.3*P.forest);each((x,y)=>{if(at(x,y)==='plain'&&moisture(x,y)>woods)set(x,y,'forest');});
   // 4. Campos e sebes: lotes entre linhas espelhadas; lote cultivado vira campo e suas bordas viram sebes com porteiras.
@@ -736,7 +753,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   // ponytail: com três lados não há aeroportos neutros (cairiam colados à base verde) e os postos não são balanceados para ela; ajustar se a partida pedir.
   if(!three)this.generateAirports(carve,nodes);
   // 9. Minas no centro, fora de água, serra, ponte e estruturas.
-  const mineRandom=this.mineRng||rng;for(let placedMines=0,tries=0;placedMines<4&&tries<200;tries++){const x=mid-6+Math.floor(mineRandom()*12),y=Math.floor(ROWS/2)-5+Math.floor(mineRandom()*10),cells=[[x,y],[COLS-1-x,ROWS-1-y]];
+  const mineRandom=this.mineRng||rng;for(let placedMines=0,tries=0;placedMines<4&&tries<200;tries++){const wide=this.landscape!=='continent'&&tries>=60?2.2:1,x=Math.round(mid-6*wide+mineRandom()*12*wide),y=Math.round(Math.floor(ROWS/2)-5*wide+mineRandom()*10*wide)-(wide>1?0:0),cells=[[x,y],[COLS-1-x,ROWS-1-y]];
    if(cells.some(([cx,cy])=>['river','mountain','bridge'].includes(at(cx,cy))||this.structureAt(cx,cy)||this.mines.some(m=>m.x===cx&&m.y===cy))||x===COLS-1-x&&y===ROWS-1-y)continue;
    for(const [cx,cy]of cells)this.mines.push({x:cx,y:cy,known:Object.fromEntries(this.sides.map(s=>[s,false]))});placedMines++;}
   for(const owner of this.sides){const positions=[];for(let y=ROWS-5;y<ROWS;y++)for(let x=0;x<6;x++)positions.push({x,y});positions.sort((a,b)=>(a.y-ROWS+5)%2-(b.y-ROWS+5)%2||a.y-b.y||Math.abs(a.x-1)-Math.abs(b.x-1)||a.x-b.x);
