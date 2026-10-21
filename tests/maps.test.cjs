@@ -1,9 +1,8 @@
 // Mapas: simetria, conexão, identidade dos mapas fixos, controles do procedural, determinismo e métricas de naturalidade.
 // Verificações movidas de tests/engine.test.cjs (que aborta antes de chegar nelas) e novas. node tests/maps.test.cjs [--metrics]
 'use strict';
-const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
-const ctx=vm.createContext({console});vm.runInContext(fs.readFileSync(path.join(__dirname,'..','public','js','engine.js'),'utf8')+'\nObject.assign(this,{Game,COLS,ROWS,KEY,MAPS,landscapeOf,LANDSCAPE_LIST});',ctx);
-const {Game,COLS,ROWS,KEY,MAPS,LANDSCAPE_LIST}=ctx;
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const {Game,COLS,ROWS,KEY,MAPS,LANDSCAPE_LIST}=new Function(fs.readFileSync(path.join(__dirname,'..','public','js','engine.js'),'utf8')+'\nreturn {Game,COLS,ROWS,KEY,MAPS,LANDSCAPE_LIST};')();
 const NEIGH=[[1,0],[-1,0],[0,1],[0,-1]],SIZE=COLS*ROWS;
 // --- métricas (exportadas; usadas pelos testes de cada etapa) ---
 const share=(g,...t)=>g.terrain.filter(v=>t.includes(v)).length/SIZE;
@@ -98,6 +97,11 @@ check('Estradas seguem o terreno: vales (relevo mais baixo), curvas e poucas ret
  const e=mean(f.map(x=>x.elev)),long=mean(f.map(x=>x.longShare)),stair=mean(st.map(x=>x.stair)),run=mean(st.map(x=>x.meanRun));
  assert.ok(e<=.95,JSON.stringify(c)+' elevação das estradas / terra = '+e.toFixed(3));assert.ok(long<=.2,JSON.stringify(c)+' estrada em reta de 15+ = '+long.toFixed(3));assert.ok(stair<=.2,JSON.stringify(c)+' escada '+stair.toFixed(3));assert.ok(run>=2.5&&run<=15,JSON.stringify(c)+' reta média '+run.toFixed(2));}});
 console.log(checks+' verificações de estrada concluídas.');}
+// --- T8: desempenho da geração (média ≤ 150 ms, nenhum mapa acima de 300 ms, em máquina ociosa) ---
+{let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
+check('Desempenho: 8 configurações × 12 sementes geram em média ≤ 150 ms',()=>{const times=[];for(const c of configs)for(let seed=1;seed<=12;seed++){const t=process.hrtime.bigint();make(c,seed);times.push(Number(process.hrtime.bigint()-t)/1e6);}
+ const avg=mean(times),max=Math.max(...times);assert.ok(avg<=150,'média '+avg.toFixed(0)+' ms');assert.ok(max<=300,'máximo '+max.toFixed(0)+' ms');console.log('  geração: média '+avg.toFixed(0)+' ms, máximo '+max.toFixed(0)+' ms');});
+console.log(checks+' verificações de desempenho concluídas.');}
 // --- determinismo: mesma semente e opções geram o mesmo terreno, minas e estruturas ---
 {let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
 check('Determinismo: 8 configurações × 5 sementes geram terreno, minas e estruturas idênticos',()=>{for(const c of configs)for(let seed=1;seed<=5;seed++){const a=make(c,seed),b=make(c,seed),key=g=>JSON.stringify([g.terrain,g.mines.map(m=>[m.x,m.y]),g.structures.map(s=>[s.type,s.x,s.y,s.owner])]);assert.equal(key(a),key(b),JSON.stringify(c)+' '+seed);}});
