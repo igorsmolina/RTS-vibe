@@ -341,7 +341,11 @@ const cam={x:0,y:0,zoom:1};
 // Folga em pixels de tela abaixo do mapa: a última fileira pode subir acima da faixa de baixo (grupos, barra de comando, minimapa).
 const cameraFoot=()=>Math.max(110,(document.querySelector('.hud-row')?.offsetHeight||0)+16);
 function cameraViewport(){const v=renderer.canvas;return {width:v.clientWidth,height:Math.max(1,v.clientHeight-cameraFoot())};}
-function clampCamera(){const v=cameraViewport(),z=cam.zoom=Math.max(.35,Math.min(1.5,cam.zoom));for(const [axis,size,cells]of [['x',v.width,COLS],['y',v.height,ROWS]]){const center=size/z/2;cam[axis]=Math.max(CELL/2-center,Math.min((cells-.5)*CELL-center,cam[axis]));}renderer.dirty=true;}
+// Zoom mínimo: o que enquadra o mapa inteiro na área útil do campo (nunca acima do máximo; o piso evita zoom zero com o canvas oculto).
+const MAX_ZOOM=1.5,minZoom=()=>{const v=cameraViewport();return Math.min(MAX_ZOOM,Math.max(.05,Math.min(v.width/(COLS*CELL),v.height/(ROWS*CELL))));};
+function clampCamera(){const v=cameraViewport(),z=cam.zoom=Math.max(minZoom(),Math.min(MAX_ZOOM,cam.zoom));for(const [axis,size,cells]of [['x',v.width,COLS],['y',v.height,ROWS]]){const map=cells*CELL,span=size/z;
+ // Se o mapa cabe inteiro neste eixo, ele fica centralizado; senão a câmera pode ir até meia casa além da borda, como antes.
+ cam[axis]=span>=map?(map-span)/2:Math.max(CELL/2-span/2,Math.min((cells-.5)*CELL-span/2,cam[axis]));}renderer.dirty=true;}
 function centerCamera(x,y){const v=cameraViewport();cam.x=(x+.5)*CELL-v.width/cam.zoom/2;cam.y=(y+.5)*CELL-v.height/cam.zoom/2;clampCamera();}
 function drawPreview(canvas,g){const c=canvas.getContext('2d'),{s,ox,oy}=miniTransform(canvas);c.fillStyle='#20333d';c.fillRect(0,0,canvas.width,canvas.height);c.save();c.translate(ox,oy);for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){c.fillStyle=terrainMinimapColor(g.terrain[KEY(x,y)],g.map);c.fillRect(x*s,y*s,s+.2,s+.2);}for(const u of g.structures){c.fillStyle=TEAM[u.owner];c.fillRect(u.x*s,u.y*s,Math.max(3,(u.width||1)*s),Math.max(3,(u.height||1)*s));}c.restore();}
 
