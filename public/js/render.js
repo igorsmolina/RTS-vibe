@@ -441,6 +441,8 @@ class Renderer{
  }
  outline(x,y,color,width=2){const c=this.ctx;c.strokeStyle=color;c.lineWidth=width;c.strokeRect(x*CELL+2,y*CELL+2,CELL-4,CELL-4);}
  area(x,y,alpha=.2){const c=this.ctx;c.save();for(let yy=y-1;yy<=y+1;yy++)for(let xx=x-1;xx<=x+1;xx++)if(INSIDE(xx,yy)){c.fillStyle=`rgba(242,174,94,${alpha})`;c.fillRect(xx*CELL+1,yy*CELL+1,CELL-2,CELL-2);this.outline(xx,yy,'#ffdc92',1.6);}c.restore();}
+ // Cronômetro de processos com duração (captura, obra, reparo, manutenção, treino): só as suas, e sem texto no zoom muito afastado. Estruturas já têm barra própria.
+ timerBadge(x,y,u,bar=true){if(u.owner!==localPlayerSide())return;const t=game.timerFor(u);if(!t)return;const c=this.ctx,color={Manutenção:'#a4e7bb',Treinando:'#edd098'}[t.label]||'#efd094';if(bar)this.bar(x,y+16,44,t.progress,color);if(cam.zoom<.3)return;const text=t.label+' '+t.left.toFixed(1).replace('.',',')+' s';c.save();c.font='bold 10px Segoe UI';c.textAlign='center';const w=c.measureText(text).width+10;c.fillStyle='#0b2028cc';c.fillRect(x-w/2,y,w,14);c.fillStyle=color;c.fillText(text,x,y+11);c.restore();}
  // Contador de mísseis da unidade (só as suas): cor muda com pouca munição e sem munição, como os avisos flutuantes.
  ammoBadge(x,y,u){if(u.owner!==localPlayerSide())return;const l=game.missileLoad(u);if(!l)return;const c=this.ctx,text=l.have+'/'+l.max,color=l.have===0?'#f26d5b':l.have<=Math.max(1,Math.floor(l.max/4))?'#ffdc92':'#dde6cf';c.save();c.font='bold 11px Segoe UI';c.textAlign='left';const w=c.measureText(text).width+18,x0=x-w/2;c.fillStyle='#0b2028cc';c.fillRect(x0,y+32,w,14);c.fillStyle=color;c.fillRect(x0+4,y+35,2.5,7);c.beginPath();c.moveTo(x0+3,y+35);c.lineTo(x0+5.25,y+31.5);c.lineTo(x0+7.5,y+35);c.fill();c.fillText(text,x0+11,y+43);c.restore();}
  bar(x,y,width,ratio,color){const c=this.ctx;c.fillStyle='#0b2028';c.fillRect(x-width/2-1,y-1,width+2,6);c.fillStyle=color;c.fillRect(x-width/2,y,width*Math.max(0,Math.min(1,ratio)),4);}
@@ -473,6 +475,7 @@ class Renderer{
    if(chosen||u.type==='airportSite'){c.strokeStyle=chosen?TEAM[u.owner]:'#d5bd8b';c.lineWidth=chosen?3:1;c.strokeRect(px+2,py+2,w-4,h-4);}
    if(!memory&&(chosen||u.hp<u.maxHp))this.bar(px+w/2,py+h-9,barWidth,u.hp/u.maxHp,'#b8dba5');
    if(u.type==='airportSite')this.bar(px+w/2,py+h-20,barWidth,(u.work||0)/game.airportDuration(u),'#efd094');
+   if(!memory)this.timerBadge(px+w/2,py-18,u,false);
    if(!memory&&u.queue?.length)this.bar(px+w/2,py+(airport?16:18),barWidth,u.queue[0].progress/game.trainDuration(u.queue[0].type),'#edd098');c.restore();return;
   }
   if(!memory&&(AIR(u)||PLANE(u))){
@@ -499,6 +502,7 @@ class Renderer{
   if(!memory&&game.radarContact(localPlayerSide(),u)){const r=32*pose.scale;c.strokeStyle='#102a1c';c.lineWidth=4;c.strokeRect(x-r,y-r,r*2,r*2);c.strokeStyle='#68ef8d';c.lineWidth=1.8;c.strokeRect(x-r,y-r,r*2,r*2);}
   if(!memory&&(chosen||u.hp<u.maxHp))this.bar(x,y+24,36,u.hp/u.maxHp,u.hp/u.maxHp>.45?'#b8dba5':'#f69d87');
   if(!memory)this.ammoBadge(x,y,u);
+  if(!memory)this.timerBadge(x,y-(AIR(u)&&u.altitude==='high'?66:52),u);
   if(!memory&&!UT(u).structure){
    if(AIR(u)&&(u.altitude==='high'||u.order.type==='altitude')){const transition=u.order.type==='altitude',label=transition?(u.order.altitude==='high'?'SUBINDO':'DESCENDO'):'ALTA',width=transition?66:32;c.font='bold 9px Segoe UI';c.textAlign='center';c.fillStyle='#132a35';c.fillRect(x-width/2,y-46,width,14);c.fillStyle='#e4f1f5';c.fillText(label,x,y-36);if(transition)this.bar(x,y-30,width,Math.min(1,(u.altitudeTransition?.returning?0:u.altitudeTransition?.elapsed||0)/ALTITUDE_TIME),'#92dae4');}
    if(u.level>1||chosen){c.fillStyle='#ffde96';c.font='10px Segoe UI';c.textAlign='center';c.fillText('★'.repeat(u.level),x,y-22);}
