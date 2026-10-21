@@ -2,7 +2,7 @@
 
 Written for: você, como referência de consulta e balanceamento.
 
-Fonte: `public/js/engine.js` (`TYPES`, `PLANE_MODELS`, `WEAPONS`, `HELICOPTER_*`). Os valores são os do código neste momento; se forem alterados, este arquivo precisa ser atualizado.
+Fonte: `public/js/engine.js` (`TYPES` = ficha verde, `RED` e `FR` = diferenças do vermelho e da França, `PLANE_MODELS`, `WEAPONS`). As tabelas por time foram geradas a partir do código em 21/10/2026, depois da planilha de ajustes; se os valores forem alterados, este arquivo precisa ser atualizado.
 
 ## Legenda
 
@@ -20,112 +20,117 @@ Fonte: `public/js/engine.js` (`TYPES`, `PLANE_MODELS`, `WEAPONS`, `HELICOPTER_*`
 | Recarga | Tempo entre disparos, em segundos no tempo real. |
 | Visão | Casas de visão. |
 | Recompensa | Créditos ganhos ao destruir a unidade (`reward`). Quando não definida, aviões ganham 120. |
+| Mísseis | Tipo, dano, alcance e quantidade de cada míssil que a unidade lança. Alcance entre parênteses = altitude alta. |
 
-## Tropas a pé
 
-| Unidade | Custo | Treino | HP | Vel. | Mov. | Alcance | Mín. | Dano | Precisão | Recarga | Visão | Recompensa |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Infantaria | 50 | 1 | 100 | 1.35 | 3 | 3 | 0 | 35 | 90% | 0.8 | 4 | 20 |
-| Engenheiro | 65 | 2 | 85 | 1.25 | 3 | 1.15 | 0 | 20 | 90% | 1.2 | 4 | 25 |
-| Metralhador | 90 | 2 | 110 | 1.05 | 2 | 3 | 0 | 18 | 75% | 0.3 | 4 | 30 |
-| Antitanque | 110 | 2 | 90 | 1.05 | 3 | 7 | 0 | 40 | 85% | 3 | 4 | 35 |
-| Soldado lançador | 90 | 2 | 80 | 1.25 | 3 | 10 | 0 | 40 | 70% | 3 | 4 | 30 |
+## Fichas por time
 
-- **Infantaria**: captura postos e constrói. Fuzil de alcance 3.
-- **Engenheiro**: repara +24 HP por ação. Alcance 1.15.
-- **Metralhador**: fogo rápido contra tropas a pé, alcance 3, menos preciso que a infantaria.
-- **Antitanque**: míssil de alcance 7 contra veículos e estruturas (4 mísseis). Contra tropas usa fuzil de alcance 3.
-- **Soldado lançador**: mísseis só contra aeronaves, alcance 10. Fácil de despistar (precisão 70%).
+Cada time tem ficha própria: **Verde** (Aliado, ficha base `TYPES`), **Vermelho** (Inimigo, `RED`) e **Azul** (França, `FR`). Dano e alcance dos mísseis estão na última coluna. Nos aviões, o custo é casco + munição. A coluna Dano das unidades que lançam míssil mostra a arma principal (fuzil, canhão ou minigun).
 
-## Veículos terrestres
+### Verde
 
-| Unidade | Custo | Treino | HP | Vel. | Mov. | Alcance | Mín. | Dano | Precisão | Recarga | Visão | Recompensa |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Caminhão de transporte | 100 | 2 | 90 | 2.4 | 7 | — | — | — | — | — | 4 | 30 |
-| Batedor | 75 | 1 | 75 | 2.25 | 5 | 2 | 0 | 24 | 90% | 1.1 | 7 | 25 |
-| Tanque leve | 100 | 2 | 110 | 2 | 6 | 4 | 0 | 35 | 75% | 2 | 5 | 35 |
-| Tanque médio | 150 | 3 | 170 | 1.7 | 5 | 5 | 0 | 60 | 75% | 2.5 | 5 | 50 |
-| Tanque pesado | 240 | 4 | 280 | 1.5 | 4 | 7 | 0 | 80 | 85% | 3.5 | 5 | 80 |
-| Artilharia | 180 | 4 | 100 | 1.2 | 3 | 16 | 2 | 85 | 85% | 5 | 3 | 40 |
-| Artilharia de mísseis | 240 | 4 | 90 | 0.85 | 2 | 30 | 3 | 20 × 4 mísseis | 80% | 10 | 3 | 60 |
-| Veículo antiaéreo | 160 | 3 | 70 | 2.25 | 5 | 30 | 0 | 80 | 80% | 3.5 | 6 | 45 |
-
-- **Caminhão de transporte**: leva 4 tropas a pé. Sem armas.
-- **Batedor**: reconhecimento rápido, visão 7. Veículo, mas com arma leve (alcance 2).
-- **Tanque leve**: o mais rápido dos tanques. Não perfura tanques pesados.
-- **Tanque médio**: alcance 5. Precisão cai após 3 casas.
-- **Tanque pesado**: maior dano e precisão dos tanques. Tem Trophy: 3 cargas interceptam mísseis antitanque vindos de mais de 3 casas. Exige reconhecimento distante.
-- **Artilharia**: cerco de longo alcance, área 3×3, fogo amigo. Não atira a menos de 2 casas.
-- **Artilharia de mísseis**: bombardeia área 3×3 com 4 mísseis. Dobra o dano contra estruturas (×2). Não atira a menos de 3 casas. Equilíbrio provisório, ainda não validado em partidas (comentário no código).
-- **Veículo antiaéreo**: mísseis de alcance 30 contra aeronaves, radar global. Exige escolta.
-
-## Helicópteros
-
-Os quatro helicópteros têm o mesmo casco: HP 120 (transporte: 150), velocidade 3.2 (transporte: 3.4), movimento 8 (transporte: 10), visão 6, recompensa 50 (transporte: 60).
-
-| Unidade | Custo | Treino | Armas | Dano por arma | Alcance | Recarga |
-|---|---|---|---|---|---|---|
-| Helicóptero (minigun) | 150 | 3 | Minigun | 4 × 5 tiros, 85% | 3 | 0.2 |
-| Helicóptero ar-terra | 230 | 4 | Canhão + míssil ar-terra | Canhão 20 · míssil 65 | 3 · 5 | 1 · 3 |
-| Helicóptero ar-ar | 180 | 4 | Canhão + míssil ar-ar | Canhão 20 · míssil 70 | 3 · 6 | 1 · 3 |
-| Helicóptero de transporte | 220 | 4 | Nenhuma (transporte) | — | — | — |
-
-Multiplicadores de dano:
-
-| Arma | Contra infantaria | Contra veículos | Contra estruturas |
-|---|---|---|---|
-| Minigun | ×3 | ×0.25 | ×0.5 |
-| Canhão (ar-terra e ar-ar) | ×0.6 | ×1.5 (ar-ar: ×1.25) | ×0.5 |
-
-- **Minigun**: alta cadência contra infantaria. Fraco contra veículos.
-- **Ar-terra**: canhão perfurante e mísseis contra solo.
-- **Ar-ar**: canhão perfurante e mísseis contra aeronaves (míssil com bônus de evasão 0.2).
-- **Transporte**: leva 6 tropas a pé.
-  - Aliado: embarca em altitude baixa e pode pendurar 1 tanque leve. Em altitude alta fica 50% mais rápido, enxerga através de floresta e colina, e os flares são mais eficazes.
-  - Inimigo: dispara rajada de mísseis 3×3 (alcance 10 em baixa altitude, 30 em alta), 2 salvas, parado durante o lançamento.
-
-## Drones
-
-| Unidade | Custo | Treino | HP | Vel. | Mov. | Alcance | Dano | Precisão | Recarga | Visão | Recompensa |
+| Unidade | Custo | Treino | HP | Vel. | Mov. | Alcance | Dano | Recarga | Visão | Recompensa | Mísseis |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Drone de reconhecimento | 90 | 2 | 60 | 2.4 | 7 | — | sem armas | — | — | 12 | 30 |
-| Drone furtivo | 160 | 3 | 50 | 2.2 | 6 | 8 | 35 (2 mísseis) | 85% | 3 | 12 | 45 |
+| Infantaria | 50 | 1 | 100 | 1,35 | 3 | 3 | 35 | 0,8 | 4 | 20 | — |
+| Engenheiro | 65 | 2 | 85 | 1,25 | 3 | 1,15 | 20 | 1,2 | 4 | 25 | — |
+| Metralhador | 90 | 2 | 110 | 1,05 | 2 | 3 | 18 | 0,3 | 4 | 30 | — |
+| Antitanque | 110 | 2 | 90 | 1,05 | 3 | 7 | 40 | 3 | 4 | 35 | Antitanque 50 · alc. 7 · 4 mísseis |
+| Soldado lançador | 90 | 2 | 80 | 1,25 | 3 | 10 | 55 | 3 | 4 | 30 | Míssil 55 · alc. 10 (só aeronaves) |
+| Comandante | — | — | 140 | 1,35 | 3 | 2 | 40 | 1,5 | 5 | 70 | — |
+| Batedor | 75 | 1 | 75 | 2,25 | 5 | 2 | 24 | 1,1 | 7 | 25 | — |
+| Tanque leve | 100 | 2 | 110 | 2,2 | 6 | 4 | 35 | 2 | 6 | 35 | — |
+| Tanque médio | 150 | 3 | 170 | 2 | 5 | 5 | 60 | 2,5 | 6 | 50 | — |
+| Tanque pesado | 240 | 4 | 280 | 1,7 | 4 | 7 | 80 | 3,5 | 6 | 80 | — |
+| Artilharia | 180 | 4 | 100 | 1,2 | 3 | 16 | 85 | 5 | 3 | 40 | — |
+| Artilharia de mísseis | 240 | 4 | 90 | 0,85 | 2 | 30 | 20 | 10 | 3 | 60 | Foguete 20 × 4 · alc. 30 · ×2 contra estruturas |
+| Veículo antiaéreo | 160 | 3 | 70 | 2,25 | 5 | 30 | 80 | 3,5 | 6 | 45 | Míssil 80 · alc. 30 (só aeronaves) |
+| Caminhão de transporte | 100 | 2 | 90 | 2,4 | 7 | — | — | — | 4 | 30 | — |
+| Helicóptero | 150 | 3 | 120 | 3,2 | 8 | 3 | 4 × 5 | 0,2 | 6 | 50 | — |
+| Helicóptero ar-terra | 230 | 4 | 120 | 3,2 | 8 | 3 | 20 | 1 | 6 | 50 | Antiblindado 60 · alc. 7 (alta 20) · rec. 3 · 8 mísseis |
+| Helicóptero ar-ar | 180 | 4 | 120 | 3,2 | 8 | 3 | 20 | 1 | 6 | 50 | Ar-ar 85 · alc. 17 · rec. 3 |
+| Helicóptero de transporte | 220 | 4 | 150 | 3,4 | 10 | — | — | — | 6 | 60 | — |
+| Drone de reconhecimento | 90 | 2 | 60 | 2,4 | 7 | — | — | — | 12 | 30 | — |
+| Drone furtivo | 160 | 3 | 50 | 2,2 | 6 | 15 | 80 | 3 | 12 | 45 | Míssil furtivo 80 · alc. 15 · 2 mísseis |
 
-- Ambos voam sempre em altitude alta e enxergam através do terreno (visão 12).
-- **Drone furtivo**: invisível ao radar. Exige reconhecimento atual para ser atacado. Só dispara por ordem.
+Aviões de Verde
 
-## Aviões
+| Avião | Custo | Treino | HP | Vel. | Evasão | Flares | Recompensa | Munição (quantidade · dano · alcance) |
+|---|---|---|---|---|---|---|---|---|
+| Avião de transporte | — | — | 240 | 4,5 | 0% | 300 | 90 | Nenhuma |
+| Caça aliado | 660 | 3 | 150 | 6 | 20% | 60 | 120 | ar-ar ×4 · 90 · alc. 30; antirradiação ×4 · 80 · alc. 40; MG ×80 |
+| Multifunção aliado | 850 | 4 | 180 | 5,6 | 30% | 60 | 120 | ar-ar ×2 · 90 · alc. 30; antiblindado ×6 · 80 · alc. 15; antirradiação ×4 · 80 · alc. 40; MG ×80 |
+| Caça furtivo aliado | 1000 | 5 | 180 | 6,2 | 30% | 60 | 140 | ar-ar ×6 · 90 · alc. 30; antirradiação ×2 · 80 · alc. 40; MG ×80 |
+| Bombardeiro furtivo aliado | 1296 | 6 | 240 | 3,5 | 10% | 100 | 120 | bomba comum ×4 · 120; fragmentação ×4 · 70; incendiária ×4 · 40; cruzeiro ×2 · 160 · alc. 67 |
 
-Custo = casco + munição. Evasão e flares são os valores da ficha.
+### Vermelho
 
-| Unidade | Custo | Treino | HP | Vel. | Evasão | Flares | Alcance máx. | Recompensa | Radar |
-|---|---|---|---|---|---|---|---|---|---|
-| Avião de transporte | 0 | — | 240 | 4.5 | 0% | 300 | — | 90 | — |
-| Caça aliado | 610 | 3 | 150 | 6 | 20% | 60 | 30 | 120 | sim |
-| Caça inimigo | 610 | 3 | 160 | 5.4 | 30% | 60 | 30 | 120 | sim |
-| Caça furtivo aliado | 1000 | 5 | 180 | 6.2 | 30% | 60 | 30 | 140 | sim, furtivo ao radar |
-| Caça furtivo inimigo | 1030 | 5 | 190 | 5.8 | 35% | 60 | 30 | 140 | sim, furtivo ao radar |
-| Multifunção aliado | 750 | 4 | 180 | 5.6 | 30% | 60 | 30 | 120 | não |
-| Multifunção inimigo | 920 | 4 | 200 | 4.8 | 20% | 80 | 30 | 120 | não |
-| Bombardeiro furtivo aliado | 1296 | 6 | 240 | 3.5 | 10% | 100 | 67 | 120 | furtivo ao radar |
-| Bombardeiro pesado inimigo | 1164 | 8 | 340 | 3.8 | 10% | 120 | 67 | 180 | detectável |
+| Unidade | Custo | Treino | HP | Vel. | Mov. | Alcance | Dano | Recarga | Visão | Recompensa | Mísseis |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Infantaria | 50 | 1 | 100 | 1,35 | 3 | 3 | 35 | 0,8 | 4 | 20 | — |
+| Engenheiro | 65 | 2 | 85 | 1,25 | 3 | 1,15 | 20 | 1,2 | 4 | 25 | — |
+| Metralhador | 90 | 2 | 110 | 1,05 | 2 | 3 | 18 | 0,3 | 4 | 30 | — |
+| Antitanque | 110 | 2 | 90 | 1,05 | 3 | 7 | 40 | 3 | 4 | 35 | Antitanque 40 · alc. 7 · 6 mísseis |
+| Soldado lançador | 90 | 2 | 80 | 1,25 | 3 | 15 | 45 | 3 | 4 | 30 | Míssil 45 · alc. 15 (só aeronaves) |
+| Comandante | — | — | 140 | 1,35 | 3 | 2 | 40 | 1,5 | 5 | 70 | — |
+| Batedor | 75 | 1 | 75 | 2,5 | 5 | 2 | 24 | 1,1 | 7 | 25 | — |
+| Tanque leve | 100 | 2 | 110 | 1,9 | 6 | 4 | 35 | 2 | 5 | 35 | Antitanque 40 · alc. 7 · 4 mísseis |
+| Tanque médio | 150 | 3 | 170 | 1,8 | 5 | 5 | 60 | 2,5 | 5 | 50 | — |
+| Tanque pesado | 240 | 4 | 280 | 1,5 | 4 | 7 | 80 | 3,5 | 5 | 80 | Antitanque 50 · alc. 12 · 4 mísseis |
+| Artilharia | 180 | 4 | 100 | 1,2 | 3 | 16 | 85 | 5 | 3 | 40 | — |
+| Artilharia de mísseis | 240 | 4 | 90 | 0,85 | 2 | 30 | 20 | 10 | 3 | 60 | Foguete 20 × 4 · alc. 30 · ×2 contra estruturas |
+| Veículo antiaéreo | 160 | 3 | 70 | 2,25 | 5 | 30 | 80 | 3,5 | 6 | 45 | Míssil 80 · alc. 30 (só aeronaves) |
+| Caminhão de transporte | 100 | 2 | 90 | 2,4 | 7 | 3 | 20 | 1 | 4 | 30 | — |
+| Helicóptero | 150 | 3 | 120 | 3,2 | 8 | 3 | 7 × 5 | 0,2 | 6 | 50 | — |
+| Helicóptero ar-terra | 230 | 4 | 120 | 3,2 | 8 | 3 | 20 | 1 | 6 | 50 | Antiblindado 80 · alc. 7 (alta 23) · rec. 2,5 · 12 mísseis |
+| Helicóptero ar-ar | 180 | 4 | 120 | 3,2 | 8 | 3 | 20 | 1 | 6 | 50 | Ar-ar 70 · alc. 15 · rec. 3 |
+| Helicóptero de transporte | 220 | 4 | 150 | 3,4 | 10 | — | — | — | 6 | 60 | Foguete 20 · alc. 10 (alta 30) · 4 por salva · 2 salvas |
+| Drone de reconhecimento | 90 | 2 | 60 | 2,4 | 7 | — | — | — | 12 | 30 | — |
+| Drone furtivo | 160 | 3 | 50 | 2,2 | 6 | 10 | 50 | 3 | 12 | 45 | Míssil furtivo 50 · alc. 10 · 4 mísseis |
 
-Munição de cada avião (quantidade de disparos):
+Aviões de Vermelho
 
-| Unidade | Munição |
-|---|---|
-| Avião de transporte | Nenhuma. Leva 12 vagas de tropas e veículos. Pousa na pista, embarca tropas próximas e lança em linha por paraquedas. |
-| Caça aliado / inimigo | Ar-ar ×4, antirradiação ×2, metralhadora ×80 |
-| Caça furtivo aliado / inimigo | Ar-ar ×6, antirradiação ×2, metralhadora ×80 |
-| Multifunção aliado | Ar-ar ×2, antiblindado ×4, antirradiação ×2, metralhadora ×80 |
-| Multifunção inimigo | Ar-ar ×2, antiblindado ×5, antirradiação ×3, metralhadora ×80 |
-| Bombardeiro furtivo aliado | Bomba comum ×4, fragmentação ×4, incendiária ×4, cruzeiro ×2 |
-| Bombardeiro pesado inimigo | Bomba comum ×16, fragmentação ×16, incendiária ×16, cruzeiro ×6 |
+| Avião | Custo | Treino | HP | Vel. | Evasão | Flares | Recompensa | Munição (quantidade · dano · alcance) |
+|---|---|---|---|---|---|---|---|---|
+| Avião de transporte | — | — | 240 | 4,5 | 0% | 300 | 90 | Nenhuma |
+| Caça inimigo | 610 | 3 | 160 | 5,4 | 30% | 60 | 120 | ar-ar ×4 · 75 · alc. 30; antirradiação ×2 · 90 · alc. 40; MG ×80 |
+| Multifunção inimigo | 895 | 4 | 200 | 4,8 | 20% | 80 | 120 | ar-ar ×2 · 80 · alc. 30; antiblindado ×4 · 90 · alc. 15; antirradiação ×3 · 90 · alc. 40; MG ×80 |
+| Caça furtivo inimigo | 1030 | 5 | 190 | 5,8 | 35% | 60 | 140 | ar-ar ×6 · 75 · alc. 30; antirradiação ×2 · 90 · alc. 40; MG ×80 |
+| Bombardeiro pesado inimigo | 1164 | 8 | 340 | 3 | 10% | 120 | 180 | bomba comum ×16 · 120; fragmentação ×16 · 70; incendiária ×16 · 40; cruzeiro ×6 · 160 · alc. 70 |
 
-- **Caça**: interceptação. Caça inimigo tem mais evasão, caça aliado é mais rápido.
-- **Multifunção**: ar e solo. Aliado é mais rápido e manobrável. Inimigo tem mais HP, mais mísseis antiblindados e antirradiação, e mais flares.
-- **Bombardeiro furtivo aliado**: 12 bombas e 2 cruzeiros. Sem metralhadora.
-- **Bombardeiro pesado inimigo**: 48 bombas e 6 cruzeiros. Sem metralhadora. Detectável por radar.
+### Azul (França)
+
+| Unidade | Custo | Treino | HP | Vel. | Mov. | Alcance | Dano | Recarga | Visão | Recompensa | Mísseis |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Infantaria | 50 | 1 | 100 | 1,35 | 3 | 3 | 55 | 0,8 | 4 | 20 | — |
+| Engenheiro | 50 | 2 | 85 | 1,25 | 3 | 1,15 | 20 | 1,2 | 4 | 25 | — |
+| Metralhador | 60 | 2 | 110 | 1,05 | 2 | 3 | 20 | 0,3 | 4 | 30 | — |
+| Antitanque | 60 | 2 | 90 | 1,05 | 3 | 7 | 40 | 3 | 4 | 35 | Antitanque 50 · alc. 7 · 4 mísseis |
+| Soldado lançador | 55 | 2 | 80 | 1,25 | 3 | 12 | 40 | 3 | 4 | 30 | Míssil 40 · alc. 12 (só aeronaves) · fuzil alc. 3 |
+| Comandante | — | — | 140 | 1,35 | 3 | 2 | 40 | 1,5 | 5 | 70 | — |
+| Batedor | 75 | 1 | 65 | 3 | 6 | 2 | 20 | 1 | 7 | 25 | — |
+| Tanque leve | 100 | 2 | 95 | 2,5 | 7 | 4 | 40 | 2,2 | 6 | 35 | — |
+| Tanque médio | 155 | 3 | 155 | 2 | 5 | 5 | 55 | 2,1 | 5 | 50 | — |
+| Tanque pesado | 240 | 4 | 300 | 1,7 | 4 | 6 | 75 | 3,5 | 5 | 80 | — |
+| Artilharia | 180 | 4 | 80 | 1,8 | 4 | 14 | 80 | 4 | 3 | 40 | — |
+| Artilharia de mísseis | 250 | 4 | 115 | 1 | 2 | 25 | 20 | 11 | 3 | 60 | Foguete 20 × 6 · alc. 25 · ×2 contra estruturas |
+| Veículo antiaéreo | 145 | 3 | 85 | 2,25 | 5 | 25 | 90 | 2,5 | 6 | 45 | Míssil 90 · alc. 25 (só aeronaves) |
+| Caminhão de transporte | 115 | 2 | 100 | 2,2 | 6 | — | — | — | 4 | 30 | — |
+| Helicóptero | 140 | 3 | 100 | 3,6 | 9 | 3 | 6 × 4 | 0,25 | 7 | 50 | — |
+| Helicóptero ar-terra | 245 | 4 | 110 | 3,5 | 8 | 3 | 22 | 1,2 | 6 | 50 | Antiblindado 60 · alc. 6 (alta 11) · rec. 3,5 · sem limite · foguetes 12 × 4 · alc. 4 |
+| Helicóptero ar-ar | 175 | 4 | 140 | 3,8 | 8 | 3 | 20 | 1 | 6 | 50 | Ar-ar 60 · alc. 6 · rec. 2,2 |
+| Helicóptero de transporte | 230 | 4 | 160 | 3,2 | 9 | — | — | — | 6 | 60 | — |
+| Drone de reconhecimento | 95 | 2 | 70 | 2 | 6 | — | — | — | 15 | 30 | — |
+| Drone furtivo | 170 | 3 | 55 | 2,2 | 6 | 5 | 50 | 3 | 12 | 45 | Bomba guiada 50 · alc. 5 · 6 mísseis |
+
+Aviões de Azul (França)
+
+| Avião | Custo | Treino | HP | Vel. | Evasão | Flares | Recompensa | Munição (quantidade · dano · alcance) |
+|---|---|---|---|---|---|---|---|---|
+| Avião de transporte | — | — | 230 | 5 | 0% | 300 | 90 | Nenhuma |
+| Caça azul | 630 | 3 | 140 | 6,5 | 25% | 60 | 120 | ar-ar ×4 · 70 · alc. 30; antirradiação ×2 · 80 · alc. 40; MG ×100 |
+| Multifunção azul | 785 | 4 | 185 | 6 | 25% | 70 | 120 | ar-ar ×2 · 65 · alc. 30; antiblindado ×3 · 75 · alc. 15; antirradiação ×2 · 80 · alc. 40; cruzeiro ×1 · 160 · alc. 67; MG ×80 |
+| Caça furtivo azul | 990 | 5 | 175 | 5,7 | 35% | 60 | 140 | ar-ar ×4 · 70 · alc. 30; antirradiação ×2 · 80 · alc. 40; MG ×80 |
+| Bombardeiro azul | 1356 | 6 | 200 | 5 | 20% | 80 | 150 | bomba comum ×6 · 120; fragmentação ×6 · 70; cruzeiro ×4 · 160 · alc. 75 |
 
 ## Comandante e estruturas
 
@@ -138,7 +143,7 @@ Munição de cada avião (quantidade de disparos):
 | Aeroporto de concreto | — | 500 | 0 | 0 | 0 | 0 | — | — | 5 | 90 | 8×3 |
 | Canteiro de aeroporto | — | 150 | 0 | 0 | 0 | 0 | — | — | 2 | 25 | 6×2 |
 
-- **Comandante**: aura de comando, raio 2. Não tem custo na ficha, então não é comprado.
+- **Comandante**: aura de comando, raio 6 (verde e vermelho) ou 8 (França): +20% de dano e +15 pontos de precisão para as tropas dentro do raio. Não tem custo na ficha, então não é comprado.
 - **Posto avançado**: reconhecimento e recrutamento. Só infantaria, metralhador, antitanque, soldado lançador e comandante podem capturá-lo.
 - **Aeroportos**: pista para aviões. Dirt ou concreto, com 4 vagas de pouso.
 
@@ -163,99 +168,50 @@ Munição de cada avião (quantidade de disparos):
 | Bomba fragmentação | 70 | 0 | 80% | 0.1 | |
 | Bomba incendiária | 40 | 0 | 80% | 0.1 | |
 
-## Diferenças principais
+Valores base de `WEAPONS`. Cada time pode ter dano e alcance próprios para o mesmo míssil (veja a coluna Mísseis nas fichas por time). Dano e alcance dos aviões também mudam por modelo.
 
-**Tanques terrestres.** Leve, médio e pesado são uma escada de custo e força.
-- Custo: 100 / 150 / 240.
-- HP: 110 / 170 / 280.
-- Dano: 35 / 60 / 80.
-- Alcance: 4 / 5 / 7.
-- Velocidade: 2 / 1.7 / 1.5.
-- Movimento: 6 / 5 / 4.
 
-O leve é o mais rápido e barato. O pesado é o mais forte e lento, e é o único com Trophy.
+## Diferenças entre os times
 
-**Artilharia.** As duas são de longo alcance, mas servem a papéis diferentes.
-- Artilharia: alcance 16, mínimo 2, um disparo de 85 em área 3×3, recarga 5 s.
-- Artilharia de mísseis: alcance 30, mínimo 3, 4 mísseis de 20 (×2 contra estruturas), recarga 10 s. Custa mais (240 contra 180).
+**Tropas a pé e engenheiro.**
+- Engenheiro: repara +24 HP (verde e França) ou +30 HP (vermelho) por passo.
+- Comandante: aura de raio 6 (verde e vermelho) e 8 (França).
+- Antitanque: míssil de dano 50 e 4 mísseis (verde e França); 40 e 6 mísseis (vermelho).
+- Soldado lançador: verde 55 de dano, alcance 10; vermelho 45, alcance 15; França 40, alcance 12 e fuzil de alcance 3 contra tropas a pé.
 
-**Anti-infantaria contra anti-veículo.**
-- Metralhador: alcance 3, fogo rápido contra tropas a pé.
-- Antitanque: alcance 7, míssil contra veículos e estruturas.
-- Soldado lançador: alcance 10, só contra aeronaves.
+**Blindados.** Verde tem mais visão e velocidade; vermelho tem míssil antitanque nos tanques.
+- Verde: leve 2,2 / médio 2 / pesado 1,7 de velocidade, visão 6. O pesado tem Trophy com 6 cargas.
+- Vermelho: leve 1,9 / médio 1,8 / pesado 1,5, visão 5; o médio perde precisão só após 4 casas. Leve e pesado lançam míssil antitanque (4 mísseis; o do pesado tem dano 50 e alcance 12), e o leve consegue ferir o pesado enquanto tiver míssil. O pesado tem Trophy com 3 cargas.
+- Azul (França): ver mecânicas próprias abaixo.
 
-**Helicópteros.** Mesmo casco, armas diferentes.
-- Minigun (150): especialista em infantaria, fraco contra veículos.
-- Ar-terra (230): canhão e míssil de 65 contra solo. É o mais caro.
-- Ar-ar (180): canhão e míssil de 70 contra aeronaves. Mais barato que o ar-terra.
+**Caminhão vermelho.** Além de transportar 4 tropas, tem uma metralhadora leve (dano 20, alcance 3) que não fere tanques médios nem pesados. A IA não o usa como tropa de combate.
 
-**Transporte.** Aliado e inimigo têm papéis opostos.
-- Aliado: transporta tropas e pode pendurar 1 tanque leve. Em altitude alta é mais rápido e enxerga mais.
-- Inimigo: transporta tropas e dispara rajada de mísseis 3×3.
+**Helicópteros e drones.**
+- Ar-terra: verde 60 de dano, alcance 7 (20 em altitude alta), 8 mísseis; vermelho 80, alcance 7 (23), 12 mísseis, recarga 2,5; França 60, alcance 6, sem limite de mísseis.
+- Ar-ar: verde 85, alcance 17; vermelho 70, alcance 15; França 60, alcance 6.
+- Minigun: dano 7 no vermelho, 4 no verde, 6 × 4 tiros na França.
+- Drone furtivo: verde 80 de dano, alcance 15, 2 mísseis; vermelho 50, alcance 10, 4 mísseis; França: bombas guiadas 50, alcance 5, 6 bombas.
 
-**Drones.** Reconhecimento (90, sem armas) contra furtivo (160, 2 mísseis, invisível ao radar).
+**Aviões.** Cada modelo tem a própria munição.
+- Verde: ar-ar 90 de dano em todos os caças e no multifunção; multifunção com antiblindado 80 (×6). Caça com 4 antirradiação.
+- Vermelho: dano base mais alto (ar-ar 75/80, antirradiação 90, antiblindado 90). Bombardeiro pesado mais lento (3) e cruzeiro com alcance 70.
+- França: cruzeiro do Mirage IV com alcance 75 e 4 mísseis; Mirage 2000 e Rafale com 2 antirradiação.
 
-**Caças.** Aliado e inimigo diferem na ficha.
-- Caça: aliado tem mais velocidade (6 contra 5.4) e menos evasão (20% contra 30%). Ambos custam 610.
-- Caça furtivo: inimigo tem mais HP, mais evasão e custa 30 a mais.
-- Multifunção: inimigo tem mais HP e mais flares, mas é mais lento e tem menos evasão. Custa 170 a mais (casco 600 contra 480, e mais munição).
+**Munição de mísseis.** Antitanque, tanques vermelhos (leve e pesado), helicóptero ar-terra (verde e vermelho) e drone furtivo têm munição limitada. Ela recarrega na manutenção. A tela mostra `mísseis/máximo` sob a barra de vida das suas unidades e um aviso flutuante: "Pouca munição" quando restar 1/4 da carga e "Munição acabou" quando zerar. Com o helicóptero sem mísseis, o modo Auto usa o canhão.
 
-**Bombardeiros.** Papel de ataque pesado.
-- Aliado: furtivo ao radar, 240 HP, 12 bombas, 2 cruzeiros.
-- Inimigo: detectável, 340 HP, 48 bombas, 6 cruzeiros. Dá 180 de recompensa.
-
-**Tropas terrestres.** Verde e vermelho têm os mesmos atributos, e só muda a arte (verde/oliva para aliados, vermelho para inimigos). A França (azul) tem fichas próprias: veja a seção **Time azul (França)**.
-
-## Time azul (França)
-
-Terceira facção, escolhida em **Suas unidades** (e, para a IA, em **Unidades da IA**). Tropas a pé e comandante não mudam: usam a ficha verde. Os valores abaixo vêm de `FR` em `public/js/engine.js`; o que não aparece é igual ao verde. Setas mostram verde → azul. Os 19 sprites estão em `assets/NovosTimes/azul/`.
-
-Doutrina: rápida, sobre rodas e precisa, com pouca blindagem. A força aérea é a parte mais forte, e o time não tem Trophy.
-
-| Unidade | Custo | HP | Vel. / Mov. | Alcance | Dano | Recarga | Visão |
-|---|---|---|---|---|---|---|---|
-| Tanque leve (AMX-10 RC) | 100 | 110 → **95** | 2 → **2,3** / 6 → **7** | 4 | 35 → **40** | 2 → **2,2** | 5 → **6** |
-| Tanque médio (Leclerc) | 150 → **155** | 170 → **155** | 1,7 / 5 | 5 | 60 → **55** | 2,5 → **2,1** | 5 |
-| Tanque pesado (Leclerc blindado) | 240 | 280 → **300** | 1,5 → **1,4** / 4 | 7 → **6** | 80 → **75** | 3,5 | 5 |
-| Artilharia (CAESAR) | 180 | 100 → **80** | 1,2 → **1,7** / 3 → **4** | 16 → **14** | 85 → **80** | 5 | 3 |
-| Batedor (VBL) | 75 | 75 → **65** | 2,25 → **2,4** / 5 → **6** | 2 | 24 → **20** | 1,1 → **1** | 7 |
-| Veículo antiaéreo (Mistral) | 160 → **145** | 70 → **85** | 2,25 / 5 | 30 → **20** | 80 → **60** | 3,5 → **2,5** | 6 |
-| Artilharia de mísseis (LRU) | 240 → **250** | 90 → **115** | 0,85 → **0,95** / 2 | 30 → **24** | 20 → **14** | 10 → **11** | 3 |
-| Caminhão (TRM 10000) | 100 → **115** | 90 → **100** | 2,4 → **2,2** / 7 → **6** | 0 | 0 | 1 | 4 |
-
-Helicópteros e drones:
-
-| Unidade | Custo | HP | Vel. / Mov. | Alcance | Dano | Recarga | Visão |
-|---|---|---|---|---|---|---|---|
-| Helicóptero padrão (Gazelle) | 150 → **140** | 120 → **100** | 3,2 → **3,6** / 8 → **9** | 3 | 4 × 5 → **6 × 4** | 0,2 → **0,25** | 6 → **7** |
-| Helicóptero ar-terra (Tigre) | 230 → **245** | 120 → **110** | 3,2 / 8 | 3 (canhão) | 20 → **22** | 1 → **1,2** | 6 |
-| Helicóptero ar-ar (Panther) | 180 → **175** | 120 → **140** | 3,2 → **3** / 8 | 6 (míssil) | 70 → **60** | 3 → **2,2** | 6 |
-| Helicóptero de transporte (NH90) | 220 → **230** | 150 → **160** | 3,4 → **3,2** / 10 → **9** | 0 | 0 | 1 | 6 |
-| Drone de reconhecimento (Patroller) | 90 → **95** | 60 → **70** | 2,4 → **2** / 7 → **6** | 0 | 0 | 1 | 12 → **14** |
-| Drone furtivo (nEUROn) | 160 → **170** | 50 → **55** | 2,2 / 6 | 8 → **5** | 35 → **50** | 3 | 12 |
-
-Aviões (custo = casco + munição):
-
-| Avião | Custo | HP | Vel. | Evasão | Flares | Munição |
-|---|---|---|---|---|---|---|
-| Caça (Mirage 2000) | 610 → **605** | 150 → **140** | 6 → **6,3** | 20% → **25%** | 60 → **60** | MG ×100, AA ×4, ARM ×1 |
-| Multifunção (Rafale) | 750 → **760** | 180 → **185** | 5,6 → **5,3** | 30% → **25%** | 60 → **70** | MG ×80, AA ×2, AB ×3, ARM ×1, cruzeiro ×1 |
-| Caça furtivo (FCAS) | 1000 → **990** | 180 → **175** | 6,2 → **6** | 30% → **35%** | 60 → **60** | MG ×80, AA ×4, ARM ×2 |
-| Bombardeiro (Mirage IV) | 1296 → **1296** | 240 → **200** | 3,5 → **5** | 10% → **20%** | 100 → **80** | comum ×6, frag. ×6, cruzeiro ×3 |
-
-**Mecânicas próprias**
+**Mecânicas próprias da França**
 - **GALIX (tanque pesado):** 2 cargas. Ao ser atingido, solta fumaça por 3 s (1 turno): −40% de precisão contra ele, de qualquer atacante. Não intercepta mísseis como o Trophy. Recarrega como o Trophy, em QG/posto.
 - **Silhueta pequena (VBL):** −10% de precisão contra ele.
-- **Leclerc:** a precisão só começa a cair após 4 casas (verde: 3).
+- **Leclerc:** a precisão só começa a cair após 4 casas (verde: 3). Sem Trophy; o pesado usa o GALIX.
 - **Atira e foge (CAESAR):** depois de atirar, +1 Mov no turno (RTS: +30% de velocidade por 3 s).
-- **LRU:** salva de 6 foguetes de 14 (84 no total, verde: 4 × 20 = 80). Continua ×2 contra estruturas e com alcance mínimo 3.
+- **LRU:** salva de 6 foguetes de 20, alcance 25 (verde: 4 × 20 = 80, alcance 30). Continua ×2 contra estruturas e com alcance mínimo 3.
 - **Tigre:** terceira arma, foguetes em área 3×3: 4 foguetes de 12, 2 salvas, alcance 4, recarga 8 s, ×1,5 contra infantaria e ×0,5 contra veículos e estruturas. Míssil ar-terra: 60, alcance 6, recarga 3,5.
 - **Panther:** só míssil ar-ar (sem canhão); **não ataca alvos no solo**.
 - **NH90:** 8 vagas a pé, ou 1 batedor (5 vagas) + 3 tropas, dentro da rampa. Não sobe à altitude alta (sem bônus de visão, velocidade ou flares) e não tem armas.
 - **A400M:** 10 vagas (verde: 12) e pista curta: pouso e decolagem 30% mais rápidos.
-- **nEUROn:** 2 bombas guiadas de 50, 90% de precisão, alcance 5, ×1,5 contra estruturas.
-- **Rafale:** leva 1 míssil de cruzeiro SCALP (alcance 67) além da metralhadora.
+- **nEUROn:** 6 bombas guiadas de 50, 90% de precisão, alcance 5, ×1,5 contra estruturas.
+- **Rafale:** leva 1 míssil de cruzeiro SCALP (alcance 67) além da metralhadora e 2 antirradiação.
 - **FCAS:** rede de sensores revela drones e aviões furtivos inimigos a até 8 casas dele, em voo.
-- **Mirage IV:** supersônico e detectável por radar; 6 bombas comuns, 6 de fragmentação, 3 cruzeiros.
+- **Mirage IV:** supersônico e detectável por radar; 6 bombas comuns, 6 de fragmentação, 4 cruzeiros de alcance 75.
 
-**Eficiência (HP × dano por segundo ÷ custo, contra o verde).** Tanque leve −10%, médio −4%, pesado 0%, CAESAR −25%, VBL −21%, LRU −22%, Gazelle −14%, Tigre −21% (compensam com mobilidade, visão ou foguetes). Acima do verde: Mistral +41%, Panther +20% e nEUROn +48%, em troca de alcance menor ou de não atacar o solo. Equilíbrio provisório, ainda não validado em partidas.
+Equilíbrio provisório, ainda não validado em partidas.
