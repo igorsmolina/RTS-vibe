@@ -23,7 +23,10 @@ function cleanNation(value){
  return out;
 }
 const TERRAIN={plain:{name:'Planície',cover:0,color:'#77816a'},field:{name:'Campo',cover:0,color:'#9b9a63'},hedge:{name:'Sebe',cover:.25,color:'#4f6a45'},hill:{name:'Colina',cover:.2,color:'#8f9470'},forest:{name:'Floresta',cover:.3,color:'#4b6654'},mountain:{name:'Montanha',cover:.5,color:'#868879'},river:{name:'Rio',cover:0,color:'#477986'},bridge:{name:'Ponte',cover:0,color:'#a69977'},road:{name:'Estrada',cover:0,color:'#b0a487'}};
-const PROCEDURAL={water:.35,forest:.35,relief:.35,farmland:.6,posts:24};
+const PROCEDURAL={water:.35,forest:.35,relief:.35,farmland:.6,posts:24,landscape:'continent'};
+// Paisagens do mapa procedural: 'auto' sorteia uma das quatro pela semente; sem a opção vale Continente (o gerador de sempre).
+const LANDSCAPE_LIST=['continent','lakes','islands','highlands'],LANDSCAPE_NAMES={auto:'Aleatória',continent:'Continente',lakes:'Lagos',islands:'Ilhas',highlands:'Serras'};
+function landscapeOf(seed,landscape){return landscape==='auto'?LANDSCAPE_LIST[(()=>{let n=Math.imul((seed>>>0)^0x2f6b1d37,0x9e3779b1)>>>0;n=Math.imul(n^(n>>>15),0x2c1b3c6d)>>>0;n=Math.imul(n^(n>>>13),0x297a2d39)>>>0;return(n^(n>>>16))>>>0;})()%LANDSCAPE_LIST.length]:LANDSCAPE_LIST.includes(landscape)?landscape:'continent';}
 /* Perfis dos campos de batalha: relevo (colinas), serra (montanha intransitável), água, floresta, campos e sebes.
    A Fronteira procedural monta o perfil a partir dos controles da tela de nova operação. */
 const MAP_PROFILES={
@@ -223,7 +226,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   const per=f=>Object.fromEntries(this.sides.map(s=>[s,f(s)]));this.out=[];this.doctrines=Object.freeze(per(s=>cleanDoctrine(doctrines?.[s])));this.nationName=NATION_DEFAULTS.name;
   this.mode=mode==='rts'?'rts':'turns';this.economyClock=0;this.aiClock=0;this.visionClock=0;this.claims=new Set();
   this.map=MAPS[map]?map:'river';this.difficulty=Object.hasOwn(PLAN,difficulty)?difficulty:'normal';this.seed=seed>>>0;this.rng=seeded(seed);this.mineRng=typeof privateRandom==='function'?privateRandom:null;this.initialArmies={blue:cleanStartingArmy(initialArmies?.blue,this.factions.blue),red:cleanStartingArmy(initialArmies?.red,this.factions.red,enemyStartingArmy(this.seed,this.factions.red)),...(this.factions.green?{green:cleanStartingArmy(initialArmies?.green,this.factions.green)}:{})};
-  const o={...PROCEDURAL,...options},unit=v=>Math.max(0,Math.min(1,Number(v)||0));this.options={water:unit(o.water),forest:unit(o.forest),relief:unit(options.relief??options.mountain??PROCEDURAL.relief),farmland:unit(o.farmland),posts:Math.max(2,Math.min(32,Math.round(Number(o.posts)/2)*2||24))};
+  const o={...PROCEDURAL,...options},unit=v=>Math.max(0,Math.min(1,Number(v)||0));this.options={water:unit(o.water),forest:unit(o.forest),relief:unit(options.relief??options.mountain??PROCEDURAL.relief),farmland:unit(o.farmland),posts:Math.max(2,Math.min(32,Math.round(Number(o.posts)/2)*2||24)),landscape:o.landscape==='auto'||LANDSCAPE_LIST.includes(o.landscape)?o.landscape:'continent'};this.landscape=this.map==='random'?landscapeOf(this.seed,this.options.landscape):'continent';
   this.terrain=Array(SIZE).fill('plain');this.units=[];this.structures=[];this.mines=[];this.projectiles=[];this.events=[];this.logs=[];this.nextId=1;this.nextBatchId=1;this.nextProjectileId=1;
   this.time=0;this.round=1;this.turn='blue';this.actions=[];this.animation=null;this.aiQueue=[];this.aiWait=0;this.aiEnabled=true;this.aiDecisions=0;this.aiState='prepare';this.plan={phase:'prepare',since:this.mode==='rts'?0:1,rally:null,objective:null,wave:[],waveStart:0};this.intel=new Map();this.shotsFired=0;
   this.credits=per(()=>150);this.fires=[];this.winner=null;this.stats=per(()=>({kills:{},losses:{}}));this.visible=per(()=>Array(SIZE).fill(false));this.sky=per(()=>Array(SIZE).fill(false));this.explored=per(()=>Array(SIZE).fill(true));this.memory=per(()=>new Map());
@@ -652,6 +655,8 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   const height=noise(6),moisture=noise(5),flow=noise(8),wobble=noise(4);
   // Limiar por quantil: a fração pedida da meia malha recebe o terreno.
   const cut=(f,frac)=>{const v=[];each((x,y)=>v.push(f(x,y)));v.sort((p,q)=>p-q);return v[v.length-1-Math.floor(frac*v.length)];};
+  // Relevo e água (etapas 1 e 2): cada paisagem tem a sua; Continente é o gerador original.
+  const continent=()=>{
   // 1. Relevo: colinas em manchas; picos de serra raros; no Passe, uma serra central com três passagens.
   const hills=cut(height,.32*P.relief),peaks=cut(height,.06*P.ridge);
   each((x,y)=>set(x,y,P.ridge&&!P.pass&&height(x,y)>peaks?'mountain':height(x,y)>hills?'hill':'plain'));
@@ -668,6 +673,8 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
    for(let y=0;y<ROWS;y++){wet(x,y);if(wide)wet(x+1,y);const r=rng(),nx=Math.max(4,Math.min(COLS-6,x+(r<.3?-1:r>.7?1:0)));if(nx!==x){wet(nx,y);if(wide)wet(nx+1,y);}x=nx;}
   }
   const lakes=cut(flow,.035*P.water);each((x,y)=>{if(flow(x,y)>lakes&&at(x,y)!=='mountain')set(x,y,'river');});
+  };
+  ({continent,lakes:continent,islands:continent,highlands:continent})[this.landscape]();
   // 3. Florestas em manchas pela umidade, só em planície.
   const woods=cut(moisture,.3*P.forest);each((x,y)=>{if(at(x,y)==='plain'&&moisture(x,y)>woods)set(x,y,'forest');});
   // 4. Campos e sebes: lotes entre linhas espelhadas; lote cultivado vira campo e suas bordas viram sebes com porteiras.
