@@ -1,10 +1,9 @@
 'use strict';
-// Paisagens do mapa procedural: Continente (idêntico ao gerador antigo), Lagos, Ilhas e Serras.
+// Paisagens do mapa procedural: Continente, Lagos, Ilhas e Serras (o determinismo está em tests/maps.test.cjs).
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const E=new Function(fs.readFileSync(path.join(__dirname,'..','public','js','engine.js'),'utf8')+'\nreturn {Game,COLS,ROWS,KEY,landscapeOf,LANDSCAPE_LIST};')();
 const {Game,COLS,ROWS,KEY,landscapeOf,LANDSCAPE_LIST}=E;
 const tests=[],test=(name,fn)=>tests.push([name,fn]);
-const fnv=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h;};
 const make=(landscape,seed,o={})=>new Game('random','normal',seed,'turns',{landscape,...o});
 const share=(g,t)=>g.terrain.filter(v=>v===t).length/g.terrain.length;
 // Componentes 4-conectados das casas com pred(terreno); devolve os tamanhos e se cada um toca a borda do mapa.
@@ -12,7 +11,6 @@ function components(g,pred){const seen=new Uint8Array(COLS*ROWS),out=[];for(let 
 // Bases ligadas por tanque, todo posto alcançável por alguma casa do seu perímetro (o espelho do posto abre pelo lado oposto) e mapa simétrico por ponto (mesmas garantias de engine.test.cjs).
 function connected(g,label){g.units=[];const tank={type:'tank',owner:'blue',x:4,y:ROWS-2};assert.ok(g.findPath(tank,{x:COLS-5,y:1}),'bases desconectadas '+label);for(const p of g.structures.filter(s=>s.type==='post')){const ring=[];for(let i=-1;i<=p.width;i++)for(let j=-1;j<=p.height;j++)if(i<0||j<0||i>=p.width||j>=p.height)ring.push({x:p.x+i,y:p.y+j});assert.ok(ring.some(c=>g.findPath(tank,c)),'posto inalcançável '+label+' '+p.x+','+p.y);}for(let k=0;k<COLS*ROWS;k++)assert.equal(g.terrain[k],g.terrain[COLS*ROWS-1-k],'assimetria '+label);}
 
-test('continente idêntico ao gerador anterior',()=>{const ref=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures','continent-terrain.json'),'utf8'));assert.equal(ref.length,60);for(const {seed,options,hash} of ref){assert.equal(fnv(new Game('random','normal',seed,'turns',options).terrain.join(',')),hash,'sem opção '+seed);assert.equal(fnv(new Game('random','normal',seed,'turns',{...options,landscape:'continent'}).terrain.join(',')),hash,'continent '+seed);}});
 test('auto sorteia as quatro paisagens pela semente',()=>{const count={};for(let seed=1;seed<=60;seed++){const l=landscapeOf(seed,'auto');count[l]=(count[l]||0)+1;assert.equal(landscapeOf(seed,'auto'),l);}for(const l of LANDSCAPE_LIST)assert.ok(count[l]>=8,l+' '+count[l]);assert.equal(make('auto',7).landscape,landscapeOf(7,'auto'));});
 test('opção inválida vira continente e mapas fixos ignoram a paisagem',()=>{assert.equal(make('vulcão',5).landscape,'continent');assert.equal(make(undefined,5).landscape,'continent');assert.equal(new Game('river','normal',5,'turns',{landscape:'islands'}).landscape,'continent');});
 test('lagos: água, lagos grandes, ilhas, conexão e minas',()=>{let withIsland=0;for(let seed=1;seed<=30;seed++)for(const o of [{},{forest:1,farmland:1,posts:12}]){const g=make('lakes',seed,o),label='lakes/'+seed;
