@@ -28,5 +28,9 @@ test('ilhas: mar, massas de terra, pontes, conexão, aeroportos e minas',()=>{le
  const tank={type:'tank',owner:'blue',x:4,y:ROWS-2};for(const a of g.structures.filter(s=>s.type==='airportAsphalt'&&s.owner==='neutral')){withAirport++;for(let y=a.y;y<a.y+a.height;y++)for(let x=a.x;x<a.x+a.width;x++)assert.notEqual(g.terrain[KEY(x,y)],'river',label+' aeroporto na água');
   const ring=[];for(let i=-1;i<=a.width;i++)for(let j=-1;j<=a.height;j++)if(i<0||j<0||i>=a.width||j>=a.height)ring.push({x:a.x+i,y:a.y+j});assert.ok(ring.some(c=>g.findPath(tank,c)),label+' aeroporto inalcançável');}}
  assert.ok(withAirport>0,'nenhum aeroporto neutro gerado nas 30 sementes');});
+test('serras: montanha, planalto, passagens, conexão e minas',()=>{for(let seed=1;seed<=30;seed++){const g=make('highlands',seed),label='highlands/'+seed,at=(x,y)=>x<0||y<0||x>=COLS||y>=ROWS?undefined:g.terrain[KEY(x,y)];
+ const m=share(g,'mountain');assert.ok(m>=.12&&m<=.24,label+' montanha '+m.toFixed(3));assert.ok(share(g,'hill')>=.18,label+' colina');assert.ok(share(g,'river')<=.08,label+' água');
+ let gaps=0;for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){if(at(x,y)==='mountain')continue;const side=(dx,dy)=>[1,2].some(k=>at(x+dx*k,y+dy*k)==='mountain');if(side(1,0)&&side(-1,0)||side(0,1)&&side(0,-1))gaps++;}
+ assert.ok(gaps>=6,label+' passagens '+gaps);connected(g,label);assert.equal(g.mines.length,8,label+' minas');}});
 module.exports={make,share,components,connected,test,tests};
 if(require.main===module){for(const [name,fn] of tests){fn();console.log('OK '+name);}console.log(tests.length+' verificações de paisagem passaram.');}
