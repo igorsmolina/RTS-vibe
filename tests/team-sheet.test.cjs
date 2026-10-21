@@ -57,5 +57,22 @@ test('aviões: dano e alcance por modelo',()=>{
  const fr=field({blue:FRANCE,red:'red'});assert.equal(fr.planeWeapon(fr.add('blue','bomberFr',10,80),'cruiseMissile').range,75);
  assert.equal(TYPES.bomberRed.range,70);assert.equal(TYPES.bomberFr.range,75);assert.equal(TYPES.bomberBlue.range,67);
 });
+test('tanques vermelhos lançam míssil antitanque; lançador azul tem fuzil; caminhão vermelho atira',()=>{
+ const g=field({blue:'blue',red:'red'});
+ const lt=g.add('red','lightTank',60,40),ht=g.add('red','heavyTank',60,44),vHeavy=g.add('blue','heavyTank',62,40),vInf=g.add('blue','infantry',62,44);
+ assert.equal(lt.atMissiles,4);assert.equal(ht.atMissiles,4);assert.equal(g.add('red','antitank',60,48).atMissiles,6);assert.equal(g.add('blue','antitank',10,80).atMissiles,4);
+ assert.equal(g.weapon(lt,vHeavy),'atMissile');assert.equal(g.weapon(ht,vHeavy),'atMissile');assert.equal(g.weapon(ht,vInf),'heavyTank');
+ assert.equal(g.range(ht,vHeavy),12);lt.atMissiles=0;assert.equal(g.weapon(lt,vHeavy),null);
+ assert.equal(g.weapon(g.add('blue','lightTank',10,84),vHeavy),null,'verde continua sem míssil');
+ const fr=field({blue:FRANCE,red:'red'}),mi=fr.add('blue','missileInfantry',60,40);
+ assert.equal(fr.weapon(mi,fr.add('red','infantry',62,40)),'rifle');assert.equal(fr.range(mi,fr.get(fr.units.at(-1).id)),3);
+ assert.equal(fr.weapon(mi,fr.add('red','lightTank',62,44)),null);
+ const truck=g.add('red','transportTruck',70,40);assert.equal(g.weapon(truck,vInf),'transportTruck');assert.equal(g.weapon(truck,vHeavy),null);
+ assert.equal(g.fighter(truck),false,'IA não usa o caminhão como tropa de combate');
+});
+test('tanque leve vermelho fere o pesado com o míssil',()=>{
+ const g=field({blue:'blue',red:'red'}),lt=g.add('red','lightTank',60,40),h=g.add('blue','heavyTank',62,40),hp=h.hp;g.rng=()=>.1;
+ assert.notEqual(g.shoot(lt,h),false);assert.equal(lt.atMissiles,3);for(let i=0;i<30;i++)g.update(1/30);assert.ok(h.hp<hp);
+});
 for(const [name,fn] of cases){fn();console.log('OK '+name);}
 console.log(cases.length+' verificações de ficha por time passaram.');
