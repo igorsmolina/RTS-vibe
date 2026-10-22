@@ -2,11 +2,12 @@
 <html lang="pt-BR"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#E9EDE3">
+<meta name="theme-color" content="#0B120E">
 <meta name="description" content="rtsvibe — Estratégia militar contra a IA: tropas terrestres, aéreas e campanha no mapa-múndi."><title>rtsvibe — Fronteiras</title>
 <script src="js/menu-theme.js"></script>
 
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/menus.css">
 </head>
 <body>
 <div class="shell">
@@ -92,7 +93,6 @@
 <div class="title-shade" aria-hidden="true"></div>
 <div class="title-content"><h1 id="titleName">rtsvibe</h1><p class="title-sub">Estratégia militar contra a IA: tropas terrestres, aéreas e campanha no mapa-múndi.</p>
 <div class="title-nation"><canvas id="titleNationFlag" width="72" height="48" role="img" aria-label="Bandeira da sua nação"></canvas><strong id="titleNationName"></strong>
-<div class="theme-field"><label for="titleTheme">Tema</label><select id="titleTheme"><option value="system">Sistema</option><option value="light">Claro</option><option value="dark">Escuro</option></select></div>
 </div>
 <nav class="title-menu" aria-label="Menu inicial"><button id="titleResume" class="title-btn primary" hidden="">Continuar partida</button><button id="titlePlay" class="title-btn primary">Jogar<small>batalha rápida</small></button><button id="titleMultiplayer" class="title-btn">Multiplayer<small>salas privadas por código</small></button><button class="title-btn" id="titleTutorial"><span>Treinamento</span><small>Aprenda os comandos em 8 passos</small></button><button id="titleCampaign" class="title-btn"><span>Campanha</span><small id="titleCampaignInfo">Mapa-múndi gerado por semente</small></button><button id="titleSettings" class="title-btn">Configurações<small>gráficos, som, grade e padrões</small></button><button id="titleProfile" class="title-btn">Perfil e conquistas<small id="titleProfileInfo"></small></button><button id="titleHelp" class="title-btn">Como jogar<small>controles e regras</small></button></nav>
 <p class="title-foot">Setas navegam · Enter escolhe · Esc volta ao jogo</p></div>
@@ -104,7 +104,6 @@
 <dialog id="settings" class="settings-dialog" aria-labelledby="settingsTitle"><h2 id="settingsTitle">Configurações</h2>
 <form id="settingsForm" class="settings-grid" onsubmit="return false">
 <fieldset class="settings-section"><legend>Aparência</legend>
-<div class="field"><label for="setTheme">Tema</label><select id="setTheme"><option value="system">Sistema</option><option value="light">Claro</option><option value="dark">Escuro</option></select></div>
 <div class="field"><label for="setGraphics">Perfil gráfico</label><select id="setGraphics" aria-describedby="graphicsHelp"><option value="performance">Desempenho</option><option value="balanced" selected="">Equilibrado</option><option value="cinematic">Cinematográfico</option></select><small id="graphicsHelp">Cinematográfico inclui poeira de canhão, esteiras, pneus e pegadas. Aplicado na hora; mísseis e flares permanecem em todos os perfis.</small></div>
 <label class="check"><input type="checkbox" id="setGrid" class="switch" role="switch"> Grade de casas</label></fieldset>
 <fieldset class="settings-section"><legend>Som e tela</legend><label class="check"><input type="checkbox" id="setSound" class="switch" role="switch"> Som</label><label class="check"><input type="checkbox" id="setFullscreen" class="switch" role="switch"> Tela cheia ao iniciar operação</label></fieldset>
@@ -455,6 +454,7 @@
 <script src="js/p2p.js"></script>
 <script src="js/multiplayer.js"></script>
 <script src="js/title-map.js"></script>
+<script src="js/menu-kit.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/campaign.js"></script>
 <script src="js/neon-config.js"></script>

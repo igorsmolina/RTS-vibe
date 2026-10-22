@@ -22,6 +22,10 @@ class Sound{
   else if(kind==='tank'){this.noise(.35,600);this.tone(120,.3,'triangle',0,30);}
   else if(kind==='artillery'||kind==='blast'){this.noise(.55,900);this.tone(90,.5,'sine',0,22);}
   else if(kind==='infantry'){this.noise(.1,2400);this.tone(180,.07,'square',0,70);}
+  else if(kind==='ui-hover')this.tone(1500,.025,'sine',0,1700);
+  else if(kind==='ui-select'){this.tone(520,.05,'square',0,640);this.tone(780,.06,'sine',.045,820);}
+  else if(kind==='ui-confirm'){this.tone(392,.09,'triangle');this.tone(587,.14,'triangle',.08);}
+  else if(kind==='ui-open')this.tone(180,.18,'sawtooth',0,420);
   else if(kind==='victory')[392,494,587,784].forEach((n,i)=>this.tone(n,.3,'triangle',i*.17));
   else if(kind==='defeat')[330,294,220,165].forEach((n,i)=>this.tone(n,.4,'triangle',i*.2));
  }
@@ -503,7 +507,6 @@ $('menuButton').addEventListener('click',()=>{if(started)openTitle();});
 $('titleScreen').addEventListener('cancel',e=>{e.preventDefault();if(started)closeChild('titleScreen');});
 $('titleScreen').addEventListener('keydown',e=>{if(e.key!=='ArrowDown'&&e.key!=='ArrowUp')return;const items=[...document.querySelectorAll('.title-menu button')].filter(b=>!b.hidden);const i=items.indexOf(document.activeElement);if(i<0)return;e.preventDefault();items[(i+(e.key==='ArrowDown'?1:-1)+items.length)%items.length].focus();});
 // Tema dos menus: independente das configurações sincronizadas da partida.
-for(const id of ['titleTheme','setTheme'])$(id).addEventListener('change',e=>setMenuTheme(e.target.value));
 applyMenuTheme();
 // Configurações: cada alteração vale na hora e fica salva.
 function drawNationFlag(id,n){
@@ -538,8 +541,8 @@ for(const id of ['nationName','nationPrimary','nationSecondary','nationPattern',
 $('nationForm').addEventListener('submit',e=>{e.preventDefault();previewNation();if(!$('nationForm').reportValidity())return;changeSetting('nation',cleanNation(nationDraft()));applyNation();closeMenu('nationEditor');});
 $('cancelNation').addEventListener('click',()=>closeMenu('nationEditor'));
 $('nationEditor').addEventListener('cancel',e=>{e.preventDefault();closeMenu('nationEditor');});
-function fillSettings(){$('setSound').checked=audio.enabled;$('setGrid').checked=showGrid;$('setFullscreen').checked=settings.fullscreen;$('setSpeed').value=String(settings.speed);$('setDifficulty').value=settings.difficulty;$('setMode').value=settings.mode;$('setGraphics').value=settings.graphics;$('setTheme').value=menuTheme;}
-function applySettings(){settings.army=Object.hasOwn(ARMY_FACTION,settings.army)?settings.army:'own';settings.enemyArmy=['blue','red',FRANCE].includes(settings.enemyArmy)?settings.enemyArmy:'auto';if(armyOverBudget(settings.startingArmy,playerFaction()))settings.armyRestored=true;settings.nation=cleanNation(settings.nation);settings.doctrine=cleanDoctrine(settings.doctrine);settings.startingArmy=cleanStartingArmy(settings.startingArmy,playerFaction());audio.enabled=settings.sound!==false;if(audio.master)audio.master.gain.value=audio.enabled?.14:0;$('sound').textContent=audio.enabled?'Som ligado':'Som desligado';$('sound').setAttribute('aria-pressed',String(audio.enabled));showGrid=settings.grid===true;fillSettings();applyNation();updateArmySummary();}
+function fillSettings(){$('setSound').checked=audio.enabled;$('setGrid').checked=showGrid;$('setFullscreen').checked=settings.fullscreen;$('setSpeed').value=String(settings.speed);$('setDifficulty').value=settings.difficulty;$('setMode').value=settings.mode;$('setGraphics').value=settings.graphics;}
+function applySettings(){settings.army=Object.hasOwn(ARMY_FACTION,settings.army)?settings.army:'own';settings.enemyArmy=['blue','red',FRANCE].includes(settings.enemyArmy)?settings.enemyArmy:'auto';if(armyOverBudget(settings.startingArmy,playerFaction()))settings.armyRestored=true;settings.nation=cleanNation(settings.nation);settings.doctrine=cleanDoctrine(settings.doctrine);settings.startingArmy=cleanStartingArmy(settings.startingArmy,playerFaction());document.documentElement.dataset.fx=settings.graphics;audio.enabled=settings.sound!==false;if(audio.master)audio.master.gain.value=audio.enabled?.14:0;$('sound').textContent=audio.enabled?'Som ligado':'Som desligado';$('sound').setAttribute('aria-pressed',String(audio.enabled));showGrid=settings.grid===true;fillSettings();applyNation();updateArmySummary();}
 function openSettings(){fillSettings();openMenu('settings');}
 $('setSound').addEventListener('change',()=>{audio.enabled=$('setSound').checked;if(audio.master)audio.master.gain.value=audio.enabled?.14:0;audio.unlock();$('sound').textContent=audio.enabled?'Som ligado':'Som desligado';$('sound').setAttribute('aria-pressed',String(audio.enabled));changeSetting('sound',audio.enabled);});
 $('setGrid').addEventListener('change',()=>{showGrid=$('setGrid').checked;renderer.dirty=true;changeSetting('grid',showGrid);updateUI();});
@@ -548,7 +551,7 @@ $('setSpeed').addEventListener('change',()=>changeSetting('speed',Number($('setS
 $('setDifficulty').addEventListener('change',()=>changeSetting('difficulty',$('setDifficulty').value));
 $('setMode').addEventListener('change',()=>changeSetting('mode',$('setMode').value));
 ambientClouds.forEach((image,i)=>{image.onload=()=>{const s=document.createElement('canvas');s.width=image.width;s.height=image.height;const c=s.getContext('2d');c.drawImage(image,0,0);c.globalCompositeOperation='source-in';c.fillStyle='#071c2c';c.fillRect(0,0,s.width,s.height);cloudShadows[i]=s;renderer.dirty=true;};image.onerror=()=>{cloudShadows[i]=null;renderer.dirty=true;};image.src=ambientCloudData[i];});
-$('setGraphics').addEventListener('change',()=>{changeSetting('graphics',$('setGraphics').value);renderer.dirty=true;say('Perfil gráfico aplicado: '+$('setGraphics').selectedOptions[0].textContent+'.');});
+$('setGraphics').addEventListener('change',()=>{changeSetting('graphics',$('setGraphics').value);document.documentElement.dataset.fx=settings.graphics;renderer.dirty=true;say('Perfil gráfico aplicado: '+$('setGraphics').selectedOptions[0].textContent+'.');});
 $('settingsReset').addEventListener('click',()=>{settings={...SETTING_DEFAULTS};saveSettings();applySettings();setMenuTheme('system');});
 $('settingsBack').addEventListener('click',()=>closeChild('settings'));
 applySettings();
