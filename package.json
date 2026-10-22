@@ -21,6 +21,7 @@
     "prepare:terrain": "node scripts/prepare-terrain.cjs",
     "prepare:tanks": "node scripts/prepare-tanks.cjs",
     "compare:tanks": "node scripts/compare-tanks.cjs",
+    "balance:franca": "node scripts/faction-balance.cjs",
     "test:terrain": "node tests/terrain.test.cjs",
     "prepare:atmosphere": "node scripts/prepare-atmosphere.cjs",
     "prepare:new-troops": "node scripts/prepare-new-troops.cjs",
