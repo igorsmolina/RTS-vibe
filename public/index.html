@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="css/menus.css">
 <link rel="stylesheet" href="css/menus-title.css">
 <link rel="stylesheet" href="css/menus-setup.css">
+<link rel="stylesheet" href="css/menus-campaign.css">
 </head>
 <body>
 <div class="shell">
@@ -187,11 +188,11 @@
 <div class="dialog-buttons sticky-actions"><button type="button" id="cancelSetup">Voltar</button><button type="button" id="openCampaign"><i data-icon="map" aria-hidden="true"></i>Campanha (mapa-múndi)</button><button type="submit" class="primary"><i data-icon="crosshair" aria-hidden="true"></i>Iniciar operação</button></div>
 </form>
 </dialog>
-<dialog id="campaign" class="campaign-dialog" aria-labelledby="campaignTitle">
+<dialog id="campaign" class="campaign-dialog tac-dialog" aria-labelledby="campaignTitle">
 <div class="campaign-head">
-<div><h2 id="campaignTitle">Campanha — mapa-múndi</h2>
+<div class="campaign-title"><span class="tac-kicker">Teatro mundial</span><h2 id="campaignTitle">Campanha — mapa-múndi</h2>
 <div class="campaign-nation"><canvas id="campaignNationFlag" class="nation-flag" width="72" height="48" role="img" aria-label="Bandeira da nação"></canvas><span id="campaignNationName"></span></div>
-<p id="campaignStats"></p></div>
+<p id="campaignStats"></p><div class="control-bar" id="campaignControl" aria-hidden="true"><i class="own"></i><i class="foe"></i><i class="neu"></i></div></div>
 <div class="campaign-actions"><button type="button" id="newCampaign" class="danger">Nova campanha</button><button type="button" id="closeCampaign">Voltar</button></div>
 </div>
 <div class="campaign-body">
@@ -201,16 +202,19 @@
 </div>
 <section class="campaign-diary"><h3>Diário de campanha</h3><ul id="campaignEvents" aria-live="polite"></ul></section>
 </div>
-<aside class="region-panel"><section class="region-card"><h3>Dossiê</h3><label for="regionSelect" class="sr-only">Região</label><select id="regionSelect"></select><h3 id="regionName">Escolha uma região</h3><p id="regionInfo"></p>
-<div class="map-sheet region-sheet"><canvas id="regionPreview" width="252" height="189" aria-label="Prévia do campo de batalha da região"></canvas></div></section>
-<button type="button" id="attackRegion" class="primary" disabled="">Atacar região</button>
-<section id="storyMission" class="region-card story-card" hidden><h3 id="storyMissionTitle"></h3><p id="storyMissionBrief"></p><p id="storyMissionBudget"></p><button type="button" id="startStoryMission" class="primary">Iniciar missão</button></section>
-<section class="region-card"><h3>Preparação</h3>
-<div class="field"><label for="campaignMode">Modo das batalhas</label><select id="campaignMode"><option value="turns">Por turnos</option><option value="rts">RTS com pausa tática</option></select></div>
-<div class="field"><label for="campaignKind">Tipo da próxima campanha</label><select id="campaignKind"><option value="story">História: Véu de Cinzas</option><option value="free">Conquista livre</option></select></div>
-<button type="button" id="storyJournal" hidden>História e documentos</button><button type="button" id="storyResume" hidden>Retomar conversa</button><button type="button" id="storyCheckpoint" hidden>Retomar operação salva</button>
-<fieldset class="doctrine-fields"><legend>Doutrinas da batalha</legend><p id="campaignEnemyDoctrineInfo" role="status">Selecione uma região atacável.</p>
-<div class="field"><label for="campaignDoctrine">Sua doutrina</label><select id="campaignDoctrine" aria-describedby="campaignDoctrineInfo"></select><small id="campaignDoctrineInfo"></small></div><div class="field"><label for="campaignUnits">Suas unidades</label><select id="campaignUnits"><option value="own">Verdes (padrão)</option><option value="enemy">Vermelhas</option><option value="franca">Azuis (França)</option></select><small>Cada exército tem unidades próprias. Vale na batalha rápida, na campanha livre e no multiplayer.</small></div><div class="field"><label for="campaignEnemyArmy">Unidades da IA</label><select id="campaignEnemyArmy"><option value="auto">Automático</option><option value="blue">Verdes</option><option value="red">Vermelhas</option><option value="franca">Azuis (França)</option></select><small>Automático: a IA usa as vermelhas, ou as verdes se você escolher as vermelhas.</small></div>
+<aside class="region-panel">
+<section class="region-card dossier tac-panel"><span class="tac-kicker">Dossiê da região</span><label for="regionSelect" class="sr-only">Região</label><select id="regionSelect"></select><h3 id="regionName">Escolha uma região</h3>
+<div class="dossier-photo" id="regionPhoto"><canvas id="regionPreview" width="252" height="189" aria-label="Prévia do campo de batalha da região"></canvas><span id="regionBiomeTag" class="dossier-biome" hidden></span></div>
+<dl class="dossier-facts"><div><dt>Bioma</dt><dd id="regionBiome">–</dd></div><div><dt>Posse</dt><dd><span id="regionOwner" class="badge" hidden></span> <span id="regionHq" class="badge" hidden>QG</span></dd></div><div><dt>Ameaça</dt><dd><div class="meter threat"><i id="regionThreatBar"></i></div><span id="regionThreat">–</span></dd></div></dl>
+<p id="regionInfo"></p><p id="campaignEnemyDoctrineInfo" role="status">Selecione uma região atacável.</p></section>
+<button type="button" id="attackRegion" class="primary" data-icon="crosshair" disabled="">Atacar região</button>
+<section id="storyMission" class="region-card story-card tac-panel" hidden><img id="storyMissionPortrait" class="story-portrait" alt="" width="88" height="88" hidden><div class="story-copy"><span class="tac-kicker">Missão da história</span><h3 id="storyMissionTitle"></h3><p id="storyMissionBrief"></p><p id="storyMissionBudget"></p></div><button type="button" id="startStoryMission" class="primary" data-icon="play">Iniciar missão</button></section>
+<section class="region-card forces tac-panel"><span class="tac-kicker">Preparação</span>
+<div class="field"><label for="campaignMode">Modo das batalhas</label><select id="campaignMode"><option value="turns" data-title="Por turnos" data-caption="planeje sem pressa">Por turnos</option><option value="rts" data-title="RTS" data-caption="com pausa tática">RTS com pausa tática</option></select></div>
+<div class="field"><label for="campaignKind">Tipo da próxima campanha</label><select id="campaignKind"><option value="story" data-caption="cinco capítulos">História: Véu de Cinzas</option><option value="free" data-caption="sem roteiro">Conquista livre</option></select></div>
+<div class="story-buttons"><button type="button" id="storyJournal" hidden>História e documentos</button><button type="button" id="storyResume" hidden>Retomar conversa</button><button type="button" id="storyCheckpoint" hidden>Retomar operação salva</button></div>
+<fieldset class="doctrine-fields"><legend>Doutrinas da batalha</legend>
+<div class="field"><label for="campaignDoctrine">Sua doutrina</label><select id="campaignDoctrine" aria-describedby="campaignDoctrineInfo"></select><small id="campaignDoctrineInfo"></small></div><div class="field"><label for="campaignUnits">Suas unidades</label><select id="campaignUnits"><option value="own" data-title="Verdes" data-caption="padrão">Verdes (padrão)</option><option value="enemy" data-title="Vermelhas">Vermelhas</option><option value="franca" data-title="Azuis" data-caption="França">Azuis (França)</option></select><small>Cada exército tem unidades próprias. Vale na batalha rápida, na campanha livre e no multiplayer.</small></div><div class="field"><label for="campaignEnemyArmy">Unidades da IA</label><select id="campaignEnemyArmy"><option value="auto" data-title="Automático">Automático</option><option value="blue" data-title="Verdes">Verdes</option><option value="red" data-title="Vermelhas">Vermelhas</option><option value="franca" data-title="Azuis" data-caption="França">Azuis (França)</option></select><small>Automático: a IA usa as vermelhas, ou as verdes se você escolher as vermelhas.</small></div>
 </fieldset>
 <div class="army-summary"><button type="button" id="campaignArmy">Montar exército inicial</button><small id="campaignArmySummary"></small></div></section>
 </aside>
@@ -406,22 +410,31 @@
 <dl class="result-stats"><div><dt>Duração</dt><dd id="resultTime">–</dd></div><div><dt>Abates</dt><dd id="resultKills">0</dd></div><div><dt>Perdas</dt><dd id="resultLosses">0</dd></div></dl>
 <div class="dialog-buttons"><button id="review">Rever campo</button><button id="revealMap" hidden="">Ver mapa inteiro</button><button id="backToWorld" hidden="">Voltar ao mapa-múndi</button><button id="resultToMenu">Voltar ao menu inicial</button><button id="playAgain" class="primary">Nova operação</button></div>
 </div></dialog>
-<dialog id="multiplayer" class="settings-dialog" aria-labelledby="mpTitle">
-<h2 id="mpTitle">Multiplayer</h2><p>Partida privada para 2 ou 3 jogadores, todos contra todos: cada um escolhe o seu time de unidades. Sem conta obrigatória; as salas são temporárias. Cada jogador pode ter até 50 tropas ao mesmo tempo (em campo, embarcadas e na fila de produção).</p>
-<p id="mpStatus" role="status" aria-live="polite">Crie uma sala ou entre com o código do seu amigo.</p>
-<div id="mpEntry" class="multiplayer-entry">
-<div class="field"><label for="mpNickname">Seu apelido</label><input id="mpNickname" required minlength="1" maxlength="24" autocomplete="nickname" value="Jogador"></div>
-<div class="field"><label for="mpCode">Código da sala</label><input id="mpCode" minlength="6" maxlength="12" pattern="[A-Za-z0-9]+" autocomplete="off" placeholder="Código do seu amigo"></div>
-<div class="dialog-buttons"><button id="mpCreate" type="button" class="primary">Criar sala</button><button id="mpJoin" type="button">Entrar com código</button><button id="mpPcServer" type="button" hidden>Entrar no servidor do PC</button></div>
+<dialog id="multiplayer" class="settings-dialog tac-dialog mp-dialog" aria-labelledby="mpTitle">
+<header class="mp-head"><span class="tac-kicker">Partida privada · 2 ou 3 jogadores</span><h2 id="mpTitle">Multiplayer</h2><p>Todos contra todos: cada um escolhe o seu time de unidades. Sem conta obrigatória; as salas são temporárias. Até 50 tropas por jogador ao mesmo tempo (em campo, embarcadas e na fila de produção).</p>
+<p id="mpStatus" role="status" aria-live="polite" class="mp-status">Crie uma sala ou entre com o código do seu amigo.</p></header>
+<div id="mpEntry" class="mp-entry">
+<div class="field mp-nick"><label for="mpNickname">Seu apelido</label><input id="mpNickname" required minlength="1" maxlength="24" autocomplete="nickname" value="Jogador"></div>
+<div class="mp-cards">
+<section class="mp-card tac-panel"><span data-icon="room" aria-hidden="true"></span><h3>Criar sala</h3><p>Você é o anfitrião: escolhe o teatro e compartilha o código com seus amigos.</p><button id="mpCreate" type="button" class="primary">Criar sala</button></section>
+<section class="mp-card tac-panel"><span data-icon="code" aria-hidden="true"></span><h3>Entrar com código</h3><div class="field"><label for="mpCode">Código da sala</label><input id="mpCode" class="mp-code-input" minlength="6" maxlength="12" pattern="[A-Za-z0-9]+" autocomplete="off" placeholder="Código do seu amigo"></div><div class="mp-card-buttons"><button id="mpJoin" type="button">Entrar com código</button><button id="mpPcServer" type="button" hidden>Entrar no servidor do PC</button></div></section>
+</div></div>
+<div id="mpRoom" hidden><div class="mp-codebox tac-panel"><span class="tac-kicker">Código da sala</span><strong id="mpCodeLabel"></strong><button id="mpCopy" type="button" data-icon="copy">Copiar</button><span id="mpOwnSide" class="badge"></span></div>
+<div class="mp-slots" id="mpSlots"><ul id="mpPlayers"></ul></div></div>
+<div class="mp-columns">
+<section id="mpFormation" class="mp-panel tac-panel" hidden><span class="tac-kicker">Sua força</span><div class="field"><label for="mpDoctrine">Doutrina</label><select id="mpDoctrine"></select></div><div class="field"><label for="mpFaction">Suas unidades</label><select id="mpFaction"><option value="" data-title="Do meu time" data-caption="padrão da sua cor">Do meu time (padrão)</option><option value="blue" data-title="Verdes">Unidades verdes</option><option value="red" data-title="Vermelhas">Unidades vermelhas</option><option value="franca" data-title="Azuis" data-caption="França">Unidades azuis (França)</option></select></div><div class="army-summary"><button id="mpArmy" type="button">Montar exército inicial</button><small id="mpArmySummary"></small></div><p class="mp-hint">Cada time tem unidades diferentes (aviões, helicóptero de transporte); você pode jogar com as de qualquer time, até com as mesmas dos outros jogadores. A revanche gira os lados (azul, vermelho, verde).</p><div class="mp-actions"><button id="mpReady" type="button" aria-pressed="false" data-icon="check">Estou pronto</button><button id="mpStart" type="button" class="primary" data-icon="play">Iniciar partida</button><button id="mpRematch" type="button" hidden>Solicitar revanche</button><button id="mpResume" type="button" hidden>Voltar ao campo</button><button id="mpEnd" type="button" hidden>Encerrar partida</button><button id="mpLeave" type="button" class="danger">Sair da sala</button></div></section>
+<fieldset id="mpConfiguration" class="mp-panel tac-panel"><legend>Configuração do anfitrião</legend>
+<div class="field"><label for="mpMap">Teatro de operações</label><select id="mpMap"><option value="river" data-caption="bocage temperado">Vale dos Rios</option><option value="desert" data-caption="dunas e oásis">Deserto Aberto</option><option value="mountain" data-caption="serra e desfiladeiro">Passe de Montanha</option><option value="random" data-caption="gerada por semente">Fronteira procedural</option></select></div>
+<div class="mp-pair"><div class="field"><label for="mpMode">Modo</label><select id="mpMode"><option value="rts" data-caption="tempo real">RTS contínuo</option><option value="turns" data-caption="uma vez cada">Por turnos</option></select></div>
+<div class="field"><label for="mpSeed">Semente do mapa</label><input id="mpSeed" type="number" min="1" max="4294967295" step="1" value="1"></div></div>
+<fieldset id="mpTerrain" class="procedural mp-terrain" hidden><legend>Paisagem procedural</legend><div class="field"><label for="mpLandscape">Paisagem</label><select id="mpLandscape"><option value="auto" selected>Aleatória</option><option value="continent">Continente</option><option value="lakes">Lagos</option><option value="islands">Ilhas</option><option value="highlands">Serras</option></select></div>
+<div class="slider-row"><i data-icon="water" aria-hidden="true"></i><div class="slider-main"><label for="mpWater">Água</label><input id="mpWater" type="range" min="0" max="100" value="35"></div><output id="mpWaterOut" for="mpWater"></output></div>
+<div class="slider-row"><i data-icon="forest" aria-hidden="true"></i><div class="slider-main"><label for="mpForest">Floresta</label><input id="mpForest" type="range" min="0" max="100" value="40"></div><output id="mpForestOut" for="mpForest"></output></div>
+<div class="slider-row"><i data-icon="relief" aria-hidden="true"></i><div class="slider-main"><label for="mpRelief">Relevo</label><input id="mpRelief" type="range" min="0" max="100" value="35"></div><output id="mpReliefOut" for="mpRelief"></output></div>
+<div class="slider-row"><i data-icon="farmland" aria-hidden="true"></i><div class="slider-main"><label for="mpFarmland">Campos e sebes</label><input id="mpFarmland" type="range" min="0" max="100" value="60"></div><output id="mpFarmlandOut" for="mpFarmland"></output></div>
+<div class="posts-row"><i data-icon="posts" aria-hidden="true"></i><label for="mpPosts">Postos</label><select id="mpPosts"></select></div></fieldset></fieldset>
 </div>
-<div id="mpRoom" hidden><p class="multiplayer-code">Sala <strong id="mpCodeLabel"></strong> · <span id="mpOwnSide"></span></p><ul id="mpPlayers" class="multiplayer-players"></ul></div>
-<fieldset id="mpConfiguration"><legend>Configuração do anfitrião</legend><div class="multiplayer-grid">
-<div class="field"><label for="mpMap">Teatro de operações</label><select id="mpMap"><option value="river">Vale dos Rios</option><option value="desert">Deserto Aberto</option><option value="mountain">Passe de Montanha</option><option value="random">Fronteira procedural</option></select></div>
-<div class="field"><label for="mpMode">Modo</label><select id="mpMode"><option value="rts">RTS contínuo</option><option value="turns">Por turnos</option></select></div>
-<div class="field"><label for="mpSeed">Semente do mapa</label><input id="mpSeed" type="number" min="1" max="4294967295" step="1" value="1"></div>
-</div><fieldset id="mpTerrain" class="procedural" hidden><label>Paisagem<select id="mpLandscape"><option value="auto" selected>Aleatória</option><option value="continent">Continente</option><option value="lakes">Lagos</option><option value="islands">Ilhas</option><option value="highlands">Serras</option></select></label><label>Água<input id="mpWater" type="range" min="0" max="100" value="35"></label><label>Floresta<input id="mpForest" type="range" min="0" max="100" value="40"></label><label>Relevo<input id="mpRelief" type="range" min="0" max="100" value="35"></label><label>Campos e sebes<input id="mpFarmland" type="range" min="0" max="100" value="60"></label><label>Postos<select id="mpPosts"></select></label></fieldset></fieldset>
-<section id="mpFormation" hidden><h3>Sua força</h3><div class="field"><label for="mpDoctrine">Doutrina</label><select id="mpDoctrine"></select></div><div class="field"><label for="mpFaction">Suas unidades</label><select id="mpFaction"><option value="">Do meu time (padrão)</option><option value="blue">Unidades verdes</option><option value="red">Unidades vermelhas</option><option value="franca">Unidades azuis (França)</option></select></div><div class="army-summary"><button id="mpArmy" type="button">Montar exército inicial</button><small id="mpArmySummary"></small></div><p>Cada time tem unidades diferentes (aviões, helicóptero de transporte); você pode jogar com as de qualquer time, até com as mesmas dos outros jogadores. A revanche gira os lados (azul, vermelho, verde).</p><div class="dialog-buttons"><button id="mpReady" type="button" aria-pressed="false">Estou pronto</button><button id="mpStart" type="button" class="primary">Iniciar partida</button><button id="mpRematch" type="button" hidden>Solicitar revanche</button><button id="mpResume" type="button" hidden>Voltar ao campo</button><button id="mpEnd" type="button" hidden>Encerrar partida</button><button id="mpLeave" type="button" class="danger">Sair da sala</button></div></section>
-<div class="dialog-buttons"><button id="mpBack" type="button">Voltar</button></div>
+<div class="dialog-buttons mp-foot"><button id="mpBack" type="button">Voltar</button></div>
 </dialog>
 <div id="networkStatus" class="network-status" role="status" aria-live="polite" hidden></div>
 <dialog id="armyEditor" class="settings-dialog army-editor" aria-labelledby="armyTitle"><h2 id="armyTitle">Exército inicial</h2><p>QG e um comandante gratuitos. Escolha suas tropas com 600 pontos; a batalha começa com 150 créditos. Aviões começam em patrulha e precisam de uma pista aliada para pousar.</p>

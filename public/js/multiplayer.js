@@ -44,7 +44,7 @@ const Multiplayer={
   button.hidden=false;button.onclick=()=>{const target=new URL(live),room=new URLSearchParams(location.search).get('room')||$('mpCode').value.trim().toUpperCase();target.searchParams.set('multiplayer','1');if(room)target.searchParams.set('room',room);location.assign(target.href);};
  },
  show(){
-  if($('titleScreen').open)$('titleScreen').close();backTo=null;if(!$('multiplayer').open)openMenu('multiplayer');this.renderRoom();$('mpNickname').focus();
+  this.build();if($('titleScreen').open)$('titleScreen').close();backTo=null;if(!$('multiplayer').open)openMenu('multiplayer');this.renderRoom();$('mpNickname').focus();
  },
  async enter(join=false){
   if(!$('mpNickname').reportValidity()||join&&!$('mpCode').reportValidity())return;
@@ -110,18 +110,53 @@ const Multiplayer={
   $('networkStatus').hidden=true;$('mpCreate').disabled=$('mpJoin').disabled=false;this.editingArmy=false;if(game.multiplayer){game.multiplayer=false;game.playerSide='blue';paused=true;started=false;selection.clear();updateUI();}if($('multiplayer').open)closeMenu('multiplayer');if(show)openTitle();
  },
  expired(reason){this.leave(false);this.show();this.status(reason);},
+ // Cartões e réguas: montados na primeira abertura (opções de doutrina e postos já existem; miniaturas em tempo ocioso).
+ build(){
+  if(this.ui||typeof MenuKit==='undefined')return;const K=MenuKit,art={blue:0,red:1,[FRANCE]:2,franca:2},team=o=>K.spriteNode('heavyTank',art[o.value]??0);
+  const mine=()=>K.spriteNode('heavyTank',ART[SIDE_FACTION[this.side]]||0);
+  this.ui={pickers:[
+   K.cardPicker($('mpMap'),{kind:'map',cols:4,art:o=>K.thumbNode(o.value,1,o.value==='random'?{landscape:'continent'}:{},224,168)}),
+   K.cardPicker($('mpMode'),{kind:'icon',cols:2,art:o=>K.iconNode(o.value==='rts'?'mode-rts':'mode-turns')}),
+   K.cardPicker($('mpLandscape'),{kind:'icon',cols:5,art:o=>K.iconNode({auto:'dice',continent:'continent',lakes:'water',islands:'islands',highlands:'relief'}[o.value])}),
+   K.cardPicker($('mpDoctrine'),{kind:'icon',cols:2,art:o=>K.iconNode('doctrine-'+o.value),caption:o=>NATION_DOCTRINES[o.value]?.text}),
+   K.cardPicker($('mpFaction'),{kind:'square',cols:4,art:o=>o.value===''?mine():team(o)})
+  ],syncs:[['mpWater','Out'],['mpForest','Out'],['mpRelief','Out'],['mpFarmland','Out']].map(([id,o])=>K.slider($(id),$(id+o)))};
+  this.ui.faction=this.ui.pickers[4];this.ui.side=this.side;
+  $('mpCopy').addEventListener('click',async()=>{
+   const code=this.room?.code;if(!code)return;let copied=false;try{await navigator.clipboard.writeText(code);copied=true;}catch{try{getSelection().selectAllChildren($('mpCodeLabel'));}catch{}}
+   $('mpCopy').textContent=copied?'Copiado':'Selecionado';K.ui('ui-confirm');clearTimeout(this.copyTimer);this.copyTimer=setTimeout(()=>{$('mpCopy').textContent='Copiar';},1600);
+  });
+ },
+ sync(){
+  if(!this.ui)return;if(this.ui.side!==this.side){this.ui.side=this.side;this.ui.faction.rebuild();}
+  for(const p of this.ui.pickers)p.refresh();for(const f of this.ui.syncs)f();
+ },
+ // Vaga de um jogador: posição fixa por lado (azul, vermelho, verde), time, doutrina e lâmpada de "pronto".
+ slot(p,room){
+  const K=MenuKit,state=p.out?'out':!p.connected?'offline':p.ready?'ready':'preparing',faction=p.faction||SIDE_FACTION[p.side],doctrine=NATION_DOCTRINES[p.doctrine]||NATION_DOCTRINES.balanced;
+  const li=K.el('li','mp-slot');li.dataset.side=p.side;li.dataset.state=state;li.style.gridColumn=String(['blue','red','green'].indexOf(p.side)+1);
+  const head=K.el('span','mp-slot-head'),side=K.el('span','mp-slot-side',SIDE_NAME[p.side]);head.append(side);
+  if(p.side===this.side)head.append(K.el('span','badge','Você'));if(p.side===room.hostSide)head.append(K.el('span','badge','Anfitrião'));
+  const doc=K.el('span','mp-slot-doc');doc.append(K.iconNode('doctrine-'+(Object.keys(NATION_DOCTRINES).find(k=>NATION_DOCTRINES[k]===doctrine))),document.createTextNode(doctrine.name));
+  const lamp=K.el('span','mp-slot-state'),label={out:'Eliminado',offline:'Desconectado',ready:'Pronto',preparing:'Preparando'}[state];lamp.append(K.el('i','mp-lamp'),document.createTextNode(label));
+  const art=K.el('span','mp-slot-art');art.append(K.spriteNode('heavyTank',ART[faction]||0));
+  li.append(head,art,K.el('strong','mp-slot-name',p.nickname),doc,K.el('span','mp-slot-units','Unidades '+(UNIT_NAME[faction]||faction)),lamp);return li;
+ },
  renderRoom(){
-  const room=this.room,waiting=room?.status==='waiting',host=!room||this.side===room.hostSide;
+  this.build();const room=this.room,waiting=room?.status==='waiting',host=!room||this.side===room.hostSide;
   $('mpEntry').hidden=!!room;$('mpRoom').hidden=!room;$('mpConfiguration').disabled=!!room&&(!waiting||!host);$('mpFormation').hidden=!room;
   $('mpCodeLabel').textContent=room?.code||'';$('mpOwnSide').textContent='Equipe '+SIDE_TEAM[this.side];
   if(room){const config=room.config;for(const [id,value]of [['mpMap',config.map],['mpMode',config.mode],['mpSeed',config.seed],['mpLandscape',config.options.landscape],['mpWater',config.options.water*100],['mpForest',config.options.forest*100],['mpRelief',config.options.relief*100],['mpFarmland',config.options.farmland*100],['mpPosts',config.options.posts]])if(document.activeElement!==$(id))$(id).value=String(value);
    const me=room.players.find(p=>p.side===this.side);if(me){$('mpDoctrine').value=me.doctrine;$('mpFaction').value=me.faction||'';$('mpFaction').disabled=!waiting;$('mpArmySummary').textContent=armyCost(me.army||{},me.faction||SIDE_FACTION[me.side])+' / 600 pontos';$('mpReady').textContent=me.ready?'Cancelar pronto':'Estou pronto';$('mpReady').setAttribute('aria-pressed',String(me.ready));}
-   $('mpPlayers').replaceChildren(...room.players.map(p=>{const item=document.createElement('li');item.textContent=p.nickname+' · '+SIDE_NAME[p.side]+' · unidades '+(UNIT_NAME[p.faction||SIDE_FACTION[p.side]]||p.faction)+' · '+(p.out?'Eliminado':!p.connected?'Desconectado':p.ready?'Pronto':'Preparando');item.dataset.side=p.side;item.dataset.state=p.out?'out':!p.connected?'offline':p.ready?'ready':'preparing';return item;}));
+   const sig=JSON.stringify([room.players.map(p=>[p.side,p.nickname,p.faction,p.doctrine,p.ready,p.connected,p.out]),room.hostSide,this.side]);
+   if(sig!==this.slotSig){this.slotSig=sig;$('mpPlayers').replaceChildren(...room.players.map(p=>this.slot(p,room)));
+    for(const old of $('mpSlots').querySelectorAll('.mp-slot.empty'))old.remove();
+    ['blue','red','green'].forEach((side,i)=>{if(room.players.some(p=>p.side===side))return;const empty=document.createElement('div');empty.className='mp-slot empty';empty.dataset.side=side;empty.setAttribute('aria-hidden','true');empty.style.gridColumn=String(i+1);empty.innerHTML='<span class="mp-slot-side"></span><span class="mp-slot-wait">Aguardando jogador…</span>';empty.firstChild.textContent=SIDE_NAME[side];$('mpSlots').append(empty);});}
    $('mpStart').hidden=!host;$('mpStart').disabled=!waiting||room.players.length<2||!room.players.every(p=>p.ready&&p.connected);$('mpReady').disabled=!waiting||!this.connected;$('mpDoctrine').disabled=$('mpArmy').disabled=!waiting;
    $('mpEnd').hidden=!(host&&room.status==='playing');$('mpRematch').hidden=!['finished','cancelled'].includes(room.status);$('mpResume').hidden=room.status!=='playing';$('mpLeave').textContent=room.status==='playing'?'Desistir e sair da sala':'Sair da sala';
    if(waiting)this.status('Sala '+room.code+' · compartilhe o código com seu amigo.');else if(room.paused)this.status('Partida suspensa · aguardando reconexão.');else if(room.status==='playing')this.status('Partida em andamento · '+SIDE_NAME[this.side]);else this.status('Partida encerrada.');
   }
-  $('mpTerrain').hidden=$('mpMap').value!=='random';$('networkStatus').hidden=!game.multiplayer;
+  $('mpTerrain').hidden=$('mpMap').value!=='random';$('networkStatus').hidden=!game.multiplayer;this.sync();
  },
  replica(){
   const view=Object.create(Game.prototype);Object.defineProperty(view,'busy',{get(){return !!this.networkBusy;}});

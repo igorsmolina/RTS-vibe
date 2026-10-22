@@ -9,9 +9,16 @@ function refreshStoryHUD(){
 function refreshCampaignStory(){
  const s=campaign?.story,marker=s?Story.marker(campaign):null,shown=marker&&marker.region===selectedRegion&&!s.active;
  $('storyMission').hidden=!shown;$('storyJournal').hidden=!s;$('storyResume').hidden=!s?.scene;$('storyCheckpoint').hidden=!s?.active||!readStoryCheckpoint();
- if(shown){setText('storyMissionTitle',marker.chapter+'. '+Story.chapters[marker.chapter].title);setText('storyMissionBrief',Story.chapters[marker.chapter].brief);setText('storyMissionBudget','Créditos iniciais: '+Story.budget(campaign,marker.chapter)+' · engenheiro e transporte necessários fornecidos.');$('startStoryMission').disabled=!!Story.pending(campaign);$('attackRegion').disabled=true;}
+ if(shown){setText('storyMissionTitle',marker.chapter+'. '+Story.chapters[marker.chapter].title);setText('storyMissionBrief',Story.chapters[marker.chapter].brief);setText('storyMissionBudget','Créditos iniciais: '+Story.budget(campaign,marker.chapter)+' · engenheiro e transporte necessários fornecidos.');$('startStoryMission').disabled=!!Story.pending(campaign);paintStoryPortrait(marker.chapter);$('attackRegion').disabled=true;}
  if(s&&!marker&&!campaignOver(campaign))setText('storyMissionBrief','Próximo capítulo: conquiste novas regiões.');
  if(s&&selectedRegion===campaign.world.homes.red&&!s.completed.includes(4))$('regionInfo').textContent+='\nAssalto final reservado: conclua os quatro capítulos da investigação.';
+}
+// Retrato de quem faz o briefing da missão (primeira fala de um personagem na cena "before").
+function paintStoryPortrait(chapter){
+ const img=$('storyMissionPortrait'),line=Story.scene(campaign,'before'+chapter).lines.find(l=>Story.characters[l.speaker]);
+ if(!line){img.hidden=true;return;}
+ const ch=Story.characters[line.speaker],expression=ch.expressions.includes(line.expression)?line.expression:ch.expressions[0],src='assets/characters/'+line.speaker+'-'+expression+'.webp';
+ img.onerror=()=>{img.hidden=true;};img.onload=()=>{img.hidden=false;};img.alt=ch.name;if(img.getAttribute('src')!==src)img.src=src;else img.hidden=!img.naturalWidth;
 }
 function onCampaignStoryOpen(){
  const s=campaign.story;if(!s)return;
