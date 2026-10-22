@@ -211,5 +211,7 @@ const TitleMap=(()=>{
   })));
   thumbQueue=job;thumbs.set(key,job);if(thumbs.size>48)thumbs.delete(thumbs.keys().next().value);return job;
  }
- return{paint:paint_,start,stop,thumb};
+ // Desenha o teatro estilizado de um jogo já gerado em um canvas qualquer (prévia da Nova operação).
+ function render(canvas,game,map){const c=canvas.getContext('2d');c.imageSmoothingQuality='high';c.drawImage(overlay(game,paint(game,map)),0,0,canvas.width,canvas.height);}
+ return{paint:paint_,start,stop,thumb,render};
 })();

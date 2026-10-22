@@ -31,11 +31,12 @@ const MenuKit=(()=>{
    cards.clear();root.replaceChildren();let i=0;
    for(const option of select.options){
     if(option.hidden)continue;
-    const button=el('button','pick-card');button.type='button';button.setAttribute('role','radio');button.dataset.value=option.value;button.style.setProperty('--i',String(i++));
-    button.append(artBox(kind,art,option),el('span','pick-title',option.dataset.title||option.textContent.split(' — ')[0]));
+    const button=el('button','pick-card'+(kind==='none'?' plain':''));button.type='button';button.setAttribute('role','radio');button.dataset.value=option.value;button.style.setProperty('--i',String(i++));
+    if(kind!=='none')button.append(artBox(kind,art,option));
+    button.append(el('span','pick-title',option.dataset.title||option.textContent.split(' — ')[0]));
     const sub=caption?caption(option):option.dataset.caption||(option.textContent.includes(' — ')?option.textContent.split(' — ')[1]:'');
     if(sub)button.append(el('span','pick-sub',sub));
-    button.addEventListener('click',()=>{if(select.value!==option.value){select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));ui('ui-select');}refresh();});
+    button.addEventListener('click',()=>{if(select.value!==option.value){select.value=option.value;select.dispatchEvent(new Event('input',{bubbles:true}));select.dispatchEvent(new Event('change',{bubbles:true}));ui('ui-select');}refresh();});
     button.addEventListener('mouseenter',()=>ui('ui-hover'));
     cards.set(option.value,button);root.append(button);
    }
@@ -73,7 +74,7 @@ const MenuKit=(()=>{
  /* Sprites e bandeiras para os cartões. */
  const spriteNode=(type,art=0,size=96)=>{
   const c=document.createElement('canvas');c.width=c.height=size;
-  const draw=()=>{const ctx=c.getContext('2d');ctx.clearRect(0,0,size,size);unitIcon(ctx,type,size/2,size/2+size*.08,'#9fb0a3',size/96*1.6,0,0,false,0,false,art);};
+  const draw=()=>{const ctx=c.getContext('2d');ctx.clearRect(0,0,size,size);unitIcon(ctx,type,size/2,size/2+size*.06,'#9fb0a3',size/96*1.15,0,0,false,0,false,art);};
   draw();return c;
  };
  const thumbNode=(map,seed,options,w=240,h=180)=>TitleMap.thumb(map,seed,options,w,h);

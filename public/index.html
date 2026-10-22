@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/menus.css">
 <link rel="stylesheet" href="css/menus-title.css">
+<link rel="stylesheet" href="css/menus-setup.css">
 </head>
 <body>
 <div class="shell">
@@ -148,33 +149,42 @@
 </section></div></section>
 <div class="dialog-buttons"><button id="closeProfile" type="button" class="primary">Voltar</button></div>
 </dialog>
-<dialog id="setup" aria-labelledby="setupTitle">
-<form id="setupForm"><h2 id="setupTitle">Assuma o comando</h2>
-<div class="setup-grid">
-<div class="setup-fields">
-<section class="setup-section"><h3>Modo</h3>
-<div class="field"><label for="modeSelect">Modo de jogo</label><select id="modeSelect" aria-describedby="setupDescription"><option value="turns" selected="">Por turnos</option><option value="rts">RTS com pausa tática</option></select></div>
-<p id="setupDescription">Você joga primeiro. Cada tropa tem movimento limitado e uma ação por turno. Planeje sem limite de tempo.</p></section>
-<section class="setup-section"><h3>Teatro de operações</h3>
-<div class="field"><label for="mapSelect">Teatro de operações</label><select id="mapSelect"><option value="river">Vale dos Rios</option><option value="desert">Deserto Aberto</option><option value="mountain">Passe de Montanha</option><option value="random">Fronteira procedural</option></select></div>
-<fieldset id="procedural" class="procedural" hidden=""><label>Paisagem<select id="genLandscape"><option value="auto" selected>Aleatória</option><option value="continent">Continente</option><option value="lakes">Lagos</option><option value="islands">Ilhas</option><option value="highlands">Serras</option></select></label><label>Água<input id="genWater" type="range" min="0" max="100" value="35"></label><label>Floresta<input id="genForest" type="range" min="0" max="100" value="40"></label><label>Relevo<input id="genRelief" type="range" min="0" max="100" value="35" title="Colinas; acima de 55% surgem serras."></label><label>Campos e sebes<input id="genFarmland" type="range" min="0" max="100" value="60"></label><label>Postos<select id="genPosts"><option>2</option><option>4</option><option>6</option><option>8</option><option>10</option><option>12</option><option>14</option><option>16</option><option>18</option><option>20</option><option>22</option><option selected="">24</option><option>26</option><option>28</option><option>30</option><option>32</option></select></label></fieldset>
-</section>
-<section class="setup-section"><h3>Força</h3>
-<div class="field"><label for="difficulty">Dificuldade</label><select id="difficulty"><option value="easy">Fácil — renda inimiga −20%</option><option value="normal" selected="">Normal — equilibrada</option><option value="hard">Difícil — renda inimiga +20%</option><option value="veteran">Veterano — renda inimiga +35%, exército até 64</option></select></div>
-<fieldset class="doctrine-fields"><legend>Doutrinas da batalha</legend><p id="enemyDoctrineInfo" role="status"></p>
-<div class="field"><label for="playerDoctrine">Sua doutrina</label><select id="playerDoctrine" aria-describedby="playerDoctrineInfo"></select><small id="playerDoctrineInfo"></small></div><div class="field"><label for="playerArmy">Suas unidades</label><select id="playerArmy"><option value="own">Verdes (padrão)</option><option value="enemy">Vermelhas</option><option value="franca">Azuis (França)</option></select><small>Cada exército tem unidades próprias. Vale na batalha rápida, na campanha livre e no multiplayer.</small></div><div class="field"><label for="enemyArmy">Unidades da IA</label><select id="enemyArmy"><option value="auto">Automático</option><option value="blue">Verdes</option><option value="red">Vermelhas</option><option value="franca">Azuis (França)</option></select><small>Automático: a IA usa as vermelhas, ou as verdes se você escolher as vermelhas.</small></div>
+<dialog id="setup" class="tac-dialog setup-dialog" aria-labelledby="setupTitle">
+<form id="setupForm">
+<header class="setup-head"><p class="tac-kicker">Briefing da operação</p><h2 id="setupTitle">Assuma o comando</h2><div id="setupTabs" class="setup-tabs"></div></header>
+<div class="setup-body">
+<div class="setup-main">
+<section id="setupPaneTheater" class="setup-pane">
+<div class="field"><label for="mapSelect">Teatro de operações</label><select id="mapSelect"><option value="river" data-caption="bocage com rio central">Vale dos Rios</option><option value="desert" data-caption="dunas, oásis e estradas longas">Deserto Aberto</option><option value="mountain" data-caption="serra com passagens">Passe de Montanha</option><option value="random" data-caption="gerado por semente">Fronteira procedural</option></select></div>
+<fieldset id="procedural" class="procedural" hidden=""><legend class="tac-kicker">Terreno da fronteira</legend>
+<div class="field"><label for="genLandscape">Paisagem</label><select id="genLandscape"><option value="auto" selected data-caption="sorteada pela semente">Aleatória</option><option value="continent" data-caption="rios e campos">Continente</option><option value="lakes" data-caption="lagos e ilhas">Lagos</option><option value="islands" data-caption="arquipélago com pontes">Ilhas</option><option value="highlands" data-caption="maciços e planaltos">Serras</option></select></div>
+<div class="slider-row"><i data-icon="water" aria-hidden="true"></i><div class="slider-main"><label for="genWater">Água</label><input id="genWater" type="range" min="0" max="100" value="35"></div><output id="genWaterOut" for="genWater"></output></div>
+<div class="slider-row"><i data-icon="forest" aria-hidden="true"></i><div class="slider-main"><label for="genForest">Floresta</label><input id="genForest" type="range" min="0" max="100" value="40"></div><output id="genForestOut" for="genForest"></output></div>
+<div class="slider-row"><i data-icon="relief" aria-hidden="true"></i><div class="slider-main"><label for="genRelief">Relevo</label><input id="genRelief" type="range" min="0" max="100" value="35" title="Colinas; acima de 55% surgem serras."></div><output id="genReliefOut" for="genRelief"></output></div>
+<div class="slider-row"><i data-icon="farmland" aria-hidden="true"></i><div class="slider-main"><label for="genFarmland">Campos e sebes</label><input id="genFarmland" type="range" min="0" max="100" value="60"></div><output id="genFarmlandOut" for="genFarmland"></output></div>
+<div class="field posts-field"><label for="genPosts">Postos avançados</label><select id="genPosts"><option>2</option><option>4</option><option>6</option><option>8</option><option>10</option><option selected>12</option><option>14</option><option>16</option></select></div>
 </fieldset>
-<div class="army-summary"><button type="button" id="setupArmy">Montar exército inicial</button><small id="setupArmySummary"></small></div>
+</section>
+<section id="setupPaneRules" class="setup-pane" hidden="">
+<div class="field"><label for="modeSelect">Modo de jogo</label><select id="modeSelect" aria-describedby="setupDescription"><option value="turns" selected="" data-caption="uma ação por tropa, sem pressa">Por turnos</option><option value="rts" data-caption="tempo real, com pausa tática">RTS com pausa tática</option></select></div>
+<p id="setupDescription">Você joga primeiro. Cada tropa tem movimento limitado e uma ação por turno. Planeje sem limite de tempo.</p>
+<div class="field"><label for="difficulty">Dificuldade</label><select id="difficulty"><option value="easy">Fácil — renda inimiga −20%</option><option value="normal" selected="">Normal — equilibrada</option><option value="hard">Difícil — renda inimiga +20%</option><option value="veteran">Veterano — renda inimiga +35%, exército até 64</option></select></div>
+</section>
+<section id="setupPaneForces" class="setup-pane" hidden="">
+<p id="enemyDoctrineInfo" class="enemy-info" role="status"></p>
+<div class="field"><label for="playerDoctrine">Sua doutrina</label><select id="playerDoctrine" aria-describedby="playerDoctrineInfo"></select><small id="playerDoctrineInfo"></small></div>
+<div class="field"><label for="playerArmy">Suas unidades</label><select id="playerArmy"><option value="own" data-title="Verdes" data-caption="os melhores aviões">Verdes (padrão)</option><option value="enemy" data-title="Vermelhas" data-caption="os melhores tanques">Vermelhas</option><option value="franca" data-title="Azuis (França)" data-caption="infantaria e transporte">Azuis (França)</option></select></div>
+<div class="field"><label for="enemyArmy">Unidades da IA</label><select id="enemyArmy"><option value="auto" data-title="Automático" data-caption="vermelhas, ou verdes se você usar as vermelhas">Automático</option><option value="blue" data-title="Verdes" data-caption="os melhores aviões">Verdes</option><option value="red" data-title="Vermelhas" data-caption="os melhores tanques">Vermelhas</option><option value="franca" data-title="Azuis (França)" data-caption="infantaria e transporte">Azuis (França)</option></select></div>
+<div class="army-summary tac-panel"><button type="button" id="setupArmy"><i data-icon="infantry" aria-hidden="true"></i>Montar exército inicial</button><small id="setupArmySummary"></small></div>
 </section>
 </div>
-<div class="setup-map">
-<div class="map-sheet"><canvas id="preview" width="252" height="189" aria-label="Prévia do mapa"></canvas></div>
-<div class="seed-row">
-<div class="field"><label for="seed">Semente (opcional)</label><input id="seed" type="number" min="1" max="4294967295" step="1" placeholder="Gerada automaticamente"></div>
-<button type="button" id="reroll">Gerar outro</button></div>
+<aside class="setup-side">
+<div class="preview-frame tac-panel"><canvas id="preview" width="480" height="360" aria-label="Prévia do mapa"></canvas></div>
+<p id="previewCaption" class="preview-caption"></p>
+<div class="seed-row"><div class="field"><label for="seed">Semente (opcional)</label><input id="seed" type="number" min="1" max="4294967295" step="1" placeholder="Gerada automaticamente"></div><button type="button" id="reroll"><i data-icon="dice" aria-hidden="true"></i>Gerar outro</button></div>
+</aside>
 </div>
-</div>
-<div class="dialog-buttons sticky-actions"><button type="button" id="cancelSetup">Voltar</button><button type="button" id="openCampaign">Campanha (mapa-múndi)</button><button type="submit" class="primary">Iniciar operação</button></div>
+<div class="dialog-buttons sticky-actions"><button type="button" id="cancelSetup">Voltar</button><button type="button" id="openCampaign"><i data-icon="map" aria-hidden="true"></i>Campanha (mapa-múndi)</button><button type="submit" class="primary"><i data-icon="crosshair" aria-hidden="true"></i>Iniciar operação</button></div>
 </form>
 </dialog>
 <dialog id="campaign" class="campaign-dialog" aria-labelledby="campaignTitle">
@@ -456,6 +466,7 @@
 <script src="js/title-map.js"></script>
 <script src="js/menu-kit.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/menu-setup.js"></script>
 <script src="js/campaign.js"></script>
 <script src="js/neon-config.js"></script>
 <script src="js/profile.js"></script>
