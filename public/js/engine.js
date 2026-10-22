@@ -143,7 +143,7 @@ const FR_FOOT=u=>KIT(u)===FRANCE&&FOOT(u); // infantaria azul: captura e obra ma
 const workSeconds=(u,type)=>({build:3,capture:2}[type]||1)*(FR_FOOT(u)&&(type==='build'||type==='capture')?FAST_WORK:1);
 const FR_GUN={...HELICOPTER_MINIGUN,name:'Metralhadora',damage:6,shots:4,cooldown:.25,infantryMultiplier:2.5,vehicleMultiplier:.4},FR_CANNON={...HELICOPTER_CANNON,damage:22,cooldown:1.2};
 const FR={
- infantry:{damage:40,role:'Captura e construção · fuzil alcance 3, dano 40'},
+ infantry:{damage:40,role:'Captura e construção 30% mais rápidas · fuzil alcance 3, dano 40 · ganha assalto ao sair de transporte azul'},
  engineer:{cost:50},
  machinegun:{cost:85,damage:20},
  antitank:{cost:100},
@@ -156,11 +156,11 @@ const FR={
  recon:{hp:75,speed:3,move:6,damage:20,cooldown:1,evade:.1,role:'VBL · silhueta pequena: −10% de precisão contra ele · reconhecimento rápido'},
  antiAirVehicle:{cost:145,hp:85,range:25,damage:90,cooldown:2.5,role:'Mistral · mísseis dano 90, alcance 25 contra aeronaves · radar global · recarga curta · exige escolta'},
  rocketArtillery:{cost:250,hp:115,speed:1,range:25,damage:20,cooldown:11,salvo:6,role:'LRU · lagartas · salva de 6 foguetes ×20, alcance 25 · ×2 contra estruturas'},
- transportTruck:{cost:100,hp:100,speed:2.2,move:6,capacity:5,role:'TRM 10000 · transporte de 5 tropas a pé · cabine blindada · sem armas'},
+ transportTruck:{cost:100,hp:100,speed:2.2,move:6,capacity:5,role:'TRM 10000 · transporte de 5 tropas a pé · desembarque de assalto (+20% de precisão e +25% de velocidade por 6 s) · evacuação blindada: se destruído, a tropa sai viva com metade da vida · sem armas'},
  helicopter:{cost:140,hp:100,speed:3.6,move:9,vision:7,damage:6,cooldown:.25,shots:4,infantryMultiplier:2.5,vehicleMultiplier:.4,gun:FR_GUN,role:'Gazelle · metralhadora 6×4 tiros · o mais rápido, visão 7 · frágil'},
  helicopterGround:{cost:235,hp:110,speed:3.5,missiles:undefined,damage:22,cooldown:1.2,gun:FR_CANNON,arms:{agm:{...WEAPONS.agm,damage:60,range:6,cooldown:3.5}},barrage:{range:4,min:1,missiles:4,damage:12,cooldown:8,infantry:1.5,vehicle:.5},role:'Tigre · canhão 30 mm, míssil alcance 6 e foguetes em área 3×3 (2 salvas, alcance 4, ×1.5 contra infantaria)'},
  helicopterAir:{cost:175,hp:140,speed:3.8,gun:undefined,weapons:['aam'],arms:{aam:{...WEAPONS.aam,damage:60,cooldown:2.2}},role:'Panther · 4 Mistral, sem canhão: não ataca alvos no solo · recarga curta'},
- transportHelicopter:{cost:210,hp:160,speed:3.2,move:9,capacity:8,seats:{recon:5},noHigh:true,role:'NH90 · rampa traseira: 8 tropas a pé ou 1 batedor + 3 tropas · sem altitude alta · sem armas'},
+ transportHelicopter:{cost:210,hp:160,speed:3.2,move:9,capacity:8,seats:{recon:5},noHigh:true,role:'NH90 · rampa traseira: 8 tropas a pé ou 1 batedor + 3 tropas · desembarque de assalto e evacuação blindada · sem altitude alta · sem armas'},
  reconDrone:{cost:95,hp:70,speed:2,move:6,vision:15,role:'Patroller · reconhecimento · visão 15 através do terreno · sempre em altitude alta · sem armas'},
  stealthDrone:{cost:170,hp:55,missiles:6,range:5,damage:50,accuracy:.9,arms:{stealthMissile:{name:'Bomba guiada',damage:50,range:5,accuracy:.9,cooldown:3,structureMultiplier:1.5}},role:'nEUROn · furtivo ao radar · 6 bombas guiadas alcance 5, ×1.5 contra estruturas, só por ordem · sempre em altitude alta'},
  transportPlane:{hp:230,speed:5,capacity:10,shortRunway:true,role:'A400M · pista curta: pouso e embarque 30% mais rápidos · até 10 vagas · 300 flares'}
