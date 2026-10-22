@@ -8,6 +8,7 @@
 
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/menus.css">
+<link rel="stylesheet" href="css/menus-title.css">
 </head>
 <body>
 <div class="shell">
@@ -90,16 +91,15 @@
 </main>
 </div>
 <dialog id="titleScreen" class="title-screen" aria-labelledby="titleName">
-<div class="title-shade" aria-hidden="true"></div>
-<div class="title-content"><h1 id="titleName">rtsvibe</h1><p class="title-sub">Estratégia militar contra a IA: tropas terrestres, aéreas e campanha no mapa-múndi.</p>
-<div class="title-nation"><canvas id="titleNationFlag" width="72" height="48" role="img" aria-label="Bandeira da sua nação"></canvas><strong id="titleNationName"></strong>
-</div>
-<nav class="title-menu" aria-label="Menu inicial"><button id="titleResume" class="title-btn primary" hidden="">Continuar partida</button><button id="titlePlay" class="title-btn primary">Jogar<small>batalha rápida</small></button><button id="titleMultiplayer" class="title-btn">Multiplayer<small>salas privadas por código</small></button><button class="title-btn" id="titleTutorial"><span>Treinamento</span><small>Aprenda os comandos em 8 passos</small></button><button id="titleCampaign" class="title-btn"><span>Campanha</span><small id="titleCampaignInfo">Mapa-múndi gerado por semente</small></button><button id="titleSettings" class="title-btn">Configurações<small>gráficos, som, grade e padrões</small></button><button id="titleProfile" class="title-btn">Perfil e conquistas<small id="titleProfileInfo"></small></button><button id="titleHelp" class="title-btn">Como jogar<small>controles e regras</small></button></nav>
+<canvas id="titleBg" class="title-bg" width="1024" height="768" aria-hidden="true"></canvas>
+<div class="title-shade" aria-hidden="true"></div><div class="title-grid" aria-hidden="true"></div>
+<header class="title-top">
+<div class="title-nation"><canvas id="titleNationFlag" width="72" height="48" role="img" aria-label="Bandeira da sua nação"></canvas><div><strong id="titleNationName"></strong><small>Comandante da nação</small></div></div>
+<p id="titleMapName" class="chart-caption" aria-hidden="true"></p>
+</header>
+<div class="title-content"><p class="tac-kicker">Estratégia militar · terra e ar</p><h1 id="titleName">rtsvibe</h1><p class="title-sub">Estratégia militar contra a IA: tropas terrestres, aéreas e campanha no mapa-múndi.</p>
+<nav class="title-menu" aria-label="Menu inicial"><button id="titleResume" class="title-btn primary" hidden=""><i data-icon="play" aria-hidden="true"></i>Continuar partida</button><button id="titlePlay" class="title-btn primary"><i data-icon="crosshair" aria-hidden="true"></i>Jogar<small>batalha rápida</small></button><button id="titleMultiplayer" class="title-btn"><i data-icon="users" aria-hidden="true"></i>Multiplayer<small>salas privadas por código</small></button><button class="title-btn" id="titleTutorial"><i data-icon="book-open" aria-hidden="true"></i><span>Treinamento</span><small>Aprenda os comandos em 8 passos</small></button><button id="titleCampaign" class="title-btn"><i data-icon="map" aria-hidden="true"></i><span>Campanha</span><small id="titleCampaignInfo">Mapa-múndi gerado por semente</small></button><button id="titleSettings" class="title-btn"><i data-icon="sliders" aria-hidden="true"></i>Configurações<small>gráficos, som, grade e padrões</small></button><button id="titleProfile" class="title-btn"><i data-icon="medal" aria-hidden="true"></i>Perfil e conquistas<small id="titleProfileInfo"></small></button><button id="titleHelp" class="title-btn"><i data-icon="info" aria-hidden="true"></i>Como jogar<small>controles e regras</small></button></nav>
 <p class="title-foot">Setas navegam · Enter escolhe · Esc volta ao jogo</p></div>
-<div class="title-chart map-sheet"><span class="chart-columns" aria-hidden="true"><i>A</i><i>B</i><i>C</i><i>D</i><i>E</i><i>F</i><i>G</i></span><div class="chart-field"><span class="chart-rows" aria-hidden="true"><i>1</i><i>2</i><i>3</i><i>4</i></span><canvas id="titleBg" class="title-bg" width="1024" height="768" aria-hidden="true"></canvas></div><p id="titleMapName" class="chart-caption" aria-hidden="true"></p>
-<div class="map-legend"><span class="friendly">Sua nação</span><span class="hostile">Inimigo</span><span class="third">Terceiro time</span><span class="neutral">Posto neutro</span></div>
-<div class="chart-scale"><svg viewBox="0 0 240 32" aria-hidden="true"><path d="M12 24V6m-5 7 5-7 5 7M80 20h120m-120-5v10m60-10v10m60-10v10" fill="none" stroke="currentColor"></path><text x="25" y="17">N</text><text x="80" y="12">0</text><text x="170" y="12">10 casas</text></svg></div>
-</div>
 </dialog>
 <dialog id="settings" class="settings-dialog" aria-labelledby="settingsTitle"><h2 id="settingsTitle">Configurações</h2>
 <form id="settingsForm" class="settings-grid" onsubmit="return false">

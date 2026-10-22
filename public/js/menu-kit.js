@@ -78,5 +78,13 @@ const MenuKit=(()=>{
  };
  const thumbNode=(map,seed,options,w=240,h=180)=>TitleMap.thumb(map,seed,options,w,h);
 
- return {el,ui,hide,artBox,iconNode,cardPicker,tabs,slider,spriteNode,thumbNode};
+ /* Paralaxe: camadas [elemento, força em px] seguem o ponteiro em sentido contrário (só com movimento permitido). */
+ function parallax(host,layers){
+  const still=()=>matchMedia('(prefers-reduced-motion: reduce)').matches||document.documentElement.dataset.fx==='performance';
+  let raf=0,x=0,y=0;
+  host.addEventListener('pointermove',e=>{if(still())return;x=e.clientX/innerWidth-.5;y=e.clientY/innerHeight-.5;if(!raf)raf=requestAnimationFrame(()=>{raf=0;for(const [node,k] of layers)node.style.translate=`${(-x*k).toFixed(1)}px ${(-y*k).toFixed(1)}px`;});});
+  host.addEventListener('pointerleave',()=>{for(const [node] of layers)node.style.translate='';});
+ }
+ return {el,ui,hide,artBox,iconNode,cardPicker,tabs,slider,spriteNode,thumbNode,parallax};
 })();
+{const title=document.getElementById('titleScreen');if(title)MenuKit.parallax(title,[[document.getElementById('titleBg'),22],[title.querySelector('.title-grid'),10]]);}
