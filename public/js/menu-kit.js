@@ -88,4 +88,9 @@ const MenuKit=(()=>{
  }
  return {el,ui,hide,artBox,iconNode,cardPicker,tabs,slider,spriteNode,thumbNode,parallax};
 })();
+// Sons de interface: passar o mouse e confirmar nos blocos do menu, abas e botões de ação; abrir um diálogo.
+document.addEventListener('mouseover',e=>{const b=e.target.closest?.('.title-btn,.dialog-buttons button,.tac-tabs [role=tab]');if(b&&!b.contains(e.relatedTarget))MenuKit.ui('ui-hover');});
+document.addEventListener('click',e=>{if(e.target.closest?.('.title-btn,.dialog-buttons button.primary'))MenuKit.ui('ui-confirm');});
+{const opening=new MutationObserver(list=>{for(const m of list)if(m.target.open&&m.oldValue===null&&m.target.id!=='titleScreen'&&m.target.id!=='result')MenuKit.ui('ui-open');});
+ for(const d of document.querySelectorAll('dialog'))opening.observe(d,{attributes:true,attributeFilter:['open'],attributeOldValue:true});}
 {const title=document.getElementById('titleScreen');if(title)MenuKit.parallax(title,[[document.getElementById('titleBg'),22],[title.querySelector('.title-grid'),10]]);}
