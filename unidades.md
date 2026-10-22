@@ -101,24 +101,24 @@ Aviões de Vermelho
 
 | Unidade | Custo | Treino | HP | Vel. | Mov. | Alcance | Dano | Recarga | Visão | Recompensa | Mísseis |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Infantaria | 50 | 1 | 100 | 1,35 | 3 | 3 | 55 | 0,8 | 4 | 20 | — |
+| Infantaria | 50 | 1 | 100 | 1,35 | 3 | 3 | 40 | 0,8 | 4 | 20 | — |
 | Engenheiro | 50 | 2 | 85 | 1,25 | 3 | 1,15 | 20 | 1,2 | 4 | 25 | — |
-| Metralhador | 60 | 2 | 110 | 1,05 | 2 | 3 | 20 | 0,3 | 4 | 30 | — |
-| Antitanque | 60 | 2 | 90 | 1,05 | 3 | 7 | 40 | 3 | 4 | 35 | Antitanque 50 · alc. 7 · 4 mísseis |
-| Soldado lançador | 55 | 2 | 80 | 1,25 | 3 | 12 | 40 | 3 | 4 | 30 | Míssil 40 · alc. 12 (só aeronaves) · fuzil alc. 3 |
+| Metralhador | 85 | 2 | 110 | 1,05 | 2 | 3 | 20 | 0,3 | 4 | 30 | — |
+| Antitanque | 100 | 2 | 90 | 1,05 | 3 | 7 | 40 | 3 | 4 | 35 | Antitanque 50 · alc. 7 · 4 mísseis |
+| Soldado lançador | 80 | 2 | 80 | 1,25 | 3 | 12 | 40 | 3 | 4 | 30 | Míssil 40 · alc. 12 (só aeronaves) · fuzil alc. 3 |
 | Comandante | — | — | 140 | 1,35 | 3 | 2 | 40 | 1,5 | 5 | 70 | — |
-| Batedor | 75 | 1 | 65 | 3 | 6 | 2 | 20 | 1 | 7 | 25 | — |
-| Tanque leve | 100 | 2 | 95 | 2,5 | 7 | 4 | 40 | 2,2 | 6 | 35 | — |
-| Tanque médio | 155 | 3 | 155 | 2 | 5 | 5 | 55 | 2,1 | 5 | 50 | — |
-| Tanque pesado | 240 | 4 | 300 | 1,7 | 4 | 6 | 75 | 3,5 | 5 | 80 | — |
+| Batedor | 75 | 1 | 75 | 3 | 6 | 2 | 20 | 1 | 7 | 25 | — |
+| Tanque leve | 100 | 2 | 100 | 2,5 | 7 | 4 | 40 | 2,2 | 6 | 35 | — |
+| Tanque médio | 150 | 3 | 160 | 2 | 5 | 5 | 55 | 2,1 | 5 | 50 | — |
+| Tanque pesado | 240 | 4 | 300 | 1,7 | 4 | 7 | 75 | 3,5 | 5 | 80 | Antitanque 45 · alc. 10 · 3 mísseis |
 | Artilharia | 180 | 4 | 80 | 1,8 | 4 | 14 | 80 | 4 | 3 | 40 | — |
 | Artilharia de mísseis | 250 | 4 | 115 | 1 | 2 | 25 | 20 | 11 | 3 | 60 | Foguete 20 × 6 · alc. 25 · ×2 contra estruturas |
 | Veículo antiaéreo | 145 | 3 | 85 | 2,25 | 5 | 25 | 90 | 2,5 | 6 | 45 | Míssil 90 · alc. 25 (só aeronaves) |
-| Caminhão de transporte | 115 | 2 | 100 | 2,2 | 6 | — | — | — | 4 | 30 | — |
+| Caminhão de transporte | 100 | 2 | 100 | 2,2 | 6 | — | — | — | 4 | 30 | — |
 | Helicóptero | 140 | 3 | 100 | 3,6 | 9 | 3 | 6 × 4 | 0,25 | 7 | 50 | — |
-| Helicóptero ar-terra | 245 | 4 | 110 | 3,5 | 8 | 3 | 22 | 1,2 | 6 | 50 | Antiblindado 60 · alc. 6 (alta 11) · rec. 3,5 · sem limite · foguetes 12 × 4 · alc. 4 |
+| Helicóptero ar-terra | 235 | 4 | 110 | 3,5 | 8 | 3 | 22 | 1,2 | 6 | 50 | Antiblindado 60 · alc. 6 (alta 11) · rec. 3,5 · sem limite · foguetes 12 × 4 · alc. 4 |
 | Helicóptero ar-ar | 175 | 4 | 140 | 3,8 | 8 | 3 | 20 | 1 | 6 | 50 | Ar-ar 60 · alc. 6 · rec. 2,2 |
-| Helicóptero de transporte | 230 | 4 | 160 | 3,2 | 9 | — | — | — | 6 | 60 | — |
+| Helicóptero de transporte | 210 | 4 | 160 | 3,2 | 9 | — | — | — | 6 | 60 | — |
 | Drone de reconhecimento | 95 | 2 | 70 | 2 | 6 | — | — | — | 15 | 30 | — |
 | Drone furtivo | 170 | 3 | 55 | 2,2 | 6 | 5 | 50 | 3 | 12 | 45 | Bomba guiada 50 · alc. 5 · 6 mísseis |
 
@@ -199,15 +199,21 @@ Valores base de `WEAPONS`. Cada time pode ter dano e alcance próprios para o me
 
 **Munição de mísseis.** Antitanque, tanques vermelhos (leve e pesado), helicóptero ar-terra (verde e vermelho) e drone furtivo têm munição limitada. Ela recarrega na manutenção. A tela mostra `mísseis/máximo` sob a barra de vida das suas unidades e um aviso flutuante: "Pouca munição" quando restar 1/4 da carga e "Munição acabou" quando zerar. Com o helicóptero sem mísseis, o modo Auto usa o canhão.
 
+**Especialidade da França: infantaria e transporte de infantaria.** Cada time tem a sua: o Verde, os melhores aviões; o Vermelho, os melhores tanques; o Azul, infantaria e transporte.
+- **Desembarque de assalto:** tropa a pé que sai de um transporte azul (TRM, NH90 ou paraquedas do A400M) ganha +20% de precisão e +25% de velocidade por 6 s. Por turnos: +1 de Mov e +20% de precisão no turno seguinte. A barra "Assalto" aparece na tela.
+- **Captura e obra rápidas:** a infantaria azul captura e constrói em 70% do tempo (2 s → 1,4 s; 3 s → 2,1 s no RTS). Reparo e desminagem não mudam.
+- **Evacuação blindada:** se o TRM ou o NH90 for destruído com tropa a pé a bordo, ela sai viva com metade da vida nas casas livres mais próximas. Quem não tiver casa livre morre, e veículos pendurados não escapam. O A400M não tem essa proteção.
+- **Equilíbrio medido** (`scripts/faction-balance.cjs`, mesmo orçamento dos dois lados, lados trocados): infantaria ~69% de vitórias contra Verde e Vermelho; infantaria embarcada em transporte azul, ~100%; tanques ~56% contra o Verde e ~38% contra o Vermelho; helicópteros ficam os mais fracos. Relatórios em `reports/franca-2026-10-22/`.
+
 **Mecânicas próprias da França**
 - **GALIX (tanque pesado):** 2 cargas. Ao ser atingido, solta fumaça por 3 s (1 turno): −40% de precisão contra ele, de qualquer atacante. Não intercepta mísseis como o Trophy. Recarrega como o Trophy, em QG/posto.
 - **Silhueta pequena (VBL):** −10% de precisão contra ele.
-- **Leclerc:** a precisão só começa a cair após 4 casas (verde: 3). Sem Trophy; o pesado usa o GALIX.
+- **Leclerc:** a precisão só começa a cair após 4 casas (verde: 3). Sem Trophy; o pesado usa o GALIX e carrega 3 mísseis antitanque (dano 45, alcance 10).
 - **Atira e foge (CAESAR):** depois de atirar, +1 Mov no turno (RTS: +30% de velocidade por 3 s).
 - **LRU:** salva de 6 foguetes de 20, alcance 25 (verde: 4 × 20 = 80, alcance 30). Continua ×2 contra estruturas e com alcance mínimo 3.
 - **Tigre:** terceira arma, foguetes em área 3×3: 4 foguetes de 12, 2 salvas, alcance 4, recarga 8 s, ×1,5 contra infantaria e ×0,5 contra veículos e estruturas. Míssil ar-terra: 60, alcance 6, recarga 3,5.
 - **Panther:** só míssil ar-ar (sem canhão); **não ataca alvos no solo**.
-- **NH90:** 8 vagas a pé, ou 1 batedor (5 vagas) + 3 tropas, dentro da rampa. Não sobe à altitude alta (sem bônus de visão, velocidade ou flares) e não tem armas.
+- **TRM e NH90:** o caminhão leva 5 tropas a pé (verde: 4). O NH90 leva 8 vagas a pé, ou 1 batedor (5 vagas) + 3 tropas, dentro da rampa. Não sobe à altitude alta (sem bônus de visão, velocidade ou flares) e não tem armas.
 - **A400M:** 10 vagas (verde: 12) e pista curta: pouso e decolagem 30% mais rápidos.
 - **nEUROn:** 6 bombas guiadas de 50, 90% de precisão, alcance 5, ×1,5 contra estruturas.
 - **Rafale:** leva 1 míssil de cruzeiro SCALP (alcance 67) além da metralhadora e 2 antirradiação.
