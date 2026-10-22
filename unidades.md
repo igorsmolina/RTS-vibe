@@ -130,7 +130,7 @@ Aviões de Azul (França)
 | Caça azul | 630 | 3 | 140 | 6,5 | 25% | 60 | 120 | ar-ar ×4 · 70 · alc. 30; antirradiação ×2 · 80 · alc. 40; MG ×100 |
 | Multifunção azul | 785 | 4 | 185 | 6 | 25% | 70 | 120 | ar-ar ×2 · 65 · alc. 30; antiblindado ×3 · 75 · alc. 15; antirradiação ×2 · 80 · alc. 40; cruzeiro ×1 · 160 · alc. 67; MG ×80 |
 | Caça furtivo azul | 990 | 5 | 175 | 5,7 | 35% | 60 | 140 | ar-ar ×4 · 70 · alc. 30; antirradiação ×2 · 80 · alc. 40; MG ×80 |
-| Bombardeiro azul | 1356 | 6 | 200 | 5 | 20% | 80 | 150 | bomba comum ×6 · 120; fragmentação ×6 · 70; cruzeiro ×4 · 160 · alc. 75 |
+| Bombardeiro azul | 1356 | 6 | 200 | 5 | 20% | 100 | 150 | bomba comum ×6 · 120; fragmentação ×6 · 70; cruzeiro ×4 · 160 · alc. 75 |
 
 ## Comandante e estruturas
 
@@ -195,7 +195,7 @@ Valores base de `WEAPONS`. Cada time pode ter dano e alcance próprios para o me
 **Aviões.** Cada modelo tem a própria munição.
 - Verde: ar-ar 90 de dano em todos os caças e no multifunção; multifunção com antiblindado 80 (×6). Caça com 4 antirradiação.
 - Vermelho: dano base mais alto (ar-ar 75/80, antirradiação 90, antiblindado 90). Bombardeiro pesado mais lento (3) e cruzeiro com alcance 70.
-- França: cruzeiro do Mirage IV com alcance 75 e 4 mísseis; Mirage 2000 e Rafale com 2 antirradiação.
+- França: cruzeiro do Mirage IV com alcance 75 e 4 mísseis; Mirage 2000 e Rafale com 2 antirradiação. Equilíbrio dos aviões medido por `scripts/faction-air-balance.cjs` (relatório em `reports/franca-2026-10-22/relatorio-avioes.md`).
 
 **Munição de mísseis.** Antitanque, tanques vermelhos (leve e pesado), helicóptero ar-terra (verde e vermelho) e drone furtivo têm munição limitada. Ela recarrega na manutenção. A tela mostra `mísseis/máximo` sob a barra de vida das suas unidades e um aviso flutuante: "Pouca munição" quando restar 1/4 da carga e "Munição acabou" quando zerar. Com o helicóptero sem mísseis, o modo Auto usa o canhão.
 
