@@ -14,6 +14,8 @@ const COMPOSITIONS={
  misto:['infantry','tank','antitank','heavyTank','infantry','recon'],
  apoio:['artillery','tank','infantry','antiAirVehicle'],
  helicopteros:['helicopter','helicopterGround','helicopterAir'],
+ tigre:['helicopterGround'],
+ reconhecimento:['recon','recon','infantry'],
  blindados_leves:['lightTank','recon','lightTank'],
  antitanque:['antitank','antitank','infantry'],
 };
