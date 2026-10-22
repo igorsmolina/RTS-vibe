@@ -1,9 +1,9 @@
 'use strict';
 // Time azul (França): facção 'franca' com fichas próprias por unidade e mecânicas novas (GALIX, atira e foge, salva do Tigre…).
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
-const names='AUTO_CRUISE,Game,TYPES,FR_TYPES,SPEC,UT,KIT,FRANCE,STANDARD_FACTIONS,startingCatalog,cleanStartingArmy,armyCost,STARTING_BUDGET,UNIT_CAP,BARRAGE,AIR,PLANE,FOOT,trophyMax,seatsUsed,salvoSize,GALIX_CHARGES,GALIX_SMOKE,SCOOT_TIME,SHORT_RUNWAY,AIRDROP_SLOTS,PLANE_MODELS'.split(',');
+const names='AUTO_CRUISE,Game,TYPES,FR_TYPES,SPEC,UT,KIT,FRANCE,STANDARD_FACTIONS,startingCatalog,cleanStartingArmy,armyCost,STARTING_BUDGET,UNIT_CAP,BARRAGE,AIR,PLANE,FOOT,trophyMax,seatsUsed,salvoSize,GALIX_CHARGES,GALIX_SMOKE,SCOOT_TIME,SHORT_RUNWAY,AIRDROP_SLOTS,PLANE_MODELS,ASSAULT_TIME,ASSAULT_ACCURACY,ASSAULT_SPEED,FAST_WORK,workSeconds'.split(',');
 const E=new Function(fs.readFileSync(path.join(__dirname,'..','public','js','engine.js'),'utf8')+'\nreturn {'+names.join(',')+'};')();
-const {AUTO_CRUISE,Game,TYPES,FR_TYPES,SPEC,UT,FRANCE,STANDARD_FACTIONS,startingCatalog,cleanStartingArmy,armyCost,STARTING_BUDGET,BARRAGE,AIR,PLANE,trophyMax,seatsUsed,salvoSize,GALIX_CHARGES,GALIX_SMOKE,SCOOT_TIME,SHORT_RUNWAY}=E;
+const {AUTO_CRUISE,Game,TYPES,FR_TYPES,SPEC,UT,FRANCE,STANDARD_FACTIONS,startingCatalog,cleanStartingArmy,armyCost,STARTING_BUDGET,BARRAGE,AIR,PLANE,trophyMax,seatsUsed,salvoSize,GALIX_CHARGES,GALIX_SMOKE,SCOOT_TIME,SHORT_RUNWAY,ASSAULT_TIME,ASSAULT_ACCURACY,ASSAULT_SPEED,FAST_WORK,workSeconds}=E;
 const FR_SIDE={blue:FRANCE,red:'red'},cases=[],test=(name,fn)=>cases.push([name,fn]);
 function field(factions=FR_SIDE,mode='rts'){
  const g=new Game('river','normal',123,mode,{posts:2},{},{},null,factions);g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.actions=[];g.animation=null;g.projectiles=[];g.memory.blue.clear();g.memory.red.clear();g.intel.clear();g.aiEnabled=false;
@@ -156,6 +156,41 @@ const g=field(),r=g.add('blue','multiroleFr',40,40),b=g.add('blue','bomberFr',40
 assert.equal(AUTO_CRUISE(r),false);assert.equal(AUTO_CRUISE(b),true);
 g.order(r,'strikeCell',{x:50,y:40,weapon:'auto'});assert.notEqual(r.flightJob?.weapon,'cruiseMissile');
 assert.equal(g.order(r,'strikeCell',{x:50,y:40,weapon:'cruiseMissile'}),true);assert.equal(r.flightJob.weapon,'cruiseMissile');
+});
+test('desembarque de assalto: tropa que sai de transporte azul ganha precisão e velocidade por 6 s',()=>{
+ const g=field(),t=g.add('blue','transportTruck',50,60),a=g.add('blue','infantry',51,60),b=g.add('blue','infantry',52,60);
+ t.cargo=[];g.units=g.units.filter(u=>u!==a&&u!==b);t.cargo.push(a,b);
+ const foe=g.add('red','infantry',50,64);g.updateVision();
+ assert.equal(g.order(t,'disembark'),true);const out=g.units.filter(u=>u.owner==='blue'&&u.type==='infantry');assert.equal(out.length,2);
+ for(const u of out)assert.equal(u.assault,ASSAULT_TIME);
+ out[0].assault=0;const plain=g.accuracy(out[0],foe);out[0].assault=ASSAULT_TIME;
+ assert.ok(Math.abs(g.accuracy(out[0],foe)-plain*ASSAULT_ACCURACY)<1e-9,'+20% de precisão');
+ assert.equal(g.timerFor(out[0]).label,'Assalto');
+ g.order(out[1],'move',{x:56,y:60});run(g,ASSAULT_TIME-.3);assert.ok(out[1].assault>0);
+ run(g,.6);assert.equal(out[1].assault,0,'o bônus acaba depois de 6 s');assert.equal(g.timerFor(out[1]),null);
+ const v=field({blue:'blue',red:'red'}),vt=v.add('blue','transportTruck',50,60),p=v.add('blue','infantry',51,60);v.units=v.units.filter(u=>u!==p);vt.cargo=[p];v.order(vt,'disembark');assert.equal(p.assault,undefined,'verde e vermelho não têm o bônus');
+ const turns=field(FR_SIDE,'turns'),tt=turns.add('blue','transportTruck',50,60),q=turns.add('blue','infantry',51,60);turns.units=turns.units.filter(u=>u!==q);tt.cargo=[q];turns.order(tt,'disembark');
+ assert.equal(q.assault,1);turns.beginTurn('blue');assert.equal(q.moveLeft,UT(q).move+1,'+1 de Mov no próximo turno');turns.beginTurn('blue');assert.equal(q.assault,0);
+ const copy=Game.fromSnapshot(g.snapshot());assert.equal(copy.units.length,g.units.length);
+});
+test('captura e obra rápidas: infantaria azul leva 70% do tempo',()=>{
+ const g=field(),r=field({blue:'blue',red:'red'});
+ assert.equal(workSeconds(g.add('blue','infantry',20,20),'capture'),2*FAST_WORK);assert.equal(workSeconds(g.add('blue','infantry',21,20),'build'),3*FAST_WORK);
+ assert.equal(workSeconds(g.add('blue','engineer',22,20),'repair'),1,'reparo não muda');assert.equal(workSeconds(g.add('blue','tank',23,20),'capture'),2);
+ assert.equal(workSeconds(r.add('blue','infantry',20,20),'capture'),2);assert.equal(workSeconds(r.add('red','infantry',21,20),'build'),3);
+ const time=gg=>{const post=gg.add('neutral','post',60,60),u=gg.add('blue','infantry',60,59);gg.updateVision();assert.equal(gg.order(u,'capture',{targetId:post.id}),true);let t=0;while(post.owner!=='blue'&&t<10){gg.update(1/30);gg.events=[];t+=1/30;}return t;};
+ const fr=time(g),base=time(r);assert.ok(fr<base*.85,'captura azul '+fr.toFixed(2)+' s contra '+base.toFixed(2)+' s');
+});
+test('evacuação blindada: tropas saem vivas com metade da vida do transporte azul destruído',()=>{
+ const make=(factions,type)=>{const g=field(factions),t=g.add('blue',type,50,60);t.altitude='low';t.cargo=[];for(let i=0;i<3;i++){const p=g.add('blue','infantry',49+i,61);g.units=g.units.filter(u=>u!==p);t.cargo.push(p);}return {g,t};};
+ for(const type of ['transportTruck','transportHelicopter']){
+  const {g,t}=make(FR_SIDE,type),foe=g.add('red','heavyTank',50,56),pax=[...t.cargo];g.hurt(t,t.hp,foe);
+  assert.ok(!g.units.includes(t));for(const p of pax){assert.ok(g.units.includes(p),'sobreviveu');assert.equal(p.hp,Math.round(p.maxHp/2));assert.equal(p.embarkedIn,null);}
+  assert.equal(new Set(pax.map(p=>p.x+','+p.y)).size,3,'cada um numa casa');
+ }
+ const {g,t}=make({blue:'blue',red:'red'},'transportTruck'),pax=[...t.cargo];g.hurt(t,t.hp,g.add('red','heavyTank',50,56));
+ for(const p of pax)assert.ok(!g.units.includes(p),'verde: a tropa morre com o transporte');
+ const {g:h,t:plane}=make(FR_SIDE,'transportTruck');plane.cargo=[h.add('blue','tank',48,61)];h.units=h.units.filter(u=>u!==plane.cargo[0]);const tank=plane.cargo[0];h.hurt(plane,plane.hp,h.add('red','heavyTank',50,56));assert.ok(!h.units.includes(tank),'só tropa a pé escapa');
 });
 for(const [name,fn] of cases){fn();console.log('OK '+name);}
 console.log(cases.length+' verificações do time azul passaram.');

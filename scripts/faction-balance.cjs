@@ -9,14 +9,13 @@ const SEEDS=+opt('seeds',4),LABEL=opt('label','atual'),ONLY=opt('only','').split
 const FACTION={V:'blue',R:'red',F:FRANCE},NAME={V:'Verde',R:'Vermelho',F:'França'};
 // Composições por domínio: tipos em ordem de compra (ciclo) até esgotar o orçamento.
 const COMPOSITIONS={
- infantaria:['infantry','antitank','infantry','machinegun','missileInfantry','infantry'],
+ infantaria:['infantry','antitank','infantry','machinegun','infantry','engineer'],
  tanques:['lightTank','tank','heavyTank','tank'],
  misto:['infantry','tank','antitank','heavyTank','infantry','recon'],
  apoio:['artillery','tank','infantry','antiAirVehicle'],
  helicopteros:['helicopter','helicopterGround','helicopterAir'],
  blindados_leves:['lightTank','recon','lightTank'],
  antitanque:['antitank','antitank','infantry'],
- lancador_vs_helis:['missileInfantry','infantry','antiAirVehicle']
 };
 function field(factions,seed){
  const g=new Game('river','normal',123,'rts',{posts:2},{},{},null,factions);g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.actions=[];g.animation=null;g.projectiles=[];

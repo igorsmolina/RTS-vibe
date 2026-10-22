@@ -16,7 +16,7 @@ test('ficha verde, vermelha e azul seguem a planilha',()=>{
  assert.deepEqual([v('tank').speed,v('tank').vision,r('tank').speed,r('tank').falloff,a('tank').speed,a('tank').vision],[2,6,1.8,4,2,5]);
  assert.deepEqual([v('heavyTank').speed,v('heavyTank').vision,r('heavyTank').speed,r('heavyTank').vision,a('heavyTank').speed,a('heavyTank').vision],[1.7,6,1.5,5,1.7,5]);
  assert.equal(r('recon').speed,2.5);assert.equal(a('recon').speed,3);
- assert.deepEqual([a('infantry').damage,a('engineer').cost,a('machinegun').cost,a('machinegun').damage,a('antitank').cost,a('missileInfantry').cost],[55,50,60,20,60,55]);
+ assert.deepEqual([a('infantry').damage,a('engineer').cost,a('machinegun').cost,a('machinegun').damage,a('antitank').cost,a('missileInfantry').cost],[40,50,85,20,100,80]);
  assert.deepEqual([v('missileInfantry').damage,r('missileInfantry').damage,r('missileInfantry').range,a('missileInfantry').damage,a('missileInfantry').range],[55,45,15,40,12]);
  assert.deepEqual([a('artillery').speed,a('artillery').cooldown,a('rocketArtillery').speed,a('rocketArtillery').damage,a('rocketArtillery').range],[1.8,4,1,20,25]);
  assert.deepEqual([a('antiAirVehicle').damage,a('antiAirVehicle').range,a('helicopterGround').speed,a('helicopterAir').speed,a('reconDrone').vision,a('transportPlane').speed],[90,25,3.5,3.8,15,5]);
