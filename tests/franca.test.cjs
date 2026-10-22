@@ -15,22 +15,22 @@ const run=(g,seconds)=>{for(let i=0;i<seconds*30;i++){g.update(1/30);g.events=[]
 test('fichas da França: cada unidade mantém o tipo e troca só o que o plano define',()=>{
  for(const [type,spec] of Object.entries(FR_TYPES)){assert.ok(TYPES[type],type);assert.equal(spec.name===undefined||typeof spec.name==='string',true);}
  const g=field();const u=name=>g.add('blue',name,10,80);
- assert.equal(UT(u('lightTank')).speed,2.5);assert.equal(u('lightTank').hp,95);assert.equal(u('tank').hp,155);assert.equal(u('heavyTank').hp,300);
- assert.equal(u('artillery').hp,80);assert.equal(u('recon').hp,65);assert.equal(u('antiAirVehicle').hp,85);assert.equal(u('rocketArtillery').hp,115);
+ assert.equal(UT(u('lightTank')).speed,2.5);assert.equal(u('lightTank').hp,100);assert.equal(u('tank').hp,160);assert.equal(u('heavyTank').hp,300);
+ assert.equal(u('artillery').hp,80);assert.equal(u('recon').hp,75);assert.equal(u('antiAirVehicle').hp,85);assert.equal(u('rocketArtillery').hp,115);
  assert.equal(u('transportTruck').hp,100);assert.equal(u('helicopter').hp,100);assert.equal(u('helicopterAir').hp,140);assert.equal(u('reconDrone').hp,70);
  const red=g.add('red','lightTank',100,10);assert.equal(red.hp,110,'o vermelho continua com a ficha base');assert.equal(UT(red).speed,1.9);
  assert.equal(TYPES.lightTank.hp,110,'a tabela base não é alterada');
 });
 test('catálogo, custo e orçamento seguem a facção',()=>{
- assert.equal(SPEC('tank',FRANCE).cost,155);assert.equal(SPEC('tank','blue').cost,150);assert.equal(SPEC('antiAirVehicle',FRANCE).cost,145);
+ assert.equal(SPEC('tank',FRANCE).cost,150);assert.equal(SPEC('tank','blue').cost,150);assert.equal(SPEC('antiAirVehicle',FRANCE).cost,145);
  const cat=startingCatalog(FRANCE);for(const t of ['fighterFr','multiroleFr','stealthFighterFr','bomberFr'])assert.ok(cat.includes(t),t);
  for(const t of ['fighterBlue','fighterRed','bomberRed'])assert.ok(!cat.includes(t),t);
- assert.equal(armyCost({tank:2},FRANCE),310);assert.equal(armyCost({tank:2},'blue'),300);
+ assert.equal(armyCost({tank:2},FRANCE),300);assert.equal(armyCost({tank:2},'blue'),300);
  assert.ok(armyCost({tank:3,infantry:2},FRANCE)<=STARTING_BUDGET);
  assert.deepEqual({...cleanStartingArmy({tank:2,infantry:2},FRANCE)},{tank:2,infantry:2});
  assert.notDeepEqual({...cleanStartingArmy({fighterBlue:1},FRANCE)},{fighterBlue:1},'aviões de outra facção são recusados');
  const g=field();g.credits.blue=1000;const hq=g.structures.find(s=>s.owner==='blue'&&s.type==='hq');
- assert.equal(g.recruitCost('tank',hq),155);assert.equal(g.recruitCost('tank',g.structures.find(s=>s.owner==='red')),150);
+ assert.equal(g.recruitCost('tank',hq),150);assert.equal(g.recruitCost('tank',g.structures.find(s=>s.owner==='red')),150);
  g.add('blue','airportAsphalt',10,70);const air=g.structures.find(s=>s.type==='airportAsphalt');
  assert.equal(g.canRecruit('blue','multiroleFr',air),true);assert.equal(g.canRecruit('blue','multiroleBlue',air),false);
 });
@@ -125,7 +125,7 @@ test('caminhão TRM: 5 vagas; A400M: 10 vagas, pista curta',()=>{
  p.runway={type:'land',phase:'approach',baseId:0,elapsed:0,level:1};g.runwayPhase(p,'landing',{x:1,y:1},1.5,0);
  assert.ok(Math.abs(p.runway.duration-1.5*SHORT_RUNWAY)<1e-9);
  const q=g.add('red','transportPlane',20,20);q.runway={type:'land',phase:'approach',baseId:0,elapsed:0,level:1};g.runwayPhase(q,'landing',{x:1,y:1},1.5,0);assert.equal(q.runway.duration,1.5);
- g.airdropQuote({tank:1},undefined,'blue');assert.equal(g.airdropQuote({tank:1},undefined,'blue').cost,150+155);assert.equal(g.airdropQuote({tank:1},undefined,'red').cost,150+150);
+ g.airdropQuote({tank:1},undefined,'blue');assert.equal(g.airdropQuote({tank:1},undefined,'blue').cost,150+150);assert.equal(g.airdropQuote({tank:1},undefined,'red').cost,150+150);
  assert.equal(g.airdropQuote({infantry:11},undefined,'blue'),null,'11 vagas não cabem nas 10 do A400M');assert.notEqual(g.airdropQuote({infantry:11},undefined,'red'),null);
 });
 test('rede de sensores do FCAS revela furtivos inimigos a 8 casas',()=>{
@@ -191,6 +191,11 @@ test('evacuação blindada: tropas saem vivas com metade da vida do transporte a
  const {g,t}=make({blue:'blue',red:'red'},'transportTruck'),pax=[...t.cargo];g.hurt(t,t.hp,g.add('red','heavyTank',50,56));
  for(const p of pax)assert.ok(!g.units.includes(p),'verde: a tropa morre com o transporte');
  const {g:h,t:plane}=make(FR_SIDE,'transportTruck');plane.cargo=[h.add('blue','tank',48,61)];h.units=h.units.filter(u=>u!==plane.cargo[0]);const tank=plane.cargo[0];h.hurt(plane,plane.hp,h.add('red','heavyTank',50,56));assert.ok(!h.units.includes(tank),'só tropa a pé escapa');
+});
+test('Leclerc blindado: alcance 7 e 3 mísseis antitanque (dano 45, alcance 10); Tigre custa 235',()=>{
+ const g=field(),h=g.add('blue','heavyTank',50,60);assert.equal(UT(h).range,7);assert.equal(h.atMissiles,3);
+ assert.equal(g.weaponStats(h,'atMissile').damage,45);assert.equal(g.weaponStats(h,'atMissile').range,10);
+ assert.equal(SPEC('helicopterGround',FRANCE).cost,235);
 });
 for(const [name,fn] of cases){fn();console.log('OK '+name);}
 console.log(cases.length+' verificações do time azul passaram.');
