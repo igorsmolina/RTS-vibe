@@ -10,7 +10,7 @@ const {chromium}=require('playwright-core');
 
  // Campanha: cartões espelham os selects, que continuam no DOM.
  const count=sel=>page.locator(sel+'+.pick-grid .pick-card').count();
- assert.equal(await count('#campaignDoctrine'),4);assert.equal(await count('#campaignUnits'),3);assert.equal(await count('#campaignEnemyArmy'),4);assert.equal(await count('#campaignMode'),2);assert.equal(await count('#campaignKind'),2);
+ assert.equal(await count('#campaignDoctrine'),4);assert.equal(await count('#campaignUnits'),4);assert.equal(await count('#campaignEnemyArmy'),5);assert.equal(await count('#campaignMode'),2);assert.equal(await count('#campaignKind'),2);
  assert.equal(await page.locator('#campaignUnits+.pick-grid .pick-card[aria-checked=true]').getAttribute('data-value'),await page.locator('#campaignUnits').inputValue());
  await page.locator('#campaignUnits+.pick-grid .pick-card[data-value=franca]').click();
  assert.equal(await page.locator('#campaignUnits').inputValue(),'franca');assert.equal(await page.evaluate(()=>settings.army),'franca');

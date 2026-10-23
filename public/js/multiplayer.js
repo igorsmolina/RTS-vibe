@@ -2,8 +2,8 @@
 // Servidor hospedado num PC (scripts/host-local.cjs): o link muda a cada vez, então o host o publica neste tópico do ntfy.sh e a página lê daqui.
 // Qualquer um que conheça o tópico pode publicar; por isso só links https://*.trycloudflare.com são aceitos.
 window.RTS_SERVER_REGISTRY='https://ntfy.sh/rts-vibe-b760a287e42ddf70';
-// Até três jogadores, todos contra todos. Cada lado começa com um time de unidades: verdes, vermelhas e azuis (França).
-const SIDE_NAME={blue:'Azul',red:'Vermelho',green:'Verde'},SIDE_TEAM={blue:'azul',red:'vermelha',green:'verde'},SIDE_FACTION={blue:'blue',red:'red',green:FRANCE},UNIT_NAME={blue:'verdes',red:'vermelhas',[FRANCE]:'azuis (França)'};
+// Até três jogadores, todos contra todos. Cada lado começa com um time de unidades: verdes, vermelhas, roxas e azuis (França).
+const SIDE_NAME={blue:'Azul',red:'Vermelho',green:'Verde'},SIDE_TEAM={blue:'azul',red:'vermelha',green:'verde'},SIDE_FACTION={blue:'blue',red:'red',green:FRANCE},UNIT_NAME={blue:'verdes',red:'vermelhas',[FRANCE]:'azuis (França)',[ROXO]:'roxas'};
 const Multiplayer={
  session:null,room:null,socket:null,connected:false,editingArmy:false,seq:0,pending:new Map(),matchId:null,lastEvent:0,retry:0,timer:null,poses:new Map(),receivedAt:0,
  get side(){return this.session?.side||'blue';},
@@ -85,7 +85,7 @@ const Multiplayer={
    const me=this.room.players.find(p=>p.token===this.session.token)||this.room.players.find(p=>p.side===this.session.side)||this.room.players.find(p=>p.nickname===$('mpNickname').value.trim());
    // Side is sent separately on auth/rematch; player seat stays fixed while teams swap.
    if(message.side)this.session.side=message.side;else if(this.room.players.some(p=>p.self))this.session.side=this.room.players.find(p=>p.self).side;
-   if(me&&first&&this.room.status==='waiting'&&!me.ready){const faction=settings.army==='enemy'?{blue:'red',red:'blue',green:'red'}[this.side]:settings.army==='franca'?FRANCE:null;this.send({type:'prepare',faction,army:cleanStartingArmy(settings.startingArmy,faction||SIDE_FACTION[this.side]),doctrine:settings.doctrine});}
+   if(me&&first&&this.room.status==='waiting'&&!me.ready){const faction=settings.army==='enemy'?{blue:'red',red:'blue',green:'red'}[this.side]:{franca:FRANCE,roxo:ROXO}[settings.army]||null;this.send({type:'prepare',faction,army:cleanStartingArmy(settings.startingArmy,faction||SIDE_FACTION[this.side]),doctrine:settings.doctrine});}
    this.persist();this.renderRoom();if(first){for(const queued of this.pending.values())this.send(queued);}return;
   }
   if(message.type==='authenticated'||message.type==='auth'){if(message.side)this.session.side=message.side;this.connected=true;this.retry=0;this.retrySince=0;if(Number.isInteger(message.lastSeq)){this.seq=message.lastSeq;for(const [seq,queued]of this.pending){if(seq<=message.lastSeq)this.pending.delete(seq);else{this.seq=Math.max(this.seq,seq);this.send(queued);}}}this.persist();return;}
@@ -112,14 +112,14 @@ const Multiplayer={
  expired(reason){this.leave(false);this.show();this.status(reason);},
  // Cartões e réguas: montados na primeira abertura (opções de doutrina e postos já existem; miniaturas em tempo ocioso).
  build(){
-  if(this.ui||typeof MenuKit==='undefined')return;const K=MenuKit,art={blue:0,red:1,[FRANCE]:2,franca:2},team=o=>K.spriteNode('heavyTank',art[o.value]??0);
+  if(this.ui||typeof MenuKit==='undefined')return;const K=MenuKit,art={blue:0,red:1,[FRANCE]:2,franca:2,[ROXO]:3,roxo:3},team=o=>K.spriteNode('heavyTank',art[o.value]??0);
   const mine=()=>K.spriteNode('heavyTank',ART[SIDE_FACTION[this.side]]||0);
   this.ui={pickers:[
    K.cardPicker($('mpMap'),{kind:'map',cols:4,art:o=>K.thumbNode(o.value,1,o.value==='random'?{landscape:'continent'}:{},224,168)}),
    K.cardPicker($('mpMode'),{kind:'icon',cols:2,art:o=>K.iconNode(o.value==='rts'?'mode-rts':'mode-turns')}),
    K.cardPicker($('mpLandscape'),{kind:'icon',cols:5,art:o=>K.iconNode({auto:'dice',continent:'continent',lakes:'water',islands:'islands',highlands:'relief'}[o.value])}),
    K.cardPicker($('mpDoctrine'),{kind:'icon',cols:2,art:o=>K.iconNode('doctrine-'+o.value),caption:o=>NATION_DOCTRINES[o.value]?.text}),
-   K.cardPicker($('mpFaction'),{kind:'square',cols:4,art:o=>o.value===''?mine():team(o)})
+   K.cardPicker($('mpFaction'),{kind:'square',cols:5,art:o=>o.value===''?mine():team(o)})
   ],syncs:[['mpWater','Out'],['mpForest','Out'],['mpRelief','Out'],['mpFarmland','Out']].map(([id,o])=>K.slider($(id),$(id+o)))};
   this.ui.faction=this.ui.pickers[4];this.ui.side=this.side;
   $('mpCopy').addEventListener('click',async()=>{

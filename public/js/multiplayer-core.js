@@ -12,7 +12,7 @@ function createCore(engine,{graceMs=120000,now=Date.now,maxRooms=16}={}){
  const random32=()=>globalThis.crypto.getRandomValues(new Uint32Array(1))[0],privateRandom=()=>random32()/0x100000000;
  const token=()=>Array.from(globalThis.crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');
  const ALPHABET='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',roomCode=()=>Array.from(globalThis.crypto.getRandomValues(new Uint8Array(8)),b=>ALPHABET[b%ALPHABET.length]).join('');
- const factionOf=value=>value==='blue'||value==='red'||value==='franca'?value:null;
+ const factionOf=value=>value==='blue'||value==='red'||value==='franca'||value==='roxo'?value:null;
  function nickname(value){if(typeof value!=='string'||!value.trim()||value.trim().length>32||/[\x00-\x1f\x7f]/.test(value))throw failure('Informe um apelido de 1 a 32 caracteres.');return value.trim();}
  function config(value={},previous={map:'river',mode:'rts',seed:1,options:{...PROCEDURAL}}){
   if(!plain(value))throw failure('Configuração inválida.');const result={...previous,options:{...previous.options}};

@@ -114,5 +114,15 @@ test('missileLoad sem dados de munição (inimigo no multiplayer) devolve null',
  const h=g.add('red','helicopterGround',100,18);delete h.missiles;assert.equal(g.missileLoad(h),null);
  assert.deepEqual(g.missileLoad(g.add('blue','fighterBlue',10,80)),{have:8,max:8});
 });
+test('ficha roxa final do balanceamento (reports/roxo-2026-10-22)',()=>{
+ const p=t=>SPEC(t,'roxo');
+ assert.deepEqual([p('lightTank').hp,p('lightTank').cost,p('tank').hp,p('tank').cost,p('recon').hp,p('recon').cost,p('artillery').hp,p('artillery').cost],[140,100,195,150,65,75,90,180]);
+ assert.deepEqual([p('heavyTank').hp,p('heavyTank').trophy,p('antiAirVehicle').hp,p('transportHelicopter').cost,p('transportHelicopter').capacity,p('transportPlane').airdropFee],[265,4,65,280,10,220],'sem mudança no balanceamento');
+ assert.deepEqual([PLANE_MODELS.fighterRoxo.hp,PLANE_MODELS.multiroleRoxo.hp,PLANE_MODELS.stealthFighterRoxo.hp,PLANE_MODELS.bomberRoxo.hp],[165,165,175,195]);
+ assert.deepEqual(['fighterRoxo','multiroleRoxo','stealthFighterRoxo','bomberRoxo'].map(t=>TYPES[t].cost),[615,800,990,1276]);
+ const g=field({blue:'roxo',red:'red'}),turn=t=>Math.round(g.planeTurnRate(g.add('blue',t,10,80))*180/Math.PI);
+ assert.deepEqual(['fighterRoxo','multiroleRoxo','stealthFighterRoxo','bomberRoxo'].map(turn),[100,105,102,70]);
+ assert.deepEqual([SPEC('tank','blue').hp,SPEC('artillery','blue').hp,SPEC('recon','blue').hp,SPEC('lightTank','blue').hp],[170,100,75,110],'a ficha verde não muda');
+});
 for(const [name,fn] of cases){fn();console.log('OK '+name);}
 console.log(cases.length+' verificações de ficha por time passaram.');

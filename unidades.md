@@ -2,7 +2,7 @@
 
 Written for: você, como referência de consulta e balanceamento.
 
-Fonte: `public/js/engine.js` (`TYPES` = ficha verde, `RED` e `FR` = diferenças do vermelho e da França, `PLANE_MODELS`, `WEAPONS`). As tabelas por time foram geradas a partir do código em 21/10/2026, depois da planilha de ajustes; se os valores forem alterados, este arquivo precisa ser atualizado.
+Fonte: `public/js/engine.js` (`TYPES` = ficha verde, `RED`, `FR` e `PURPLE` = diferenças do vermelho, da França e do roxo, `PLANE_MODELS`, `WEAPONS`). As tabelas por time foram geradas a partir do código em 21/10/2026, depois da planilha de ajustes; se os valores forem alterados, este arquivo precisa ser atualizado.
 
 ## Legenda
 
@@ -25,7 +25,7 @@ Fonte: `public/js/engine.js` (`TYPES` = ficha verde, `RED` e `FR` = diferenças 
 
 ## Fichas por time
 
-Cada time tem ficha própria: **Verde** (Aliado, ficha base `TYPES`), **Vermelho** (Inimigo, `RED`) e **Azul** (França, `FR`). Dano e alcance dos mísseis estão na última coluna. Nos aviões, o custo é casco + munição. A coluna Dano das unidades que lançam míssil mostra a arma principal (fuzil, canhão ou minigun).
+Cada time tem ficha própria: **Verde** (Aliado, ficha base `TYPES`), **Vermelho** (Inimigo, `RED`) **Azul** (França, `FR`) e **Roxo** (`PURPLE`). Dano e alcance dos mísseis estão na última coluna. Nos aviões, o custo é casco + munição. A coluna Dano das unidades que lançam míssil mostra a arma principal (fuzil, canhão ou minigun).
 
 ### Verde
 
@@ -132,6 +132,43 @@ Aviões de Azul (França)
 | Caça furtivo azul | 990 | 5 | 175 | 5,7 | 35% | 60 | 140 | ar-ar ×4 · 70 · alc. 30; antirradiação ×2 · 80 · alc. 40; MG ×80 |
 | Bombardeiro azul | 1356 | 6 | 200 | 5 | 20% | 100 | 150 | bomba comum ×6 · 120; fragmentação ×6 · 70; cruzeiro ×4 · 160 · alc. 75 |
 
+### Roxo
+
+Ficha base Verde com sensores melhores e menos blindagem; só mudam as linhas abaixo em relação ao Verde: batedor, tanques, artilharia, antiaéreo, helicóptero de transporte (convertiplano) e os aviões. A tabela mostra todas as unidades para consulta. Trophy do tanque pesado: 4 cargas (Verde 6, Vermelho 3).
+
+| Unidade | Custo | Treino | HP | Vel. | Mov. | Alcance | Dano | Recarga | Visão | Recompensa | Mísseis |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Infantaria | 50 | 1 | 100 | 1,35 | 3 | 3 | 35 | 0,8 | 4 | 20 | — |
+| Engenheiro | 65 | 2 | 85 | 1,25 | 3 | 1,15 | 20 | 1,2 | 4 | 25 | — |
+| Metralhador | 90 | 2 | 110 | 1,05 | 2 | 3 | 18 | 0,3 | 4 | 30 | — |
+| Antitanque | 110 | 2 | 90 | 1,05 | 3 | 7 | 40 | 3 | 4 | 35 | Antitanque 50 · alc. 7 · 4 mísseis |
+| Soldado lançador | 90 | 2 | 80 | 1,25 | 3 | 10 | 55 | 3 | 4 | 30 | Míssil 55 · alc. 10 (só aeronaves) |
+| Comandante | — | — | 140 | 1,35 | 3 | 2 | 40 | 1,5 | 5 | 70 | — |
+| Batedor | 75 | 1 | 65 | 2,25 | 5 | 2 | 24 | 1,1 | 8 | 25 | — |
+| Tanque leve | 100 | 2 | 140 | 2,2 | 6 | 4 | 35 | 2 | 7 | 35 | — |
+| Tanque médio | 150 | 3 | 195 | 2 | 5 | 5 | 60 | 2,5 | 7 | 50 | — |
+| Tanque pesado | 240 | 4 | 265 | 1,7 | 4 | 7 | 80 | 3,5 | 7 | 80 | — |
+| Artilharia | 180 | 4 | 90 | 1,2 | 3 | 16 | 85 | 5 | 3 | 40 | — |
+| Artilharia de mísseis | 240 | 4 | 90 | 0,85 | 2 | 30 | 20 | 10 | 3 | 60 | Foguete 20 × 4 · alc. 30 · ×2 contra estruturas |
+| Veículo antiaéreo | 160 | 3 | 65 | 2,25 | 5 | 30 | 80 | 3,5 | 7 | 45 | Míssil 80 · alc. 30 (só aeronaves) |
+| Caminhão de transporte | 100 | 2 | 90 | 2,4 | 7 | — | — | — | 4 | 30 | — |
+| Helicóptero | 150 | 3 | 120 | 3,2 | 8 | 3 | 4 × 5 | 0,2 | 6 | 50 | — |
+| Helicóptero ar-terra | 230 | 4 | 120 | 3,2 | 8 | 3 | 20 | 1 | 6 | 50 | Antiblindado 60 · alc. 7 (alta 20) · rec. 3 · 8 mísseis |
+| Helicóptero ar-ar | 180 | 4 | 120 | 3,2 | 8 | 3 | 20 | 1 | 6 | 50 | Ar-ar 85 · alc. 17 · rec. 3 |
+| Helicóptero de transporte (convertiplano) | 280 | 4 | 160 | 4 | 12 | — | — | — | 6 | 60 | — |
+| Drone de reconhecimento | 90 | 2 | 60 | 2,4 | 7 | — | — | — | 12 | 30 | — |
+| Drone furtivo | 160 | 3 | 50 | 2,2 | 6 | 15 | 80 | 3 | 12 | 45 | Míssil furtivo 80 · alc. 15 · 2 mísseis |
+
+Aviões de Roxo
+
+| Avião | Custo | Treino | HP | Vel. | Evasão | Flares | Recompensa | Munição (quantidade · dano · alcance) |
+|---|---|---|---|---|---|---|---|---|
+| Avião de transporte (cargueiro a jato) | — | — | 240 | 5,5 | 0% | 300 | 90 | Nenhuma |
+| Caça roxo | 615 | 3 | 165 | 5,8 | 25% | 60 | 120 | ar-ar ×4 · 85 · alc. 30; antirradiação ×3 · 80 · alc. 40; MG ×80 |
+| Multifunção roxo | 800 | 4 | 165 | 5,4 | 25% | 70 | 120 | ar-ar ×2 · 85 · alc. 30; antiblindado ×5 · 80 · alc. 15; antirradiação ×3 · 80 · alc. 40; MG ×80 |
+| Caça furtivo roxo | 990 | 5 | 175 | 6 | 30% | 60 | 140 | ar-ar ×5 · 85 · alc. 30; antirradiação ×2 · 80 · alc. 40; MG ×80 |
+| Bombardeiro roxo | 1276 | 6 | 195 | 3,8 | 10% | 100 | 120 | bomba comum ×4 · 120; fragmentação ×4 · 70; incendiária ×4 · 40; cruzeiro ×2 · 160 · alc. 67 |
+
 ## Comandante e estruturas
 
 | Unidade | Custo | HP | Vel. | Mov. | Alcance | Dano | Precisão | Recarga | Visão | Recompensa | Tamanho |
@@ -199,11 +236,19 @@ Valores base de `WEAPONS`. Cada time pode ter dano e alcance próprios para o me
 
 **Munição de mísseis.** Antitanque, tanques vermelhos (leve e pesado), helicóptero ar-terra (verde e vermelho) e drone furtivo têm munição limitada. Ela recarrega na manutenção. A tela mostra `mísseis/máximo` sob a barra de vida das suas unidades e um aviso flutuante: "Pouca munição" quando restar 1/4 da carga e "Munição acabou" quando zerar. Com o helicóptero sem mísseis, o modo Auto usa o canhão.
 
-**Especialidade da França: infantaria e transporte de infantaria.** Cada time tem a sua: o Verde, os melhores aviões; o Vermelho, os melhores tanques; o Azul, infantaria e transporte.
+**Especialidade da França: infantaria e transporte de infantaria.** Cada time tem a sua: o Verde, os melhores aviões; o Vermelho, os melhores tanques; o Azul, infantaria e transporte de infantaria; o Roxo, o transporte pesado (veja abaixo).
 - **Desembarque de assalto:** tropa a pé que sai de um transporte azul (TRM, NH90 ou paraquedas do A400M) ganha +20% de precisão e +25% de velocidade por 6 s. Por turnos: +1 de Mov e +20% de precisão no turno seguinte. A barra "Assalto" aparece na tela.
 - **Captura e obra rápidas:** a infantaria azul captura e constrói em 70% do tempo (2 s → 1,4 s; 3 s → 2,1 s no RTS). Reparo e desminagem não mudam.
 - **Evacuação blindada:** se o TRM ou o NH90 for destruído com tropa a pé a bordo, ela sai viva com metade da vida nas casas livres mais próximas. Quem não tiver casa livre morre, e veículos pendurados não escapam. O A400M não tem essa proteção.
 - **Equilíbrio medido** (`scripts/faction-balance.cjs`, mesmo orçamento dos dois lados, lados trocados): infantaria ~69% de vitórias contra Verde e Vermelho; infantaria embarcada em transporte azul, ~100%; tanques ~56% contra o Verde e ~38% contra o Vermelho; helicópteros ficam os mais fracos. Relatórios em `reports/franca-2026-10-22/`.
+
+**Especialidade do Roxo: transporte pesado.** O Roxo é o melhor do jogo em carga e fica abaixo do especialista em todo o resto (ficha Verde com sensores melhores e menos blindagem).
+- **Convertiplano (helicóptero de transporte):** 10 vagas a pé, ou 1 batedor (5 vagas) + 5 tropas; velocidade 4 e Mov 12 (os outros helicópteros: 3,2 a 3,8 e 8 a 10); custo 280; sem armas. O motor não tem combustível, então "alcance" é o Mov. Pode subir à altitude alta, mas sem o bônus de velocidade e visão do verde.
+- **Cargueiro a jato (avião de transporte):** 16 vagas (Verde 12, França 10), velocidade 5,5 (Verde 4,5, França 5), pista normal (sem a pista curta da França). O lançamento por paraquedas aceita até 16 vagas e custa 220 de taxa fixa (nos outros times, 150).
+- **Remuniciar a bordo:** a tropa com míssil antitanque embarcada num transporte roxo (caminhão, convertiplano ou jato) recupera mísseis: +1 a cada 3 s no RTS, +2 por turno, até o máximo da ficha. Nos outros times só se reabastece em QG ou posto.
+- **Desembarque rápido:** o transporte roxo desembarca sem gastar a ação do turno (nos outros, desembarcar gasta); o convertiplano também desembarca em altitude alta (nos outros, só em altitude baixa) e põe as tropas num raio de 2 casas (nos outros, 1). Não há bônus de precisão nem evacuação blindada (isso é da França): transporte roxo destruído leva a tropa junto.
+- **Sensores:** tanques e antiaéreo com visão 7 (Verde 6) e batedor com visão 8 (Verde 7). O pesado, a artilharia, o antiaéreo e o batedor têm menos vida que os verdes; o leve e o médio têm mais (140 e 195 contra 110 e 170, ajuste do simulador). Trophy do pesado com 4 cargas (verde 6, vermelho 3).
+- **Equilíbrio medido** (`scripts/faction-balance.cjs --pairs PV,PR,PF,VR` e `scripts/faction-air-balance.cjs --so-roxo`, mesmo orçamento dos dois lados, lados trocados): infantaria 50% contra Verde e Vermelho e 33% contra a França; tanques 58% contra o Verde e 42% contra o Vermelho; infantaria embarcada no convertiplano 95% contra Verde e Vermelho e 15% contra a França; aviões abaixo do Verde (Roxo/Verde 0,46 no caça, 0,68 no multifunção, 0,51 no furtivo e 0,96 no bombardeiro) e perto do Vermelho no multifunção, no furtivo e no bombardeiro (0,95, 0,91 e 0,92). O caça fica em 0,10 do Vermelho: no simulador o caça vermelho vence o verde, e o roxo ficou abaixo do verde. Relatórios em `reports/roxo-2026-10-22/`; refazer com `npm run balance:roxo`.
 
 **Mecânicas próprias da França**
 - **GALIX (tanque pesado):** 2 cargas. Ao ser atingido, solta fumaça por 3 s (1 turno): −40% de precisão contra ele, de qualquer atacante. Não intercepta mísseis como o Trophy. Recarrega como o Trophy, em QG/posto.

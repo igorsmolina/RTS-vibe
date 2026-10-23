@@ -7,7 +7,7 @@ const SetupMenu=(()=>{
  function init(){
   if(ready||typeof MenuKit==='undefined')return;ready=true;
   showDoctrines('playerDoctrine','playerDoctrineInfo','enemyDoctrineInfo',preparedSeed); // as doutrinas precisam existir antes dos cartões
-  const K=MenuKit,art={own:0,blue:0,enemy:1,red:1,franca:2},ids=['genWater','genForest','genRelief','genFarmland'];
+  const K=MenuKit,art={own:0,blue:0,enemy:1,red:1,franca:2,roxo:3},ids=['genWater','genForest','genRelief','genFarmland'];
   const sample={water:.4,relief:.4,forest:.4,farmland:.5,posts:12};
   pickers.push(
    K.cardPicker(byId('mapSelect'),{kind:'map',cols:4,art:o=>K.thumbNode(o.value,SAMPLE,o.value==='random'?{landscape:'continent',...sample}:{},240,180)}),
@@ -16,8 +16,8 @@ const SetupMenu=(()=>{
    K.cardPicker(byId('modeSelect'),{kind:'icon',cols:2,art:o=>K.iconNode(o.value==='rts'?'mode-rts':'mode-turns')}),
    K.cardPicker(byId('difficulty'),{kind:'icon',cols:4,art:o=>K.iconNode({easy:'rank-1',normal:'rank-2',hard:'rank-3',veteran:'rank-4'}[o.value])}),
    K.cardPicker(byId('playerDoctrine'),{kind:'icon',cols:4,art:o=>K.iconNode('doctrine-'+o.value),caption:o=>NATION_DOCTRINES[o.value]?.text}),
-   K.cardPicker(byId('playerArmy'),{kind:'square',cols:3,art:o=>K.spriteNode('heavyTank',art[o.value])}),
-   K.cardPicker(byId('enemyArmy'),{kind:'square',cols:4,art:o=>o.value==='auto'?K.iconNode('dice'):K.spriteNode('heavyTank',art[o.value])})
+   K.cardPicker(byId('playerArmy'),{kind:'square',cols:4,art:o=>K.spriteNode('heavyTank',art[o.value])}),
+   K.cardPicker(byId('enemyArmy'),{kind:'square',cols:5,art:o=>o.value==='auto'?K.iconNode('dice'):K.spriteNode('heavyTank',art[o.value])})
   );
   for(const id of ids)syncs.push(K.slider(byId(id),byId(id+'Out')));
   tabs=K.tabs(byId('setupTabs'),[

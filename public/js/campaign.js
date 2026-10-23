@@ -70,11 +70,11 @@ let campaignUi=null;
 function buildCampaignUi(){
  if(campaignUi||typeof MenuKit==='undefined')return;
  showDoctrines('campaignDoctrine','campaignDoctrineInfo','campaignEnemyDoctrineInfo',null);
- const K=MenuKit,art={own:0,blue:0,enemy:1,red:1,franca:2},team=o=>K.spriteNode('heavyTank',art[o.value]);
+ const K=MenuKit,art={own:0,blue:0,enemy:1,red:1,franca:2,roxo:3},team=o=>K.spriteNode('heavyTank',art[o.value]);
  campaignUi=[
   K.cardPicker($('campaignDoctrine'),{kind:'icon',cols:2,art:o=>K.iconNode('doctrine-'+o.value),caption:o=>NATION_DOCTRINES[o.value]?.text}),
-  K.cardPicker($('campaignUnits'),{kind:'square',cols:3,art:team}),
-  K.cardPicker($('campaignEnemyArmy'),{kind:'square',cols:2,art:o=>o.value==='auto'?K.iconNode('sliders'):team(o)}),
+  K.cardPicker($('campaignUnits'),{kind:'square',cols:4,art:team}),
+  K.cardPicker($('campaignEnemyArmy'),{kind:'square',cols:3,art:o=>o.value==='auto'?K.iconNode('sliders'):team(o)}),
   K.cardPicker($('campaignMode'),{kind:'icon',cols:2,art:o=>K.iconNode(o.value==='rts'?'mode-rts':'mode-turns')}),
   K.cardPicker($('campaignKind'),{kind:'icon',cols:2,art:o=>K.iconNode(o.value==='story'?'medal':'map')})
  ];

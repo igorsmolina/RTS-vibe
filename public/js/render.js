@@ -24,6 +24,9 @@ const newTroopImages={rocketArtillery:[new Image(),new Image()],reconDrone:[new 
 const rocketLauncherImages=Array.from({length:2},()=>[new Image(),new Image()]);
 // França (azul): um PNG 128 × 128 por tipo, frente para cima; lançador do LRU: [transição, elevado]. Sem imagem cai na arte verde.
 const franceImages=Object.fromEntries(Object.keys(franceSpriteData).map(type=>[type,new Image()])),franceLaunchImages=[new Image(),new Image()];
+// Roxo: mesma ideia, arte 3. TEAM_ART liga o índice de arte ao conjunto de imagens (2 = França, 3 = Roxo).
+const roxoImages=Object.fromEntries(Object.keys(roxoSpriteData).map(type=>[type,new Image()])),roxoLaunchImages=[new Image(),new Image()];
+const TEAM_ART={2:{images:franceImages,launch:franceLaunchImages},3:{images:roxoImages,launch:roxoLaunchImages}};
 const FRANCE_SIZES={lightTank:48,tank:54,heavyTank:60,artillery:60,recon:52,antiAirVehicle:54,rocketArtillery:56,transportTruck:56,transportHelicopter:76,transportPlane:96,helicopter:62,helicopterGround:62,helicopterAir:62,reconDrone:66,stealthDrone:60};
 const missileImages=Object.fromEntries(Object.keys(missileSpriteData).map(name=>[name,new Image()]));
 const missileArt={antiAirVehicle:['anti-air',32],missileInfantry:['anti-air',24],atMissile:['air-ground',22],jetAgm:['air-ground',28],antiRadiation:['air-air',30],agm:['air-ground',28],aam:['air-air',28],jetAam:['air-air',28],rocket:['artillery-rocket',30],stealthMissile:['drone-missile',22],cruiseMissile:['cruise',42]};
@@ -55,8 +58,9 @@ function unitIcon(ctx,type,x,y,color,scale=1,facing=0,stride=0,firing=false,laun
   if(type==='post'){box(-20,8,12,9,dark);box(8,8,12,9,dark);}ctx.restore();return;
  }
  ctx.rotate(facing);
- if(art===2&&type in franceImages){
-  const image=type==='rocketArtillery'&&launcherFrame?franceLaunchImages[launcherFrame-1]:franceImages[type],size=type==='transportPlane'&&!battle?64:FRANCE_SIZES[type]||60,air=TYPES[type].air;
+ const teamArt=TEAM_ART[art];
+ if(teamArt&&type in teamArt.images){
+  const image=type==='rocketArtillery'&&launcherFrame?teamArt.launch[launcherFrame-1]:teamArt.images[type],size=type==='transportPlane'&&!battle?64:FRANCE_SIZES[type]||60,air=TYPES[type].air;
   if(image?.complete&&image.naturalWidth){
    if(!air)ctx.translate(0,stride*.6+(firing?1.5:0));
    ctx.drawImage(image,-size/2,-size/2,size,size);
@@ -175,8 +179,8 @@ function unitIcon(ctx,type,x,y,color,scale=1,facing=0,stride=0,firing=false,laun
 
 // Cache de sprites por equipe, disparo e três poses de caminhada; rotação aplicada ao desenhar.
 const sprites=new Map();
-// Arte da facção: 0 = verde (padrão), 1 = vermelha, 2 = França (azul).
-const ART={red:1,[FRANCE]:2},unitArt=u=>ART[KIT(u)]||0,sideArt=side=>ART[game.factions?.[side]||side]||0;
+// Arte da facção: 0 = verde (padrão), 1 = vermelha, 2 = França (azul), 3 = roxa.
+const ART={red:1,[FRANCE]:2,[ROXO]:3},unitArt=u=>ART[KIT(u)]||0,sideArt=side=>ART[game.factions?.[side]||side]||0;
 function sprite(type,color,scale,stride=0,firing=false,launcherFrame=0,battle=false,art){
  const key=type+color+scale+':'+stride+':'+firing+':'+launcherFrame+':'+battle+':'+art;let s=sprites.get(key);
  if(!s){const plane=TYPES[type].plane&&battle,extent=plane?planeDrawSize(type)/2+8:0,ox=Math.ceil((plane?extent:TYPES[type].plane?52:38)*scale),oy=Math.ceil((plane?extent:50)*scale);s=document.createElement('canvas');s.width=ox*2;s.height=plane?oy*2:Math.ceil(82*scale);unitIcon(s.getContext('2d'),type,ox,oy,color,scale,0,stride,firing,launcherFrame,battle,art);s.ox=ox;s.oy=oy;if(sprites.size>=512)sprites.delete(sprites.keys().next().value);sprites.set(key,s);}
@@ -447,7 +451,7 @@ class Renderer{
  ammoBadge(x,y,u){if(u.owner!==localPlayerSide())return;const l=game.missileLoad(u);if(!l)return;const c=this.ctx,text=l.have+'/'+l.max,color=l.have===0?'#f26d5b':l.have<=Math.max(1,Math.floor(l.max/4))?'#ffdc92':'#dde6cf';c.save();c.font='bold 11px Segoe UI';c.textAlign='left';const w=c.measureText(text).width+18,x0=x-w/2;c.fillStyle='#0b2028cc';c.fillRect(x0,y+32,w,14);c.fillStyle=color;c.fillRect(x0+4,y+35,2.5,7);c.beginPath();c.moveTo(x0+3,y+35);c.lineTo(x0+5.25,y+31.5);c.lineTo(x0+7.5,y+35);c.fill();c.fillText(text,x0+11,y+43);c.restore();}
  bar(x,y,width,ratio,color){const c=this.ctx;c.fillStyle='#0b2028';c.fillRect(x-width/2-1,y-1,width+2,6);c.fillStyle=color;c.fillRect(x-width/2,y,width*Math.max(0,Math.min(1,ratio)),4);}
  transportAnimation(c,u,x,y,scale){
-  if(u.type!=='transportHelicopter'&&u.type!=='transportPlane'||KIT(u)===FRANCE)return;c.save();c.translate(x,y+2);c.rotate(u.facing||0);c.scale(scale*.86,scale*.86);c.strokeStyle='#b4c0b6';c.lineWidth=1.8;
+  if(u.type!=='transportHelicopter'&&u.type!=='transportPlane'||KIT(u)===FRANCE||KIT(u)===ROXO)return;c.save();c.translate(x,y+2);c.rotate(u.facing||0);c.scale(scale*.86,scale*.86);c.strokeStyle='#b4c0b6';c.lineWidth=1.8;
   const angle=reducedMotion?0:game.time*18,rotors=u.type==='transportHelicopter'?(KIT(u)==='blue'?[[0,-15,29],[0,15,29]]:[[0,-2,31]]):[[-29,-6,7],[-15,-6,7],[15,-6,7],[29,-6,7]];
   c.globalAlpha=reducedMotion?.55:.4;for(const [dx,dy,r]of rotors){c.save();c.translate(dx,dy);c.rotate(angle);for(let i=0;i<3;i++){c.rotate(Math.PI*2/3);c.beginPath();c.moveTo(0,0);c.lineTo(r,0);c.stroke();}c.restore();}c.restore();
  }

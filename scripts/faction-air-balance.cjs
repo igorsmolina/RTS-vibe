@@ -5,24 +5,27 @@
 //   --partes ar,bomb   quais simulações rodar (padrão: ambas)   --papeis caca,multi,furtivo,bombardeiro   filtra papéis
 //   --engine caminho/engine.js   mede outra versão do motor (ex.: o engine.js do commit anterior)
 //   --so-franca   pula o par Verde×Vermelho (só pares com a França)
+//   --so-roxo     mede o Roxo no lugar da França: pares Roxo×Verde e Roxo×Vermelho, veredito com colunas P/R e P/V
 //   --set fighterFr.hp=150,multiroleFr.ammo.jetAgm=2   simula uma ficha alternativa sem editar o motor (custo recalculado)
 const fs=require('node:fs'),path=require('node:path');
-const names='Game,TYPES,AIR,FRANCE,AMMO_PRICE'.split(',');
+const names='Game,TYPES,AIR,FRANCE,ROXO,AMMO_PRICE'.split(',');
 const arg=(k,d)=>{const i=process.argv.indexOf('--'+k);return i>0?process.argv[i+1]:d;};
-const E=new Function(fs.readFileSync(arg('engine',path.join(__dirname,'..','public','js','engine.js')),'utf8')+'\nreturn {'+names.join(',')+'};')();
-const {Game,TYPES,AIR,FRANCE,AMMO_PRICE}=E;
+const E=new Function(fs.readFileSync(arg('engine',path.join(__dirname,'..','public','js','engine.js')),'utf8')+'\nreturn {'+names.map(n=>n+':typeof '+n+"==='undefined'?undefined:"+n).join(',')+'};')(); // motores antigos (--engine) não têm ROXO
+const {Game,TYPES,AIR,FRANCE,ROXO,AMMO_PRICE}=E;
 const SET=arg('set','');
 for(const kv of SET.split(',').filter(Boolean)){const [k,v]=kv.split('='),ks=k.split('.');let o=TYPES;for(const x of ks.slice(0,-1))o=o[x];o[ks.at(-1)]=+v;const t=TYPES[ks[0]];t.cost=t.hull+Object.entries(t.ammo).reduce((n,[w,q])=>n+AMMO_PRICE[w]*q,0);}
-const SEEDS=+arg('seeds',60),PARTES=arg('partes','ar,bomb').split(','),FAC={verde:'blue',vermelho:'red',franca:FRANCE};
+const SEEDS=+arg('seeds',60),PARTES=arg('partes','ar,bomb').split(','),FAC={verde:'blue',vermelho:'red',franca:FRANCE,roxo:ROXO};
+// Terceira facção medida: França (padrão) ou Roxo (--so-roxo). X = chave, XN = nome, XL = letra do veredito.
+const SO_ROXO=process.argv.includes('--so-roxo'),X=SO_ROXO?'roxo':'franca',XN=SO_ROXO?'Roxo':'França',XL=SO_ROXO?'P':'F';delete FAC[SO_ROXO?'franca':'roxo'];
 const ROLES={
- caca:{nome:'Caça',verde:'fighterBlue',vermelho:'fighterRed',franca:'fighterFr'},
- multi:{nome:'Multifunção',verde:'multiroleBlue',vermelho:'multiroleRed',franca:'multiroleFr'},
- furtivo:{nome:'Caça furtivo',verde:'stealthFighterBlue',vermelho:'stealthFighterRed',franca:'stealthFighterFr'},
- bombardeiro:{nome:'Bombardeiro',verde:'bomberBlue',vermelho:'bomberRed',franca:'bomberFr'}
+ caca:{nome:'Caça',verde:'fighterBlue',vermelho:'fighterRed',franca:'fighterFr',roxo:'fighterRoxo'},
+ multi:{nome:'Multifunção',verde:'multiroleBlue',vermelho:'multiroleRed',franca:'multiroleFr',roxo:'multiroleRoxo'},
+ furtivo:{nome:'Caça furtivo',verde:'stealthFighterBlue',vermelho:'stealthFighterRed',franca:'stealthFighterFr',roxo:'stealthFighterRoxo'},
+ bombardeiro:{nome:'Bombardeiro',verde:'bomberBlue',vermelho:'bomberRed',franca:'bomberFr',roxo:'bomberRoxo'}
 };
 const PAPEIS=arg('papeis','caca,multi,furtivo,bombardeiro').split(',');
 const FRACOES=[1,.5,.25];
-const PAIRS=[['verde','vermelho'],['franca','verde'],['franca','vermelho']].filter(p=>!process.argv.includes('--so-franca')||p.includes('franca'));
+const PAIRS=[['verde','vermelho'],['franca','verde'],['franca','vermelho'],['roxo','verde'],['roxo','vermelho']].filter(p=>p.every(k=>k in FAC)&&(!process.argv.includes('--so-franca')||p.includes('franca'))&&(!SO_ROXO||p.includes('roxo')));
 const f1=n=>n.toFixed(1),f2=n=>n.toFixed(2),f3=n=>n.toFixed(3),pct=n=>(100*n).toFixed(0)+'%';
 
 function field(factions,seed){
@@ -116,10 +119,10 @@ P('### Análise analítica (funções do motor: dano de `planeWeapon`, precisão
 P('Dano esperado = soma por arma de munição × dano × precisão (antiar-ar contra caça com evasão '+REF_EVASION+'; antirradiação contra antiaéreo; antiblindado ×1,5 contra tanque; cruzeiro e bombas contra tanque). Índice = √(dano × (vida/(1−evasão)))/custo × 100.\n');
 P('| Modelo | Facção | Custo | Vida | Vel. | Evasão | Flares | Dano ar-ar | Dano solo | Dano/crédito | Vida/crédito | Vida efet./crédito | Índice |');P('|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|');
 for(const [rk,r] of Object.entries(ROLES))for(const k of Object.keys(FAC)){const x=A[r[k]];P(`| ${x.type} | ${k} | ${x.cost} | ${x.hp} | ${x.speed} | ${x.evasion} | ${x.flares} | ${f1(x.dmgAA)} | ${f1(x.dmgSolo)} | ${f3(x.danoPorCredito)} | ${f3(x.hpPorCredito)} | ${f3(x.ehpPorCredito)} | ${f1(x.indice)} |`);}
-P('\nRazão do índice analítico por papel (alvo: Verde > Vermelho ≥ França, França ≥ 0,85 × Vermelho):\n');
-P('| Papel | Verde/Vermelho | França/Vermelho | França/Verde | Custo FR/Verde |');P('|---|---:|---:|---:|---:|');
+P(`\nRazão do índice analítico por papel (alvo: Verde > Vermelho ≥ ${XN}, ${XN} ≥ 0,85 × Vermelho):\n`);
+P(`| Papel | Verde/Vermelho | ${XN}/Vermelho | ${XN}/Verde | Custo ${SO_ROXO?'P':'FR'}/Verde |`);P('|---|---:|---:|---:|---:|');
 const veredito=[];
-for(const [rk,r] of Object.entries(ROLES)){const v=A[r.verde],m=A[r.vermelho],f=A[r.franca];P(`| ${r.nome} | ${f2(v.indice/m.indice)} | ${f2(f.indice/m.indice)} | ${f2(f.indice/v.indice)} | ${f2(f.cost/v.cost)} |`);veredito.push({rk,analitico:f.indice/m.indice});}
+for(const [rk,r] of Object.entries(ROLES)){const v=A[r.verde],m=A[r.vermelho],f=A[r[X]];P(`| ${r.nome} | ${f2(v.indice/m.indice)} | ${f2(f.indice/m.indice)} | ${f2(f.indice/v.indice)} | ${f2(f.cost/v.cost)} |`);veredito.push({rk,analitico:f.indice/m.indice});}
 
 P('\n### Duelos 1×1 no ar (caça, multifunção, furtivo), '+SEEDS+' sementes × 2 lados = '+2*SEEDS+' duelos por par\n');
 P('Vitória = 1 se só o oponente cai, 0,5 se ambos vivos/mortos. Troca = valor em créditos destruído no oponente (fração de vida perdida × custo) ÷ valor perdido por si. Vit./crédito = razão de vitórias normalizada pelo custo. Eficácia = √(vit./crédito × troca); > 1 favorece o primeiro, 1 = equivalentes por crédito.\n');
@@ -142,14 +145,14 @@ for(const k of Object.keys(FAC)){mediaB[k]={};for(const f of FRACOES)mediaB[k][f
 // multifunção = média geométrica da eficácia aérea com a razão de dano ao solo por crédito (o Vermelho paga por munição que o duelo não usa);
 // bombardeiro = razão do retorno por crédito contra a defesa de metade do custo.
 P('\n### Veredito\n');
-P('Eficácia por crédito (razão): V/R = Verde ÷ Vermelho, F/R = França ÷ Vermelho, F/V = França ÷ Verde. Meta: V/R > 1, 0,85 ≤ F/R ≤ 1,05, F/V < 1.\n');
-P('| Papel | Medida | V/R | F/R | F/V | Verde > Vermelho | França ≤ 1,05 × Vermelho | França ≥ 0,85 × Vermelho |');P('|---|---|---:|---:|---:|---|---|---|');
+P(`Eficácia por crédito (razão): V/R = Verde ÷ Vermelho, ${XL}/R = ${XN} ÷ Vermelho, ${XL}/V = ${XN} ÷ Verde. Meta: V/R > 1, 0,85 ≤ ${XL}/R ≤ 1,05, ${XL}/V < 1.\n`);
+P(`| Papel | Medida | V/R | ${XL}/R | ${XL}/V | Verde > Vermelho | ${XN} ≤ 1,05 × Vermelho | ${XN} ≥ 0,85 × Vermelho |`);P('|---|---|---:|---:|---:|---|---|---|');
 const sim=b=>b?'sim':'NÃO',solo=(r,k)=>A[ROLES[r][k]].dmgSolo/A[ROLES[r][k]].cost,veredicto={};
 for(const rk of Object.keys(duelos)){const d=duelos[rk],t=(a,b)=>d[a+'x'+b]?.eficacia;
  const f=rk==='multi'?(tr,a,b)=>Math.sqrt(tr*solo(rk,a)/solo(rk,b)):tr=>tr;
- const vr=f(t('verde','vermelho')??NaN,'verde','vermelho'),fr=f(t('franca','vermelho'),'franca','vermelho'),fv=f(t('franca','verde'),'franca','verde');
+ const vr=f(t('verde','vermelho')??NaN,'verde','vermelho'),fr=f(t(X,'vermelho'),X,'vermelho'),fv=f(t(X,'verde'),X,'verde'); // fr/fv = terceira facção ÷ Vermelho/Verde
  veredicto[rk]={vr,fr,fv};P(`| ${ROLES[rk].nome} | ${rk==='multi'?'√(eficácia aérea × dano solo/crédito)':'eficácia do duelo'} | ${f2(vr)} | ${f2(fr)} | ${f2(fv)} | ${sim(vr>1)} | ${sim(fr<=1.05)} | ${sim(fr>=.85)} |`);}
-if(B){const m=mediaB,vr=m.verde[.5]/m.vermelho[.5],fr=m.franca[.5]/m.vermelho[.5],fv=m.franca[.5]/m.verde[.5];veredicto.bombardeiro={vr,fr,fv};P(`| Bombardeiro | retorno por crédito (defesa 50%) | ${f2(vr)} | ${f2(fr)} | ${f2(fv)} | ${sim(vr>1)} | ${sim(fr<=1.05)} | ${sim(fr>=.85)} |`);}
+if(B){const m=mediaB,vr=m.verde[.5]/m.vermelho[.5],fr=m[X][.5]/m.vermelho[.5],fv=m[X][.5]/m.verde[.5];veredicto.bombardeiro={vr,fr,fv};P(`| Bombardeiro | retorno por crédito (defesa 50%) | ${f2(vr)} | ${f2(fr)} | ${f2(fv)} | ${sim(vr>1)} | ${sim(fr<=1.05)} | ${sim(fr>=.85)} |`);}
 
 const md=out.join('\n')+'\n';console.log(md);
 if(arg('md'))fs.writeFileSync(arg('md'),md);

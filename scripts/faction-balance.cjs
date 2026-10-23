@@ -1,13 +1,16 @@
 'use strict';
 // Balanceamento por time: mesmo orçamento dos dois lados, preço pela ficha de cada facção (SPEC), lados trocados e várias sementes.
-// Uso: node scripts/faction-balance.cjs [--label antes|depois] [--seeds 4] [--only infantaria,tanques]
+// Uso: node scripts/faction-balance.cjs [--label antes|depois] [--seeds 4] [--only infantaria,tanques] [--pairs FV,FR,VR] [--out reports/franca-2026-10-22]
+//   --pairs: pares de facções (V Verde, R Vermelho, F França, P Roxo), ex.: PV,PR,PF,VR. --out: pasta dos resultados.
 //   --transport: infantaria dentro de caminhões/helicópteros de transporte (o orçamento inclui os veículos); composições infantaria_transporte e infantaria_helicoptero.
 const fs=require('node:fs'),path=require('node:path');
-const E=new Function(fs.readFileSync(path.join(__dirname,'..','public','js','engine.js'),'utf8')+'\nreturn {Game,SPEC,UT,seeded,FRANCE};')();
-const {Game,SPEC,UT,seeded,FRANCE}=E;
+const E=new Function(fs.readFileSync(path.join(__dirname,'..','public','js','engine.js'),'utf8')+'\nreturn {Game,SPEC,UT,seeded,FRANCE,ROXO};')();
+const {Game,SPEC,UT,seeded,FRANCE,ROXO}=E;
 const args=process.argv.slice(2),opt=(k,d)=>{const i=args.indexOf('--'+k);return i<0?d:args[i+1];};
 const SEEDS=+opt('seeds',4),LABEL=opt('label',args.includes('--transport')?'transporte':'atual'),ONLY=opt('only','').split(',').filter(Boolean),BUDGET=+opt('budget',900);
-const FACTION={V:'blue',R:'red',F:FRANCE},NAME={V:'Verde',R:'Vermelho',F:'França'};
+const FACTION={V:'blue',R:'red',F:FRANCE,P:ROXO},NAME={V:'Verde',R:'Vermelho',F:'França',P:'Roxo'};
+const PAIRS=opt('pairs','FV,FR,VR').split(',').filter(Boolean).map(p=>[p[0],p[1]]);
+for(const [a,b] of PAIRS)if(!FACTION[a]||!FACTION[b])throw new Error('par inválido: '+a+b);
 // Composições por domínio: tipos em ordem de compra (ciclo) até esgotar o orçamento.
 const COMPOSITIONS={
  infantaria:['infantry','antitank','infantry','machinegun','infantry','engineer'],
@@ -87,14 +90,14 @@ if(TRANSPORT)for(const k of Object.keys(COMPOSITIONS))delete COMPOSITIONS[k];
 if(TRANSPORT)for(const k of Object.keys(CARRIERS))COMPOSITIONS[k]=CARRIERS[k];
 const fightAny=TRANSPORT?(fa,fb,t,seed)=>fightTransport(fa,fb,t,seed):fight;
 const result={label:LABEL,budget:BUDGET,seeds:SEEDS,matches:{}};
-const lines=[`| Composição | França×Verde | França×Vermelho | Verde×Vermelho |`,`|---|---|---|---|`];
+const lines=[`| Composição | ${PAIRS.map(([a,b])=>NAME[a]+'×'+NAME[b]).join(' | ')} |`,`|---|${PAIRS.map(()=>'---|').join('')}`];
 for(const [name,types] of Object.entries(COMPOSITIONS)){
  if(ONLY.length&&!ONLY.includes(name))continue;
- const row={};for(const [a,b] of [['F','V'],['F','R'],['V','R']])row[a+b]=match(a,b,types);
+ const row={};for(const [a,b] of PAIRS)row[a+b]=match(a,b,types);
  result.matches[name]=row;
- lines.push(`| ${name} | ${row.FV.pct}% (${row.FV.left.join('/')}) | ${row.FR.pct}% (${row.FR.left.join('/')}) | ${row.VR.pct}% (${row.VR.left.join('/')}) |`);
+ lines.push(`| ${name} | ${PAIRS.map(([a,b])=>`${row[a+b].pct}% (${row[a+b].left.join('/')})`).join(' | ')} |`);
 }
 console.log(`Vitórias da 1ª facção (valor restante % de cada lado) · orçamento ${BUDGET} · ${SEEDS*2} duelos por célula · ${LABEL}\n`+lines.join('\n'));
-const dir=path.join(__dirname,'..','reports','franca-2026-10-22');fs.mkdirSync(dir,{recursive:true});
+const dir=path.resolve(__dirname,'..',opt('out','reports/franca-2026-10-22'));fs.mkdirSync(dir,{recursive:true});
 fs.writeFileSync(path.join(dir,`resultado-${LABEL}.json`),JSON.stringify(result,null,1));
 fs.writeFileSync(path.join(dir,`tabela-${LABEL}.md`),lines.join('\n')+'\n');
