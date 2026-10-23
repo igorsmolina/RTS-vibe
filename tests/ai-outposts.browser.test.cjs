@@ -14,7 +14,7 @@ const path=require('node:path'),assert=require('node:assert/strict'),{pathToFile
    const g=game,B=[];for(let y=0;y<g.terrain.length/128;y++)for(let x=0;x<128;x++)if(g.terrain[y*128+x]==='bridge')B.push({x,y});
    const hqB=g.hq('blue'),hqR=g.hq('red'),groups=[];
    for(const b of B){const q=groups.find(G=>G.some(c=>Math.abs(c.x-b.x)+Math.abs(c.y-b.y)<=2));if(q)q.push(b);else groups.push([b]);}
-   for(const G of groups){const c=G.reduce((a,b)=>Math.abs(b.x-hqB.x)+Math.abs(b.y-hqB.y)<Math.abs(a.x-hqB.x)+Math.abs(a.y-hqB.y)?b:a);for(let i=0;i<3;i++)g.add('blue','heavyTank',c.x-(hqB.x<hqR.x?1+i:-1-i),c.y);}
+   for(const G of groups.filter(G=>G.some(c=>Math.abs(c.x-64)<=14))){const c=G.reduce((a,b)=>Math.abs(b.x-hqB.x)+Math.abs(b.y-hqB.y)<Math.abs(a.x-hqB.x)+Math.abs(a.y-hqB.y)?b:a);for(let i=0;i<3;i++)g.add('blue','heavyTank',c.x-(hqB.x<hqR.x?1+i:-1-i),c.y);}
    const posts=o=>g.structures.filter(s=>s.owner===o&&s.type==='post'&&s.hp>0).length;
    const seen=new Map(),lost=[];let idle=0,run=0,longest=0,blueBuilt=0,minutes=6;
    for(let i=0;i<30*60*minutes&&!g.winner;i++){

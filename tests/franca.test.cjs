@@ -1,9 +1,9 @@
 'use strict';
 // Time azul (França): facção 'franca' com fichas próprias por unidade e mecânicas novas (GALIX, atira e foge, salva do Tigre…).
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
-const names='AUTO_CRUISE,Game,TYPES,FR_TYPES,SPEC,UT,KIT,FRANCE,STANDARD_FACTIONS,startingCatalog,cleanStartingArmy,armyCost,STARTING_BUDGET,UNIT_CAP,BARRAGE,AIR,PLANE,FOOT,trophyMax,seatsUsed,salvoSize,GALIX_CHARGES,GALIX_SMOKE,SCOOT_TIME,SHORT_RUNWAY,AIRDROP_SLOTS,PLANE_MODELS'.split(',');
+const names='AUTO_CRUISE,Game,TYPES,FR_TYPES,SPEC,UT,KIT,FRANCE,STANDARD_FACTIONS,startingCatalog,cleanStartingArmy,armyCost,STARTING_BUDGET,UNIT_CAP,BARRAGE,AIR,PLANE,FOOT,trophyMax,seatsUsed,salvoSize,GALIX_CHARGES,GALIX_SMOKE,SCOOT_TIME,SHORT_RUNWAY,AIRDROP_SLOTS,PLANE_MODELS,ASSAULT_TIME,ASSAULT_ACCURACY,ASSAULT_SPEED,FAST_WORK,workSeconds'.split(',');
 const E=new Function(fs.readFileSync(path.join(__dirname,'..','public','js','engine.js'),'utf8')+'\nreturn {'+names.join(',')+'};')();
-const {AUTO_CRUISE,Game,TYPES,FR_TYPES,SPEC,UT,FRANCE,STANDARD_FACTIONS,startingCatalog,cleanStartingArmy,armyCost,STARTING_BUDGET,BARRAGE,AIR,PLANE,trophyMax,seatsUsed,salvoSize,GALIX_CHARGES,GALIX_SMOKE,SCOOT_TIME,SHORT_RUNWAY}=E;
+const {AUTO_CRUISE,Game,TYPES,FR_TYPES,SPEC,UT,FRANCE,STANDARD_FACTIONS,startingCatalog,cleanStartingArmy,armyCost,STARTING_BUDGET,BARRAGE,AIR,PLANE,trophyMax,seatsUsed,salvoSize,GALIX_CHARGES,GALIX_SMOKE,SCOOT_TIME,SHORT_RUNWAY,ASSAULT_TIME,ASSAULT_ACCURACY,ASSAULT_SPEED,FAST_WORK,workSeconds}=E;
 const FR_SIDE={blue:FRANCE,red:'red'},cases=[],test=(name,fn)=>cases.push([name,fn]);
 function field(factions=FR_SIDE,mode='rts'){
  const g=new Game('river','normal',123,mode,{posts:2},{},{},null,factions);g.terrain.fill('plain');g.units=[];g.structures=[];g.mines=[];g.actions=[];g.animation=null;g.projectiles=[];g.memory.blue.clear();g.memory.red.clear();g.intel.clear();g.aiEnabled=false;
@@ -15,22 +15,22 @@ const run=(g,seconds)=>{for(let i=0;i<seconds*30;i++){g.update(1/30);g.events=[]
 test('fichas da França: cada unidade mantém o tipo e troca só o que o plano define',()=>{
  for(const [type,spec] of Object.entries(FR_TYPES)){assert.ok(TYPES[type],type);assert.equal(spec.name===undefined||typeof spec.name==='string',true);}
  const g=field();const u=name=>g.add('blue',name,10,80);
- assert.equal(UT(u('lightTank')).speed,2.3);assert.equal(u('lightTank').hp,95);assert.equal(u('tank').hp,155);assert.equal(u('heavyTank').hp,300);
- assert.equal(u('artillery').hp,80);assert.equal(u('recon').hp,65);assert.equal(u('antiAirVehicle').hp,85);assert.equal(u('rocketArtillery').hp,115);
+ assert.equal(UT(u('lightTank')).speed,2.5);assert.equal(u('lightTank').hp,100);assert.equal(u('tank').hp,160);assert.equal(u('heavyTank').hp,300);
+ assert.equal(u('artillery').hp,80);assert.equal(u('recon').hp,75);assert.equal(u('antiAirVehicle').hp,85);assert.equal(u('rocketArtillery').hp,115);
  assert.equal(u('transportTruck').hp,100);assert.equal(u('helicopter').hp,100);assert.equal(u('helicopterAir').hp,140);assert.equal(u('reconDrone').hp,70);
- const red=g.add('red','lightTank',100,10);assert.equal(red.hp,110,'o vermelho continua com a ficha base');assert.equal(UT(red).speed,2);
+ const red=g.add('red','lightTank',100,10);assert.equal(red.hp,110,'o vermelho continua com a ficha base');assert.equal(UT(red).speed,1.9);
  assert.equal(TYPES.lightTank.hp,110,'a tabela base não é alterada');
 });
 test('catálogo, custo e orçamento seguem a facção',()=>{
- assert.equal(SPEC('tank',FRANCE).cost,155);assert.equal(SPEC('tank','blue').cost,150);assert.equal(SPEC('antiAirVehicle',FRANCE).cost,145);
+ assert.equal(SPEC('tank',FRANCE).cost,150);assert.equal(SPEC('tank','blue').cost,150);assert.equal(SPEC('antiAirVehicle',FRANCE).cost,145);
  const cat=startingCatalog(FRANCE);for(const t of ['fighterFr','multiroleFr','stealthFighterFr','bomberFr'])assert.ok(cat.includes(t),t);
  for(const t of ['fighterBlue','fighterRed','bomberRed'])assert.ok(!cat.includes(t),t);
- assert.equal(armyCost({tank:2},FRANCE),310);assert.equal(armyCost({tank:2},'blue'),300);
+ assert.equal(armyCost({tank:2},FRANCE),300);assert.equal(armyCost({tank:2},'blue'),300);
  assert.ok(armyCost({tank:3,infantry:2},FRANCE)<=STARTING_BUDGET);
  assert.deepEqual({...cleanStartingArmy({tank:2,infantry:2},FRANCE)},{tank:2,infantry:2});
  assert.notDeepEqual({...cleanStartingArmy({fighterBlue:1},FRANCE)},{fighterBlue:1},'aviões de outra facção são recusados');
  const g=field();g.credits.blue=1000;const hq=g.structures.find(s=>s.owner==='blue'&&s.type==='hq');
- assert.equal(g.recruitCost('tank',hq),155);assert.equal(g.recruitCost('tank',g.structures.find(s=>s.owner==='red')),150);
+ assert.equal(g.recruitCost('tank',hq),150);assert.equal(g.recruitCost('tank',g.structures.find(s=>s.owner==='red')),150);
  g.add('blue','airportAsphalt',10,70);const air=g.structures.find(s=>s.type==='airportAsphalt');
  assert.equal(g.canRecruit('blue','multiroleFr',air),true);assert.equal(g.canRecruit('blue','multiroleBlue',air),false);
 });
@@ -38,7 +38,7 @@ test('aviões da França: custo dentro de ±10% do aliado e munição declarada'
  const pair=[['fighterFr','fighterBlue'],['multiroleFr','multiroleBlue'],['stealthFighterFr','stealthFighterBlue'],['bomberFr','bomberBlue']];
  for(const [fr,base] of pair){const r=TYPES[fr].cost/TYPES[base].cost;assert.ok(r>=.9&&r<=1.1,fr+' custo '+TYPES[fr].cost+' vs '+TYPES[base].cost);assert.equal(TYPES[fr].team,FRANCE);}
  assert.equal(TYPES.multiroleFr.ammo.cruiseMissile,1);assert.equal(TYPES.multiroleFr.range,67);assert.ok(TYPES.multiroleFr.ammo.jetGun>0,'o Rafale mantém a metralhadora');
- assert.equal(TYPES.fighterFr.ammo.jetGun,100);assert.equal(TYPES.fighterFr.ammo.antiRadiation,1);assert.equal(TYPES.stealthFighterFr.ammo.jetAam,4);
+ assert.equal(TYPES.fighterFr.ammo.jetGun,100);assert.equal(TYPES.fighterFr.ammo.antiRadiation,2);assert.equal(TYPES.stealthFighterFr.ammo.jetAam,4);
  assert.equal(TYPES.bomberFr.radarStealth,undefined,'o bombardeiro francês é detectável');assert.equal(TYPES.bomberFr.speed,5);
  assert.equal(TYPES.bomberFr.ammo.bombIncendiary,0);assert.equal(TYPES.fighterBlue.ammo.jetGun,80,'padrão intacto');assert.equal(TYPES.bomberRed.ammo.jetGun,undefined);
 });
@@ -61,7 +61,7 @@ test('GALIX: fumaça ao ser atingido, −40% de precisão contra ele, sem Trophy
  run(g,GALIX_SMOKE+.2);assert.equal(tank.smokeTime,0);g.hurt(tank,10,foe);assert.equal(tank.trophy,0);
  const tr=g.add('blue','heavyTank',60,40);tr.trophy=2;const at=g.add('red','antitank',60,30);at.atMissiles=4;
  g.shoot(at,tr,'atMissile');assert.equal(tr.trophy,2,'o Trophy do verde não intercepta aqui: GALIX não é Trophy');
- const gv=field({blue:'blue',red:'red'}),vt=gv.add('blue','heavyTank',60,40),vat=gv.add('red','antitank',60,30);gv.shoot(vat,vt,'atMissile');assert.equal(vt.trophy,2,'Trophy do verde gasta uma carga');
+ const gv=field({blue:'blue',red:'red'}),vt=gv.add('blue','heavyTank',60,40),vat=gv.add('red','antitank',60,30);gv.shoot(vat,vt,'atMissile');assert.equal(vt.trophy,5,'Trophy do verde gasta uma carga');
 });
 test('atira e foge do CAESAR: +1 Mov por turnos e +30% de velocidade no RTS',()=>{
  const t=field(FR_SIDE,'turns'),a=t.add('blue','artillery',40,60),foe=t.add('red','infantry',40,50);t.updateVision();
@@ -71,10 +71,10 @@ test('atira e foge do CAESAR: +1 Mov por turnos e +30% de velocidade no RTS',()=
  const x0=c.x,y0=c.y;r.order(c,'move',{x:40,y:66});run(r,2);const fast=Math.hypot(c.x-x0,c.y-y0);
  const d=field(FR_SIDE,'rts'),n=d.add('blue','artillery',40,60);d.order(n,'move',{x:40,y:66});run(d,2);assert.ok(fast>Math.hypot(n.x-40,n.y-60)+.05,'move mais rápido depois de atirar '+fast);
 });
-test('LRU: salva de 6 foguetes ×14, alcance 24; verde segue com 4 × 20',()=>{
+test('LRU: salva de 6 foguetes ×20, alcance 25; verde segue com 4 × 20',()=>{
  const g=field(),l=g.add('blue','rocketArtillery',40,60),v=field({blue:'blue',red:'red'}),w=v.add('blue','rocketArtillery',40,60);
- assert.equal(salvoSize(l),6);assert.equal(salvoSize(w),4);assert.equal(UT(l).range,24);assert.equal(g.attackPower(l,'rocket'),14);assert.equal(v.attackPower(w,'rocket'),20);
- assert.equal(g.canBombard(l,{x:40,y:40}),true);assert.equal(g.canBombard(l,{x:40,y:30}),false,'além de 24 casas');assert.equal(v.canBombard(w,{x:40,y:35}),true);
+ assert.equal(salvoSize(l),6);assert.equal(salvoSize(w),4);assert.equal(UT(l).range,25);assert.equal(g.attackPower(l,'rocket'),20);assert.equal(v.attackPower(w,'rocket'),20);
+ assert.equal(g.canBombard(l,{x:40,y:40}),true);assert.equal(g.canBombard(l,{x:40,y:30}),false,'além de 25 casas');assert.equal(v.canBombard(w,{x:40,y:35}),true);
  g.credits.blue=0;const target=g.add('red','infantry',40,40);g.updateVision();g.rng=()=>0;assert.equal(g.order(l,'bombard',{x:40,y:40}),true);
  run(g,4);assert.ok(target.hp<target.maxHp||!g.units.includes(target),'a salva atingiu a casa');
  assert.ok(l.cooldown>8,'recarga 11 s depois da salva: '+l.cooldown);
@@ -101,9 +101,9 @@ test('Gazelle, nEUROn e Patroller usam as armas e o status da França',()=>{
  assert.equal(gun.damage,6);assert.equal(gun.shots,4);assert.equal(gun.cooldown,.25);assert.equal(gun.infantryMultiplier,2.5);assert.equal(gun.vehicleMultiplier,.4);
  assert.equal(h.hp,100);assert.equal(g.sight(h),7);
  const d=g.add('blue','stealthDrone',50,50);assert.equal(g.weaponStats(d,'stealthMissile').damage,50);assert.equal(g.weaponRange(d,'stealthMissile'),5);assert.equal(g.weaponStats(d,'stealthMissile').structureMultiplier,1.5);
- assert.equal(g.sight(g.add('blue','reconDrone',60,50)),14);
- const hit=faction=>{const f=field({blue:faction,red:'red'});f.rng=()=>.99;const dr=f.add('blue','stealthDrone',50,52),post=f.add('red','post',50,48);f.updateVision();f.rng=()=>0;f.shoot(dr,post);settle(f,200);return post.maxHp-post.hp;};
- assert.ok(hit(FRANCE)>hit('blue')*1.5,'bomba guiada: dano maior e ×1.5 contra estruturas');
+ assert.equal(g.sight(g.add('blue','reconDrone',60,50)),15);
+ const hit=faction=>{const f=field({blue:faction,red:'red'});f.rng=()=>.99;const dr=f.add('blue','stealthDrone',50,52),post=f.add('red','hq',50,46);f.updateVision();f.rng=()=>0;f.shoot(dr,post);settle(f,200);return post.maxHp-post.hp;};
+ assert.ok(hit(FRANCE)>hit('red')*1.4,'bomba guiada (mesmo dano 50 do vermelho): ×1.5 contra estruturas');
 });
 test('NH90: 8 vagas, ou 1 batedor + 3 tropas, sem altitude alta e sem armas',()=>{
  const g=field(),h=g.add('blue','transportHelicopter',50,60);h.altitude='low';h.cargo=[];
@@ -121,11 +121,11 @@ test('NH90: 8 vagas, ou 1 batedor + 3 tropas, sem altitude alta e sem armas',()=
 test('caminhão TRM: 5 vagas; A400M: 10 vagas, pista curta',()=>{
  const g=field();assert.equal(UT(g.add('blue','transportTruck',10,80)).capacity,5);
  assert.equal(g.airCap('blue'),10);assert.equal(g.airCap('red'),12);
- const p=g.add('blue','transportPlane',20,80);assert.equal(p.hp,230);assert.equal(UT(p).speed,4.8);
+ const p=g.add('blue','transportPlane',20,80);assert.equal(p.hp,230);assert.equal(UT(p).speed,5);
  p.runway={type:'land',phase:'approach',baseId:0,elapsed:0,level:1};g.runwayPhase(p,'landing',{x:1,y:1},1.5,0);
  assert.ok(Math.abs(p.runway.duration-1.5*SHORT_RUNWAY)<1e-9);
  const q=g.add('red','transportPlane',20,20);q.runway={type:'land',phase:'approach',baseId:0,elapsed:0,level:1};g.runwayPhase(q,'landing',{x:1,y:1},1.5,0);assert.equal(q.runway.duration,1.5);
- g.airdropQuote({tank:1},undefined,'blue');assert.equal(g.airdropQuote({tank:1},undefined,'blue').cost,150+155);assert.equal(g.airdropQuote({tank:1},undefined,'red').cost,150+150);
+ g.airdropQuote({tank:1},undefined,'blue');assert.equal(g.airdropQuote({tank:1},undefined,'blue').cost,150+150);assert.equal(g.airdropQuote({tank:1},undefined,'red').cost,150+150);
  assert.equal(g.airdropQuote({infantry:11},undefined,'blue'),null,'11 vagas não cabem nas 10 do A400M');assert.notEqual(g.airdropQuote({infantry:11},undefined,'red'),null);
 });
 test('rede de sensores do FCAS revela furtivos inimigos a 8 casas',()=>{
@@ -156,6 +156,46 @@ const g=field(),r=g.add('blue','multiroleFr',40,40),b=g.add('blue','bomberFr',40
 assert.equal(AUTO_CRUISE(r),false);assert.equal(AUTO_CRUISE(b),true);
 g.order(r,'strikeCell',{x:50,y:40,weapon:'auto'});assert.notEqual(r.flightJob?.weapon,'cruiseMissile');
 assert.equal(g.order(r,'strikeCell',{x:50,y:40,weapon:'cruiseMissile'}),true);assert.equal(r.flightJob.weapon,'cruiseMissile');
+});
+test('desembarque de assalto: tropa que sai de transporte azul ganha precisão e velocidade por 6 s',()=>{
+ const g=field(),t=g.add('blue','transportTruck',50,60),a=g.add('blue','infantry',51,60),b=g.add('blue','infantry',52,60);
+ t.cargo=[];g.units=g.units.filter(u=>u!==a&&u!==b);t.cargo.push(a,b);
+ const foe=g.add('red','infantry',50,64);g.updateVision();
+ assert.equal(g.order(t,'disembark'),true);const out=g.units.filter(u=>u.owner==='blue'&&u.type==='infantry');assert.equal(out.length,2);
+ for(const u of out)assert.equal(u.assault,ASSAULT_TIME);
+ out[0].assault=0;const plain=g.accuracy(out[0],foe);out[0].assault=ASSAULT_TIME;
+ assert.ok(Math.abs(g.accuracy(out[0],foe)-plain*ASSAULT_ACCURACY)<1e-9,'+20% de precisão');
+ assert.equal(g.timerFor(out[0]).label,'Assalto');
+ g.order(out[1],'move',{x:56,y:60});run(g,ASSAULT_TIME-.3);assert.ok(out[1].assault>0);
+ run(g,.6);assert.equal(out[1].assault,0,'o bônus acaba depois de 6 s');assert.equal(g.timerFor(out[1]),null);
+ const v=field({blue:'blue',red:'red'}),vt=v.add('blue','transportTruck',50,60),p=v.add('blue','infantry',51,60);v.units=v.units.filter(u=>u!==p);vt.cargo=[p];v.order(vt,'disembark');assert.equal(p.assault,undefined,'verde e vermelho não têm o bônus');
+ const turns=field(FR_SIDE,'turns'),tt=turns.add('blue','transportTruck',50,60),q=turns.add('blue','infantry',51,60);turns.units=turns.units.filter(u=>u!==q);tt.cargo=[q];turns.order(tt,'disembark');
+ assert.equal(q.assault,1);turns.beginTurn('blue');assert.equal(q.moveLeft,UT(q).move+1,'+1 de Mov no próximo turno');turns.beginTurn('blue');assert.equal(q.assault,0);
+ const copy=Game.fromSnapshot(g.snapshot());assert.equal(copy.units.length,g.units.length);
+});
+test('captura e obra rápidas: infantaria azul leva 70% do tempo',()=>{
+ const g=field(),r=field({blue:'blue',red:'red'});
+ assert.equal(workSeconds(g.add('blue','infantry',20,20),'capture'),2*FAST_WORK);assert.equal(workSeconds(g.add('blue','infantry',21,20),'build'),3*FAST_WORK);
+ assert.equal(workSeconds(g.add('blue','engineer',22,20),'repair'),1,'reparo não muda');assert.equal(workSeconds(g.add('blue','tank',23,20),'capture'),2);
+ assert.equal(workSeconds(r.add('blue','infantry',20,20),'capture'),2);assert.equal(workSeconds(r.add('red','infantry',21,20),'build'),3);
+ const time=gg=>{const post=gg.add('neutral','post',60,60),u=gg.add('blue','infantry',60,59);gg.updateVision();assert.equal(gg.order(u,'capture',{targetId:post.id}),true);let t=0;while(post.owner!=='blue'&&t<10){gg.update(1/30);gg.events=[];t+=1/30;}return t;};
+ const fr=time(g),base=time(r);assert.ok(fr<base*.85,'captura azul '+fr.toFixed(2)+' s contra '+base.toFixed(2)+' s');
+});
+test('evacuação blindada: tropas saem vivas com metade da vida do transporte azul destruído',()=>{
+ const make=(factions,type)=>{const g=field(factions),t=g.add('blue',type,50,60);t.altitude='low';t.cargo=[];for(let i=0;i<3;i++){const p=g.add('blue','infantry',49+i,61);g.units=g.units.filter(u=>u!==p);t.cargo.push(p);}return {g,t};};
+ for(const type of ['transportTruck','transportHelicopter']){
+  const {g,t}=make(FR_SIDE,type),foe=g.add('red','heavyTank',50,56),pax=[...t.cargo];g.hurt(t,t.hp,foe);
+  assert.ok(!g.units.includes(t));for(const p of pax){assert.ok(g.units.includes(p),'sobreviveu');assert.equal(p.hp,Math.round(p.maxHp/2));assert.equal(p.embarkedIn,null);}
+  assert.equal(new Set(pax.map(p=>p.x+','+p.y)).size,3,'cada um numa casa');
+ }
+ const {g,t}=make({blue:'blue',red:'red'},'transportTruck'),pax=[...t.cargo];g.hurt(t,t.hp,g.add('red','heavyTank',50,56));
+ for(const p of pax)assert.ok(!g.units.includes(p),'verde: a tropa morre com o transporte');
+ const {g:h,t:plane}=make(FR_SIDE,'transportTruck');plane.cargo=[h.add('blue','tank',48,61)];h.units=h.units.filter(u=>u!==plane.cargo[0]);const tank=plane.cargo[0];h.hurt(plane,plane.hp,h.add('red','heavyTank',50,56));assert.ok(!h.units.includes(tank),'só tropa a pé escapa');
+});
+test('Leclerc blindado: alcance 7 e 3 mísseis antitanque (dano 45, alcance 10); Tigre custa 235',()=>{
+ const g=field(),h=g.add('blue','heavyTank',50,60);assert.equal(UT(h).range,7);assert.equal(h.atMissiles,3);
+ assert.equal(g.weaponStats(h,'atMissile').damage,45);assert.equal(g.weaponStats(h,'atMissile').range,10);
+ assert.equal(SPEC('helicopterGround',FRANCE).cost,235);
 });
 for(const [name,fn] of cases){fn();console.log('OK '+name);}
 console.log(cases.length+' verificações do time azul passaram.');
