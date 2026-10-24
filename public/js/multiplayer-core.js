@@ -5,8 +5,9 @@
    o núcleo anota nele o jogador e a sala. Recebe o motor pronto: createCore(engine, opções). */
 function createCore(engine,{graceMs=120000,now=Date.now,maxRooms=16}={}){
  const {Game,TYPES,MAPS,NATION_DOCTRINES,PROCEDURAL,STARTING_DEFAULT,STARTING_BUDGET,UNIT_CAP,startingCatalog,armyCost,cleanStartingArmy,STEP,SIZE,KEY,TILE,AIR,MISSILE}=engine;
- // Até três jogadores, todos contra todos; o primeiro é o anfitrião. Sem escolha explícita, cada lado usa um time de unidades diferente.
- const SIDES=['blue','red','green'],DEFAULT_FACTION={blue:'blue',red:'red',green:'franca'},plain=o=>o!==null&&typeof o==='object'&&!Array.isArray(o),id=n=>Number.isSafeInteger(n)&&n>0;
+ // Até quatro jogadores, todos contra todos; o primeiro é o anfitrião. Sem escolha explícita, cada lado usa um time de unidades diferente.
+ // STATE_BACKLOG: com mais de 1 MB parado no envio de um jogador, ele não recebe estado novo (o próximo estado já traz tudo); mensagens que não são estado nunca são puladas.
+ const SIDES=['blue','red','green','gold'],DEFAULT_FACTION={blue:'blue',red:'red',green:'franca',gold:'roxo'},STATE_BACKLOG=1024*1024,plain=o=>o!==null&&typeof o==='object'&&!Array.isArray(o),id=n=>Number.isSafeInteger(n)&&n>0;
  const copy=o=>JSON.parse(JSON.stringify(o)),pick=(o,keys)=>Object.fromEntries(keys.filter(k=>o[k]!==undefined).map(k=>[k,o[k]]));
  const failure=(message,status=400,code='invalid')=>Object.assign(new Error(message),{status,code});
  const random32=()=>globalThis.crypto.getRandomValues(new Uint32Array(1))[0],privateRandom=()=>random32()/0x100000000;
@@ -69,7 +70,7 @@ function createCore(engine,{graceMs=120000,now=Date.now,maxRooms=16}={}){
  const send=(socket,value)=>{if(socket&&(socket.readyState===undefined||socket.readyState===1))socket.send(JSON.stringify(value));};
  const publicRoom=room=>({code:room.code,status:room.status,hostSide:room.players.find(p=>p.host)?.side,config:room.config,matchId:room.matchId,paused:room.paused,reconnectDeadline:room.paused?Math.min(...room.players.filter(p=>!p.ws&&!p.out).map(p=>p.disconnectedAt+graceMs)):null,result:room.result||null,players:room.players.map(p=>({nickname:p.nickname,side:p.side,ready:p.ready,connected:!!p.ws,doctrine:p.doctrine,faction:p.faction,army:p.army,rematch:!!p.rematch,out:!!p.out}))});
  // stateOnly: o envio periódico (10 Hz) leva só o estado; sala e resultado saem quando a sala muda.
- const broadcast=(room,stateOnly=false)=>{for(const r of room?[room]:rooms.values())for(const p of r.players){if(!p.ws)continue;if(!stateOnly)send(p.ws,{type:'room',side:p.side,room:publicRoom(r)});if(r.game)send(p.ws,{type:'state',side:p.side,matchId:r.matchId,state:viewState(r,p)});if(r.result&&!stateOnly)send(p.ws,{type:'result',...r.result});}};
+ const broadcast=(room,stateOnly=false)=>{for(const r of room?[room]:rooms.values())for(const p of r.players){if(!p.ws)continue;if(!stateOnly)send(p.ws,{type:'room',side:p.side,room:publicRoom(r)});if(r.game&&!(p.ws.bufferedAmount>STATE_BACKLOG))send(p.ws,{type:'state',side:p.side,matchId:r.matchId,state:viewState(r,p)});if(r.result&&!stateOnly)send(p.ws,{type:'result',...r.result});}};
  const newPlayer=(name,side,host=false)=>({nickname:nickname(name),side,host,token:token(),ready:false,doctrine:'balanced',faction:null,army:{...STARTING_DEFAULT},ws:null,lastSeq:0,acks:new Map(),eventCursor:0,terrainRevision:-1,disconnectedAt:null,rematch:false,out:false,left:false});
  // Facção = unidades usadas; sem escolha explícita vale o padrão do lado.
  const factionFor=p=>p.faction||DEFAULT_FACTION[p.side];

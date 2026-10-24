@@ -67,7 +67,7 @@ const {chromium}=require('playwright-core');
  assert.ok(await page.locator('#mpMap+.pick-grid .pick-card').first().isDisabled(),'convidado não configura');
  await page.locator('#mpFaction').selectOption('blue');assert.equal(await page.locator('#mpFaction+.pick-grid .pick-card[aria-checked=true]').getAttribute('data-value'),'blue');
  await room([P('blue','Anfitrião',false),P('red','Bia',false)]);
- assert.equal(await page.locator('#mpPlayers li').count(),2);assert.equal(await page.locator('.mp-slot.empty').count(),1);
+ assert.equal(await page.locator('#mpPlayers li').count(),2);assert.equal(await page.locator('.mp-slot.empty').count(),2,'vagas livres: verde e amarelo');
  assert.equal(await page.locator('#multiplayer').evaluate(e=>e.scrollWidth<=e.clientWidth+1),true);
  await page.evaluate(()=>{Multiplayer.session=null;Multiplayer.room=null;});
 

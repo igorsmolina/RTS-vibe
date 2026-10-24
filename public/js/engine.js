@@ -5,7 +5,7 @@ const KEY=(x,y)=>y*COLS+x,INSIDE=(x,y)=>Number.isInteger(x)&&Number.isInteger(y)
 const TILE=u=>({x:Math.round(u.x),y:Math.round(u.y)}),DIST=(a,b)=>Math.max(0,a.x-b.x-(b.width||1)+1,b.x-a.x-(a.width||1)+1)+Math.max(0,a.y-b.y-(b.height||1)+1,b.y-a.y-(a.height||1)+1);
 const CENTER=u=>({x:u.x+((u.width||1)-1)/2,y:u.y+((u.height||1)-1)/2});
 const NEAREST=(u,p)=>({x:Math.max(u.x,Math.min(u.x+(u.width||1)-1,p.x)),y:Math.max(u.y,Math.min(u.y+(u.height||1)-1,p.y))});
-const DIRS=[[1,0],[-1,0],[0,1],[0,-1]],AIR_DIRS=[...DIRS,[1,1],[-1,1],[1,-1],[-1,-1]],SIDE={blue:'Azul',red:'Vermelha',green:'Verde',neutral:'Neutra'};
+const DIRS=[[1,0],[-1,0],[0,1],[0,-1]],AIR_DIRS=[...DIRS,[1,1],[-1,1],[1,-1],[-1,-1]],SIDE={blue:'Azul',red:'Vermelha',green:'Verde',gold:'Amarela',neutral:'Neutra'};
 const NATION_COLORS={blue:'#77c8e2',green:'#8acb91',gold:'#e0c067',violet:'#b79ae8'},NATION_SECONDARY={white:'#ffffff',black:'#182128',cream:'#f3e8c9'};
 const NATION_DEFAULTS=Object.freeze({name:'Azul',primary:'blue',secondary:'white',pattern:'plain',emblem:'none'});
 const NATION_DOCTRINES={
@@ -232,7 +232,7 @@ function seeded(seed){let n=seed>>>0;const rng=()=>{n=(Math.imul(n,1664525)+1013
 const UNIT_CAP=50;
 const STANDARD_FACTIONS=Object.freeze({blue:'blue',red:'red'}),FACTION_IDS=Object.freeze(['blue','red',FRANCE,ROXO]);
 // O terceiro lado (verde) só existe se vier no objeto: partidas de dois lados não mudam.
-function cleanFactions(value){const ok=v=>FACTION_IDS.includes(v);const sides={blue:ok(value?.blue)?value.blue:'blue',red:ok(value?.red)?value.red:'red'};if(value&&Object.hasOwn(value,'green'))sides.green=ok(value.green)?value.green:FRANCE;return Object.freeze(sides);}
+function cleanFactions(value){const ok=v=>FACTION_IDS.includes(v);const sides={blue:ok(value?.blue)?value.blue:'blue',red:ok(value?.red)?value.red:'red'};if(value&&Object.hasOwn(value,'green'))sides.green=ok(value.green)?value.green:FRANCE;if(sides.green&&value&&Object.hasOwn(value,'gold'))sides.gold=ok(value.gold)?value.gold:ROXO;return Object.freeze(sides);}
 const STARTING_BUDGET=600,STARTING_DEFAULT=Object.freeze({infantry:2,engineer:2,recon:1,tank:1,antitank:1});
 function startingCatalog(owner='blue'){return Object.keys(TYPES).filter(type=>SPEC(type,owner).cost>0&&!TYPES[type].structure&&(!TYPES[type].plane||TYPES[type].team===owner));}
 function armyOverBudget(army,faction){return !!army&&typeof army==='object'&&!Array.isArray(army)&&armyCost(army,faction)>STARTING_BUDGET;}
@@ -244,7 +244,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   this.factions=cleanFactions(factions);
   const per=f=>Object.fromEntries(this.sides.map(s=>[s,f(s)]));this.out=[];this.doctrines=Object.freeze(per(s=>cleanDoctrine(doctrines?.[s])));this.nationName=NATION_DEFAULTS.name;
   this.mode=mode==='rts'?'rts':'turns';this.economyClock=0;this.aiClock=0;this.visionClock=0;this.claims=new Set();
-  this.map=MAPS[map]?map:'river';this.difficulty=Object.hasOwn(PLAN,difficulty)?difficulty:'normal';this.seed=seed>>>0;this.rng=seeded(seed);this.mineRng=typeof privateRandom==='function'?privateRandom:null;this.initialArmies={blue:cleanStartingArmy(initialArmies?.blue,this.factions.blue),red:cleanStartingArmy(initialArmies?.red,this.factions.red,enemyStartingArmy(this.seed,this.factions.red)),...(this.factions.green?{green:cleanStartingArmy(initialArmies?.green,this.factions.green)}:{})};
+  this.map=MAPS[map]?map:'river';this.difficulty=Object.hasOwn(PLAN,difficulty)?difficulty:'normal';this.seed=seed>>>0;this.rng=seeded(seed);this.mineRng=typeof privateRandom==='function'?privateRandom:null;this.initialArmies={blue:cleanStartingArmy(initialArmies?.blue,this.factions.blue),red:cleanStartingArmy(initialArmies?.red,this.factions.red,enemyStartingArmy(this.seed,this.factions.red)),...(this.factions.green?{green:cleanStartingArmy(initialArmies?.green,this.factions.green)}:{}),...(this.factions.gold?{gold:cleanStartingArmy(initialArmies?.gold,this.factions.gold)}:{})};
   const o={...PROCEDURAL,...options},unit=v=>Math.max(0,Math.min(1,Number(v)||0));this.options={water:unit(o.water),forest:unit(o.forest),relief:unit(options.relief??options.mountain??PROCEDURAL.relief),farmland:unit(o.farmland),posts:Math.max(2,Math.min(32,Math.round(Number(o.posts)/2)*2||24)),landscape:o.landscape==='auto'||LANDSCAPE_LIST.includes(o.landscape)?o.landscape:'continent'};this.landscape=this.map==='random'?landscapeOf(this.seed,this.options.landscape):'continent';
   this.terrain=Array(SIZE).fill('plain');this.units=[];this.structures=[];this.mines=[];this.projectiles=[];this.events=[];this.logs=[];this.nextId=1;this.nextBatchId=1;this.nextProjectileId=1;
   this.time=0;this.round=1;this.turn='blue';this.actions=[];this.animation=null;this.aiQueue=[];this.aiWait=0;this.aiEnabled=true;this.aiDecisions=0;this.aiState='prepare';this.plan={phase:'prepare',since:this.mode==='rts'?0:1,rally:null,objective:null,wave:[],waveStart:0};this.intel=new Map();this.shotsFired=0;
@@ -673,7 +673,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   u.hp=u.maxHp=this.baseHp(owner,type);if(t.width){u.width=t.width;u.height=t.height;}if(t.plane){u.ammo={...t.ammo};u.flightState='patrol';u.patrol={x:Math.max(4,Math.min(COLS-5,x-4)),y:Math.max(4,Math.min(ROWS-5,y)),angle:0};u.salvo=1;}if(t.drone){u.flightState='patrol';u.patrol={x:Math.max(4,Math.min(COLS-5,x-4)),y:Math.max(4,Math.min(ROWS-5,y)),angle:0};}if(t.structure)u.queue=[];if(t.air){if(!t.unarmed)u.weaponMode='auto';u.altitude=t.drone||t.plane?'high':'low';u.flares=t.drone?0:(t.flares??3);u.flareCooldown=0;u.flareUsed=false;}if(t.missiles)u.missiles=t.missiles;if(t.stealth)u.spotted=Object.fromEntries(this.sides.map(s=>[s,false]));if(atMax(u))u.atMissiles=atMax(u);if(type==='heavyTank')u.trophy=trophyMax(u);if(type!=='rocketArtillery'&&BARRAGE(u))u.salvos=HELI_SALVOS;if(type==='antiAirVehicle'){u.radarOn=true;u.smokeCharges=2;u.smokeCooldown=0;u.smokeTime=0;u.smokeUsed=false;u.reactionReady=true;}(t.structure?this.structures:this.units).push(u);if(type==='antiAirVehicle')this.updateRadarContacts();return u;
  }
   generate(){
-  const o=this.options,rng=this.rng,mid=COLS/2,T=this.terrain,seed=this.seed,three=this.sides.length>2;
+  const o=this.options,rng=this.rng,mid=COLS/2,T=this.terrain,seed=this.seed,three=this.sides.length>2,four=this.sides.length>3;
   const P=this.map==='random'?{relief:o.relief,ridge:Math.max(0,o.relief-.55)*2.2,water:o.water,forest:o.forest,farmland:o.farmland,hedges:.8}:MAP_PROFILES[this.map];
   // Mapa simétrico por ponto: decide meia malha e espelha (justiça e a IA presume o QG azul pelo espelho).
   const mirror=c=>({...c,x:COLS-(c.width||1)-c.x,y:ROWS-(c.height||1)-c.y}),half=(x,y)=>KEY(x,y)<=KEY(COLS-1-x,ROWS-1-y),at=(x,y)=>T[KEY(x,y)],set=(x,y,t)=>{T[KEY(x,y)]=T[KEY(COLS-1-x,ROWS-1-y)]=t;};
@@ -809,7 +809,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   const reach=new Uint8Array(SIZE),queue=[KEY(exit.x,exit.y)];reach[queue[0]]=1;
   while(queue.length){const k=queue.pop(),px=k%COLS,py=(k-px)/COLS;for(const [dx,dy]of DIRS){const x=px+dx,y=py+dy,n=KEY(x,y);if(INSIDE(x,y)&&!reach[n]&&at(x,y)!=='mountain'){reach[n]=1;queue.push(n);}}}
   // 6. Postos em pontos estratégicos: colinas, cabeceiras de rio e o meio do mapa; espaçados e longe dos QGs.
-  const home={x:1,y:ROWS-4,width:3,height:3},greenHome={x:COLS-4,y:ROWS-4,width:3,height:3},hqs=[home,mirror(home),...(three?[greenHome]:[])],placed=[],nearWater=(x,y)=>[[1,0],[-1,0],[0,1],[0,-1],[2,0],[-2,0],[0,2],[0,-2]].some(([dx,dy])=>INSIDE(x+dx,y+dy)&&at(x+dx,y+dy)==='river');
+  const home={x:1,y:ROWS-4,width:3,height:3},greenHome={x:COLS-4,y:ROWS-4,width:3,height:3},hqs=[home,mirror(home),...(three?[greenHome]:[]),...(four?[mirror(greenHome)]:[])],placed=[],nearWater=(x,y)=>[[1,0],[-1,0],[0,1],[0,-1],[2,0],[-2,0],[0,2],[0,-2]].some(([dx,dy])=>INSIDE(x+dx,y+dy)&&at(x+dx,y+dy)==='river');
   const candidates=[];each((x,y)=>{const p={x,y,width:2,height:2},pair=[p,mirror(p)];if(x<2||y<1||pair.some(c=>!INSIDE(c.x+c.width-1,c.y+c.height-1)||hqs.some(h=>DIST(h,c)<8)))return;
    for(const c of pair)for(let yy=c.y;yy<c.y+c.height;yy++)for(let xx=c.x;xx<c.x+c.width;xx++)if(!reach[KEY(xx,yy)]||['river','mountain'].includes(at(xx,yy)))return;
    const balance=Math.abs(DIST(p,hqs[0])-DIST(p,hqs[1]));const corner=Math.min(Math.hypot(x,y),Math.hypot(COLS-1-x,ROWS-1-y));candidates.push({...p,score:rng()*1.6+.9*Math.max(0,1-corner/12)+(at(x,y)==='hill'?.35:0)+(nearWater(x,y)?.35:0)+.25*(1-balance/40)});});
@@ -872,6 +872,8 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
   // 8. Tropas iniciais.
   for(const [type,p]of [['hq',home],['commander',{x:4,y:ROWS-3}]]){const q=mirror(p);this.add('blue',type,p.x,p.y);this.add('red',type,q.x,q.y);}
   if(three)for(const [type,p]of [['hq',greenHome],['commander',exit3]])this.add('green',type,p.x,p.y);
+  // Quatro lados: a base amarela é a verde espelhada no centro (o terreno já é simétrico, então o canto superior esquerdo já está limpo e ligado).
+  if(four)for(const [type,p]of [['hq',mirror(greenHome)],['commander',mirror(exit3)]])this.add('gold',type,p.x,p.y);
   // ponytail: com três lados não há aeroportos neutros (cairiam colados à base verde) e os postos não são balanceados para ela; ajustar se a partida pedir.
   if(!three)this.generateAirports(carve,nodes);
   // 9. Minas no centro, fora de água, serra, ponte e estruturas.
@@ -880,7 +882,7 @@ function enemyStartingArmy(seed,faction='red'){const rng=seeded((seed>>>0)^0x6a0
    for(const [cx,cy]of cells)this.mines.push({x:cx,y:cy,known:Object.fromEntries(this.sides.map(s=>[s,false]))});placedMines++;}
   for(const owner of this.sides){const positions=[];for(let y=ROWS-5;y<ROWS;y++)for(let x=0;x<6;x++)positions.push({x,y});positions.sort((a,b)=>(a.y-ROWS+5)%2-(b.y-ROWS+5)%2||a.y-b.y||Math.abs(a.x-1)-Math.abs(b.x-1)||a.x-b.x);
    for(let y=ROWS-7;y<ROWS;y++)for(let x=0;x<8;x++)if(y<ROWS-5||x>=6)positions.push({x,y});
-   for(const type of startingCatalog(this.factionOf(owner)))for(let n=0;n<(this.initialArmies[owner][type]||0);n++){const cell=positions.map(p=>owner==='blue'?p:owner==='green'?{x:COLS-1-p.x,y:p.y}:mirror(p)).find(p=>!this.structureAt(p.x,p.y)&&!this.units.some(u=>u.owner===owner&&u.x===p.x&&u.y===p.y));if(!cell)throw Error('Initial army has no deployment space');if(['river','mountain'].includes(at(cell.x,cell.y)))set(cell.x,cell.y,'plain');const unit=this.add(owner,type,cell.x,cell.y);if(PLANE(unit))this.setPatrol(unit);}
+   for(const type of startingCatalog(this.factionOf(owner)))for(let n=0;n<(this.initialArmies[owner][type]||0);n++){const cell=positions.map(p=>owner==='blue'?p:owner==='green'?{x:COLS-1-p.x,y:p.y}:owner==='gold'?{x:p.x,y:ROWS-1-p.y}:mirror(p)).find(p=>!this.structureAt(p.x,p.y)&&!this.units.some(u=>u.owner===owner&&u.x===p.x&&u.y===p.y));if(!cell)throw Error('Initial army has no deployment space');if(['river','mountain'].includes(at(cell.x,cell.y)))set(cell.x,cell.y,'plain');const unit=this.add(owner,type,cell.x,cell.y);if(PLANE(unit))this.setPatrol(unit);}
   }
  }
 

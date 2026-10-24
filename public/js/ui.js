@@ -31,7 +31,7 @@ class Sound{
  }
 }
 
-const $=id=>document.getElementById(id),CELL=56,TEAM={blue:'#77c8e2',red:'#ee9986',green:'#a8dc6a',neutral:'#e0c992'};
+const $=id=>document.getElementById(id),CELL=56,TEAM={blue:'#77c8e2',red:'#ee9986',green:'#a8dc6a',gold:'#f2cf3a',neutral:'#e0c992'};
 const RECRUIT_TYPES=['infantry','recon','engineer','artillery','lightTank','tank','heavyTank','antitank','machinegun','helicopter','helicopterGround','helicopterAir','antiAirVehicle','missileInfantry','rocketArtillery','reconDrone','stealthDrone','fighterBlue','multiroleBlue'];
 const UNIT_CATEGORY={infantry:'infantaria',engineer:'infantaria',antitank:'infantaria',machinegun:'infantaria',missileInfantry:'infantaria',commander:'infantaria',recon:'veiculos',lightTank:'veiculos',tank:'veiculos',heavyTank:'veiculos',antiAirVehicle:'veiculos',artillery:'artilharia',rocketArtillery:'artilharia',helicopter:'aereo',helicopterGround:'aereo',helicopterAir:'aereo',reconDrone:'aereo',stealthDrone:'aereo',fighterBlue:'aereo',multiroleBlue:'aereo',fighterRed:'aereo',multiroleRed:'aereo',bomberRed:'aereo',bomberBlue:'aereo',stealthFighterBlue:'aereo',stealthFighterRed:'aereo'};
 const CATEGORY_NAME={infantaria:'Infantaria',veiculos:'Veículos',artilharia:'Artilharia',aereo:'Aéreo'};

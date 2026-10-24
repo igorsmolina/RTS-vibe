@@ -18,9 +18,10 @@ const start=(a)=>{for(const s of [a.host,a.guest])say(s,{type:'ready',ready:true
 
 {const a=pair();
  assert.equal(a.joined.side,'red');assert.equal(a.room.players.length,2);assert.ok(last(a.guest,'authenticated'));
- // a sala comporta três jogadores; o quarto (ou um código inválido) é recusado, e a conexão é fechada
+ // a sala comporta quatro jogadores; o quinto (ou um código inválido) é recusado, e a conexão é fechada
  const third=socket();say(third,{type:'join',version:1,code:a.code,nickname:'Terceiro'});assert.equal(last(third,'joined').side,'green');
- const stranger=socket();say(stranger,{type:'join',version:1,code:a.code,nickname:'Quarto'});assert.equal(last(stranger,'error').code,'room_full');assert.ok(stranger.closed);
+ const fourth=socket();say(fourth,{type:'join',version:1,code:a.code,nickname:'Quarto'});assert.equal(last(fourth,'joined').side,'gold');
+ const stranger=socket();say(stranger,{type:'join',version:1,code:a.code,nickname:'Quinto'});assert.equal(last(stranger,'error').code,'room_full');assert.ok(stranger.closed);
  const lost=socket();say(lost,{type:'join',version:1,code:'ZZZZZZZZ',nickname:'X'});assert.equal(last(lost,'error').code,'room_missing');
  console.log('OK entrar na sala sem HTTP: token, auth e sala cheia');}
 

@@ -2,8 +2,8 @@
 // Servidor hospedado num PC (scripts/host-local.cjs): o link muda a cada vez, então o host o publica neste tópico do ntfy.sh e a página lê daqui.
 // Qualquer um que conheça o tópico pode publicar; por isso só links https://*.trycloudflare.com são aceitos.
 window.RTS_SERVER_REGISTRY='https://ntfy.sh/rts-vibe-b760a287e42ddf70';
-// Até três jogadores, todos contra todos. Cada lado começa com um time de unidades: verdes, vermelhas, roxas e azuis (França).
-const SIDE_NAME={blue:'Azul',red:'Vermelho',green:'Verde'},SIDE_TEAM={blue:'azul',red:'vermelha',green:'verde'},SIDE_FACTION={blue:'blue',red:'red',green:FRANCE},UNIT_NAME={blue:'verdes',red:'vermelhas',[FRANCE]:'azuis (França)',[ROXO]:'roxas'};
+// Até quatro jogadores, todos contra todos. Cada lado começa com um time de unidades: verdes, vermelhas, roxas e azuis (França).
+const SIDE_NAME={blue:'Azul',red:'Vermelho',green:'Verde',gold:'Amarelo'},SIDE_TEAM={blue:'azul',red:'vermelha',green:'verde',gold:'amarela'},SIDE_FACTION={blue:'blue',red:'red',green:FRANCE,gold:ROXO},UNIT_NAME={blue:'verdes',red:'vermelhas',[FRANCE]:'azuis (França)',[ROXO]:'roxas'};
 const Multiplayer={
  session:null,room:null,socket:null,connected:false,editingArmy:false,seq:0,pending:new Map(),matchId:null,lastEvent:0,retry:0,timer:null,poses:new Map(),receivedAt:0,
  get side(){return this.session?.side||'blue';},
@@ -85,7 +85,7 @@ const Multiplayer={
    const me=this.room.players.find(p=>p.token===this.session.token)||this.room.players.find(p=>p.side===this.session.side)||this.room.players.find(p=>p.nickname===$('mpNickname').value.trim());
    // Side is sent separately on auth/rematch; player seat stays fixed while teams swap.
    if(message.side)this.session.side=message.side;else if(this.room.players.some(p=>p.self))this.session.side=this.room.players.find(p=>p.self).side;
-   if(me&&first&&this.room.status==='waiting'&&!me.ready){const faction=settings.army==='enemy'?{blue:'red',red:'blue',green:'red'}[this.side]:{franca:FRANCE,roxo:ROXO}[settings.army]||null;this.send({type:'prepare',faction,army:cleanStartingArmy(settings.startingArmy,faction||SIDE_FACTION[this.side]),doctrine:settings.doctrine});}
+   if(me&&first&&this.room.status==='waiting'&&!me.ready){const faction=settings.army==='enemy'?{blue:'red',red:'blue',green:'red',gold:'blue'}[this.side]:{franca:FRANCE,roxo:ROXO}[settings.army]||null;this.send({type:'prepare',faction,army:cleanStartingArmy(settings.startingArmy,faction||SIDE_FACTION[this.side]),doctrine:settings.doctrine});}
    this.persist();this.renderRoom();if(first){for(const queued of this.pending.values())this.send(queued);}return;
   }
   if(message.type==='authenticated'||message.type==='auth'){if(message.side)this.session.side=message.side;this.connected=true;this.retry=0;this.retrySince=0;if(Number.isInteger(message.lastSeq)){this.seq=message.lastSeq;for(const [seq,queued]of this.pending){if(seq<=message.lastSeq)this.pending.delete(seq);else{this.seq=Math.max(this.seq,seq);this.send(queued);}}}this.persist();return;}
@@ -134,7 +134,7 @@ const Multiplayer={
  // Vaga de um jogador: posição fixa por lado (azul, vermelho, verde), time, doutrina e lâmpada de "pronto".
  slot(p,room){
   const K=MenuKit,state=p.out?'out':!p.connected?'offline':p.ready?'ready':'preparing',faction=p.faction||SIDE_FACTION[p.side],doctrine=NATION_DOCTRINES[p.doctrine]||NATION_DOCTRINES.balanced;
-  const li=K.el('li','mp-slot');li.dataset.side=p.side;li.dataset.state=state;li.style.gridColumn=String(['blue','red','green'].indexOf(p.side)+1);
+  const li=K.el('li','mp-slot');li.dataset.side=p.side;li.dataset.state=state;li.style.gridColumn=String(['blue','red','green','gold'].indexOf(p.side)+1);
   const head=K.el('span','mp-slot-head'),side=K.el('span','mp-slot-side',SIDE_NAME[p.side]);head.append(side);
   if(p.side===this.side)head.append(K.el('span','badge','Você'));if(p.side===room.hostSide)head.append(K.el('span','badge','Anfitrião'));
   const doc=K.el('span','mp-slot-doc');doc.append(K.iconNode('doctrine-'+(Object.keys(NATION_DOCTRINES).find(k=>NATION_DOCTRINES[k]===doctrine))),document.createTextNode(doctrine.name));
@@ -151,7 +151,7 @@ const Multiplayer={
    const sig=JSON.stringify([room.players.map(p=>[p.side,p.nickname,p.faction,p.doctrine,p.ready,p.connected,p.out]),room.hostSide,this.side]);
    if(sig!==this.slotSig){this.slotSig=sig;$('mpPlayers').replaceChildren(...room.players.map(p=>this.slot(p,room)));
     for(const old of $('mpSlots').querySelectorAll('.mp-slot.empty'))old.remove();
-    ['blue','red','green'].forEach((side,i)=>{if(room.players.some(p=>p.side===side))return;const empty=document.createElement('div');empty.className='mp-slot empty';empty.dataset.side=side;empty.setAttribute('aria-hidden','true');empty.style.gridColumn=String(i+1);empty.innerHTML='<span class="mp-slot-side"></span><span class="mp-slot-wait">Aguardando jogador…</span>';empty.firstChild.textContent=SIDE_NAME[side];$('mpSlots').append(empty);});}
+    ['blue','red','green','gold'].forEach((side,i)=>{if(room.players.some(p=>p.side===side))return;const empty=document.createElement('div');empty.className='mp-slot empty';empty.dataset.side=side;empty.setAttribute('aria-hidden','true');empty.style.gridColumn=String(i+1);empty.innerHTML='<span class="mp-slot-side"></span><span class="mp-slot-wait">Aguardando jogador…</span>';empty.firstChild.textContent=SIDE_NAME[side];$('mpSlots').append(empty);});}
    $('mpStart').hidden=!host;$('mpStart').disabled=!waiting||room.players.length<2||!room.players.every(p=>p.ready&&p.connected);$('mpReady').disabled=!waiting||!this.connected;$('mpDoctrine').disabled=$('mpArmy').disabled=!waiting;
    $('mpEnd').hidden=!(host&&room.status==='playing');$('mpRematch').hidden=!['finished','cancelled'].includes(room.status);$('mpResume').hidden=room.status!=='playing';$('mpLeave').textContent=room.status==='playing'?'Desistir e sair da sala':'Sair da sala';
    if(waiting)this.status('Sala '+room.code+' · compartilhe o código com seu amigo.');else if(room.paused)this.status('Partida suspensa · aguardando reconexão.');else if(room.status==='playing')this.status('Partida em andamento · '+SIDE_NAME[this.side]);else this.status('Partida encerrada.');
