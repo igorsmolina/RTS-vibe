@@ -50,6 +50,8 @@ dialog.tac-dialog[open]::after{content:'';position:absolute;inset:0 0 auto 0;hei
 .pick-art{display:grid;place-items:center;aspect-ratio:4/3;background:var(--sheet-sunk);border:1px solid var(--rule);overflow:hidden;position:relative}
 .pick-art canvas,.pick-art img{width:100%;height:100%;object-fit:contain;display:block}
 .pick-art.square{aspect-ratio:1}
+/* Sprite quadrado numa caixa larga: altura da caixa, centrado, sem esticar nem cortar */
+.pick-art canvas.sprite{position:absolute;inset:0;margin:auto;width:auto;height:100%;max-width:100%;aspect-ratio:1/1;transform:translateY(-5%) scale(1.2)}
 .pick-art.icon{aspect-ratio:2/1.3}
 .pick-art.icon [data-icon]::before{width:34px;height:34px;margin:0;color:var(--amber)}
 .pick-art.loading::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgb(255 255 255 / .08) 50%,transparent 70%);background-size:200% 100%;animation:shimmer 1.2s linear infinite}

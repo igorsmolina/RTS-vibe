@@ -95,6 +95,42 @@ function orderAvailable(u,type){
  return true;
 }
 function orderUnits(type){return selectedUnits().filter(u=>supportsOrder(u,type));}
+// Texto do modo de ordem ativo (chip e faixa do mapa). Nas duas linhas de duas pontas, muda depois do primeiro clique.
+function modeText(){
+ const text={move:'Escolha o destino',attack:cruiseUnits().length?'Marque a área 3×3':'Escolha um inimigo',repair:'Escolha um aliado terrestre',service:'Escolha QG/posto aliado próximo',demine:'Escolha uma mina',bombard:'Escolha a casa central (3×3)',planeBomb:'Escolha o início e o fim da passagem',airdropLine:'Escolha o início e o fim da linha de lançamento',embark:'Clique na tropa que vai embarcar',buildAirport:'Escolha o terreno da pista',assignAirport:'Escolha uma obra de aeroporto'};
+ if((mode==='planeBomb'||mode==='airdropLine')&&bombLineStart)return 'Agora escolha o fim da passagem';
+ return text[mode]||'';
+}
+// Por que o botão está cinza: uma frase curta (vazia se não souber). Só é chamada para botão visível e desativado.
+function blockReason(id,units){
+ const rts=game.mode==='rts';if(!canCommand())return 'Aguarde o seu turno.';
+ const first=type=>units.find(u=>supportsOrder(u,type))||units[0],late=()=>rts?'Indisponível agora.':'Já agiu neste turno.';
+ if(id==='move'){const u=first('move');return u.runway?'Na pista.':u.flightState==='service'?'Em manutenção.':rts?'Indisponível agora.':'Sem movimento neste turno.';}
+ if(id==='attackMove'){const u=first('attackMove');return UT(u).stealth&&!(u.missiles>0)?'Sem mísseis: faça manutenção.':PLANE(u)?'Sem munição: volte ao aeroporto.':late();}
+ if(id==='repair'||id==='demine')return units.some(u=>u.type==='engineer')?(rts?'Indisponível agora.':'O engenheiro já agiu neste turno.'):'Só o engenheiro faz isso.';
+ if(id==='build'){const u=first('build'),credits=game.credits[u.owner];return !u.actionLeft&&!rts?'Sem ação neste turno.':u.pending?'A tropa está executando uma ordem.':credits<60?'Faltam '+(60-credits)+' créditos (custa 60).':'Sem terreno livre para o posto aqui.';}
+ if(id==='bombard')return units.filter(BARRAGE).every(u=>u.salvos<=0)?'Sem salvas: faça manutenção no QG ou posto.':late();
+ if(id==='service')return 'Fique ao lado de um QG ou posto aliado (helicóptero: QG ou aeroporto).';
+ return '';
+}
+// Cada botão visível e cinza explica o motivo no tooltip; a linha da barra junta os motivos.
+function applyOrderReasons(units){
+ const reasons=[];let turn=false;
+ for(const [id,label] of [['move','Mover'],['attackMove','Atacar'],['repair','Reparar'],['build','Posto'],['demine','Desarmar mina'],['bombard','Bombardear'],['service','Manutenção']]){
+  const b=$(id);if(b.dataset.baseTitle===undefined)b.dataset.baseTitle=b.title;
+  const why=units.length&&!b.hidden&&b.disabled?blockReason(id,units):'';
+  setProp(b,'title',why?label+': '+why:b.dataset.baseTitle);
+  if(why==='Aguarde o seu turno.')turn=true;else if(why)reasons.push(label+': '+why.charAt(0).toLowerCase()+why.slice(1));
+ }
+ const text=turn?'Aguarde o seu turno.':reasons.length?'Indisponível · '+reasons.join(' · '):'';setText('orderReason',text);setProp('orderReason','hidden',!text);
+}
+// Esconde o bloco da barra quando nenhum botão dele aparece.
+function syncCommandGroups(){
+ for(const g of document.querySelectorAll('.cmd-group')){
+  const shown=e=>{for(let n=e;n&&n!==g;n=n.parentElement)if(n.hidden)return false;return true;};
+  setProp(g,'hidden',![...g.querySelectorAll('button,label')].some(shown));
+ }
+}
 const MODE_BUTTON={move:'move',attack:'attackMove',attackMove:'attackMove',repair:'repair',demine:'demine',service:'service',bombard:'bombard',planeBomb:'planeBomb',buildAirport:'buildAirport',assignAirport:'assignAirport'};
 let productionBaseId=null,productionCollapsed=false;
 function updateProduction(base){
@@ -213,7 +249,7 @@ function updateUI(){
   groups=groups.map(g=>g.filter(id=>game.get(id)?.owner===localPlayerSide()));
   setText('mapTitle',game.title||MAPS[game.map]);setText('credits',game.credits[localPlayerSide()]);setText('income','+'+game.income(localPlayerSide()));setText('incomeLabel',rts?'Renda / 10 s':'Renda / turno');setProp('income','title',rts?`+${game.income(localPlayerSide())} créditos a cada 10 segundos de jogo`:`+${game.income(localPlayerSide())} créditos no início do seu turno, a partir da rodada 2`);setText('force',game.units.filter(u=>u.owner===localPlayerSide()).length);
   setText('clock',timeLabel(rts?game.time:game.round));setText('status',game.winner==='eliminated'?'Eliminado · assistindo':game.winner?'Operação encerrada':rts?(paused?'Pausa tática':'Combate em tempo real'):game.turn!==localPlayerSide()?(game.multiplayer?game.sides.length>2?'Turno da equipe '+SIDE_TEAM[game.turn]:'Turno do adversário':'Turno da IA'):game.busy?'Executando ordem':'Seu turno');setText('pause',paused?'Continuar':'Pausar');setProp('pause','disabled',!!game.multiplayer||!started||!!game.winner);setProp('speed','disabled',!!game.multiplayer);setAttr('pause','aria-pressed',String(paused));setText('speed',String(speed).replace('.',',')+'×');setProp('pauseOverlay','hidden',!paused||!!game.winner);$('pauseOverlay').classList.toggle('tactical',rts);setText('pauseLabel',game.multiplayer?'Conexão interrompida · aguardando reconexão':rts?'Pausa tática · emita ordens · P para continuar':'Animações pausadas');
-  setText('modeTitle',rts?'RTS':'Por turnos');setText('keyHint','Clique numa tropa: barra de comando · QG/posto: produção · Botão direito: ordem · Bordas, roda, botão do meio ou ✋: câmera');setAttr('addSelect','aria-pressed',String(addMode));setAttr('panTool','aria-pressed',String(panTool));renderer.canvas.classList.toggle('grab',panTool);setProp('speed','title',rts?'Velocidade do combate: 0,25×, 0,5×, 1× e 2×':'Velocidade das animações: 0,25×, 0,5×, 1× e 2×');setAttr('speed','aria-label',rts?'Alternar velocidade do combate':'Alternar velocidade das animações');setAttr('battlefield','aria-label',(rts?'Campo em tempo real.':'Campo por turnos.')+' Clique ou arraste para selecionar; botão direito emite ordens. Bordas, roda e botão do meio movem a câmera.');setText('stop',rts?'Parar':'Aguardar');
+  setText('modeTitle',rts?'RTS':'Por turnos');setText('keyHint',selection.size?'M mover · A atacar · S parar · Botão direito: ordem automática · Esc cancela a ordem':'Clique numa tropa: barra de comando · QG/posto: produção · Botão direito: ordem · Bordas, roda, botão do meio ou ✋: câmera');setAttr('addSelect','aria-pressed',String(addMode));setAttr('panTool','aria-pressed',String(panTool));renderer.canvas.classList.toggle('grab',panTool);setProp('speed','title',rts?'Velocidade do combate: 0,25×, 0,5×, 1× e 2×':'Velocidade das animações: 0,25×, 0,5×, 1× e 2×');setAttr('speed','aria-label',rts?'Alternar velocidade do combate':'Alternar velocidade das animações');setAttr('battlefield','aria-label',(rts?'Campo em tempo real.':'Campo por turnos.')+' Clique ou arraste para selecionar; botão direito emite ordens. Bordas, roda e botão do meio movem a câmera.');setText('stop',rts?'Parar':'Aguardar');
   setProp('endTurn','hidden',rts);setProp('endTurn','disabled',rts||!canCommand());$('endTurn').classList.toggle('ready',!rts&&canCommand()&&game.units.filter(u=>u.owner===localPlayerSide()).every(u=>!u.actionLeft&&!(u.moveLeft>0)));
   setText('difficultyLabel',game.multiplayer?'Multiplayer · '+SIDE_NAME[localPlayerSide()]:'IA '+{easy:'fácil',normal:'normal',hard:'difícil',veteran:'veterana'}[game.difficulty]);setText('operationInfo',`Semente ${game.seed} · ${COLS} × ${ROWS} casas · Capture postos e destrua o QG inimigo`);setText('explored',Math.round(game.explored[localPlayerSide()].filter(Boolean).length/SIZE*100)+'%');
   const units=selectedUnits(),items=[...selection].map(id=>game.get(id)).filter(Boolean),u=items[0];setText('selectionCount',items.length?items.length+' selecionada(s)':'—');
@@ -232,14 +268,14 @@ function updateUI(){
    setText('unitInfo',items.length>1?'Integridade '+Math.ceil(total)+' / '+max+' HP\n'+(rts?units.filter(v=>v.pending).length+' tropas executando ordens':units.filter(v=>v.actionLeft).length+' ações disponíveis · '+units.filter(v=>v.moveLeft>0).length+' tropas com movimento')+units.filter(AIR).map(v=>'\n'+UT(v).name+flightStatus(v)).join(''):Math.ceil(u.hp)+' / '+u.maxHp+' HP · '+(t.air?'Em voo sobre '+TERRAIN[game.terrainAt(u)].name.toLowerCase():TERRAIN[game.terrainAt(u)].name+' · '+Math.round(game.cover(u)*100)+'% defesa')+'\n'+(u.type==='airportSite'?`Obra: ${Math.max(0,game.airportDuration(u)-u.work).toFixed(rts?1:0)} / ${game.airportDuration(u)} ${rts?'s':'turnos próprios'} restantes; precisa de dois engenheiros`:t.structure?(`Treinamento em lotes · até ${game.queueLimit(u)} tropas`+(u.type==='post'?(rts?' · renda base +8 / 10 s':' · renda base +8 por turno'):'')):(rts?'Velocidade '+String(t.speed).replace('.',',')+' casas/s':'Movimento '+String(Number(u.moveLeft.toFixed(2))).replace('.',',')+' / '+t.move)+' · Alcance '+rangeText+(u.type==='heavyTank'?(UT(u).galix?' · GALIX '+u.trophy+'/'+GALIX_CHARGES+(u.smokeTime>0?' · fumaça ativa: −40% de precisão contra ele':''):' · Trophy '+u.trophy+'/'+trophyMax(u)):'')+'\n'+'★'.repeat(u.level)+' '+orderName(u)+(game.hasAura(u)?' · Aura ativa':'')+(u.suppressed>0?' · Suprimida (−25 pontos de precisão)':'')+(!t.air&&CONCEAL.has(game.terrainAt(u))&&!(u.revealed>0)?' · Oculta na '+TERRAIN[game.terrainAt(u)].name.toLowerCase():'')+flight+tankStats+(game.missileLoad(u)?'\nMísseis '+game.missileLoad(u).have+' / '+game.missileLoad(u).max:'')));
   }else{setText('unitName','Nenhuma unidade');setText('unitRole','Clique ou arraste no campo.');setText('unitInfo',rts?'Botão direito: ordem. Pausar congela o combate para dar ordens.':'Botão direito: ordem. Encerrar turno passa a vez à IA.');setWidth('healthBar',0);}
   for(const [action,id]of Object.entries({...MODE_BUTTON,build:'build'}))setProp(id,'hidden',!units.some(u=>supportsOrder(u,action)));
-  const onlyPlanes=units.length>0&&units.every(v=>PLANE(v));if(onlyPlanes){setProp('move','hidden',true);setProp('attackMove','hidden',true);}
+  const onlyPlanes=units.length>0&&units.every(v=>PLANE(v));setText('cmdMoveT',onlyPlanes?'Geral':'Movimento');if(onlyPlanes){setProp('move','hidden',true);setProp('attackMove','hidden',true);}
   const can=canCommand()&&units.length>0;setProp('move','disabled',!can||!units.some(u=>orderAvailable(u,'move')));setProp('attackMove','disabled',!can||!units.some(u=>orderAvailable(u,'attack')));setProp('stop','disabled',!(can&&units.some(u=>!u.runway&&(rts||u.moveLeft>0||u.actionLeft))||started&&game.turn===localPlayerSide()&&units.some(u=>!u.runway&&AIR(u)&&u.pending)));
   const noEngineer=!can||!units.some(u=>u.type==='engineer'&&(rts||u.actionLeft));setProp('repair','disabled',noEngineer);setProp('demine','disabled',noEngineer);setProp('build','disabled',!can||!units.some(u=>game.canBuild(u)));const rockets=units.filter(BARRAGE);setProp('bombard','hidden',!rockets.length);setProp('bombard','disabled',!can||!rockets.some(u=>(rts||u.actionLeft)&&!(u.salvos<=0)));
-  for(const id of ['move','attackMove','repair','demine','service','bombard'])setAttr(id,'aria-pressed',String(mode===(id==='attackMove'?'attack':id)));setText('modeLabel',mode?{move:'Escolha o destino',attack:cruiseUnits().length?'Marque a área 3×3':'Escolha um inimigo',repair:'Escolha um aliado terrestre',service:'Escolha QG/posto aliado próximo',demine:'Escolha uma mina',bombard:'Escolha a casa central (3×3)',planeBomb:'Escolha o início e o fim da passagem',airdropLine:'Escolha o início e o fim da linha de lançamento',embark:'Clique na tropa que vai embarcar',buildAirport:'Escolha o terreno da pista',assignAirport:'Escolha uma obra de aeroporto'}[mode]+' · Esc cancela':'Contextual');
+  for(const id of ['move','attackMove','repair','demine','service','bombard'])setAttr(id,'aria-pressed',String(mode===(id==='attackMove'?'attack':id)));{const text=mode?modeText()+' · Esc cancela':'';setText('modeLabel',mode?text:'Contextual');setText('modeBanner',text);setProp('modeBanner','hidden',!mode);if($('battlefield').dataset.mode!==(mode||''))$('battlefield').dataset.mode=mode||'';}
   const flying=units.filter(v=>AIR(v)&&!UT(v).drone&&!PLANE(v));setProp('flightControls','hidden',!flying.length);
   const radars=units.filter(v=>v.type==='antiAirVehicle'),radarEnabled=(!game.multiplayer||Multiplayer.canAct())&&started&&!game.winner&&(rts||game.turn===localPlayerSide())&&menusClosed(),radarState=radars.every(v=>v.radarOn)?'ligado':radars.some(v=>v.radarOn)?'misto':'desligado';setProp('radarControls','hidden',!radars.length);setText('radarToggle','Radar: '+radarState);setAttr('radarToggle','aria-pressed',radarState==='misto'?'mixed':String(radarState==='ligado'));setProp('radarToggle','disabled',!radarEnabled);setText('radarCount','Contatos da equipe: '+game.radarContacts[localPlayerSide()].size+' · fumaça '+radars.map(u=>u.smokeCharges+'/2').join(', '));
   for(const [id,altitude]of [['altitudeLow','low'],['altitudeHigh','high']]){setProp(id,'disabled',!can||!flying.some(v=>v.altitude!==altitude&&!(altitude==='high'&&UT(v).noHigh)&&(rts||v.actionLeft)));setAttr(id,'aria-pressed',String(!!flying.length&&flying.every(v=>v.altitude===altitude)));}
-  setProp('service','disabled',!can||!units.some(v=>(rts||v.actionLeft)&&game.structures.some(b=>game.canService(v,b))));
+  setProp('service','disabled',!can||!units.some(v=>(rts||v.actionLeft)&&game.structures.some(b=>game.canService(v,b))));applyOrderReasons(units);
   const armed=units.filter(v=>!PLANE(v)&&UT(v).weapons?.length>1),current=armed[0]?.weaponMode,missiles=[...new Set(armed.map(v=>UT(v).weapons[1]))];setProp('weapons','hidden',!armed.length);
   for(const b of $('weapons').children){const w=b.dataset.weapon;setProp(b,'disabled',!canCommand());setAttr(b.id,'aria-pressed',String(w==='missile'?missiles.includes(current):current===w));}setText('weaponGun',armed.length?weaponLabel('gun',armed[0]):'Canhão');setText('weaponMissile',missiles.length===1?WEAPONS[missiles[0]].name:'Míssil');
   const base=selectedProducer(),queue=base?.queue||[],batches=game.productionBatches(base),job=queue[0],batchLabel=b=>battleUnitName(b[0].type)+' ×'+b.length,limit=game.queueLimit(base);setText('queueCount',`${queue.length} / ${limit}`);updateTransportUI(units,base,can);
@@ -248,7 +284,7 @@ function updateUI(){
   setText('queue',batches.slice(1).map(batchLabel).join(' → ')+(base&&AIRPORT(base)?' · pousados '+game.docked(base).length+' / 4':''));updateAviationUI(units,base,can);updateProduction(base);
   for(let i=0;i<5;i++){$('group'+i).classList.toggle('filled',groups[i].length>0);setAttr('group'+i,'data-count',String(groups[i].length));setProp('group'+i,'title',`Grupo ${i+1}: ${groups[i].length} tropas. Clique seleciona; botão direito atribui.`);}
   if(game.logs[0]!==lastLog){lastLog=game.logs[0];$('log').replaceChildren(...game.logs.map(e=>{const div=document.createElement('div');div.className='log-line';const time=document.createElement('small');time.textContent=timeLabel(e.time);div.append(time,document.createTextNode(e.text));return div;}));setText('logLast',game.logs[0]?.text||'');}
-  setAttr('logToggle','aria-expanded',String(logOpen));setProp('log','hidden',!logOpen);
+  setAttr('logToggle','aria-expanded',String(logOpen));setProp('log','hidden',!logOpen);syncCommandGroups();
   renderer.drawMini();renderer.drawRadar();
   if(game.winner&&!resultShown){resultShown=true;paused=true;audio.play(game.winner===localPlayerSide()?'victory':'defeat');fillResult();$('revealMap').hidden=game.multiplayer;$('backToWorld').hidden=game.multiplayer||!(typeof campaignBattle!=='undefined'&&campaignBattle);if(!game.multiplayer)$('resultText').textContent+=recordResult();setText('playAgain',game.multiplayer?'Revanche · trocar lados':'Nova operação');$('result').showModal();$('result').scrollTop=0;}
 }
@@ -454,7 +490,7 @@ document.addEventListener('keydown',e=>{
  if(['BUTTON','SUMMARY'].includes(e.target.tagName)&&(e.key==='Enter'||e.key===' '))return;
  if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName)||document.querySelector('dialog[open]'))return;const key=e.key.toLowerCase();
  if(/^[1-5]$/.test(key)){e.preventDefault();groupAction(Number(key)-1,e.ctrlKey||e.metaKey);return;}
- if(key==='p'){e.preventDefault();togglePause();return;}if(key==='escape'){mode=null;drag=null;selection.clear();updateUI();return;}
+ if(key==='p'){e.preventDefault();togglePause();return;}if(key==='escape'){if(mode||bombLineStart){mode=null;bombLineStart=null;drag=null;updateUI();say('Ordem cancelada.');return;}drag=null;selection.clear();updateUI();return;}
  if(e.ctrlKey||e.metaKey||e.altKey)return;if(key==='g'){e.preventDefault();if(!e.repeat)toggleGrid();}else if(key==='enter'){e.preventDefault();if(!e.repeat)endPlayerTurn();}else if(key==='s'){e.preventDefault();stopSelected();}else if(key==='a'){e.preventDefault();setMode('attackMove');}else if(key==='m')setMode('move');else if(key==='b')setMode(orderUnits('planeBomb').length&&!$('planeBomb').disabled?'planeBomb':'bombard');else if(key==='t')planeAction('takeoff');else if(key==='l')planeAction('return');else if(key==='r')setMode('repair');
 });
 /* Parado (pausa, menus, fim de jogo), o quadro só é redesenhado após uma interação ou a cada 0,25 s. */

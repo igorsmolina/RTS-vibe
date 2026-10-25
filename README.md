@@ -136,7 +136,7 @@ Todo o jogo funciona só com o mouse; os atalhos de teclado continuam como alter
 | Produção | Clique em QG ou posto aliado; o botão **QG** centraliza no quartel-general. A barra mostra a fila da estrutura selecionada | — |
 | Somar à seleção | Botão **+ Somar** e depois cliques/caixas | **Shift** + clique |
 | Ordem contextual | Botão direito: no chão move; no inimigo ataca; no posto captura com infantaria; no aliado ferido repara com engenheiro | — |
-| Atacar / Mover / Reparar | Botões **Atacar**, **Mover**, **Reparar** e clique no alvo; clicar de novo cancela | **A** / **M** / **R**; **Esc** cancela |
+| Atacar / Mover / Reparar | Botões **Atacar**, **Mover**, **Reparar** e clique no alvo; clicar de novo cancela. Os botões ficam em blocos (Movimento, Combate, Apoio, Transporte); botão cinza diz o motivo no passar do mouse e numa linha da barra; o modo ativo aparece numa faixa no mapa e o cursor muda | **A** / **M** / **R**; **Esc** cancela a ordem (um segundo **Esc** limpa a seleção) |
 | Aguardar / Parar | Botão **Aguardar** (turnos) ou **Parar** (RTS) | **S** |
 | Encerrar turno | Botão acima do mapa, somente por turnos | **Enter** |
 | Grupos | Botão direito em **1–5** atribui; clique seleciona | **Ctrl + 1–5** / **1–5** |

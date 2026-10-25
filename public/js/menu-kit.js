@@ -73,7 +73,7 @@ const MenuKit=(()=>{
 
  /* Sprites e bandeiras para os cartões. */
  const spriteNode=(type,art=0,size=96)=>{
-  const c=document.createElement('canvas');c.width=c.height=size;
+  const c=document.createElement('canvas');c.width=c.height=size;c.className='sprite';
   const draw=()=>{const ctx=c.getContext('2d');ctx.clearRect(0,0,size,size);unitIcon(ctx,type,size/2,size/2+size*.06,'#9fb0a3',size/96*1.15,0,0,false,0,false,art);};
   draw();return c;
  };
