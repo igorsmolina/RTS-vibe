@@ -75,6 +75,10 @@ Estrutura de código (resumo):
 - Pergunta sobre remover fundo de imagens: possível com Python (Pillow/rembg) ou com o conector do Canva, quando disponível.
 
 ---------------------------------------------------------------------
+### 2.8 Trabalho feito fora desta conversa (já no branch)
+Três commits chegaram ao branch vindos de outra sessão, depois do que está descrito acima, e eu não os revisei: time Roxo de transporte pesado (`ee8584d`), multiplayer com quatro jogadores e transporte sem fila (`c470e88`) e barra de comandos em blocos com sprites dos times sem corte (`67385e8`). Por isso, as seções 1 e 2 (por exemplo, "3 times" e "até 3 jogadores") descrevem o estado desta conversa; o branch agora tem mais coisas.
+
+---------------------------------------------------------------------
 ## 3. Como testar e onde estão os relatórios
 
 - Testes de motor: `node tests/<arquivo>.test.cjs` (ex.: `node tests/franca.test.cjs`, `node tests/maps.test.cjs`).
@@ -84,7 +88,7 @@ Estrutura de código (resumo):
 - Fichas de unidades por time: `unidades.md`.
 
 ## 4. Pendências e ideias em aberto
-- Time Roxo (prompt pronto, não implementado).
+- Time Roxo: o prompt foi escrito nesta conversa e, depois, o time foi implementado em outra sessão (commit `ee8584d`, com arte, balanceamento e testes). Não revisei esse trabalho.
 - Menus em celular (ignorados de propósito).
 - Testes que já falhavam antes e dependem de ambiente (`carta`, `identity`, `radar-panel`, `visual-v2`, `browser.test`, `dialogs-in-battle`).
 - Campanha compartilhada em sala de multiplayer, campanha com evolução do comandante, navios e missões nos mapas (ideias discutidas, não implementadas).
