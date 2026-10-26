@@ -5,7 +5,7 @@ const BIOMES={
  temperate:{name:'Planície temperada',color:'#86a265',map:'river',terrain:'Bocage com rio central'},
  arid:{name:'Deserto',color:'#d4ba82',map:'desert',terrain:'Dunas, oásis e estradas longas'},
  highland:{name:'Planalto montanhoso',color:'#9b967d',map:'mountain',terrain:'Serra com passagens'},
- wetland:{name:'Terras alagadas',color:'#6f9e88',map:'random',options:{water:.8,forest:.35,relief:.2,farmland:.45,posts:8},terrain:'Rios, lagos e campos'},
+ wetland:{name:'Terras alagadas',color:'#6f9e88',map:'random',options:{landscape:'lakes',water:.8,forest:.35,relief:.2,farmland:.45,posts:8},terrain:'Rios, lagos e campos'},
  woodland:{name:'Floresta densa',color:'#5b7f56',map:'random',options:{water:.3,forest:.85,relief:.35,farmland:.25,posts:8},terrain:'Florestas e colinas'}
 };
 const HARDER={easy:'normal',normal:'hard',hard:'veteran',veteran:'veteran'};

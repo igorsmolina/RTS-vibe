@@ -44,5 +44,10 @@ test('o limite de tropas e os saves seguem a facção',()=>{
  assert.equal(copy.units.find(u=>u.owner==='blue').faction,'red');
  const old=g.snapshot();delete old.state.factions;for(const u of old.state.units)delete u.faction;const legacy=Game.fromSnapshot(old);assert.equal(legacy.factionOf('red'),'red');
 });
+test('facção roxa: aceita, mantida no snapshot e usada no exército do lado',()=>{
+ const g=field({blue:'blue',red:'roxo'});assert.equal(g.factionOf('red'),'roxo');
+ assert.equal(g.add('red','tank',100,50).faction,'roxo');
+ assert.equal(Game.fromSnapshot(g.snapshot()).factionOf('red'),'roxo');
+});
 for(const [name,fn] of cases){fn();console.log('OK '+name);}
 console.log(cases.length+' verificações de facção passaram.');

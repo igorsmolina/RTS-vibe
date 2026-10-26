@@ -12,14 +12,14 @@ const { createMultiplayerServer } = require('../scripts/multiplayer-server.cjs')
   const origin = `http://127.0.0.1:${service.server.address().port}`;
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
-    const contexts = await Promise.all([0, 1, 2, 3].map(() => browser.newContext({ viewport: { width: 1280, height: 800 } })));
+    const contexts = await Promise.all([0, 1, 2].map(() => browser.newContext({ viewport: { width: 1280, height: 800 } })));
     const pages = await Promise.all(contexts.map(context => context.newPage()));
     const errors = [];
     for (const page of pages) {
       page.on('pageerror', error => errors.push(error.message));
       page.on('console', message => { if (message.type() === 'error' && message.text().startsWith('Multiplayer:')) errors.push(message.text()); });
     }
-    const [blue, red, green, fourth] = pages;
+    const [blue, red, green] = pages;
     const open = async (page, nickname) => {
       await page.goto(origin);
       await page.locator('#titleMultiplayer').click();
@@ -43,13 +43,6 @@ const { createMultiplayerServer } = require('../scripts/multiplayer-server.cjs')
     assert.deepEqual(await Promise.all(pages.slice(0, 3).map(page => page.evaluate(() => Multiplayer.session.side))), ['blue', 'red', 'green']);
     assert.equal(await green.locator('#mpPlayers li').count(), 3);
     assert.match(await green.locator('#mpOwnSide').textContent(), /verde/i);
-
-    // o quarto jogador não entra
-    await open(fourth, 'Quarto');
-    await fourth.locator('#mpCode').fill(code);
-    await fourth.locator('#mpJoin').click();
-    await fourth.waitForFunction(() => /cheia|iniciada/i.test(document.getElementById('mpStatus').textContent));
-    assert.equal(await fourth.evaluate(() => !!Multiplayer.session), false);
 
     // cada um escolhe o time: o verde começa com os franceses, o azul com as verdes e o vermelho com as vermelhas
     await green.waitForFunction(() => Multiplayer.room.players.find(p => p.side === 'green').faction === 'franca' || Multiplayer.room.players.find(p => p.side === 'green').faction === null);

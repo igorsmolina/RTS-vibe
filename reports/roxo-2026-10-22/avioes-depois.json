@@ -1,0 +1,545 @@
+{
+ "titulo": "Depois",
+ "seeds": 60,
+ "analitico": [
+  {
+   "type": "fighterBlue",
+   "team": "blue",
+   "cost": 660,
+   "hp": 150,
+   "speed": 6,
+   "evasion": 0.2,
+   "flares": 60,
+   "dmgAA": 242.99999999999994,
+   "dmgSolo": 255.99999999999997,
+   "dano": 498.9999999999999,
+   "danoPorCredito": 0.7560606060606059,
+   "hpPorCredito": 0.22727272727272727,
+   "ehpPorCredito": 0.2840909090909091,
+   "indice": 46.34543611873571
+  },
+  {
+   "type": "fighterRed",
+   "team": "red",
+   "cost": 610,
+   "hp": 160,
+   "speed": 5.4,
+   "evasion": 0.3,
+   "flares": 60,
+   "dmgAA": 180,
+   "dmgSolo": 153,
+   "dano": 333,
+   "danoPorCredito": 0.5459016393442623,
+   "hpPorCredito": 0.26229508196721313,
+   "ehpPorCredito": 0.3747072599531616,
+   "indice": 45.2275698532021
+  },
+  {
+   "type": "fighterRoxo",
+   "team": "roxo",
+   "cost": 615,
+   "hp": 165,
+   "speed": 5.8,
+   "evasion": 0.25,
+   "flares": 60,
+   "dmgAA": 229.49999999999994,
+   "dmgSolo": 198,
+   "dano": 427.49999999999994,
+   "danoPorCredito": 0.6951219512195121,
+   "hpPorCredito": 0.2682926829268293,
+   "ehpPorCredito": 0.35772357723577236,
+   "indice": 49.8659714640509
+  },
+  {
+   "type": "multiroleBlue",
+   "team": "blue",
+   "cost": 850,
+   "hp": 180,
+   "speed": 5.6,
+   "evasion": 0.3,
+   "flares": 60,
+   "dmgAA": 108,
+   "dmgSolo": 884,
+   "dano": 992,
+   "danoPorCredito": 1.1670588235294117,
+   "hpPorCredito": 0.21176470588235294,
+   "ehpPorCredito": 0.3025210084033614,
+   "indice": 59.41883642079826
+  },
+  {
+   "type": "multiroleRed",
+   "team": "red",
+   "cost": 895,
+   "hp": 200,
+   "speed": 4.8,
+   "evasion": 0.2,
+   "flares": 80,
+   "dmgAA": 102,
+   "dmgSolo": 728.9999999999999,
+   "dano": 830.9999999999999,
+   "danoPorCredito": 0.9284916201117317,
+   "hpPorCredito": 0.22346368715083798,
+   "ehpPorCredito": 0.27932960893854747,
+   "indice": 50.92692815677462
+  },
+  {
+   "type": "multiroleRoxo",
+   "team": "roxo",
+   "cost": 800,
+   "hp": 165,
+   "speed": 5.4,
+   "evasion": 0.25,
+   "flares": 70,
+   "dmgAA": 102,
+   "dmgSolo": 693,
+   "dano": 795,
+   "danoPorCredito": 0.99375,
+   "hpPorCredito": 0.20625,
+   "ehpPorCredito": 0.275,
+   "indice": 52.2763091658162
+  },
+  {
+   "type": "stealthFighterBlue",
+   "team": "blue",
+   "cost": 1000,
+   "hp": 180,
+   "speed": 6.2,
+   "evasion": 0.3,
+   "flares": 60,
+   "dmgAA": 364.49999999999994,
+   "dmgSolo": 127.99999999999999,
+   "dano": 492.49999999999994,
+   "danoPorCredito": 0.49249999999999994,
+   "hpPorCredito": 0.18,
+   "ehpPorCredito": 0.2571428571428572,
+   "indice": 35.586915733575054
+  },
+  {
+   "type": "stealthFighterRed",
+   "team": "red",
+   "cost": 1030,
+   "hp": 190,
+   "speed": 5.8,
+   "evasion": 0.35,
+   "flares": 60,
+   "dmgAA": 270,
+   "dmgSolo": 153,
+   "dano": 423,
+   "danoPorCredito": 0.41067961165048544,
+   "hpPorCredito": 0.18446601941747573,
+   "ehpPorCredito": 0.28379387602688577,
+   "indice": 34.139179661425295
+  },
+  {
+   "type": "stealthFighterRoxo",
+   "team": "roxo",
+   "cost": 990,
+   "hp": 175,
+   "speed": 6,
+   "evasion": 0.3,
+   "flares": 60,
+   "dmgAA": 286.87499999999994,
+   "dmgSolo": 132,
+   "dano": 418.87499999999994,
+   "danoPorCredito": 0.42310606060606054,
+   "hpPorCredito": 0.17676767676767677,
+   "ehpPorCredito": 0.25252525252525254,
+   "indice": 32.68714805539178
+  },
+  {
+   "type": "bomberBlue",
+   "team": "blue",
+   "cost": 1296,
+   "hp": 240,
+   "speed": 3.5,
+   "evasion": 0.1,
+   "flares": 100,
+   "dmgAA": 0,
+   "dmgSolo": 930,
+   "dano": 930,
+   "danoPorCredito": 0.7175925925925926,
+   "hpPorCredito": 0.18518518518518517,
+   "ehpPorCredito": 0.205761316872428,
+   "indice": 38.4256160431751
+  },
+  {
+   "type": "bomberRed",
+   "team": "red",
+   "cost": 1164,
+   "hp": 340,
+   "speed": 3,
+   "evasion": 0.1,
+   "flares": 120,
+   "dmgAA": 0,
+   "dmgSolo": 3480,
+   "dano": 3480,
+   "danoPorCredito": 2.9896907216494846,
+   "hpPorCredito": 0.2920962199312715,
+   "ehpPorCredito": 0.3245513554791905,
+   "indice": 98.50422205037202
+  },
+  {
+   "type": "bomberRoxo",
+   "team": "roxo",
+   "cost": 1276,
+   "hp": 195,
+   "speed": 3.8,
+   "evasion": 0.1,
+   "flares": 100,
+   "dmgAA": 0,
+   "dmgSolo": 930,
+   "dano": 930,
+   "danoPorCredito": 0.7288401253918495,
+   "hpPorCredito": 0.15282131661442006,
+   "ehpPorCredito": 0.16980146290491116,
+   "indice": 35.17927223740352
+  }
+ ],
+ "duelos": {
+  "caca": {
+   "roxoxverde": {
+    "n": 120,
+    "vitoria": 0.2916666666666667,
+    "troca": 0.4798444225251076,
+    "porCredito": 0.44189383070301297,
+    "eficacia": 0.46047832740650774,
+    "perdaA": 540.7030303030303,
+    "perdaB": 259.4533333333333
+   },
+   "roxoxvermelho": {
+    "n": 120,
+    "vitoria": 0.03333333333333333,
+    "troca": 0.3063188874338407,
+    "porCredito": 0.03420241098962714,
+    "eficacia": 0.10235645793938726,
+    "perdaA": 610.9000000000001,
+    "perdaB": 187.13020833333334
+   }
+  },
+  "multi": {
+   "roxoxverde": {
+    "n": 120,
+    "vitoria": 0.30833333333333335,
+    "troca": 0.6616850324914173,
+    "porCredito": 0.473644578313253,
+    "eficacia": 0.559824551257435,
+    "perdaA": 659.0707070707072,
+    "perdaB": 436.0972222222223
+   },
+   "roxoxvermelho": {
+    "n": 120,
+    "vitoria": 0.39166666666666666,
+    "troca": 1.0105506178864472,
+    "porCredito": 0.7202910958904108,
+    "eficacia": 0.8531650555491362,
+    "perdaA": 610.5858585858585,
+    "perdaB": 617.0279166666662
+   }
+  },
+  "furtivo": {
+   "roxoxverde": {
+    "n": 120,
+    "vitoria": 0.3,
+    "troca": 0.5992398399196645,
+    "porCredito": 0.43290043290043295,
+    "eficacia": 0.5093242445755051,
+    "perdaA": 745.2342857142859,
+    "perdaB": 446.57407407407413
+   },
+   "roxoxvermelho": {
+    "n": 120,
+    "vitoria": 0.4166666666666667,
+    "troca": 1.118160552897395,
+    "porCredito": 0.7431457431457433,
+    "eficacia": 0.9115680199739292,
+    "perdaA": 577.5,
+    "perdaB": 645.7377192982457
+   }
+  }
+ },
+ "bombardeiro": {
+  "verde@1": {
+   "verde": {
+    "n": 60,
+    "sobrevive": 0,
+    "destruido": 21.85,
+    "perda": 1296,
+    "usadas": 0.1761904761904762,
+    "liquidoPorCredito": -0.9831404320987654,
+    "vitoria": 0
+   },
+   "vermelho": {
+    "n": 60,
+    "sobrevive": 0,
+    "destruido": 24.047916666666666,
+    "perda": 1296,
+    "usadas": 0.17976190476190473,
+    "liquidoPorCredito": -0.9814445087448557,
+    "vitoria": 0
+   },
+   "roxo": {
+    "n": 60,
+    "sobrevive": 0,
+    "destruido": 21.23461538461537,
+    "perda": 1296,
+    "usadas": 0.1761904761904762,
+    "liquidoPorCredito": -0.9836152659069324,
+    "vitoria": 0
+   }
+  },
+  "vermelho@1": {
+   "verde": {
+    "n": 60,
+    "sobrevive": 0,
+    "destruido": 37.510416666666664,
+    "perda": 1164,
+    "usadas": 0.11697530864197518,
+    "liquidoPorCredito": -0.9677745561282936,
+    "vitoria": 0
+   },
+   "vermelho": {
+    "n": 60,
+    "sobrevive": 0,
+    "destruido": 31.991666666666667,
+    "perda": 1164,
+    "usadas": 0.118827160493827,
+    "liquidoPorCredito": -0.9725157502863689,
+    "vitoria": 0
+   },
+   "roxo": {
+    "n": 60,
+    "sobrevive": 0,
+    "destruido": 36.73092948717947,
+    "perda": 1164,
+    "usadas": 0.11697530864197518,
+    "liquidoPorCredito": -0.9684442186536262,
+    "vitoria": 0
+   }
+  },
+  "roxo@1": {
+   "verde": {
+    "n": 60,
+    "sobrevive": 0,
+    "destruido": 0.05416666666665731,
+    "perda": 1276,
+    "usadas": 0.15833333333333333,
+    "liquidoPorCredito": -0.999957549634274,
+    "vitoria": 0
+   },
+   "vermelho": {
+    "n": 60,
+    "sobrevive": 0,
+    "destruido": 1.8874999999999942,
+    "perda": 1276,
+    "usadas": 0.15476190476190477,
+    "liquidoPorCredito": -0.9985207680250787,
+    "vitoria": 0
+   },
+   "roxo": {
+    "n": 60,
+    "sobrevive": 0,
+    "destruido": -0.7868589743589798,
+    "perda": 1276,
+    "usadas": 0.15833333333333333,
+    "liquidoPorCredito": -1.0006166606382132,
+    "vitoria": 0
+   }
+  },
+  "verde@0.5": {
+   "verde": {
+    "n": 60,
+    "sobrevive": 0.15,
+    "destruido": 205.06041666666667,
+    "perda": 1210.3200000000002,
+    "usadas": 0.6404761904761904,
+    "liquidoPorCredito": -0.7756632587448561,
+    "vitoria": 0.03333333333333333
+   },
+   "vermelho": {
+    "n": 60,
+    "sobrevive": 0.3333333333333333,
+    "destruido": 240.70625,
+    "perda": 1188.7200000000003,
+    "usadas": 0.7511904761904763,
+    "liquidoPorCredito": -0.7314920910493825,
+    "vitoria": 0.016666666666666666
+   },
+   "roxo": {
+    "n": 60,
+    "sobrevive": 0.1,
+    "destruido": 195.5504807692307,
+    "perda": 1264.5,
+    "usadas": 0.5833333333333334,
+    "liquidoPorCredito": -0.824806727801519,
+    "vitoria": 0
+   }
+  },
+  "vermelho@0.5": {
+   "verde": {
+    "n": 60,
+    "sobrevive": 0.25,
+    "destruido": 227.83541666666667,
+    "perda": 1113.160588235294,
+    "usadas": 0.7089506172839505,
+    "liquidoPorCredito": -0.7605886353682364,
+    "vitoria": 0
+   },
+   "vermelho": {
+    "n": 60,
+    "sobrevive": 0.3,
+    "destruido": 186.36458333333334,
+    "perda": 1102.8899999999999,
+    "usadas": 0.5595679012345678,
+    "liquidoPorCredito": -0.7873929696449025,
+    "vitoria": 0
+   },
+   "roxo": {
+    "n": 60,
+    "sobrevive": 0.25,
+    "destruido": 227.11746794871786,
+    "perda": 1113.160588235294,
+    "usadas": 0.7089506172839505,
+    "liquidoPorCredito": -0.7612054297994638,
+    "vitoria": 0
+   }
+  },
+  "roxo@0.5": {
+   "verde": {
+    "n": 60,
+    "sobrevive": 0.2833333333333333,
+    "destruido": 149.9125,
+    "perda": 1137.1668376068376,
+    "usadas": 0.5023809523809525,
+    "liquidoPorCredito": -0.7737102959301237,
+    "vitoria": 0.03333333333333333
+   },
+   "vermelho": {
+    "n": 60,
+    "sobrevive": 0.3333333333333333,
+    "destruido": 164.23125,
+    "perda": 1096.1603418803418,
+    "usadas": 0.5559523809523811,
+    "liquidoPorCredito": -0.7303519528842807,
+    "vitoria": 0.05
+   },
+   "roxo": {
+    "n": 60,
+    "sobrevive": 0.1,
+    "destruido": 140.27259615384614,
+    "perda": 1234.9935042735042,
+    "usadas": 0.4714285714285712,
+    "liquidoPorCredito": -0.8579317461752811,
+    "vitoria": 0
+   }
+  },
+  "verde@0.25": {
+   "verde": {
+    "n": 60,
+    "sobrevive": 0.9666666666666667,
+    "destruido": 139.40625,
+    "perda": 598.0500000000003,
+    "usadas": 0.9964285714285716,
+    "liquidoPorCredito": -0.3538917824074074,
+    "vitoria": 0.11666666666666667
+   },
+   "vermelho": {
+    "n": 60,
+    "sobrevive": 0.9833333333333333,
+    "destruido": 139.55625,
+    "perda": 517.8600000000001,
+    "usadas": 0.9976190476190477,
+    "liquidoPorCredito": -0.2919010416666667,
+    "vitoria": 0.13333333333333333
+   },
+   "roxo": {
+    "n": 60,
+    "sobrevive": 0.9666666666666667,
+    "destruido": 135.46875,
+    "perda": 584.9100000000002,
+    "usadas": 0.9928571428571428,
+    "liquidoPorCredito": -0.34679108796296304,
+    "vitoria": 0.1
+   }
+  },
+  "vermelho@0.25": {
+   "verde": {
+    "n": 60,
+    "sobrevive": 0.8666666666666667,
+    "destruido": 173.75833333333333,
+    "perda": 767.384117647059,
+    "usadas": 0.9333333333333332,
+    "liquidoPorCredito": -0.5099877872111044,
+    "vitoria": 0.03333333333333333
+   },
+   "vermelho": {
+    "n": 60,
+    "sobrevive": 0.7666666666666667,
+    "destruido": 155.59166666666667,
+    "perda": 860.5041176470589,
+    "usadas": 0.8475308641975308,
+    "liquidoPorCredito": -0.6055948891584126,
+    "vitoria": 0.016666666666666666
+   },
+   "roxo": {
+    "n": 60,
+    "sobrevive": 0.8666666666666667,
+    "destruido": 173.67628205128204,
+    "perda": 767.384117647059,
+    "usadas": 0.9333333333333332,
+    "liquidoPorCredito": -0.5100582780032447,
+    "vitoria": 0.03333333333333333
+   }
+  },
+  "roxo@0.25": {
+   "verde": {
+    "n": 60,
+    "sobrevive": 0.9333333333333333,
+    "destruido": 133.125,
+    "perda": 623.2769230769233,
+    "usadas": 0.9476190476190477,
+    "liquidoPorCredito": -0.3841316011574632,
+    "vitoria": 0.05
+   },
+   "vermelho": {
+    "n": 60,
+    "sobrevive": 0.9833333333333333,
+    "destruido": 138.54375,
+    "perda": 546.8259829059826,
+    "usadas": 0.986904761904762,
+    "liquidoPorCredito": -0.3199704019639365,
+    "vitoria": 0.11666666666666667
+   },
+   "roxo": {
+    "n": 60,
+    "sobrevive": 0.8833333333333333,
+    "destruido": 127.3125,
+    "perda": 734.0817094017095,
+    "usadas": 0.9345238095238096,
+    "liquidoPorCredito": -0.4755244587787692,
+    "vitoria": 0.05
+   }
+  }
+ },
+ "veredicto": {
+  "caca": {
+   "vr": null,
+   "fr": 0.10235645793938726,
+   "fv": 0.46047832740650774
+  },
+  "multi": {
+   "vr": null,
+   "fr": 0.9525458885544499,
+   "fv": 0.6828588219381815
+  },
+  "furtivo": {
+   "vr": null,
+   "fr": 0.9115680199739292,
+   "fv": 0.5093242445755051
+  },
+  "bombardeiro": {
+   "vr": 0.9670315354070169,
+   "fr": 0.9235582381364867,
+   "fv": 0.9550445919509413
+  }
+ }
+}

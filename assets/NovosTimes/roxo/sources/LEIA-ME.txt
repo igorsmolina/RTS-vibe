@@ -1,0 +1,33 @@
+TIME ROXO MODERNO — VERSÃO 2
+
+19 unidades e 3 frames adicionais do lançador, em PNG com fundo branco.
+Estilo militar moderno, camuflagem roxo/cinza, vista de cima.
+Imagens na resolução original, sem redução para 128 x 128.
+
+Sequência do lançador: 07-lancador-fechado.png -> lancamento/T1-transicao.png -> lancamento/T2-aberto.png -> lancamento/T3-lancamento.png (opcional).
+
+Inclui somente a última versão selecionada de cada imagem.
+
+Arquivos:
+01-tanque-pesado.png
+02-tanque-sensores-laterais.png
+03-tanque-assalto-pesado.png
+04-obuseiro-autopropulsado.png
+05-blindado-6x6.png
+06-caminhao-lancador-8x8.png
+07-lancador-fechado.png
+08-caminhao-transporte-6x6.png
+09-helicoptero-ataque-4-pas.png
+10-helicoptero-ataque-5-pas.png
+11-helicoptero-reconhecimento.png
+12-convertiplano.png
+13-aviao-carga.png
+14-caca-delta-canard.png
+15-caca-multifuncao.png
+16-caca-quinta-geracao.png
+17-bombardeiro-asa-voadora.png
+18-drone-reconhecimento.png
+19-caca-bombardeiro.png
+lancamento/T1-transicao.png
+lancamento/T2-aberto.png
+lancamento/T3-lancamento.png

@@ -1,0 +1,126 @@
+/* Menus táticos (somente desktop): tema escuro único, painéis com cantos marcados, cartões de escolha e animações de entrada.
+   Carregado depois de style.css; só sobrescreve tokens e acrescenta componentes. */
+:root,[data-menu-theme]{
+ color-scheme:dark;
+ --paper:#0b120e;--sheet:#141e18;--sheet-sunk:#0e1712;
+ --ink:#e4ebdd;--ink-muted:#9fb0a3;--rule:#2b3c31;--edge:#4a6354;
+ --contour:#f2b33d;--marker:#f2b33d;--on-marker:#15190f;
+ --friendly:#7cb8f0;--hostile:#f08a7e;--neutral:#d9c38a;--ok:#7bc98a;--focus:#f2b33d;--radar:#7fd6c2;
+ --amber:#f2b33d;--amber-glow:rgb(242 179 61 / .35);--olive:#7e9a5a;
+ --panel:rgb(14 22 17 / .86);--panel-line:#2e4034;--backdrop:rgb(5 9 7 / .72);
+ --lift-dialog:0 30px 80px rgb(0 0 0 / .6);
+ --t-fast:140ms;--t-mid:260ms;--t-slow:520ms;--ease-out:cubic-bezier(.16,1,.3,1);
+}
+/* Painel tático: fundo translúcido e colchetes âmbar nos quatro cantos. */
+.tac-panel{
+ --b:12px;--c:var(--amber);position:relative;border:1px solid var(--panel-line);border-radius:2px;
+ background:
+  linear-gradient(var(--c),var(--c)) top left/var(--b) 2px no-repeat,linear-gradient(var(--c),var(--c)) top left/2px var(--b) no-repeat,
+  linear-gradient(var(--c),var(--c)) top right/var(--b) 2px no-repeat,linear-gradient(var(--c),var(--c)) top right/2px var(--b) no-repeat,
+  linear-gradient(var(--c),var(--c)) bottom left/var(--b) 2px no-repeat,linear-gradient(var(--c),var(--c)) bottom left/2px var(--b) no-repeat,
+  linear-gradient(var(--c),var(--c)) bottom right/var(--b) 2px no-repeat,linear-gradient(var(--c),var(--c)) bottom right/2px var(--b) no-repeat,
+  var(--panel);
+ backdrop-filter:blur(6px);
+}
+.tac-kicker{font:600 12px/1 var(--font-display);letter-spacing:.22em;text-transform:uppercase;color:var(--amber)}
+.tac-rule{height:1px;border:0;margin:14px 0;background:linear-gradient(90deg,var(--amber),var(--panel-line) 40%,transparent)}
+/* Abertura de diálogo: desdobra com uma linha de varredura. */
+dialog.tac-dialog[open]{animation:tacOpen var(--t-mid) var(--ease-out)}
+dialog.tac-dialog[open]::after{content:'';position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,transparent,var(--amber),transparent);animation:tacScan 700ms var(--ease-out) both;pointer-events:none}
+@keyframes tacOpen{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes tacScan{from{transform:translateY(0);opacity:1}to{transform:translateY(520px);opacity:0}}
+/* Abas */
+.tac-tabs{display:flex;gap:2px;border-bottom:1px solid var(--panel-line);position:relative}
+.tac-tabs [role=tab]{background:none;border:0;border-radius:0;padding:10px 20px;font:600 15px/1 var(--font-display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted);position:relative;transition:color var(--t-fast)}
+.tac-tabs [role=tab]:hover:not(:disabled){background:none;color:var(--ink)}
+.tac-tabs [role=tab][aria-selected=true]{color:var(--amber)}
+.tac-tabs [role=tab]::after{content:'';position:absolute;left:12px;right:12px;bottom:-1px;height:2px;background:var(--amber);transform:scaleX(0);transition:transform var(--t-mid) var(--ease-out)}
+.tac-tabs [role=tab][aria-selected=true]::after{transform:scaleX(1)}
+/* Cartões de escolha (espelham um <select> oculto, que continua no DOM) */
+.pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w,148px),1fr));gap:10px;margin:8px 0 14px}
+.pick-grid[data-cols]{grid-template-columns:repeat(var(--cols),1fr)}
+.pick-card{
+ --i:0;position:relative;display:flex;flex-direction:column;gap:6px;padding:8px;text-align:left;cursor:pointer;
+ background:var(--sheet);border:1px solid var(--rule);border-radius:3px;color:var(--ink);min-height:0;
+ transition:transform var(--t-fast) var(--ease-out),border-color var(--t-fast),box-shadow var(--t-mid),background-color var(--t-fast);
+}
+.pick-grid.enter .pick-card{animation:cardIn var(--t-mid) var(--ease-out) both;animation-delay:calc(var(--i)*45ms)}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+.pick-card:hover:not(:disabled){transform:translateY(-2px);border-color:var(--edge);background:var(--sheet)}
+.pick-art{display:grid;place-items:center;aspect-ratio:4/3;background:var(--sheet-sunk);border:1px solid var(--rule);overflow:hidden;position:relative}
+.pick-art canvas,.pick-art img{width:100%;height:100%;object-fit:contain;display:block}
+.pick-art.square{aspect-ratio:1}
+/* Sprite quadrado numa caixa larga: altura da caixa, centrado, sem esticar nem cortar */
+.pick-art canvas.sprite{position:absolute;inset:0;margin:auto;width:auto;height:100%;max-width:100%;aspect-ratio:1/1;transform:translateY(-5%) scale(1.2)}
+.pick-art.icon{aspect-ratio:2/1.3}
+.pick-art.icon [data-icon]::before{width:34px;height:34px;margin:0;color:var(--amber)}
+.pick-art.loading::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgb(255 255 255 / .08) 50%,transparent 70%);background-size:200% 100%;animation:shimmer 1.2s linear infinite}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+.pick-title{font:700 15px/1.2 var(--font-display);letter-spacing:.04em;text-transform:uppercase}
+.pick-sub{font-size:12px;line-height:1.35;color:var(--ink-muted)}
+/* Trava de mira: quatro colchetes que fecham sobre o cartão selecionado. */
+.pick-card::after{content:'';position:absolute;inset:-5px;border:2px solid var(--amber);opacity:0;transform:scale(1.06);pointer-events:none;
+ -webkit-mask:linear-gradient(#000 0 0) top left/10px 2px no-repeat,linear-gradient(#000 0 0) top left/2px 10px no-repeat,linear-gradient(#000 0 0) top right/10px 2px no-repeat,linear-gradient(#000 0 0) top right/2px 10px no-repeat,linear-gradient(#000 0 0) bottom left/10px 2px no-repeat,linear-gradient(#000 0 0) bottom left/2px 10px no-repeat,linear-gradient(#000 0 0) bottom right/10px 2px no-repeat,linear-gradient(#000 0 0) bottom right/2px 10px no-repeat;
+ mask:linear-gradient(#000 0 0) top left/10px 2px no-repeat,linear-gradient(#000 0 0) top left/2px 10px no-repeat,linear-gradient(#000 0 0) top right/10px 2px no-repeat,linear-gradient(#000 0 0) top right/2px 10px no-repeat,linear-gradient(#000 0 0) bottom left/10px 2px no-repeat,linear-gradient(#000 0 0) bottom left/2px 10px no-repeat,linear-gradient(#000 0 0) bottom right/10px 2px no-repeat,linear-gradient(#000 0 0) bottom right/2px 10px no-repeat;
+ transition:opacity var(--t-fast),transform var(--t-mid) var(--ease-out)}
+.pick-card[aria-checked=true]{border-color:var(--amber);box-shadow:0 0 22px var(--amber-glow);background:#1a2820}
+.pick-card[aria-checked=true]::after{opacity:1;transform:none}
+.pick-card[aria-checked=true] .pick-title{color:var(--amber)}
+.pick-card:disabled{opacity:.4;cursor:not-allowed}
+/* Linhas de ajuste (réguas) */
+.slider-row{display:grid;grid-template-columns:28px 1fr 3.2ch;align-items:center;gap:10px;margin:6px 0}
+.slider-row label{display:flex;flex-direction:column;gap:2px;font:600 13px/1.2 var(--font-display);letter-spacing:.08em;text-transform:uppercase}
+.slider-row output{font:700 15px var(--font-display);color:var(--amber);text-align:right}
+.slider-row [data-icon]::before{width:22px;height:22px;margin:0;color:var(--olive)}
+.slider-row input[type=range]{appearance:none;background:linear-gradient(90deg,var(--amber) var(--v,50%),var(--rule) var(--v,50%));height:4px;padding:0;min-height:0;border:0;border-radius:2px}
+.slider-row input[type=range]::-webkit-slider-thumb{appearance:none;width:14px;height:20px;background:var(--ink);border:2px solid var(--amber);border-radius:2px;cursor:pointer;transition:transform var(--t-fast)}
+.slider-row input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.15)}
+/* Medidor e blocos de estatística */
+.meter{height:8px;background:var(--rule);border-radius:1px;overflow:hidden}
+.meter>i{display:block;height:100%;width:var(--v,0%);background:linear-gradient(90deg,var(--olive),var(--amber));transition:width var(--t-slow) var(--ease-out)}
+.stat-tile{display:flex;flex-direction:column;gap:2px;padding:10px 14px;background:var(--sheet);border:1px solid var(--rule)}
+.stat-tile b{font:700 24px/1 var(--font-display);color:var(--amber)}
+.stat-tile span{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted)}
+.badge{display:inline-block;padding:2px 8px;font:700 11px/1.4 var(--font-display);letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--olive);color:var(--olive)}
+/* Ícones dos menus táticos (traço de 24×24 usado como máscara, como os de style.css). */
+[data-icon=mode-rts]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 2 4 14h7l-1 8 9-12h-7z'/%3E%3C/svg%3E")}
+[data-icon=mode-turns]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 3h14M5 21h14M7 3c0 5 5 6 5 9s-5 4-5 9M17 3c0 5-5 6-5 9s5 4 5 9'/%3E%3C/svg%3E")}
+[data-icon=rank-1]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 15l6-6 6 6'/%3E%3C/svg%3E")}
+[data-icon=rank-2]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 11l6-6 6 6M6 19l6-6 6 6'/%3E%3C/svg%3E")}
+[data-icon=rank-3]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8l6-5 6 5M6 14l6-5 6 5M6 20l6-5 6 5'/%3E%3C/svg%3E")}
+[data-icon=rank-4]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z'/%3E%3C/svg%3E")}
+[data-icon=doctrine-balanced]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v18M6 21h12M4 7h16M7 7l-3.5 7a3.5 3 0 0 0 7 0zM17 7l-3.5 7a3.5 3 0 0 0 7 0z'/%3E%3C/svg%3E")}
+[data-icon=doctrine-economic]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM9 9.5h4.5a2 2 0 0 1 0 4H9m0 0h5a2 2 0 0 1 0 4H9M12 7v2.5M12 17.5V20'/%3E%3C/svg%3E")}
+[data-icon=doctrine-offensive]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2'/%3E%3C/svg%3E")}
+[data-icon=doctrine-defensive]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z'/%3E%3C/svg%3E")}
+[data-icon=water]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z'/%3E%3C/svg%3E")}
+[data-icon=relief]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 20l6-11 4 6 3-4 5 9z'/%3E%3C/svg%3E")}
+[data-icon=forest]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l5 8h-3l4 6H6l4-6H7zM12 17v4'/%3E%3C/svg%3E")}
+[data-icon=farmland]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h16v16H4zM4 12h16M12 4v16'/%3E%3C/svg%3E")}
+[data-icon=posts]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 21V4M5 4h12l-2 4 2 4H5'/%3E%3C/svg%3E")}
+[data-icon=dice]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 4h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3zM8 8h.01M16 8h.01M12 12h.01M8 16h.01M16 16h.01'/%3E%3C/svg%3E")}
+[data-icon=room]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17M3 21h18M15 12h.01'/%3E%3C/svg%3E")}
+[data-icon=code]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h16M4 15h16M10 3 8 21M16 3l-2 18'/%3E%3C/svg%3E")}
+[data-icon=check]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E")}
+[data-icon=user]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM4 21a8 8 0 0 1 16 0'/%3E%3C/svg%3E")}
+[data-icon=users]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zM2 20a7 7 0 0 1 14 0M16 5.2a3.5 3.5 0 0 1 0 6.6M18 14a7 7 0 0 1 4 6'/%3E%3C/svg%3E")}
+[data-icon=copy]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 9h11v11H9zM5 15V5h10'/%3E%3C/svg%3E")}
+[data-icon=map]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14'/%3E%3C/svg%3E")}
+[data-icon=medal]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3a6 6 0 1 0 0 12 6 6 0 0 0 0-12zM8.5 14 7 21l5-3 5 3-1.5-7'/%3E%3C/svg%3E")}
+[data-icon=sliders]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M14 4v4M10 10v4M16 16v4'/%3E%3C/svg%3E")}
+[data-icon=monitor]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 4h18v12H3zM8 20h8M12 16v4'/%3E%3C/svg%3E")}
+[data-icon=cloud]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 18a4 4 0 1 1 .9-7.9A6 6 0 0 1 19 12a3 3 0 0 1-1 6z'/%3E%3C/svg%3E")}
+[data-icon=tank]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 14h18l-2 4H5zM7 14l1-4h8l1 4M12 10V6h6'/%3E%3C/svg%3E")}
+[data-icon=infantry]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM8 21l1-8h6l1 8M9 13l-2-3M15 13l2-3'/%3E%3C/svg%3E")}
+[data-icon=upload]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V4M7 9l5-5 5 5M4 20h16'/%3E%3C/svg%3E")}
+[data-icon=play]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 4l13 8-13 8z'/%3E%3C/svg%3E")}
+/* Efeitos desligados: reduzir movimento do sistema ou perfil gráfico "desempenho". */
+@media (prefers-reduced-motion:reduce){
+ dialog.tac-dialog[open],.pick-grid.enter .pick-card{animation:none}
+ dialog.tac-dialog[open]::after,.pick-art.loading::after{display:none}
+ .pick-card,.pick-card::after,.meter>i,.tac-tabs [role=tab]::after{transition:none}
+}
+html[data-fx=performance] :is(dialog.tac-dialog[open],.pick-grid.enter .pick-card){animation:none}
+html[data-fx=performance] :is(dialog.tac-dialog[open]::after,.pick-art.loading::after){display:none}
+html[data-fx=performance] :is(.pick-card,.pick-card::after,.meter>i){transition:none}
+html[data-fx=performance] .tac-panel{backdrop-filter:none}

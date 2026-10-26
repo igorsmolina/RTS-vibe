@@ -199,5 +199,19 @@ const TitleMap=(()=>{
   buildAsync(scene=>{cur=scene;if(caption&&cur)caption.textContent=cur.name;canvas.dataset.ready='true';draw();start();});
  }
  document.getElementById('titleScreen').addEventListener('close',stop);
- return{paint:paint_,start,stop};
+ // Miniatura de um teatro para cartões de menu (240×180): gerada em tempo ocioso, uma por vez, e guardada em cache.
+ const thumbs=new Map();let thumbQueue=Promise.resolve();
+ function thumb(map,seed,options={},w=240,h=180){
+  const key=map+'|'+seed+'|'+JSON.stringify(options)+'|'+w+'x'+h;if(thumbs.has(key))return thumbs.get(key);
+  const job=thumbQueue.then(()=>new Promise(resolve=>idle(()=>{
+   try{
+    const game=new Game(map,'normal',seed,'turns',options,{},{},null,{blue:'blue',red:'red'}),out=document.createElement('canvas');
+    out.width=w;out.height=h;out.getContext('2d').drawImage(overlay(game,paint(game,map)),0,0,w,h);resolve(out);
+   }catch(error){console.error('Miniatura do teatro:',error);resolve(null);}
+  })));
+  thumbQueue=job;thumbs.set(key,job);if(thumbs.size>48)thumbs.delete(thumbs.keys().next().value);return job;
+ }
+ // Desenha o teatro estilizado de um jogo já gerado em um canvas qualquer (prévia da Nova operação).
+ function render(canvas,game,map){const c=canvas.getContext('2d');c.imageSmoothingQuality='high';c.drawImage(overlay(game,paint(game,map)),0,0,canvas.width,canvas.height);}
+ return{paint:paint_,start,stop,thumb,render};
 })();
