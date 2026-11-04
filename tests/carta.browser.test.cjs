@@ -6,6 +6,43 @@ const root=path.join(__dirname,'..'),out=path.join(root,'test-output','identity'
  await page.goto(pathToFileURL(process.argv[2]?path.resolve(process.argv[2]):path.join(root,'public/index.html')).href);await page.evaluate(()=>terrainReady);
  assert.equal(await page.locator('.topbar').count(),1,'Partida precisa de faixa de comando única');
  fs.mkdirSync(out,{recursive:true});
+ {
+ const page=await browser.newPage({offline:true, reducedMotion:'reduce'});
+ await page.goto(pathToFileURL(process.argv[2]?path.resolve(process.argv[2]):path.join(root,'public/index.html')).href);
+ await page.evaluate(()=>terrainReady);
+ for (const [width,height] of [[1280,620],[1280,720],[1366,768],[1440,900]]) {
+  await page.setViewportSize({width,height});
+  for (const theme of ['light','dark']) {
+   await page.evaluate(theme=>{
+    setMenuTheme(theme);
+    settings.nation.name='Nação com um nome muito comprido!';
+    applyNation();
+    document.querySelector('#titleResume').hidden=false;
+   },theme);
+   const title=page.locator('#titleScreen');
+   await page.locator('#titleResume').focus();
+   await page.locator('#titleHelp').focus();
+   const last=await page.locator('#titleHelp').boundingBox();
+   assert.ok(last.y>=0 && last.y+last.height<=height+1,`Último botão do início: ${width}×${height}`);
+   assert.ok(await title.evaluate(e=>e.scrollWidth<=e.clientWidth));
+   await page.screenshot({path:path.join(out,`notebook-${width}x${height}-${theme}.png`)});
+   const violations=await page.evaluate(()=>{
+    const violations=[];
+    for (const dialog of document.querySelectorAll('dialog:not(#titleScreen)')) {
+     dialog.showModal();
+     const {left,right,top,bottom}=dialog.getBoundingClientRect();
+     if (left < -1 || right > innerWidth+1 || top < -1 || bottom > innerHeight+1 ||
+         dialog.scrollWidth > dialog.clientWidth+1) violations.push(dialog.id);
+     dialog.close();
+    }
+    return violations;
+   });
+   assert.deepEqual(violations,[],`Diálogos fora dos limites: ${width}×${height} ${theme}`);
+  }
+ }
+ await page.close();
+ console.log('OK menus nas quatro áreas úteis de notebook, nos dois temas.');
+ }
  for(const theme of ['light','dark'])for(const size of [[1440,1000],[1280,800],[1920,1080],[390,844],[568,320]])for(const mode of ['turns','rts']){
   const [width,height]=size;await page.setViewportSize({width,height});await page.evaluate(({theme,mode})=>{for(const d of document.querySelectorAll('dialog[open]'))d.close();setMenuTheme(theme);settings.nation.name='Nação com um nome muito comprido!';applyNation();newOperation('river','normal',19,mode);paused=true;game.credits.blue=99999;updateUI();},{theme,mode});
   assert.equal(await page.locator('.topbar').evaluate(e=>e.scrollWidth<=e.clientWidth),true,`${theme}/${width}/${height}/${mode}`);
