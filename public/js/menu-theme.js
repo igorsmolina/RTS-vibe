@@ -1,14 +1,9 @@
 'use strict';
-// Preferência visual deste navegador; não pertence ao pacote de progresso.
-const MENU_THEME_KEY='rtsvibe.theme.v1',menuSystem=matchMedia('(prefers-color-scheme: dark)');
-let menuTheme='system';
-try{const saved=localStorage.getItem(MENU_THEME_KEY);if(['system','light','dark'].includes(saved))menuTheme=saved;}catch{}
+// Os menus usam um único tema escuro tático. As funções continuam existindo porque o resto do código as chama.
+let menuTheme='dark';
 function applyMenuTheme(){
- const theme=menuTheme==='system'?(menuSystem.matches?'dark':'light'):menuTheme;
- document.documentElement.dataset.menuTheme=theme;
- for(const id of ['titleTheme','setTheme']){const select=document.getElementById(id);if(select)select.value=menuTheme;}
- const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=theme==='dark'?'#17221C':'#E9EDE3';
+ document.documentElement.dataset.menuTheme='dark';
+ const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content='#0B120E';
 }
-function setMenuTheme(value){menuTheme=['system','light','dark'].includes(value)?value:'system';try{localStorage.setItem(MENU_THEME_KEY,menuTheme);}catch{}applyMenuTheme();}
-menuSystem.addEventListener('change',()=>{if(menuTheme==='system')applyMenuTheme();});
+function setMenuTheme(){applyMenuTheme();}
 applyMenuTheme();

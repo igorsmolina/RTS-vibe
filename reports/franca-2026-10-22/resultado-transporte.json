@@ -1,0 +1,65 @@
+{
+ "label": "transporte",
+ "budget": 900,
+ "seeds": 10,
+ "matches": {
+  "infantaria_transporte": {
+   "FV": {
+    "wins": 20,
+    "n": 20,
+    "pct": 100,
+    "left": [
+     59,
+     4
+    ]
+   },
+   "FR": {
+    "wins": 20,
+    "n": 20,
+    "pct": 100,
+    "left": [
+     58,
+     4
+    ]
+   },
+   "VR": {
+    "wins": 10,
+    "n": 20,
+    "pct": 50,
+    "left": [
+     13,
+     11
+    ]
+   }
+  },
+  "infantaria_helicoptero": {
+   "FV": {
+    "wins": 20,
+    "n": 20,
+    "pct": 100,
+    "left": [
+     65,
+     35
+    ]
+   },
+   "FR": {
+    "wins": 20,
+    "n": 20,
+    "pct": 100,
+    "left": [
+     65,
+     35
+    ]
+   },
+   "VR": {
+    "wins": 10,
+    "n": 20,
+    "pct": 50,
+    "left": [
+     44,
+     44
+    ]
+   }
+  }
+ }
+}

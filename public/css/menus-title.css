@@ -1,0 +1,53 @@
+/* Tela inicial tática: mapa vivo em tela cheia com paralaxe, menu em blocos com ícone e abertura em sequência. */
+dialog.title-screen{padding:0;background:#070c09;overflow:hidden;color:var(--ink)}
+dialog.title-screen[open]{display:block;position:fixed;inset:0}
+.title-screen::backdrop{background:#070c09}
+.title-bg{position:absolute;inset:-26px;width:calc(100% + 52px);height:calc(100% + 52px);aspect-ratio:auto;object-fit:cover;opacity:0;transition:opacity 1400ms var(--ease-out);animation:titleDrift 70s ease-in-out infinite alternate}
+.title-bg[data-ready=true]{opacity:.9}
+.title-shade{display:block;position:absolute;inset:0;pointer-events:none;background:
+ linear-gradient(90deg,rgb(6 10 8 / .97) 0,rgb(6 10 8 / .9) 30%,rgb(6 10 8 / .45) 58%,rgb(6 10 8 / .12) 100%),
+ radial-gradient(120% 90% at 70% 50%,transparent 40%,rgb(0 0 0 / .55) 100%)}
+.title-grid{position:absolute;inset:-20px;pointer-events:none;opacity:.7;
+ background-image:linear-gradient(rgb(127 214 194 / .06) 1px,transparent 1px),linear-gradient(90deg,rgb(127 214 194 / .06) 1px,transparent 1px);background-size:72px 72px;
+ -webkit-mask:linear-gradient(90deg,transparent,#000 45%,#000);mask:linear-gradient(90deg,transparent,#000 45%,#000)}
+/* Faixa superior: nação e teatro atual */
+.title-top{position:absolute;z-index:2;top:26px;left:72px;right:72px;display:flex;align-items:center;justify-content:space-between;animation:titleDrop 700ms 120ms var(--ease-out) backwards}
+.title-top .title-nation{display:flex;align-items:center;gap:12px;margin:0;padding:8px 16px 8px 10px;background:var(--panel);border:1px solid var(--panel-line);border-left:3px solid var(--amber);backdrop-filter:blur(6px)}
+.title-nation canvas{width:54px;height:36px;border:1px solid var(--edge)}
+.title-nation strong{display:block;font:700 18px/1.1 var(--font-display);letter-spacing:.06em;text-transform:uppercase}
+.title-nation small{color:var(--ink-muted);letter-spacing:.12em;text-transform:uppercase;font-size:11px}
+dialog.title-screen .chart-caption{position:static;margin:0;padding:8px 16px;background:var(--panel);border:1px solid var(--panel-line);border-right:3px solid var(--radar);font:600 13px/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;color:var(--radar);backdrop-filter:blur(6px);max-width:none}
+dialog.title-screen .chart-caption::before{content:'Teatro · ';color:var(--ink-muted)}
+.chart-caption.swap{animation:captionSwap 900ms var(--ease)}
+/* Coluna do menu */
+.title-content{position:absolute;z-index:2;left:72px;top:50%;translate:0 -50%;width:min(500px,46vw);min-width:0}
+.title-content .tac-kicker{margin:0 0 10px;animation:titleRise 600ms 160ms var(--ease-out) backwards}
+.title-content h1{position:relative;width:fit-content;font:700 clamp(64px,8.6vw,118px)/.95 var(--font-display);letter-spacing:-3px;margin:0 0 30px;text-shadow:0 0 40px rgb(242 179 61 / .22);animation:titleReveal 900ms 100ms var(--ease-out) backwards}
+.title-content h1::after{content:'';position:absolute;left:0;bottom:-14px;width:min(220px,45%);height:5px;background:var(--amber);transform-origin:left;animation:titleRule 700ms 600ms var(--ease-out) backwards}
+.title-sub{color:var(--ink-muted);max-width:44ch;margin:0 0 26px;animation:titleRise 650ms 260ms var(--ease-out) backwards}
+.title-menu{display:flex;flex-direction:column;gap:6px}
+.title-menu .title-btn{
+ position:relative;display:flex;align-items:center;gap:14px;width:100%;min-height:52px;padding:8px 16px;font:600 19px/1.15 var(--font-display);letter-spacing:.04em;text-align:left;
+ color:var(--ink);background:rgb(14 22 17 / .72);border:1px solid var(--panel-line);border-left:3px solid var(--edge);border-radius:2px;backdrop-filter:blur(4px);overflow:hidden;
+ transition:transform var(--t-mid) var(--ease-out),border-color var(--t-fast),background-color var(--t-fast),box-shadow var(--t-mid);
+ animation:titleSlide 560ms calc(420ms + var(--i,0) * 60ms) var(--ease-out) backwards;
+}
+.title-menu .title-btn::before{content:none}
+.title-menu .title-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 35%,rgb(242 179 61 / .14) 50%,transparent 65%);transform:translateX(-120%);transition:transform 700ms var(--ease-out);pointer-events:none}
+.title-menu .title-btn:hover:not(:disabled),.title-menu .title-btn:focus-visible{transform:translateX(8px);padding-left:16px;border-left-color:var(--amber);background:rgb(24 36 28 / .88);box-shadow:0 0 24px rgb(242 179 61 / .14)}
+.title-menu .title-btn:hover:not(:disabled)::after,.title-menu .title-btn:focus-visible::after{transform:translateX(120%)}
+.title-menu .title-btn.new::after{content:'Novo por aqui?';position:static;inset:auto;transform:none;margin-left:auto;padding:3px 9px;font:700 11px/1.4 var(--font-display);letter-spacing:.12em;text-transform:uppercase;background:var(--amber);color:var(--on-marker);transition:none;animation:newPulse 1.8s ease-in-out infinite}
+@keyframes newPulse{50%{box-shadow:0 0 14px var(--amber-glow)}}
+.title-btn [data-icon]::before{width:22px;height:22px;margin:0;color:var(--amber);transition:transform var(--t-mid) var(--ease-out)}
+.title-btn:hover [data-icon]::before{transform:scale(1.18) rotate(-6deg)}
+.title-btn small{margin-left:auto;font:13px/1.2 var(--font-body);font-weight:400;letter-spacing:0;color:var(--ink-muted);text-align:right;max-width:48%}
+.title-menu .title-btn.primary{color:var(--on-marker);background:var(--amber);border-color:var(--amber);border-left-color:#fff3cf}
+.title-menu .title-btn.primary:hover:not(:disabled),.title-menu .title-btn.primary:focus-visible{background:#ffc654;box-shadow:0 0 30px rgb(242 179 61 / .45)}
+.title-menu .title-btn.primary [data-icon]::before{color:var(--on-marker)}
+.title-btn.primary small{color:#3a3318}
+.title-foot{margin-top:22px;font-size:13px;letter-spacing:.06em;color:var(--ink-muted);animation:titleRise 650ms 1000ms var(--ease-out) backwards}
+@keyframes titleSlide{from{opacity:0;transform:translateX(-36px);clip-path:inset(0 100% 0 0)}to{opacity:1;transform:none;clip-path:inset(0)}}
+@keyframes titleDrop{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.title-menu .title-btn.new::after,.title-bg,.title-top,.title-content :is(.tac-kicker,h1,h1::after,.title-sub,.title-btn,.title-foot){animation:none}.title-menu .title-btn,.title-menu .title-btn::after{transition:none}}
+html[data-fx=performance] :is(.title-bg,.title-top,.title-content .tac-kicker,.title-content h1,.title-content h1::after,.title-content .title-sub,.title-menu .title-btn,.title-foot){animation:none}
+html[data-fx=performance] :is(.title-menu .title-btn,.title-top>*,.title-nation){backdrop-filter:none}

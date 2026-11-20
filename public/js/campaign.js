@@ -47,32 +47,58 @@ function drawWorld(){
 function renderCampaignStats(){
  const n=o=>campaign.owners.filter(v=>v===o).length,over=campaignOver(campaign);$('campaignNationName').textContent=settings.nation.name;drawNationFlag('campaignNationFlag',settings.nation);
  {const chips=[[`${n('blue')} suas`,'friendly'],[`${n('red')} inimigas`,'hostile'],[`${n('neutral')} neutras`,'neutral'],[`${campaign.battles} batalha(s)`,'battles']];if(over)chips.push([over==='blue'?'Campanha vencida':'Campanha perdida',over==='blue'?'win':'loss']);
- const nodes=[];chips.forEach(([text,kind],i)=>{if(i)nodes.push(document.createTextNode(' · '));const chip=document.createElement('span');chip.className='stat-chip '+kind;chip.textContent=text;nodes.push(chip);});$('campaignStats').replaceChildren(...nodes);}
- $('campaignEvents').replaceChildren(...campaign.events.map(t=>{const li=document.createElement('li');li.textContent=t;return li;}));
+ const nodes=[];chips.forEach(([text,kind],i)=>{if(i)nodes.push(document.createTextNode(' · '));const chip=document.createElement('span');chip.className='stat-chip '+kind;const [num,...rest]=text.split(' ');if(/^\d+$/.test(num)){const b=document.createElement('b');b.textContent=num;chip.append(b,' '+rest.join(' '));}else chip.textContent=text;nodes.push(chip);});$('campaignStats').replaceChildren(...nodes);const total=campaign.owners.length||1,bar=$('campaignControl');bar.style.setProperty('--own',n('blue')/total*100+'%');bar.style.setProperty('--foe',n('red')/total*100+'%');bar.style.setProperty('--neu',n('neutral')/total*100+'%');}
+ $('campaignEvents').replaceChildren(...campaign.events.map(t=>{const li=document.createElement('li');li.textContent=t;return li;}));$('campaignEvents').scrollLeft=1e6;
  const order=campaign.world.regions.slice().sort((a,b)=>Number(canAttack(campaign,b.id))-Number(canAttack(campaign,a.id))||a.name.localeCompare(b.name));
  $('regionSelect').replaceChildren(new Option('Escolha uma região…',''),...order.map(r=>new Option(`${r.name} — ${BIOMES[r.biome].name} (${OWNER_LABEL[campaign.owners[r.id]]})${canAttack(campaign,r.id)?' · atacável':''}`,r.id)));
  $('regionSelect').value=selectedRegion>=0?String(selectedRegion):'';
  if(typeof refreshCampaignStory==='function')refreshCampaignStory();
 }
+// Ameaça pela dificuldade da IA (região inimiga já vem um nível acima em battleFor).
+const THREAT={easy:[25,'Baixa','fácil'],normal:[50,'Média','normal'],hard:[75,'Alta','difícil'],veteran:[100,'Extrema','veterano']},BIOME_ICON={temperate:'farmland',arid:'sun',highland:'relief',wetland:'water',woodland:'forest'};
+function fillDossier(r,b,battle,home){
+ const owner=r&&campaign.owners[r.id],badge=$('regionOwner'),tag=$('regionBiomeTag');
+ $('regionPhoto').dataset.empty=String(!r);tag.hidden=!r;badge.hidden=!r;$('regionHq').hidden=!r||!home;
+ if(!r){$('regionBiome').textContent='–';$('regionThreat').textContent='–';$('regionThreatBar').style.setProperty('--v','0%');return;}
+ const icon=BIOME_ICON[r.biome],t=owner==='blue'?[0,'Sob seu controle','']:THREAT[battle.difficulty]||THREAT.normal;
+ $('regionBiome').textContent=b.name;$('regionBiome').dataset.icon=icon;tag.textContent=b.name;tag.dataset.icon=icon;
+ badge.textContent=OWNER_LABEL[owner];badge.dataset.owner=owner;
+ $('regionThreatBar').style.setProperty('--v',t[0]+'%');$('regionThreat').textContent=owner==='blue'?t[1]:`${t[1]} · IA ${t[2]}`;
+}
+// Cartões que espelham os selects: montados na primeira abertura (as opções de doutrina só existem depois de showDoctrines).
+let campaignUi=null;
+function buildCampaignUi(){
+ if(campaignUi||typeof MenuKit==='undefined')return;
+ showDoctrines('campaignDoctrine','campaignDoctrineInfo','campaignEnemyDoctrineInfo',null);
+ const K=MenuKit,art={own:0,blue:0,enemy:1,red:1,franca:2,roxo:3},team=o=>K.spriteNode('heavyTank',art[o.value]);
+ campaignUi=[
+  K.cardPicker($('campaignDoctrine'),{kind:'icon',cols:2,art:o=>K.iconNode('doctrine-'+o.value),caption:o=>NATION_DOCTRINES[o.value]?.text}),
+  K.cardPicker($('campaignUnits'),{kind:'square',cols:4,art:team}),
+  K.cardPicker($('campaignEnemyArmy'),{kind:'square',cols:3,art:o=>o.value==='auto'?K.iconNode('sliders'):team(o)}),
+  K.cardPicker($('campaignMode'),{kind:'icon',cols:2,art:o=>K.iconNode(o.value==='rts'?'mode-rts':'mode-turns')}),
+  K.cardPicker($('campaignKind'),{kind:'icon',cols:2,art:o=>K.iconNode(o.value==='story'?'medal':'map')})
+ ];
+}
+const refreshCampaignPickers=()=>{if(campaignUi)for(const p of campaignUi)p.refresh();};
 function showRegion(id){
  selectedRegion=Number.isInteger(id)&&campaign.world.regions[id]?id:-1;const w=campaign.world,r=w.regions[selectedRegion],over=campaignOver(campaign);
  if(!r){$('regionName').textContent=over?(over==='blue'?'Campanha vencida':'Campanha perdida'):'Escolha uma região';$('regionInfo').textContent=over?'Comece uma nova campanha para jogar outro mundo.':'Clique numa região do mapa. Contorno dourado: regiões vizinhas do seu território, que podem ser atacadas.';
-  $('attackRegion').disabled=true;$('attackRegion').textContent='Atacar região';$('regionPreview').getContext('2d').clearRect(0,0,252,196);}
+  $('attackRegion').disabled=true;$('attackRegion').textContent='Atacar região';$('regionPreview').getContext('2d').clearRect(0,0,252,196);fillDossier(null);}
  else{
   const b=BIOMES[r.biome],battle=battleFor(campaign,r.id),home=r.id===w.homes.blue?' · seu QG':r.id===w.homes.red?' · QG inimigo':'',attack=canAttack(campaign,r.id);
-  $('regionName').textContent=r.name;$('regionInfo').textContent=`${b.name} · região ${OWNER_LABEL[campaign.owners[r.id]]}${home}\nCampo: ${b.terrain} (${MAPS[battle.map]}) · IA ${{easy:'fácil',normal:'normal',hard:'difícil'}[battle.difficulty]}`;
+  $('regionName').textContent=r.name;$('regionInfo').textContent=`Campo: ${b.terrain} (${MAPS[battle.map]})`;fillDossier(r,b,battle,home);
   $('attackRegion').disabled=!attack;$('attackRegion').textContent=attack?'Atacar região':campaign.owners[r.id]==='blue'?'Região sua':over?'Campanha encerrada':'Sem fronteira com seu território';
   drawPreview($('regionPreview'),new Game(battle.map,'normal',battle.seed,'turns',battle.options));
  }
  if($('regionSelect').value!==String(selectedRegion>=0?selectedRegion:''))$('regionSelect').value=selectedRegion>=0?String(selectedRegion):'';
- showDoctrines('campaignDoctrine','campaignDoctrineInfo','campaignEnemyDoctrineInfo',r&&canAttack(campaign,r.id)?battleFor(campaign,r.id).seed:null);$('campaignDoctrine').disabled=!r||!canAttack(campaign,r.id);drawWorld();
+ showDoctrines('campaignDoctrine','campaignDoctrineInfo','campaignEnemyDoctrineInfo',r&&canAttack(campaign,r.id)?battleFor(campaign,r.id).seed:null);$('campaignDoctrine').disabled=!r||!canAttack(campaign,r.id);refreshCampaignPickers();drawWorld();
  if(typeof refreshCampaignStory==='function')refreshCampaignStory();
 }
 function openCampaign(){
  if(!campaign){campaign=loadCampaign()||newCampaign(randomSeed(),$('difficulty').value,$('modeSelect').value,$('campaignKind').value);
   if(campaign.current!==null&&!campaignBattle&&!campaign.story){campaign.events=[`Batalha por ${campaign.world.regions[campaign.current].name} interrompida.`];campaign.current=null;saveCampaign();}}
  if($('setup').open)$('setup').close();if($('result').open)$('result').close();
- $('campaignMode').value=campaign.mode;openMenu('campaign');hoverRegion=-1;renderCampaignStats();showRegion(selectedRegion);
+ buildCampaignUi();$('campaignMode').value=campaign.mode;openMenu('campaign');hoverRegion=-1;renderCampaignStats();showRegion(selectedRegion);
  if(typeof onCampaignStoryOpen==='function')onCampaignStoryOpen();
 }
 function closeCampaign(){closeChild('campaign');}

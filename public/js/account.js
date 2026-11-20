@@ -76,11 +76,19 @@ window.addEventListener('online',()=>{if(cloud.pending)cloudSync();});
 
 // --- Diálogo Perfil e conquistas
 const DIFFICULTY_NAME={easy:'Fácil',normal:'Normal',hard:'Difícil',veteran:'Veterano'},MODE_NAME={turns:'Turnos',rts:'RTS'},RESULT_NAME={win:'Vitória',loss:'Derrota',draw:'Empate'};
+// Progresso das conquistas por contagem: [atual, meta].
+const ACHIEVEMENT_GOAL={firstWin:p=>[p.stats.wins,1],hardWin:p=>[p.stats.byDifficulty.hard?.won||0,1],veteranWin:p=>[p.stats.byDifficulty.veteran?.won||0,1],rtsWin:p=>[p.stats.byMode.rts?.won||0,1],turnsWin:p=>[p.stats.byMode.turns?.won||0,1],
+ airHunter:p=>[sumOf(p.stats.kills,t=>t.air),10],armorBreaker:p=>[sumOf(p.stats.kills,t=>t.vehicle),50],centurion:p=>[sumOf(p.stats.kills),100],firstRegion:p=>[p.stats.regions,1],conqueror:p=>[p.stats.regions,10],campaignWin:p=>[p.stats.campaigns,1],warVeteran:p=>[p.stats.matches,25],
+ cartographer:p=>[Object.keys(MAPS).filter(k=>p.stats.mapsWon[k]).length,Object.keys(MAPS).length]};
 const el=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const when=t=>new Date(t).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});
 const duration=h=>h.mode==='rts'?`${Math.floor(h.time/60)}:${String(h.time%60).padStart(2,'0')}`:`${h.round} rod.`;
 function renderProfile(){
- $('achievementList').replaceChildren(...ACHIEVEMENTS.map(a=>{const at=profile.achievements[a.id],li=el('li',undefined,at?'done':'locked');li.append(el('b',a.name),el('span',a.text),el('small',at?'Desbloqueada em '+when(at):'Bloqueada'));return li;}));
+ $('achievementList').replaceChildren(...ACHIEVEMENTS.map(a=>{
+  const at=profile.achievements[a.id],li=el('li',undefined,at?'done':'locked'),goal=ACHIEVEMENT_GOAL[a.id]?.(profile),icon=el('i');icon.dataset.icon=at?'medal':'lock';icon.setAttribute('aria-hidden','true');
+  li.append(icon,el('b',a.name),el('span',a.text),el('small',at?'Desbloqueada em '+when(at):'Bloqueada'));
+  if(goal){const value=Math.min(goal[0],goal[1]),meter=el('div',undefined,'meter');meter.setAttribute('role','progressbar');meter.setAttribute('aria-valuemin','0');meter.setAttribute('aria-valuemax',String(goal[1]));meter.setAttribute('aria-valuenow',String(value));meter.setAttribute('aria-label','Progresso de '+a.name);const bar=el('i');bar.style.setProperty('--v',value/goal[1]*100+'%');meter.append(bar);li.append(meter,el('em',value+'/'+goal[1],'progress-text'));}
+  return li;}));
  $('achievementCount').textContent=`${Object.keys(profile.achievements).length} de ${ACHIEVEMENTS.length}`;
  setProp('achievementProgress','max',ACHIEVEMENTS.length);setProp('achievementProgress','value',Object.keys(profile.achievements).length);
  const s=profile.stats,kills=sumOf(s.kills),lost=sumOf(s.lost),rows=[['Operações',s.matches],['Vitórias / derrotas / empates',`${s.wins} / ${s.losses} / ${s.draws}`],['Aproveitamento',s.matches?Math.round(s.wins/s.matches*100)+'%':'—'],
@@ -88,7 +96,7 @@ function renderProfile(){
   ['Regiões conquistadas',s.regions],['Campanhas vencidas',s.campaigns],
   ...Object.entries(DIFFICULTY_NAME).map(([k,n])=>[`${n}: vitórias / jogadas`,`${s.byDifficulty[k]?.won||0} / ${s.byDifficulty[k]?.played||0}`])];
  const top=Object.entries(s.kills).filter(([t])=>TYPES[t]).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([t,n])=>`${TYPES[t].name} ${n}`).join(' · ');if(top)rows.push(['Mais abatidos',top]);
- $('statList').replaceChildren(...rows.map(([k,v])=>{const tile=el('div');tile.append(el('dt',k),el('dd',String(v)));return tile;}));
+ $('statList').replaceChildren(...rows.map(([k,v])=>{const tile=el('div',undefined,'stat-tile');tile.append(el('dt',k),el('dd',String(v)));if(k==='Aproveitamento'&&s.matches){const meter=el('div',undefined,'meter'),bar=el('i');bar.style.setProperty('--v',Math.round(s.wins/s.matches*100)+'%');meter.append(bar);tile.append(meter);}if(k==='Mais abatidos')tile.classList.add('wide');return tile;}));
  $('historyBody').replaceChildren(...profile.history.map(h=>{const tr=el('tr');for(const v of [when(h.date),(MAPS[h.map]||h.map)+(h.nationName?' · '+h.nationName:''),DIFFICULTY_NAME[h.difficulty]||h.difficulty,MODE_NAME[h.mode],RESULT_NAME[h.result],duration(h),`${sumOf(h.kills)} / ${sumOf(h.lost)}`])tr.append(el('td',v));tr.className=h.result;return tr;}));
  $('historyEmpty').hidden=profile.history.length>0;renderAccount();
 }
@@ -111,7 +119,9 @@ function renderAccount(){
  $('accountSync').hidden=!cloud.user;$('accountSync').disabled=cloud.busy||!on;
  $('accountIntro').textContent=cloud.user?'Conta conectada. Gerencie seu acesso abaixo.':on?'Entre ou crie uma conta para continuar em outros dispositivos.':'Você pode jogar sem conta. O progresso permanece neste navegador; use o backup em arquivo para levá-lo a outro dispositivo.';
 }
-function showProfileTab(name){for(const b of document.querySelectorAll('#profile [role=tab]')){const on=b.dataset.tab===name;b.setAttribute('aria-selected',String(on));$(b.getAttribute('aria-controls')).hidden=!on;}}
+function showProfileTab(name){for(const b of document.querySelectorAll('#profile [role=tab]')){const on=b.dataset.tab===name;b.setAttribute('aria-selected',String(on));b.tabIndex=on?0:-1;$(b.getAttribute('aria-controls')).hidden=!on;}}
+// Setas movem entre as abas do perfil (um só listener).
+document.querySelector('#profile .profile-tabs').addEventListener('keydown',e=>{const tabs=[...document.querySelectorAll('#profile [role=tab]')],at=tabs.indexOf(document.activeElement),step={ArrowRight:1,ArrowLeft:-1}[e.key];if(at<0||!step)return;e.preventDefault();const next=tabs[(at+step+tabs.length)%tabs.length];next.focus();next.click();});
 function openProfile(){openMenu('profile');renderProfile();}
 // Backup em arquivo: mesmo pacote da nuvem.
 function exportSave(){const blob=new Blob([JSON.stringify(bundle(),null,1)],{type:'application/json'}),a=el('a');a.href=URL.createObjectURL(blob);a.download='rtsvibe-save.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
