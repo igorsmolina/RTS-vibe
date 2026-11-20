@@ -1,0 +1,491 @@
+{
+ "seconds": 150,
+ "results": [
+  {
+   "map": "river",
+   "roxoSide": "red",
+   "enemy": "blue",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 901,
+   "units": {
+    "commander": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "machinegun": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1,
+    "infantry": 2
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 75
+   }
+  },
+  {
+   "map": "river",
+   "roxoSide": "red",
+   "enemy": "red",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 901,
+   "units": {
+    "commander": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "machinegun": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1,
+    "infantry": 2
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 75
+   }
+  },
+  {
+   "map": "river",
+   "roxoSide": "red",
+   "enemy": "franca",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 901,
+   "units": {
+    "commander": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "machinegun": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1,
+    "infantry": 2
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 75
+   }
+  },
+  {
+   "map": "desert",
+   "roxoSide": "red",
+   "enemy": "blue",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 1161,
+   "units": {
+    "commander": 1,
+    "infantry": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "machinegun": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 49
+   }
+  },
+  {
+   "map": "desert",
+   "roxoSide": "red",
+   "enemy": "red",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 1161,
+   "units": {
+    "commander": 1,
+    "infantry": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "machinegun": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 49
+   }
+  },
+  {
+   "map": "desert",
+   "roxoSide": "red",
+   "enemy": "franca",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 1161,
+   "units": {
+    "commander": 1,
+    "infantry": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "machinegun": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 49
+   }
+  },
+  {
+   "map": "mountain",
+   "roxoSide": "red",
+   "enemy": "blue",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 917,
+   "units": {
+    "commander": 1,
+    "infantry": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "machinegun": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 49
+   }
+  },
+  {
+   "map": "mountain",
+   "roxoSide": "red",
+   "enemy": "red",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 917,
+   "units": {
+    "commander": 1,
+    "infantry": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "machinegun": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 49
+   }
+  },
+  {
+   "map": "mountain",
+   "roxoSide": "red",
+   "enemy": "franca",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 917,
+   "units": {
+    "commander": 1,
+    "infantry": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "machinegun": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 49
+   }
+  },
+  {
+   "map": "river",
+   "roxoSide": "blue",
+   "enemy": "blue",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 901,
+   "units": {
+    "commander": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "machinegun": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1,
+    "infantry": 2
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 75
+   }
+  },
+  {
+   "map": "river",
+   "roxoSide": "blue",
+   "enemy": "red",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 913,
+   "units": {
+    "commander": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "machinegun": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1,
+    "infantry": 2
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 75
+   }
+  },
+  {
+   "map": "river",
+   "roxoSide": "blue",
+   "enemy": "franca",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 920,
+   "units": {
+    "commander": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "antiAirVehicle": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 66
+   }
+  },
+  {
+   "map": "desert",
+   "roxoSide": "blue",
+   "enemy": "blue",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 1161,
+   "units": {
+    "commander": 1,
+    "infantry": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "machinegun": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 49
+   }
+  },
+  {
+   "map": "desert",
+   "roxoSide": "blue",
+   "enemy": "red",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 1166,
+   "units": {
+    "commander": 1,
+    "infantry": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "machinegun": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 49
+   }
+  },
+  {
+   "map": "desert",
+   "roxoSide": "blue",
+   "enemy": "franca",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 1155,
+   "units": {
+    "commander": 1,
+    "infantry": 2,
+    "engineer": 2,
+    "antitank": 1,
+    "antiAirVehicle": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 57
+   }
+  },
+  {
+   "map": "mountain",
+   "roxoSide": "blue",
+   "enemy": "blue",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 917,
+   "units": {
+    "commander": 1,
+    "infantry": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "machinegun": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 49
+   }
+  },
+  {
+   "map": "mountain",
+   "roxoSide": "blue",
+   "enemy": "red",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 883,
+   "units": {
+    "commander": 1,
+    "infantry": 1,
+    "engineer": 2,
+    "antitank": 1,
+    "machinegun": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 49
+   }
+  },
+  {
+   "map": "mountain",
+   "roxoSide": "blue",
+   "enemy": "franca",
+   "winner": null,
+   "time": 150,
+   "aiDecisions": 942,
+   "units": {
+    "commander": 1,
+    "infantry": 2,
+    "engineer": 2,
+    "antitank": 1,
+    "antiAirVehicle": 1,
+    "missileInfantry": 1,
+    "reconDrone": 1
+   },
+   "planes": 0,
+   "transports": 0,
+   "logistics": {
+    "embarked": 0,
+    "disembarked": 0
+   },
+   "credits": {
+    "blue": 375,
+    "red": 57
+   }
+  }
+ ],
+ "failures": []
+}

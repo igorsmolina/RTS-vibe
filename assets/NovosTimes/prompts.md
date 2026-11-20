@@ -342,3 +342,15 @@ Quadro elevado:
 ```text
 Edit the attached image of a top-down violet purple military rocket launcher vehicle. Keep the exact same vehicle, colors, size, position, top-down view, outline style and transparent background. Change ONLY the rocket launcher box: raise its front end so the launcher is tilted up about 80 degrees, almost vertical, so the rocket tube openings are visible from above. Nothing else changes. No text, no shadow on the ground.
 ```
+
+### Roxo 19 (nova tentativa): drone furtivo
+
+A primeira tentativa saiu como caça tripulado (arquivo 19-caca-bombardeiro.png, não usado). Este prompt reforça "sem cabine" e "pequeno". Enquanto a arte não chega, o jogo usa o drone azul recolorido para roxo (placeholder em `scripts/prepare-roxo.cjs`).
+
+```text
+Create ONE game sprite: a single UNMANNED stealth combat drone for a top-down 2D strategy game. View: strictly orthographic, directly from above (90 degrees), no perspective. The nose points straight UP toward the top edge. One aircraft only, centered, filling about 85% of a square 1024x1024 canvas with a small empty margin; nothing cropped. Style: hand-painted semi-realistic military illustration, crisp dark outlines, moderate shading, soft light from the upper left, readable when shrunk to 50x50 pixels. Background: plain pure white or transparent; no ground, no shadow, no border. No text, numbers, insignia, logos or people.
+Subject: a SMALL tailless flying-wing combat drone, much smaller and simpler than a fighter jet: a flat arrowhead/boomerang shape with no fuselage spine, NO COCKPIT and NO CANOPY of any kind, NO vertical tails, one small dorsal slit air intake near the nose, a single buried engine exhaust slot at the rear center, two short side rails each holding one small missile tucked close to the body. It must not look like a manned fighter.
+Paint: deep violet purple with charcoal gray and pale lilac accents, dark steel details. No olive green, no red, no blue. Design: an ORIGINAL vehicle from a fictional country whose machines mix German engineering (angular, flat armor plates) with East Asian design (hexagonal panel patterns, many small sensors). Do not copy any real aircraft.
+```
+
+Depois de gerar: salve como `assets/NovosTimes/roxo/sources/stealthDrone.png` e peça para trocar o placeholder (o script `prepare-roxo.cjs` passa a ler essa fonte).

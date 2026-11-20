@@ -21,12 +21,41 @@ const P2P=(()=>{
   return source;
  }
  const gathered=(pc,limit=5000)=>new Promise(resolve=>{if(pc.iceGatheringState==='complete'){resolve();return;}const done=()=>{if(pc.iceGatheringState==='complete'){pc.removeEventListener('icegatheringstatechange',done);resolve();}};pc.addEventListener('icegatheringstatechange',done);setTimeout(resolve,limit);});
+ // Estados completos: só o mais recente importa (o núcleo serializa todo estado como {"type":"state",...}). Qualquer outra mensagem nunca é descartada nem reordenada.
+ const BUFFER_HIGH=256*1024,BUFFER_LOW=64*1024,isState=text=>typeof text==='string'&&text.startsWith('{"type":"state"');
+ // Trocar um estado por outro não pode perder o terreno: o núcleo só o manda quando muda e o cliente só o aplica quando vem no estado.
+ // Os eventos (efeitos e sons) do estado descartado se perdem de propósito: são só visuais e quase todo estado em combate os tem, então fundi-los custaria mais que o estado atrasado.
+ // Sem terreno, o estado velho some sem ser interpretado.
+ function mergeStates(older,newer){
+  if(!older.includes('"terrain":['))return newer;
+  const a=JSON.parse(older),b=JSON.parse(newer);
+  if(!a.state||!b.state||b.state.terrain)return newer;
+  b.state.terrain=a.state.terrain;
+  return JSON.stringify(b);
+ }
+ // Entrada: de uma rajada de estados só o último é entregue (no fim do tique); outra mensagem entrega antes o estado guardado, para manter a ordem.
+ function coalesce(deliver){
+  let held=null,timer=0;
+  const flush=()=>{clearTimeout(timer);timer=0;if(held!==null){const text=held;held=null;deliver(text);}};
+  return text=>{if(isState(text)){held=held!==null?mergeStates(held,text):text;if(!timer)timer=setTimeout(flush,0);return;}flush();deliver(text);};
+ }
  // Canal de dados com ordem preservada: textos grandes (estados de 60–180 KB) vão comprimidos, os pequenos direto.
+ // Saída: fila própria; um estado ainda não enviado é trocado pelo novo, e com o canal cheio (bufferedAmount) o estado espera o esvaziar.
  function wrap(channel){
-  channel.binaryType='arraybuffer';const listeners=new Set();let inbound=Promise.resolve(),outbound=Promise.resolve();
-  channel.addEventListener('message',event=>{inbound=inbound.then(async()=>{const text=typeof event.data==='string'?event.data:await inflate(event.data);for(const f of listeners)f(text);});});
+  channel.binaryType='arraybuffer';channel.bufferedAmountLowThreshold=BUFFER_LOW;const listeners=new Set(),deliver=coalesce(text=>{for(const f of listeners)f(text);});let inbound=Promise.resolve();
+  channel.addEventListener('message',event=>{inbound=inbound.then(async()=>{deliver(typeof event.data==='string'?event.data:await inflate(event.data));});});
+  const queue=[];let draining=false;
+  const drained=()=>new Promise(resolve=>{const done=()=>{channel.removeEventListener('bufferedamountlow',done);channel.removeEventListener('close',done);resolve();};channel.addEventListener('bufferedamountlow',done);channel.addEventListener('close',done);});
+  const drain=async()=>{
+   if(draining)return;draining=true;
+   try{while(queue.length){
+    if(channel.readyState!=='open'){queue.length=0;break;}
+    if(isState(queue[0])&&channel.bufferedAmount>BUFFER_HIGH){await drained();continue;}
+    const text=queue.shift();channel.send(text.length>1024?await deflate(text):text);
+   }}finally{draining=false;}
+  };
   return {channel,onText:f=>listeners.add(f),get open(){return channel.readyState==='open';},
-   send(text){outbound=outbound.then(async()=>{if(channel.readyState!=='open')return;channel.send(text.length>1024?await deflate(text):text);});}};
+   send(text){if(isState(text)&&queue.length&&isState(queue[queue.length-1]))queue[queue.length-1]=mergeStates(queue[queue.length-1],text);else queue.push(text);drain();}};
  }
  const opened=(channel,limit=25000)=>new Promise((resolve,reject)=>{if(channel.readyState==='open'){resolve();return;}const timer=setTimeout(()=>reject(Error('Não foi possível conectar ao anfitrião. A rede de um dos dois pode bloquear a conexão direta.')),limit);channel.addEventListener('open',()=>{clearTimeout(timer);resolve();},{once:true});});
  // Objeto com a interface de WebSocket usada pelo multiplayer.js.
@@ -63,7 +92,7 @@ const P2P=(()=>{
    socket(){
     worker.postMessage({type:'open',id:'local'});
     return fakeSocket({send:text=>worker.postMessage({type:'in',id:'local',text}),close:()=>worker.postMessage({type:'close',id:'local'}),isOpen:()=>!stopped,
-     subscribe:(onText,onClose)=>sinks.set('local',{text:onText,close:onClose})});
+     subscribe:(onText,onClose)=>sinks.set('local',{text:coalesce(onText),close:onClose})});
    },
    stop(){stopped=true;source?.close();worker.terminate();for(const {channel} of channels.values())try{channel.close();}catch{}}};
  }
@@ -99,6 +128,6 @@ const P2P=(()=>{
  }
  // Retoma como convidado depois de recarregar a página: nova oferta e auth com o token guardado.
  const rejoin=code=>({code,hosting:false,async socket(){return guestSocket(await connect(code));},stop(){}});
- return {host,join,rejoin,supported:()=>!!(window.Worker&&window.RTCPeerConnection&&window.CompressionStream&&location.protocol!=='file:')};
+ return {host,join,rejoin,wrap,coalesce,supported:()=>!!(window.Worker&&window.RTCPeerConnection&&window.CompressionStream&&location.protocol!=='file:')};
 })();
 window.P2P=P2P;

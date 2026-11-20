@@ -6,12 +6,12 @@ function advance(g,s){for(let t=0;t<s-1e-8;t+=1/30)g.update(Math.min(1/30,s-t));
 function settle(g){let n=0;while(g.busy&&n++<5000)g.update(1/30);assert.ok(n<5000);}
 let checks=0;function check(name,fn){fn();checks++;console.log('OK '+name);}
 
-check('Atributos: sempre alto, sem flares, altitude ou manutenção; 2 mísseis de alcance 8',()=>{
+check('Atributos: sempre alto, sem flares, altitude ou manutenção; 2 mísseis de alcance 15',()=>{
  const t=TYPES.stealthDrone;assert.deepEqual([t.hp,t.move,t.speed,t.vision,t.cost,t.train,t.reward,t.missiles],[50,6,2.2,TYPES.reconDrone.vision,160,3,45,2]);
- for(const mode of ['turns','rts']){const g=field(mode),d=g.add('blue','stealthDrone',10,10),post=g.add('blue','post',10,11),near=g.add('red','infantry',12,10),far=g.add('red','infantry',19,10);g.updateVision();
+ for(const mode of ['turns','rts']){const g=field(mode),d=g.add('blue','stealthDrone',10,10),post=g.add('blue','post',10,11),near=g.add('red','infantry',12,10),far=g.add('red','infantry',26,10);g.updateVision();
   assert.equal(d.altitude,'high');assert.equal(d.flares,0);assert.equal(d.missiles,2);assert.equal(g.flareReady(d),false);
   assert.equal(g.order(d,'altitude',{altitude:'low'}),false);assert.equal(g.canService(d,post),false);assert.equal(g.sight(d),12,'Visão do drone de reconhecimento, não a 15 dos helicópteros altos');
-  assert.equal(g.range(d,near),8,'Sem o +5 dos mísseis em altitude alta');assert.ok(g.canFire(d,near));assert.equal(g.canFire(d,far),false);}
+  assert.equal(g.range(d,near),15,'Sem o +5 dos mísseis em altitude alta');assert.ok(g.canFire(d,near));assert.equal(g.canFire(d,far),false);}
 });
 check('Radar não detecta; visão de qualquer tropa inimiga descobre, inclusive a antiaérea',()=>{
  const g=field(),d=g.add('blue','stealthDrone',5,25),scout=g.add('blue','reconDrone',6,25),aa=g.add('red','antiAirVehicle',33,2);g.updateVision();
@@ -28,7 +28,7 @@ check('Reconhecimento atual: volta a ficar oculto ao sair da visão inimiga',()=
 });
 check('Dois mísseis sem reposição, um por ação; depois só reconhecimento',()=>{
  const g=field(),d=g.add('blue','stealthDrone',10,10),foe=g.add('red','infantry',12,10);g.updateVision();
- assert.ok(g.order(d,'attack',{targetId:foe.id}));settle(g);assert.equal(d.missiles,1);assert.equal(foe.hp,65,'Dano 35');assert.equal(g.order(d,'attack',{targetId:foe.id}),false,'Uma ação por turno');
+ assert.ok(g.order(d,'attack',{targetId:foe.id}));settle(g);assert.equal(d.missiles,1);assert.equal(foe.hp,20,'Dano 80');assert.equal(g.order(d,'attack',{targetId:foe.id}),false,'Uma ação por turno');
  g.endTurn();for(let n=0;g.turn==='red'&&n<20000;n++)g.update(1/30);assert.ok(g.order(d,'attack',{targetId:foe.id}));settle(g);assert.equal(d.missiles,0);
  g.endTurn();for(let n=0;g.turn==='red'&&n<20000;n++)g.update(1/30);assert.equal(g.weapon(d,foe),null);assert.equal(g.canFire(d,foe),false);assert.equal(g.acquire(d),undefined);assert.equal(g.order(d,'attack',{targetId:foe.id}),false);
  assert.ok(g.order(d,'move',{x:14,y:14}),'Continua voando como olheiro');
@@ -48,7 +48,7 @@ check('IA: caça antiaérea ao alcance, persegue lançadores vistos e, sem míss
  const k=field(),f=k.add('red','stealthDrone',30,4);f.missiles=0;k.turn='red';k.aiEnabled=true;k.updateVision();k.aiAct(f);assert.equal(f.order.type,'move','Patrulha');
  for(const mode of ['turns','rts']){const m=new Game('river','normal',23,mode);m.add('red','stealthDrone',31,4);m.add('blue','stealthDrone',4,23);m.updateVision();
   if(mode==='turns')for(let i=0;i<8&&!m.winner;i++){m.endTurn();for(let n=0;m.turn==='red'&&!m.winner&&n<20000;n++)m.update(1/30);settle(m);}else advance(m,60);
-  for(const u of m.units)if(u.type==='stealthDrone'){assert.equal(u.altitude,'high');assert.ok(u.missiles>=0&&u.missiles<=2);}assert.ok(m.aiDecisions>0);}
+  for(const u of m.units)if(u.type==='stealthDrone'){assert.equal(u.altitude,'high');assert.ok(u.missiles>=0&&u.missiles<=(u.owner==='red'?4:2));}assert.ok(m.aiDecisions>0);}
 });
 check('Drones voam como aviões: além do alcance por turno e órbita ao chegar',()=>{
  for(const mode of ['turns','rts']){const g=field(mode),d=g.add('blue','reconDrone',10,10);g.updateVision();
