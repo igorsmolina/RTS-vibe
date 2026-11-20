@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1090" viewBox="0 0 1440 1090" role="img" aria-labelledby="title desc">
+<title id="title">Véu de Cinzas: storyboard da proposta</title>
+<desc id="desc">Seis quadros esquemáticos: posto sem sinal, horários contraditórios, extração de Ivo, contratos do corredor, escolha do canal e autorização final. Imagens de planejamento, não capturas do jogo.</desc>
+<defs>
+ <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="#38463d" stroke-width=".5"/></pattern>
+ <style>text{font-family:Segoe UI,Arial,sans-serif;fill:#e9e5d2}.label{font-size:15px;letter-spacing:2px;fill:#b9c2ac}.name{font-size:24px;font-weight:600}.line{font-size:18px}.small{font-size:15px;fill:#c0c9b8}.paper{fill:#ddd7bd}.ink{fill:#24362b}.diagram{fill:none;stroke:#d3c293;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.muted{stroke:#68796a}.accent{fill:#e8bb78}</style>
+</defs>
+<rect width="1440" height="1090" fill="#14241c"/>
+<text x="48" y="48" class="label">FRONTEIRAS / PROPOSTA DE CAMPANHA</text>
+<text x="48" y="94" font-size="38" font-weight="600">Operação Véu de Cinzas</text>
+<text x="48" y="128" class="line">Quadros estáticos, falas curtas e decisões fora da animação. Avanço controlado pelo jogador.</text>
+<g transform="translate(48 164)">
+ <rect width="432" height="370" rx="8" fill="#1d3025" stroke="#60705e"/>
+ <rect x="16" y="16" width="400" height="216" fill="url(#grid)"/>
+ <path d="M20 210L170 150 300 150 414 105M20 224L174 164 305 164 414 120" class="diagram muted"/>
+ <path d="M86 149V75M61 149L86 75 111 149M69 116H103M75 98H96" class="diagram"/>
+ <path d="M59 67Q86 43 113 67M48 53Q86 20 124 53" class="diagram"/>
+ <rect x="225" y="124" width="60" height="25" fill="#a9b59a"/><circle cx="237" cy="153" r="7" fill="#101b15"/><circle cx="274" cy="153" r="7" fill="#101b15"/>
+ <path d="M321 47L350 75M350 47L321 75" stroke="#cf9777" stroke-width="4"/>
+ <text x="22" y="261" class="label">01 / ABERTURA</text><text x="22" y="291" class="name">Posto Seis sem sinal</text>
+ <text x="22" y="322" class="line">"Vieram com a manutenção."</text><text x="22" y="350" class="small">Plano aberto. Rádio corta. Tela escurece.</text>
+</g>
+<g transform="translate(504 164)">
+ <rect width="432" height="370" rx="8" fill="#1d3025" stroke="#60705e"/>
+ <rect x="16" y="16" width="400" height="216" fill="url(#grid)"/>
+ <g transform="rotate(-5 137 124)"><rect x="48" y="44" width="168" height="155" class="paper"/><text x="64" y="76" class="ink" font-size="15">DESLIGAR ESTAÇÃO</text><text x="77" y="124" class="ink" font-size="36">03:50</text><path d="M66 147H194M66 162H170M66 177H189" stroke="#6e7966" stroke-width="2"/></g>
+ <rect x="238" y="80" width="143" height="103" fill="#2e4534" stroke="#a4b095"/><text x="254" y="111" class="small">ÚLTIMO CONTATO</text><text x="257" y="152" font-size="32">04:17</text>
+ <text x="22" y="261" class="label">02 / CAPÍTULO 1</text><text x="22" y="291" class="name">A ordem veio antes</text>
+ <text x="22" y="322" class="line">"Quero ver quem assinou."</text><text x="22" y="350" class="small">Aproximação no registro. Sem contagem.</text>
+</g>
+<g transform="translate(960 164)">
+ <rect width="432" height="370" rx="8" fill="#1d3025" stroke="#60705e"/>
+ <rect x="16" y="16" width="400" height="216" fill="url(#grid)"/>
+ <path d="M40 182L151 141 243 85 385 64M40 192L156 151 248 95 385 74" class="diagram muted"/>
+ <path d="M77 166L100 60 258 36 370 62" fill="none" stroke="#b3c6a0" stroke-width="3" stroke-dasharray="8 6"/>
+ <rect x="52" y="150" width="62" height="28" fill="#b4c49f"/><rect x="114" y="156" width="22" height="22" fill="#899c78"/><circle cx="68" cy="180" r="8" fill="#101b15"/><circle cx="120" cy="180" r="8" fill="#101b15"/>
+ <path d="M225 120L244 139M244 120L225 139M271 99L290 118M290 99L271 118" stroke="#cf9777" stroke-width="4"/>
+ <circle cx="375" cy="67" r="18" class="diagram"/><text x="190" y="202" class="small">ROTA SOB SEU COMANDO</text>
+ <text x="22" y="261" class="label">03 / CAPÍTULO 2</text><text x="22" y="291" class="name">Trazer Ivo de volta</text>
+ <text x="22" y="322" class="line">"Eu dou os nomes quando sair."</text><text x="22" y="350" class="small">Duas rotas. O trajeto acontece na missão.</text>
+</g>
+<g transform="translate(48 558)">
+ <rect width="432" height="370" rx="8" fill="#1d3025" stroke="#60705e"/>
+ <rect x="16" y="16" width="400" height="216" fill="url(#grid)"/>
+ <rect x="53" y="45" width="147" height="151" class="paper"/><rect x="233" y="45" width="147" height="151" class="paper"/>
+ <text x="70" y="73" class="ink" font-size="15">CONTRATO</text><text x="250" y="73" class="ink" font-size="15">CONTRATO</text>
+ <path d="M71 94H182M71 112H166M71 130H179M251 94H362M251 112H346M251 130H359" stroke="#78816e" stroke-width="2"/>
+ <text x="75" y="169" class="ink" font-size="18">VILAR</text><text x="249" y="169" class="ink" font-size="18">ORSEN</text><path d="M165 165H238" stroke="#b47157" stroke-width="4"/>
+ <text x="22" y="261" class="label">04 / CAPÍTULO 3</text><text x="22" y="291" class="name">O mesmo corredor</text>
+ <text x="22" y="322" class="line">"Assinaram antes do ataque."</text><text x="22" y="350" class="small">Detalhe dos documentos. Decisão ao final.</text>
+</g>
+<g transform="translate(504 558)">
+ <rect width="432" height="370" rx="8" fill="#1d3025" stroke="#60705e"/>
+ <rect x="16" y="16" width="400" height="216" fill="url(#grid)"/>
+ <path d="M196 189L216 81 236 189M202 154H230M207 128H225M216 80V52M189 65Q216 43 243 65M179 52Q216 22 253 52" class="diagram"/>
+ <path d="M185 104L95 86M247 104L337 86" class="diagram muted"/>
+ <circle cx="73" cy="80" r="30" fill="#2e4534" stroke="#c2cfae"/><rect x="322" y="50" width="60" height="60" fill="#2e4534" stroke="#c2cfae"/>
+ <text x="43" y="137" class="small">CIVIL</text><text x="310" y="137" class="small">MILITAR</text><text x="42" y="167" class="small">Cópia externa</text><text x="278" y="167" class="small">+150 créditos</text>
+ <text x="22" y="261" class="label">05 / CAPÍTULO 4</text><text x="22" y="291" class="name">Quem recebe a prova</text>
+ <text x="22" y="322" class="line">"Ele controla o destinatário."</text><text x="22" y="350" class="small">Sem seleção automática ou limite de tempo.</text>
+</g>
+<g transform="translate(960 558)">
+ <rect width="432" height="370" rx="8" fill="#1d3025" stroke="#60705e"/>
+ <rect x="16" y="16" width="400" height="216" fill="url(#grid)"/>
+ <rect x="77" y="38" width="220" height="170" class="paper"/><text x="96" y="70" class="ink" font-size="14">AUTORIZAÇÃO CONJUNTA</text><path d="M97 91H274M97 108H258M97 125H273" stroke="#78816e" stroke-width="2"/>
+ <path d="M98 171Q117 138 124 170T157 163M196 170Q210 144 220 165T266 158" fill="none" stroke="#324e3e" stroke-width="3"/>
+ <path d="M309 124H377M362 111L377 124 362 137" class="diagram"/><text x="310" y="165" class="small">DESTINO?</text>
+ <text x="22" y="261" class="label">06 / CAPÍTULO 5 E EPÍLOGO</text><text x="22" y="291" class="name">A assinatura e a cópia</text>
+ <text x="22" y="322" class="line">"Meu relatório voltou sem seis páginas."</text><text x="22" y="350" class="small">Fala apenas no final de verdade encoberta.</text>
+</g>
+<text x="48" y="978" class="line">Direção: verde de sala de operações, papel gasto e âmbar nos indícios. Retratos existentes nas conversas.</text>
+<text x="48" y="1010" class="small">Cada quadro indica composição, não uma nova mecânica. Mapa de rotas ilustrativo: o terreno final depende da missão.</text>
+<text x="48" y="1040" class="small">Duração livre para leitura. Zoom e transições são proposta; com movimento reduzido, mostrar o quadro estático.</text>
+</svg>

@@ -3,7 +3,9 @@
 const CAMPAIGN_KEY='wargrid.campaign.v1',OWNER_TINT={blue:[64,150,210],red:[220,92,78]},OWNER_LABEL={blue:'sua',red:'inimiga',neutral:'neutra'};
 let campaign=null,campaignBattle=null,worldView=null,hoverRegion=-1,selectedRegion=-1,confirmNew=0;
 const randomSeed=()=>Math.floor(Math.random()*4294967294)+1,hexColor=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16));
-function saveCampaign(){try{localStorage.setItem(CAMPAIGN_KEY,serializeCampaign(campaign));}catch{}touchProfile('campaign');}
+function saveCampaign(){if(typeof storyGalleryOriginal!=='undefined'&&storyGalleryOriginal!==undefined)return;try{localStorage.setItem(CAMPAIGN_KEY,serializeCampaign(campaign));}catch{}touchProfile('campaign');}
+const LEGACY_CAMPAIGN_BACKUP_KEY='wargrid.campaign.legacy-recovery.v1';
+function backupLegacyCampaign(text){try{localStorage.setItem(LEGACY_CAMPAIGN_BACKUP_KEY,text);if(localStorage.getItem(LEGACY_CAMPAIGN_BACKUP_KEY)!==text)throw Error('Cópia não confirmada.');}catch{throw Error('Não foi possível preservar a campanha antiga. Libere espaço ou exporte o save antes de reiniciar. O original foi mantido.');}}
 function loadCampaign(){try{const text=localStorage.getItem(CAMPAIGN_KEY);return text?deserializeCampaign(text):null;}catch{return null;}}
 // Base em pixels (oceano por profundidade, biomas, costas e fronteiras): refeita só quando o mundo muda.
 function paintWorld(){
@@ -97,13 +99,21 @@ function showRegion(id){
 function openCampaign(){
  if(!campaign){campaign=loadCampaign()||newCampaign(randomSeed(),$('difficulty').value,$('modeSelect').value,$('campaignKind').value);
   if(campaign.current!==null&&!campaignBattle&&!campaign.story){campaign.events=[`Batalha por ${campaign.world.regions[campaign.current].name} interrompida.`];campaign.current=null;saveCampaign();}}
+ if(campaign.legacyReset){
+  try{backupLegacyCampaign(localStorage.getItem(CAMPAIGN_KEY));}
+  catch(error){campaign=null;say(error.message);return;}
+  try{localStorage.setItem(CAMPAIGN_KEY,serializeCampaign(campaign));}
+  catch{campaign=null;say('Não foi possível gravar o reinício. A campanha original e a cópia de recuperação foram preservadas.');return;}
+  delete campaign.legacyReset;campaignBattle=null;localStorage.removeItem(STORY_CHECKPOINT_KEY);touchProfile('campaign');
+  say('Campanha antiga reiniciada na primeira missão. Original preservado na cópia de recuperação.');
+ }
  if($('setup').open)$('setup').close();if($('result').open)$('result').close();
- buildCampaignUi();$('campaignMode').value=campaign.mode;openMenu('campaign');hoverRegion=-1;renderCampaignStats();showRegion(selectedRegion);
+ buildCampaignUi();$('campaignMode').value=campaign.mode;openMenu('campaign');hoverRegion=-1;renderCampaignStats();showRegion(selectedRegion>=0?selectedRegion:campaign.story?Story.marker(campaign)?.region??-1:-1);
  if(typeof onCampaignStoryOpen==='function')onCampaignStoryOpen();
 }
 function closeCampaign(){closeChild('campaign');}
 // Resumo para o menu inicial: regiões dominadas e batalhas, ou vazio sem campanha salva.
-function campaignSummary(){const c=campaign||loadCampaign();if(!c)return '';const n=c.owners.filter(o=>o==='blue').length;return `${n} região(ões) · ${c.battles} batalha(s)`;}
+function campaignSummary(){const c=campaign||loadCampaign();if(!c)return '';if(c.legacyReset)return 'Campanha antiga · reinício na primeira missão';const n=c.owners.filter(o=>o==='blue').length;return `${n} região(ões) · ${c.battles} batalha(s)`;}
 $('openCampaign').addEventListener('click',openCampaign);$('worldButton').addEventListener('click',openCampaign);$('closeCampaign').addEventListener('click',closeCampaign);
 $('campaign').addEventListener('cancel',e=>{e.preventDefault();closeCampaign();});
 $('regionSelect').addEventListener('change',()=>showRegion($('regionSelect').value===''?-1:Number($('regionSelect').value)));
@@ -125,5 +135,5 @@ $('backToWorld').addEventListener('click',()=>{if(!campaignBattle||!game.winner)
 $('setupForm').addEventListener('submit',()=>{if(campaignBattle){campaignBattle=null;campaign.current=null;if(campaign.story){campaign.story.active=null;campaign.story.scene=null;}saveCampaign();}},true);
 $('newCampaign').addEventListener('click',()=>{
  if(campaign?.battles>0&&Date.now()-confirmNew>4000){confirmNew=Date.now();$('newCampaign').textContent='Confirmar nova campanha?';return;}
- confirmNew=0;$('newCampaign').textContent='Nova campanha';campaign=newCampaign(randomSeed(),campaign?.difficulty||$('difficulty').value,$('campaignMode').value,$('campaignKind').value);campaignBattle=null;worldView=null;selectedRegion=-1;saveCampaign();renderCampaignStats();showRegion(-1);onCampaignStoryOpen();
+ confirmNew=0;$('newCampaign').textContent='Nova campanha';campaign=newCampaign(randomSeed(),campaign?.difficulty||$('difficulty').value,$('campaignMode').value,$('campaignKind').value);campaignBattle=null;worldView=null;selectedRegion=-1;saveCampaign();renderCampaignStats();showRegion(campaign.story?Story.marker(campaign)?.region??-1:-1);onCampaignStoryOpen();
 });

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<defs>
+ <radialGradient id="light"><stop stop-color="#6c765a"/><stop offset="1" stop-color="#15271f"/></radialGradient>
+ <pattern id="grid" width="70" height="70" patternUnits="userSpaceOnUse"><path d="M70 0H0V70" fill="none" stroke="#b7c29a" stroke-opacity=".16"/></pattern>
+</defs>
+<path fill="#15251e" d="M0 0h1600v900H0z"/><path fill="url(#light)" d="M80 55h1440v790H80z"/>
+<g transform="translate(175 100) rotate(-3 620 320)">
+ <path fill="#64745a" stroke="#969c7b" stroke-width="3" d="M0 0h1250v650H0z"/>
+ <path fill="#4c654f" d="m0 0 240 72 45 160 199-35 123 177 226-99 98 115 319-83v343H0z"/>
+ <g fill="none" stroke="#a8b58a" stroke-opacity=".25" stroke-width="2"><path d="M30 153q120-145 270-5t285 19 225 50 310-62M30 180q120-145 270-5t285 19 225 50 310-62M50 404q120-145 270-5t285 19 225 50 310-62M50 431q120-145 270-5t285 19 225 50 310-62"/></g>
+ <path d="M880-30q-170 170-60 275t-80 235-40 220" fill="none" stroke="#8b9b87" stroke-width="40"/>
+ <path d="M880-30q-170 170-60 275t-80 235-40 220" fill="none" stroke="#506b68" stroke-width="28"/>
+ <path fill="url(#grid)" d="M0 0h1250v650H0z"/>
+ <path d="m218 490 210-48 198-182 218-48 195-96" fill="none" stroke="#d5bc83" stroke-width="8"/>
+ <path d="m218 490 33-290 318-99 275 111" fill="none" stroke="#becfa6" stroke-width="5" stroke-dasharray="17 12"/>
+ <g fill="#d0ca9e" stroke="#283e2e" stroke-width="4"><circle cx="218" cy="490" r="13"/><circle cx="1039" cy="116" r="13"/><path d="m825 198 20-32 20 32z"/></g>
+ <g stroke="#b87c60" stroke-width="6"><path d="m565 322 23 23m0-23-23 23m54-59 23 23m0-23-23 23"/></g>
+ <circle cx="1039" cy="116" r="33" fill="none" stroke="#e2cd95" stroke-width="3"/>
+ <path d="M45 55h135M45 65h70M1070 572h130m-130 12h65" stroke="#c4c4a0" stroke-width="3"/>
+</g>
+<path fill="#0d1a13" d="M0 775h1600v125H0z"/>
+<g transform="translate(1170 650) rotate(12)"><rect width="200" height="137" fill="#c6bfa0"/><path d="M22 29h151M22 43h120M22 57h144M22 101h67" stroke="#69745c" stroke-width="3"/></g>
+</svg>

@@ -5,7 +5,17 @@ function saveProfile(){try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profi
 function touchProfile(kind){if(kind)profile[kind+'At']=Date.now();saveProfile();scheduleSync();}
 function bundle(){let text=null;try{text=localStorage.getItem(CAMPAIGN_KEY);}catch{}return {version:1,profile,campaign:text,settings};}
 function applyBundle(b){
- if(b.campaign&&typeof deserializeCampaign==='function'&&!deserializeCampaign(b.campaign))throw Error('Campanha inválida no backup. O progresso atual foi preservado.');
+ const incoming=b.campaign&&typeof deserializeCampaign==='function'?deserializeCampaign(b.campaign):null;
+ if(b.campaign&&typeof deserializeCampaign==='function'&&!incoming)throw Error('Campanha inválida no backup. O progresso atual foi preservado.');
+ if(incoming?.legacyReset&&!campaignBattle){
+  backupLegacyCampaign(b.campaign);
+  b.campaign=serializeCampaign(incoming);
+  localStorage.setItem(CAMPAIGN_KEY,b.campaign);
+  localStorage.removeItem(STORY_CHECKPOINT_KEY);
+  delete incoming.legacyReset;
+  campaign=$('campaign').open?incoming:null;worldView=null;selectedRegion=campaign?Story.marker(campaign)?.region??-1:-1;
+  say('Campanha antiga reiniciada na primeira missão. Cópia de recuperação preservada.');
+ }
  profile=b.profile;saveProfile();
  let current=null;try{current=localStorage.getItem(CAMPAIGN_KEY);}catch{}
  // Batalha de campanha em andamento mantém a campanha local; o resultado sobe depois.
@@ -126,9 +136,14 @@ function openProfile(){openMenu('profile');renderProfile();}
 // Backup em arquivo: mesmo pacote da nuvem.
 function exportSave(){const blob=new Blob([JSON.stringify(bundle(),null,1)],{type:'application/json'}),a=el('a');a.href=URL.createObjectURL(blob);a.download='rtsvibe-save.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
 async function importSave(file){
- let b=null;try{b=validateBundle(JSON.parse(await file.text()));if(b?.campaign)deserializeCampaign(b.campaign);}catch{b=null;}
+ let b=null;try{b=validateBundle(JSON.parse(await file.text()));}catch{b=null;}
  if(!b){$('accountStatus').textContent='Arquivo inválido: nada foi alterado.';return;}
- applyBundle(mergeBundles(bundle(),b));touchProfile();renderProfile();$('accountStatus').textContent=`Save importado: ${b.profile.stats.wins} vitória(s), ${Object.keys(b.profile.achievements).length} conquista(s).`;
+ try{
+  const merged=mergeBundles(bundle(),b),legacy=b.campaign&&deserializeCampaign(b.campaign)?.legacyReset;
+  if(legacy&&!campaignBattle)merged.campaign=b.campaign;
+  applyBundle(merged);touchProfile();renderProfile();
+  $('accountStatus').textContent=legacy&&!campaignBattle?'Campanha reiniciada na primeira missão. Cópia de recuperação preservada.':`Save importado: ${b.profile.stats.wins} vitória(s), ${Object.keys(b.profile.achievements).length} conquista(s).`;
+ }catch(error){$('accountStatus').textContent=error.message;}
 }
 $('titleProfile').addEventListener('click',()=>leaveTitleFor(openProfile));
 $('closeProfile').addEventListener('click',()=>closeChild('profile'));

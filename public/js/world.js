@@ -50,7 +50,7 @@ function newCampaign(seed,difficulty='normal',mode='turns',kind='free'){
  return{version:1,kind:kind==='story'?'story':'free',...(kind==='story'?{story:Story.create(seed)}:{}),seed:world.seed,difficulty:HARDER[difficulty]?difficulty:'normal',mode:mode==='rts'?'rts':'turns',battles:0,current:null,events:[],world,owners:world.regions.map(r=>r.id===world.homes.blue?'blue':r.id===world.homes.red?'red':'neutral')};
 }
 function campaignOver(c){return c.owners[c.world.homes.red]==='blue'?'blue':c.owners[c.world.homes.blue]==='red'?'red':null;}
-function canAttack(c,id){const r=c.world.regions[id];return !!r&&!campaignOver(c)&&c.owners[id]!=='blue'&&(!c.story||id!==c.world.homes.red||c.story.completed.includes(4))&&r.neighbors.some(n=>c.owners[n]==='blue');}
+function canAttack(c,id){const r=c.world.regions[id];return !!r&&!campaignOver(c)&&c.owners[id]!=='blue'&&(!c.story||id!==c.world.homes.red||c.story.completed.includes(7))&&r.neighbors.some(n=>c.owners[n]==='blue');}
 // Batalha da região: mapa e opções pelo bioma, semente derivada (muda a cada tentativa); território vermelho é um nível mais difícil.
 function battleFor(c,id){
  const r=c.world.regions[id],b=BIOMES[r.biome];
@@ -69,8 +69,12 @@ function applyResult(c,id,won){
 function serializeCampaign(c){return JSON.stringify({version:1,kind:c.kind||'free',...(c.story?{story:c.story}:{}),seed:c.seed,difficulty:c.difficulty,mode:c.mode,battles:c.battles,current:c.current,events:c.events,owners:c.owners});}
 function deserializeCampaign(text){
  try{const d=JSON.parse(text);if(d?.version!==1||!Number.isInteger(d.seed)||d.kind!==undefined&&!['free','story'].includes(d.kind))return null;const c=newCampaign(d.seed,d.difficulty,d.mode,d.kind||'free');
+  if(d.kind==='story'&&d.story?.version===1){Object.defineProperty(c,'legacyReset',{value:true,enumerable:false,configurable:true});return c;}
   if(!Array.isArray(d.owners)||d.owners.length!==c.owners.length||!d.owners.every(o=>['blue','red','neutral'].includes(o)))return null;
-  if(d.kind==='story'){if(typeof Story==='undefined'||!Story.validate(d.story,c))return null;c.story=d.story;}
+  if(d.kind==='story'){if(typeof Story==='undefined'||!Story.validate(d.story,c))return null;c.story=d.story;
+   // A revisão altera a ordem das falas, mas conserva a ação pendente e as escolhas.
+   if(c.story.scene&&(c.story.scene.revision||1)<Story.sceneRevision(c.story.scene.id)){c.story.scene.index=0;c.story.scene.revision=Story.sceneRevision(c.story.scene.id);}
+  }
   return Object.assign(c,{battles:Number(d.battles)||0,current:Number.isInteger(d.current)&&d.current>=0&&d.current<c.owners.length?d.current:null,events:Array.isArray(d.events)?d.events.map(String):[],owners:d.owners});
  }catch{return null;}
 }
